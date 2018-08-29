@@ -116,7 +116,7 @@
     <ClCompile Include="codeeditor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
-    <ClCompile Include="GUIWrapper.cpp" />
+    <ClCompile Include="gui_wrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="mainwindow.ui" />
@@ -138,7 +138,7 @@
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GUIWrapper.h" />
+    <ClInclude Include="gui_wrapper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
