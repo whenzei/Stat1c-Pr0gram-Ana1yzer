@@ -11,17 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\DesignExtractor.cpp" />
-    <ClCompile Include="..\source\Parser.cpp" />
-    <ClCompile Include="..\source\PKB.cpp" />
-    <ClCompile Include="..\source\TNode.cpp" />
-    <ClCompile Include="..\source\Tokenizer.cpp" />
+    <ClCompile Include="..\source\design_extractor.cpp" />
+    <ClCompile Include="..\source\parser.cpp" />
+    <ClCompile Include="..\source\pkb.cpp" />
+    <ClCompile Include="..\source\t_node.cpp" />
+    <ClCompile Include="..\source\tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Parser.h" />
-    <ClInclude Include="..\source\PKB.h" />
-    <ClInclude Include="..\source\TNode.h" />
-    <ClInclude Include="..\source\Tokenizer.h" />
+    <ClInclude Include="..\source\parser.h" />
+    <ClInclude Include="..\source\pkb.h" />
+    <ClInclude Include="..\source\tokenizer.h" />
+    <ClInclude Include="..\source\t_node.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

@@ -1,5 +1,5 @@
-#include "TestWrapper.h"
-#include "Parser.h"
+#include "test_wrapper.h"
+#include "parser.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;

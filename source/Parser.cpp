@@ -8,10 +8,9 @@
 
 using namespace std;
 
-#include "PKB.h"
-#include "Parser.h"
-#include "TNode.h"
-#include "Tokenizer.h"
+#include "pkb.h"
+#include "parser.h"
+#include "tokenizer.h"
 
 Parser::Parser(string filepath) {
   content_ = ReadContentFromFile(filepath);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #ifndef SPA_TOKENIZER_H
 #define SPA_TOKENIZER_H
 

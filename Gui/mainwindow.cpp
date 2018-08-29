@@ -4,7 +4,7 @@
 #include <QTextStream>
 #include <QtGui>
 #include <iostream>
-#include "GUIWrapper.h"
+#include "gui_wrapper.h"
 #include "ui_mainwindow.h"
 
 #include <list>
