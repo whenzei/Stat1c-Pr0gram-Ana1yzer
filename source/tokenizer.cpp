@@ -4,7 +4,9 @@
 
 #include "tokenizer.h"
 
-enum TOKEN_TYPES {
+using namespace std;
+
+enum tokenTypes {
   NOTHING = 0,
   DIGIT = 1,
   NAME = 2,
@@ -13,18 +15,18 @@ enum TOKEN_TYPES {
   ASSIGNMENT = 5
 };
 
-const int NUM_FUNCTIONS = 6;
+const int numberOfFunctions = 6;
 
-std::vector<Token> Tokenizer::Tokenize(std::string input) {
-  TokenizerFunc tokenizer_functions[NUM_FUNCTIONS] = {
+vector<Token> Tokenizer::Tokenize(string input) {
+  TokenizerFunc tokenizer_functions[numberOfFunctions] = {
       &SkipWhitespace, &TokenizeDigits,    &TokenizeNames,
       &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals};
   size_t current_index = 0, vector_len = input.size();
-  std::vector<Token> tokens;
+  vector<Token> tokens;
 
   while (current_index < vector_len) {
     bool is_done = false;
-    for (int i = 0; i < NUM_FUNCTIONS; i++) {
+    for (int i = 0; i < numberOfFunctions; i++) {
       if (is_done) {
         break;
       }
@@ -44,8 +46,8 @@ std::vector<Token> Tokenizer::Tokenize(std::string input) {
   return tokens;
 }
 
-std::string Tokenizer::Debug(Token token) {
-  std::string type;
+string Tokenizer::Debug(Token token) {
+  string type;
 
   switch (token.type) {
     case 1:
@@ -69,67 +71,66 @@ std::string Tokenizer::Debug(Token token) {
   return "[ type: " + type + " || value: " + token.value + " ]";
 }
 
-Result Tokenizer::TokenizeCharacter(int type, char value, std::string input,
+Result Tokenizer::TokenizeCharacter(int type, char value, string input,
                                     int current_index) {
   Result result = {};
   if (value == input[current_index]) {
-    result = {1, {type, std::string(1, value)}};
+    result = {1, {type, string(1, value)}};
   } else {
-    result = {0, {NOTHING, std::string()}};
+    result = {0, {NOTHING, string()}};
   }
 
   return result;
 }
 
-Result Tokenizer::TokenizePattern(int type, std::regex pattern,
-                                  std::string input, int current_index) {
-  std::string current_char = std::string(1, input[current_index]);
+Result Tokenizer::TokenizePattern(int type, regex pattern, string input,
+                                  int current_index) {
+  string current_char = string(1, input[current_index]);
   size_t num_consumed_characters = 0, input_len = input.size();
 
-  if (std::regex_match(current_char, pattern)) {
-    std::string value = "";
+  if (regex_match(current_char, pattern)) {
+    string value = "";
     while (num_consumed_characters < input_len &&
-           std::regex_match(current_char, pattern)) {
+           regex_match(current_char, pattern)) {
       value += current_char;
       num_consumed_characters++;
-      current_char =
-          std::string(1, input[current_index + num_consumed_characters]);
+      current_char = string(1, input[current_index + num_consumed_characters]);
     }
     Result result = {num_consumed_characters, {type, value}};
     return result;
   }
 
-  Result result = {0, {NOTHING, std::string()}};
+  Result result = {0, {NOTHING, string()}};
   return result;
 }
 
-Result Tokenizer::SkipWhitespace(std::string input, int current_index) {
+Result Tokenizer::SkipWhitespace(string input, int current_index) {
   Result result = {};
   if (iswspace(input[current_index])) {
-    result = {1, {NOTHING, std::string()}};
+    result = {1, {NOTHING, string()}};
   } else {
-    result = {0, {NOTHING, std::string()}};
+    result = {0, {NOTHING, string()}};
   }
 
   return result;
 }
 
-Result Tokenizer::TokenizeDigits(std::string input, int current_index) {
-  return TokenizePattern(DIGIT, std::regex{R"([0-9])"}, input, current_index);
+Result Tokenizer::TokenizeDigits(string input, int current_index) {
+  return TokenizePattern(DIGIT, regex{R"([0-9])"}, input, current_index);
 }
 
-Result Tokenizer::TokenizeNames(std::string input, int current_index) {
-  return TokenizePattern(NAME, std::regex{R"([a-zA-Z])"}, input, current_index);
+Result Tokenizer::TokenizeNames(string input, int current_index) {
+  return TokenizePattern(NAME, regex{R"([a-zA-Z])"}, input, current_index);
 }
 
-Result Tokenizer::TokenizeBraces(std::string input, int current_index) {
-  return TokenizePattern(BRACES, std::regex{R"([{}])"}, input, current_index);
+Result Tokenizer::TokenizeBraces(string input, int current_index) {
+  return TokenizePattern(BRACES, regex{R"([{}])"}, input, current_index);
 }
 
-Result Tokenizer::TokenizeSemicolon(std::string input, int current_index) {
+Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
   return TokenizeCharacter(SEMICOLON, ';', input, current_index);
 }
 
-Result Tokenizer::TokenizeEquals(std::string input, int current_index) {
+Result Tokenizer::TokenizeEquals(string input, int current_index) {
   return TokenizeCharacter(ASSIGNMENT, '=', input, current_index);
 }
