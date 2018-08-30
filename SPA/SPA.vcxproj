@@ -16,6 +16,7 @@
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\t_node.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
+    <ClCompile Include="stmt_table.cpp" />
     <ClCompile Include="var_table.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -23,6 +24,7 @@
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\t_node.h" />
+    <ClInclude Include="stmt_table.h" />
     <ClInclude Include="var_table.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
