@@ -1,13 +1,16 @@
 #include "var_table.h"
+
 #include <string>
 
-#define TEMP_ARRAY_SIZE 10
+using std::string;
+
+const int kTempArraySize = 10;
 
 VarTable::VarTable() {
-  var_table = new std::string[TEMP_ARRAY_SIZE];
+  var_table = new string[kTempArraySize];
 }
 
-int VarTable::InsertVar(std::string var_name) {
+int VarTable::InsertVar(string var_name) {
   return 0;
 }
 
