@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum kTokenTypes {
+enum TokenTypes {
   kNothing = 0,
   kDigit = 1,
   kName = 2,
