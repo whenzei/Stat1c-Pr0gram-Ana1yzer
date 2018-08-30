@@ -6,19 +6,19 @@
 
 using namespace std;
 
-enum tokenTypes {
-  NOTHING = 0,
-  DIGIT = 1,
-  NAME = 2,
-  BRACES = 3,
-  SEMICOLON = 4,
-  ASSIGNMENT = 5
+enum kTokenTypes {
+  kNothing = 0,
+  kDigit = 1,
+  kName = 2,
+  kBrace = 3,
+  kSemicolon = 4,
+  kAssignment = 5
 };
 
-const int numberOfFunctions = 6;
+const int kNumberOfFunctions = 6;
 
 vector<Token> Tokenizer::Tokenize(string input) {
-  TokenizerFunc tokenizer_functions[numberOfFunctions] = {
+  TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
       &SkipWhitespace, &TokenizeDigits,    &TokenizeNames,
       &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals};
   size_t current_index = 0, vector_len = input.size();
@@ -26,7 +26,7 @@ vector<Token> Tokenizer::Tokenize(string input) {
 
   while (current_index < vector_len) {
     bool is_done = false;
-    for (int i = 0; i < numberOfFunctions; i++) {
+    for (int i = 0; i < kNumberOfFunctions; i++) {
       if (is_done) {
         break;
       }
@@ -37,7 +37,7 @@ vector<Token> Tokenizer::Tokenize(string input) {
         current_index += result.num_consumed_characters;
       }
 
-      if (result.token.type != NOTHING) {
+      if (result.token.type != kNothing) {
         tokens.push_back(result.token);
       }
     }
@@ -77,7 +77,7 @@ Result Tokenizer::TokenizeCharacter(int type, char value, string input,
   if (value == input[current_index]) {
     result = {1, {type, string(1, value)}};
   } else {
-    result = {0, {NOTHING, string()}};
+    result = {0, {kNothing, string()}};
   }
 
   return result;
@@ -100,37 +100,37 @@ Result Tokenizer::TokenizePattern(int type, regex pattern, string input,
     return result;
   }
 
-  Result result = {0, {NOTHING, string()}};
+  Result result = {0, {kNothing, string()}};
   return result;
 }
 
 Result Tokenizer::SkipWhitespace(string input, int current_index) {
   Result result = {};
   if (iswspace(input[current_index])) {
-    result = {1, {NOTHING, string()}};
+    result = {1, {kNothing, string()}};
   } else {
-    result = {0, {NOTHING, string()}};
+    result = {0, {kNothing, string()}};
   }
 
   return result;
 }
 
 Result Tokenizer::TokenizeDigits(string input, int current_index) {
-  return TokenizePattern(DIGIT, regex{R"([0-9])"}, input, current_index);
+  return TokenizePattern(kDigit, regex{R"([0-9])"}, input, current_index);
 }
 
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  return TokenizePattern(NAME, regex{R"([a-zA-Z])"}, input, current_index);
+  return TokenizePattern(kName, regex{R"([a-zA-Z])"}, input, current_index);
 }
 
 Result Tokenizer::TokenizeBraces(string input, int current_index) {
-  return TokenizePattern(BRACES, regex{R"([{}])"}, input, current_index);
+  return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
 }
 
 Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
-  return TokenizeCharacter(SEMICOLON, ';', input, current_index);
+  return TokenizeCharacter(kSemicolon, ';', input, current_index);
 }
 
 Result Tokenizer::TokenizeEquals(string input, int current_index) {
-  return TokenizeCharacter(ASSIGNMENT, '=', input, current_index);
+  return TokenizeCharacter(kAssignment, '=', input, current_index);
 }
