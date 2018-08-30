@@ -10,8 +10,6 @@
 #include "pkb.h"
 #include "tokenizer.h"
 
-using namespace std;
-
 // Constructor
 Parser::Parser(string filepath) {
   content_ = ReadContentFromFile(filepath);

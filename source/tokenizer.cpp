@@ -4,8 +4,6 @@
 
 #include "tokenizer.h"
 
-using namespace std;
-
 enum TokenTypes {
   kNothing = 0,
   kDigit = 1,
