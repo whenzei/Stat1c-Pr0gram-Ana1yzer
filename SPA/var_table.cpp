@@ -14,6 +14,6 @@ int VarTable::InsertVar(string var_name) {
   return 0;
 }
 
-std::string* VarTable::GetAllVar() {
+string* VarTable::GetAllVar() {
   return var_table;
 }
