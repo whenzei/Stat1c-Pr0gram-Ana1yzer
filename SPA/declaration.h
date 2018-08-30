@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-using namespace std;
+using std::string;
 
 enum DeclarationKeyword {
 	kProcedure = 0,
