@@ -1,20 +1,19 @@
 #pragma once
 
+#ifndef QUERY_EVALUATOR_H
+#define QUERY_EVALUATOR_H
+
 #include <list>
 #include <string>
-#include <vector>
 
 #include "declaration.h"
 #include "query.h"
 
-#ifndef QUERY_EVALUATOR_H
-#define QUERY_EVALUATOR_H
+using std::list;
+using std::string;
 
 /*A class to evaluate user query and return result to user*/
 class QueryEvaluator {
- private:
-  DeclarationKeyword select_type;
-
  public:
   /* Contructor */
   QueryEvaluator();
@@ -26,7 +25,7 @@ class QueryEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  std::list<std::string> GetResultFromQuery(Query query);
+  list<string> GetResultFromQuery(Query query);
 
   /**
    * Use the results from @GetResultFromQuery
@@ -34,7 +33,7 @@ class QueryEvaluator {
    * @param results the list of string containing result of the query
    * @returns a string to be displayed to the user
    */
-  std::string FormatResultString(std::list<std::string> results);
+  string FormatResultString(list<string> results);
 };
 
 #endif  // !QUERY_EVALUATOR_H
