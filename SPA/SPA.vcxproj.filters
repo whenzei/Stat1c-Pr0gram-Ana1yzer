@@ -30,9 +30,6 @@
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="query_evaluator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -45,9 +42,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\tokenizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="query_evaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
