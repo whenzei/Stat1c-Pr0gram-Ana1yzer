@@ -4,15 +4,6 @@
 
 #include "tokenizer.h"
 
-enum TokenTypes {
-  kNothing = 0,
-  kDigit = 1,
-  kName = 2,
-  kBrace = 3,
-  kSemicolon = 4,
-  kAssignment = 5
-};
-
 const int kNumberOfFunctions = 6;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
