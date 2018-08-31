@@ -1,4 +1,4 @@
-Procedure One {
+procedure One {
 	a = b;
 	c = d;
 }
