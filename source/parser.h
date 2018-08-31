@@ -4,8 +4,16 @@
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
 
+#include <tokenizer.h>
 #include <vector>
+
 using std::string;
+using std::vector;
+
+struct Pair {
+  size_t first;
+  size_t second;
+};
 
 /**
  * The parser class for the front end component
@@ -38,6 +46,13 @@ class Parser {
    * @returns true if file exists, false otherwise
    */
   bool IsValidFile(string filepath);
+
+	/**
+		* Split tokens into procedures
+		* @returns lists of Pair, containing the start index and end index of each set of procedures 
+		*/
+  static vector<Pair> SplitProcedures(vector<Token> tokens);
+		
 };
 
 #endif  // !SPA_PARSER_H
