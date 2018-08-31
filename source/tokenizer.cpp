@@ -10,17 +10,19 @@ enum TokenTypes {
   kName = 2,
   kBrace = 3,
   kSemicolon = 4,
-  kAssignment = 5
+  kAssignment = 5,
+  kOperator = 6,
+  kUnknown = 999,
 };
 
-const int kNumberOfFunctions = 6;
+const int kNumberOfFunctions = 8;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a vector of Token
 vector<Token> Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
-      &SkipWhitespace, &TokenizeDigits,    &TokenizeNames,
-      &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals};
+      &SkipComments,   &SkipWhitespace,    &TokenizeDigits, &TokenizeNames,
+      &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals, &TokenizeOperators};
   size_t current_index = 0, vector_len = input.size();
   vector<Token> tokens;
 
@@ -42,6 +44,12 @@ vector<Token> Tokenizer::Tokenize(string input) {
       if (result.token.type != kNothing) {
         tokens.push_back(result.token);
       }
+    }
+
+    // unknown token, since none of the tokenizers can recognize it
+    // TODO: decide if we throw an exception here
+    if (!is_done) {
+      tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
     }
   }
 
@@ -67,6 +75,9 @@ string Tokenizer::Debug(Token token) {
       break;
     case 5:
       type = "ASSIGNMENT";
+      break;
+    case 6:
+      type = "OPERATOR  ";
       break;
     default:
       type = "UNKNOWN   ";
@@ -132,6 +143,11 @@ Result Tokenizer::SkipWhitespace(string input, int current_index) {
   }
 
   return result;
+// Checks if input is a comment using regex and
+// returns a Result if true, with the num_consumed_characters to skip,
+// Tokenizer::EmptyResult() otherwise
+Result Tokenizer::SkipComments(string input, int current_index) {
+  return TokenizePattern(kNothing, regex{R"(\\{1}.*)"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize digits,
@@ -150,6 +166,12 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 // closing brace, and returns the result as a Result struct
 Result Tokenizer::TokenizeBraces(string input, int current_index) {
   return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
+}
+
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
+// and returns the result as a Result struct
+Result Tokenizer::TokenizeOperators(string input, int current_index) {
+  return TokenizePattern(kOperator, regex{ R"([+-/%*])" }, input, current_index);
 }
 
 // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to
