@@ -93,56 +93,43 @@ string Tokenizer::Debug(Token token) {
 // empty string.
 Result Tokenizer::TokenizeCharacter(int type, char value, string input,
                                     int current_index) {
-  Result result = {};
-  if (value == input[current_index]) {
-    result = {1, {type, string(1, value)}};
-  } else {
-    result = {0, {kNothing, string()}};
-  }
-
-  return result;
+  return (value == input[current_index]) ? Result({1, {type, string(1, value)}})
+                                         : EmptyResult();
 }
 
-// Checks whether the current character at input[current_index]
+// Checks whether the current value at input[current_index]
 // matches with the supplied regex pattern.
-// Keeps checking the next character if matched until the next character stops
-// matching. Returns a Result with the structure [num_consumed_characters,
-// [type, value]] If matched, num_consumed_characters, and the relevant type and
-// value is returned, else, num_consumed_characters = 0, and returns enum
-// kNothing with empty string.
+// Keeps appending the next character to the value until it stops matching.
+// Returns a Result with the structure [num_consumed_characters,
+// [type, value]] if matched and returns an empty result with
+// Tokenizer::EmptyResult() if no matches.
 Result Tokenizer::TokenizePattern(int type, regex pattern, string input,
                                   int current_index) {
-  string current_char = string(1, input[current_index]);
+  string value = string(1, input[current_index]);
   size_t num_consumed_characters = 0, input_len = input.size();
 
-  if (regex_match(current_char, pattern)) {
-    string value = "";
-    while (num_consumed_characters < input_len &&
-           regex_match(current_char, pattern)) {
-      value += current_char;
-      num_consumed_characters++;
-      current_char = string(1, input[current_index + num_consumed_characters]);
-    }
-    Result result = {num_consumed_characters, {type, value}};
-    return result;
+  while (num_consumed_characters < input_len && regex_match(value, pattern)) {
+    num_consumed_characters++;
+    value += input[current_index + num_consumed_characters];
   }
 
-  Result result = {0, {kNothing, string()}};
-  return result;
+  if (num_consumed_characters > 0) {
+    value.pop_back();  // remove last character added in while loop
+  }
+
+  return (num_consumed_characters > 0)
+             ? Result({num_consumed_characters, {type, value}})
+             : EmptyResult();
 }
 
 // Checks if the current character at input[current_index] is a whitespace, and
-// returns a Token with num_consumed_characters = 1 if true,
-// num_consumed_characters = 0 otherwise.
+// returns a Result with num_consumed_characters = 1 if true,
+// Tokenizer::EmptyResult() otherwise.
 Result Tokenizer::SkipWhitespace(string input, int current_index) {
-  Result result = {};
-  if (iswspace(input[current_index])) {
-    result = {1, {kNothing, string()}};
-  } else {
-    result = {0, {kNothing, string()}};
-  }
+  return (iswspace(input[current_index])) ? Result({1, {kNothing, string()}})
+                                          : EmptyResult();
+}
 
-  return result;
 // Checks if input is a comment using regex and
 // returns a Result if true, with the num_consumed_characters to skip,
 // Tokenizer::EmptyResult() otherwise
@@ -153,13 +140,14 @@ Result Tokenizer::SkipComments(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize digits,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeDigits(string input, int current_index) {
-  return TokenizePattern(kDigit, regex{R"([0-9])"}, input, current_index);
+  return TokenizePattern(kDigit, regex{R"([0-9]+)"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  return TokenizePattern(kName, regex{R"([a-zA-Z])"}, input, current_index);
+  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
+                         current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
@@ -185,3 +173,7 @@ Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
 Result Tokenizer::TokenizeEquals(string input, int current_index) {
   return TokenizeCharacter(kAssignment, '=', input, current_index);
 }
+
+// Helper function to return empty result, meaning tokenization did not find a
+// match
+Result Tokenizer::EmptyResult() { return Result({0, {kNothing, string()}}); }

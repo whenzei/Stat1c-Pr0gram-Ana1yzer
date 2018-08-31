@@ -85,6 +85,10 @@ class Tokenizer {
   // Uses Tokenizer::TokenizeCharacter(...) with '=' as the supplied value to
   // tokenize the equals sign, and returns the result as a Result struct
   static Result TokenizeEquals(string input, int current_index = 0);
+
+  // Helper function to return empty result, meaning tokenization did not find a
+  // match
+  static Result EmptyResult();
 };
 
 #endif  // !SPA_TOKENIZER_H
