@@ -52,6 +52,10 @@ bool SimpleValidator::validateProcedure(vector<Token> tokens, size_t start, size
 						if (tokens[i-1].type == kName || tokens[i-1].type == kDigit) {
         return false;
 						}
+					// Check if name is right before '}'
+						if (tokens[i + 1].value.compare(kCloseBraceSymbol) == 0) {
+						 	return false;
+						}
     }
     if (tokens[i].type == kDigit) {
 					// Check if a digit or name is followed by another digit
