@@ -24,7 +24,18 @@ class Tokenizer {
   using TokenizerFunc = Result (*)(string, int);
   using TokenList = vector<Token>;
 
+class Tokenizer {
  public:
+  enum TokenTypes {
+    kNothing,
+    kDigit,
+    kName,
+    kBrace,
+    kSemicolon,
+    kAssignment,
+    kOperator,
+    kUnknown,
+  };
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
