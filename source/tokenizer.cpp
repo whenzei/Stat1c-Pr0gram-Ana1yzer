@@ -18,13 +18,13 @@ enum TokenTypes {
 const int kNumberOfFunctions = 8;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-// to tokenize the supplied input, returning a vector of Token
-vector<Token> Tokenizer::Tokenize(string input) {
+// to tokenize the supplied input, returning a list of Tokens
+Tokenizer::TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
       &SkipComments,   &SkipWhitespace,    &TokenizeDigits, &TokenizeNames,
       &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals, &TokenizeOperators};
   size_t current_index = 0, vector_len = input.size();
-  vector<Token> tokens;
+  TokenList tokens;
 
   while (current_index < vector_len) {
     bool is_done = false;
@@ -56,35 +56,6 @@ vector<Token> Tokenizer::Tokenize(string input) {
   return tokens;
 }
 
-// Debug function, returns the contents of the token as a string
-string Tokenizer::Debug(Token token) {
-  string type;
-
-  switch (token.type) {
-    case 1:
-      type = "DIGIT     ";
-      break;
-    case 2:
-      type = "NAME      ";
-      break;
-    case 3:
-      type = "BRACES    ";
-      break;
-    case 4:
-      type = "SEMICOLON ";
-      break;
-    case 5:
-      type = "ASSIGNMENT";
-      break;
-    case 6:
-      type = "OPERATOR  ";
-      break;
-    default:
-      type = "UNKNOWN   ";
-  }
-  return "[ type: " + type + " || value: " + token.value + " ]";
-}
-
 // Checks whether the current character at input[current_index]
 // matches with the supplied value.
 // Returns a Result with the structure [num_consumed_characters, [type, value]]
@@ -114,19 +85,18 @@ Result Tokenizer::TokenizePattern(int type, regex pattern, string input,
   }
 
   if (num_consumed_characters > 0) {
-    value.pop_back();  // remove last character added in while loop
+    value.pop_back();  // remove last added character
+    return Result({num_consumed_characters, {type, value}});
+  } else {
+    return EmptyResult();
   }
-
-  return (num_consumed_characters > 0)
-             ? Result({num_consumed_characters, {type, value}})
-             : EmptyResult();
 }
 
 // Checks if the current character at input[current_index] is a whitespace, and
 // returns a Result with num_consumed_characters = 1 if true,
 // Tokenizer::EmptyResult() otherwise.
 Result Tokenizer::SkipWhitespace(string input, int current_index) {
-  return (iswspace(input[current_index])) ? Result({1, {kNothing, string()}})
+  return (iswspace(input[current_index])) ? Result({1, {kNothing}})
                                           : EmptyResult();
 }
 
@@ -159,7 +129,7 @@ Result Tokenizer::TokenizeBraces(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeOperators(string input, int current_index) {
-  return TokenizePattern(kOperator, regex{ R"([+-/%*])" }, input, current_index);
+  return TokenizePattern(kOperator, regex{R"([+-/%*])"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to
@@ -176,4 +146,33 @@ Result Tokenizer::TokenizeEquals(string input, int current_index) {
 
 // Helper function to return empty result, meaning tokenization did not find a
 // match
-Result Tokenizer::EmptyResult() { return Result({0, {kNothing, string()}}); }
+Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
+
+// Debug function, returns the contents of the token as a string
+string Tokenizer::Debug(Token token) {
+	string type;
+
+	switch (token.type) {
+	case 1:
+		type = "<DIGIT>";
+		break;
+	case 2:
+		type = "<NAME>";
+		break;
+	case 3:
+		type = "<BRACE>";
+		break;
+	case 4:
+		type = "<SEMICOLON>";
+		break;
+	case 5:
+		type = "<ASSIGNMENT>";
+		break;
+	case 6:
+		type = "<OPERATOR>";
+		break;
+	default:
+		type = "<UNKNOWN>";
+	}
+	return type + token.value;
+}

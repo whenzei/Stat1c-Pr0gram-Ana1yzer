@@ -21,13 +21,13 @@ struct Result {
 };
 
 class Tokenizer {
-  typedef Result (*TokenizerFunc)(string, int);
-  int num_functions;
+  using TokenizerFunc = Result (*)(string, int);
+  using TokenList = vector<Token>;
 
  public:
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-  // to tokenize the supplied input, returning a vector of Token
-  static vector<Token> Tokenize(string input);
+  // to tokenize the supplied input, returning a list of tokens
+  static TokenList Tokenize(string input);
 
   // Debug function, returns the contents of the token as a string
   static string Debug(Token);
@@ -60,7 +60,7 @@ class Tokenizer {
   // Checks if input is a comment using regex and
   // returns a Result if true, with the num_consumed_characters to skip,
   // Tokenizer::EmptyResult() otherwise
-  static Result Tokenizer::SkipComments(string input, int current_index = 0);
+  static Result SkipComments(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize digits,
   // and returns the result as a Result struct
