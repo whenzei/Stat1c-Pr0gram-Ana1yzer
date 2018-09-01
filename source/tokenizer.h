@@ -66,6 +66,11 @@ class Tokenizer {
   // num_consumed_characters = 0 otherwise.
   static Result SkipWhitespace(string input, int current_index = 0);
 
+  // Checks if input is a comment using regex and
+  // returns a Result if true, with the num_consumed_characters to skip,
+  // Tokenizer::EmptyResult() otherwise
+  static Result Tokenizer::SkipComments(string input, int current_index = 0);
+
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize digits,
   // and returns the result as a Result struct
   static Result TokenizeDigits(string input, int current_index = 0);
@@ -78,6 +83,10 @@ class Tokenizer {
   // and closing brace, and returns the result as a Result struct
   static Result TokenizeBraces(string input, int current_index = 0);
 
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
+  // and returns the result as a Result struct
+  static Result TokenizeOperators(string input, int current_index = 0);
+
   // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to
   // tokenize semicolons, and returns the result as a Result struct
   static Result TokenizeSemicolon(string input, int current_index = 0);
@@ -85,6 +94,10 @@ class Tokenizer {
   // Uses Tokenizer::TokenizeCharacter(...) with '=' as the supplied value to
   // tokenize the equals sign, and returns the result as a Result struct
   static Result TokenizeEquals(string input, int current_index = 0);
+
+  // Helper function to return empty result, meaning tokenization did not find a
+  // match
+  static Result EmptyResult();
 };
 
 #endif  // !SPA_TOKENIZER_H
