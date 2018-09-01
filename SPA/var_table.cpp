@@ -15,7 +15,7 @@ VarTable::~VarTable() {
 int VarTable::InsertVar(string var_name) {
 	*var_table[num_var] = var_name;
 	num_var++;
-	return num_var;
+	return (num_var-1);
 }
 
 string* VarTable::GetAllVar() {

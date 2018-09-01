@@ -23,6 +23,7 @@ public:
 	~VarTable();
   
 	// Takes in the variable name and inserts a new variable in the VarTable.
+	// Increments variable count. 
   // Returns the index of the variable.
   int InsertVar(string var_name);
 
