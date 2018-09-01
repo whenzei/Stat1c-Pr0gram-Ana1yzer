@@ -23,11 +23,11 @@ public:
 	}
 
 	// Accessors
-	string getContent() {
+	string GetContent() {
 		return content;
 	}
 
-	int getLineNum() {
+	int GetLineNum() {
 		return line_num;
 	}
 };

@@ -27,7 +27,7 @@ int* StmtTable::GetAllStmtNums() {
 	
 	if (num_stmt == 0) { return stmt_nums;  }
 	for (int i = 0; i < num_stmt; i++) {
-		stmt_nums[i] = stmt_table[i]->getLineNum();
+		stmt_nums[i] = stmt_table[i]->GetLineNum();
 	}
 
 	return stmt_nums;
