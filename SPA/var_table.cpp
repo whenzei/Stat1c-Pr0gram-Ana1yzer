@@ -19,5 +19,6 @@ int VarTable::InsertVar(string var_name) {
 }
 
 string* VarTable::GetAllVar() {
-  return *var_table;
+	if (num_var == 0) { return NULL; }
+	else { return *var_table; }
 }

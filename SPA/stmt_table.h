@@ -23,11 +23,12 @@ public:
 	~StmtTable();
 	
 	// Takes in the statement in string format and inserts it in the StmtTable.
-	// Returns the index of the statement.
+	// Increments statement count.
+	// Returns the index of the statement just added.
 	int InsertStmt(int line_num, string stmt);
 
 	// Returns a pointer to a list of all line numbers of all statements in the StmtTable.
-	// Returns a pointer to an empty list if StmtTable is empty. 
+	// Returns null if StmtTable is empty. 
 	int* GetAllStmtNums();
 };
 

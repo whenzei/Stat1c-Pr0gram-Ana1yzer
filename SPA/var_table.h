@@ -24,11 +24,11 @@ public:
   
 	// Takes in the variable name and inserts a new variable in the VarTable.
 	// Increments variable count. 
-  // Returns the index of the variable.
+  // Returns the index of the variable just added.
   int InsertVar(string var_name);
 
   // Returns pointer to an array of all var_name in the VarTable. 
-  // Returns pointer to an empty array if VarTable is empty.
+  // Returns null if VarTable is empty.
   string* VarTable::GetAllVar();
 };
 
