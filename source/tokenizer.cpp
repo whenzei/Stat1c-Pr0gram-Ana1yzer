@@ -19,7 +19,7 @@ const int kNumberOfFunctions = 8;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
-Tokenizer::TokenList Tokenizer::Tokenize(string input) {
+TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
       &SkipComments,   &SkipWhitespace,    &TokenizeDigits, &TokenizeNames,
       &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals, &TokenizeOperators};
@@ -150,29 +150,29 @@ Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
-	string type;
+  string type;
 
-	switch (token.type) {
-	case 1:
-		type = "<DIGIT>";
-		break;
-	case 2:
-		type = "<NAME>";
-		break;
-	case 3:
-		type = "<BRACE>";
-		break;
-	case 4:
-		type = "<SEMICOLON>";
-		break;
-	case 5:
-		type = "<ASSIGNMENT>";
-		break;
-	case 6:
-		type = "<OPERATOR>";
-		break;
-	default:
-		type = "<UNKNOWN>";
-	}
-	return type + token.value;
+  switch (token.type) {
+    case 1:
+      type = "<DIGIT>";
+      break;
+    case 2:
+      type = "<NAME>";
+      break;
+    case 3:
+      type = "<BRACE>";
+      break;
+    case 4:
+      type = "<SEMICOLON>";
+      break;
+    case 5:
+      type = "<ASSIGNMENT>";
+      break;
+    case 6:
+      type = "<OPERATOR>";
+      break;
+    default:
+      type = "<UNKNOWN>";
+  }
+  return type + token.value;
 }

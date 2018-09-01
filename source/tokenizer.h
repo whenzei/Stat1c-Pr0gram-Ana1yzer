@@ -20,9 +20,8 @@ struct Result {
   struct Token token;
 };
 
-class Tokenizer {
-  using TokenizerFunc = Result (*)(string, int);
-  using TokenList = vector<Token>;
+using TokenList = vector<Token>;
+using TokenizerFunc = Result (*)(string, int);
 
 class Tokenizer {
  public:
