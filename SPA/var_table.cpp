@@ -4,16 +4,20 @@
 
 using std::string;
 
-const int kTempArraySize = 10;
-
 VarTable::VarTable() {
-  var_table = new string[kTempArraySize];
+	num_var = 0;
+}
+
+VarTable::~VarTable() {
+	delete[] * var_table;
 }
 
 int VarTable::InsertVar(string var_name) {
-  return 0;
+	*var_table[num_var] = var_name;
+	num_var++;
+	return num_var;
 }
 
 string* VarTable::GetAllVar() {
-  return var_table;
+  return *var_table;
 }
