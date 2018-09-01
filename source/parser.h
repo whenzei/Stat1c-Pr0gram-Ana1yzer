@@ -10,11 +10,6 @@
 using std::string;
 using std::vector;
 
-struct Pair {
-  size_t first;
-  size_t second;
-};
-
 /**
  * The parser class for the front end component
  * Used to parse file contents and pass the parsed content to the PKB component

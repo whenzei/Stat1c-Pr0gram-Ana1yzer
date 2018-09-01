@@ -7,7 +7,7 @@
 const string kOpenBraceSymbol = "{";
 const string kCloseBraceSymbol = "}";
 
-const size_t minimalTokenSizeForPocedure = 4;
+const size_t kMinimalTokenSizeForPocedure = 4;
 
 const static string kKeywords[7] = {"procedure", "if",   "else", "while",
                                     "call",      "read", "print"};
@@ -29,7 +29,7 @@ bool SimpleValidator::validateProcedure(vector<Token> tokens, size_t start,
                                         size_t end) {
   size_t numTokens = end - start + 1;
 
-  if (numTokens < minimalTokenSizeForPocedure) {
+  if (numTokens < kMinimalTokenSizeForPocedure) {
     return false;
   }
 
