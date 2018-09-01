@@ -24,6 +24,7 @@
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\t_node.h" />
+    <ClInclude Include="statement.h" />
     <ClInclude Include="stmt_table.h" />
     <ClInclude Include="var_table.h" />
   </ItemGroup>
