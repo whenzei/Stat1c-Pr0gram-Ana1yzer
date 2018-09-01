@@ -47,12 +47,6 @@ class Parser {
    */
   bool IsValidFile(string filepath);
 
-	/**
-		* Split tokens into procedures
-		* @returns lists of Pair, containing the start index and end index of each set of procedures 
-		*/
-  static vector<Pair> SplitProcedures(vector<Token> tokens);
-		
 };
 
 #endif  // !SPA_PARSER_H

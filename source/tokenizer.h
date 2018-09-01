@@ -16,7 +16,9 @@ enum TokenTypes {
   kName = 2,
   kBrace = 3,
   kSemicolon = 4,
-  kAssignment = 5
+  kAssignment = 5,
+  kOperator = 6,
+  kUnknown = 999,
 };
 
 struct Token {

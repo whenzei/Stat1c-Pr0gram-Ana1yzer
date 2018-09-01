@@ -4,22 +4,7 @@
 
 #include "tokenizer.h"
 
-<<<<<<< HEAD
-const int kNumberOfFunctions = 6;
-=======
-enum TokenTypes {
-  kNothing = 0,
-  kDigit = 1,
-  kName = 2,
-  kBrace = 3,
-  kSemicolon = 4,
-  kAssignment = 5,
-  kOperator = 6,
-  kUnknown = 999,
-};
-
 const int kNumberOfFunctions = 8;
->>>>>>> parser
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a vector of Token
@@ -163,7 +148,7 @@ Result Tokenizer::TokenizeBraces(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeOperators(string input, int current_index) {
-  return TokenizePattern(kOperator, regex{ R"([+-/%*])" }, input, current_index);
+  return TokenizePattern(kOperator, regex{R"([+-/%*])"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to

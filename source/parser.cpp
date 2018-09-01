@@ -3,15 +3,13 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <vector>
 #include <string>
-#include <stack>
+#include <vector>
 
 #include "parser.h"
 #include "pkb.h"
 #include "simple_validator.h"
 #include "tokenizer.h"
-
 
 // Constructor
 Parser::Parser(string filepath) {
@@ -40,15 +38,13 @@ void Parser::Parse() {
        token != tokenized_content.end(); ++token) {
     cout << Tokenizer::Debug(*token) << endl;
   }
-  vector<Pair> procedures = SplitProcedures(tokenized_content);
 
-		for (size_t i = 0; i < procedures.size(); i++) {
-    if (SimpleValidator::validateProcedure(
-            tokenized_content, procedures[i].first, procedures[i].second)) {
-					// for debugging
-      cout << "Procedure " << tokenized_content[procedures[i].first + 1].value << " is syntactically correct" << endl;
-    }
-		}
+  if (SimpleValidator::validateProcedure(
+          tokenized_content, 0, tokenized_content.size() - 1)) {
+    // for debugging
+    cout << "Procedure " << tokenized_content[1].value << " is syntactically correct" << endl;
+  }
+  
 }
 
 bool Parser::IsValidFile(string filepath) {
@@ -56,39 +52,3 @@ bool Parser::IsValidFile(string filepath) {
   return infile.good();
 }
 
-vector<Pair> Parser::SplitProcedures(vector<Token> tokens) {
-  vector<Pair> procedures;
-  for (size_t i = 0; i < tokens.size(); i++) {
-    string token_value = tokens[i].value;
-	
-    if (SimpleValidator::isKeyword(kProcedure, token_value)) {
-      stack<string> bracesStack;
-
-      // Search for first occurence of '{' after keyword 'procedure'
-      size_t j;
-						for (j = i + 1; j < tokens.size(); j++) {
-        if (tokens[j].value == "{") {
-          bracesStack.push("{");
-          break;
-								}
-						}
-
-						// Search for corresponding '}' of 'procedure'
-						for (size_t k = j + 1; k < tokens.size(); k++) {
-								if (tokens[k].value == "{") {
-										bracesStack.push("{");
-								}
-								if (tokens[k].value == "}") {
-										bracesStack.pop();
-								}
-								if (bracesStack.empty()) {
-										Pair procedure = {i, k};
-										procedures.push_back(procedure);
-										i = j - 1;
-										break;
-								}
-						}
-				}
-		}
-  return procedures;
-}
