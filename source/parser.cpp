@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -39,12 +40,12 @@ void Parser::Parse() {
     cout << Tokenizer::Debug(*token) << endl;
   }
 
-  if (SimpleValidator::validateProcedure(
-          tokenized_content, 0, tokenized_content.size() - 1)) {
+  if (SimpleValidator::validateProcedure(tokenized_content, 0,
+                                         tokenized_content.size() - 1)) {
     // for debugging
-    cout << "Procedure " << tokenized_content[1].value << " is syntactically correct" << endl;
+    cout << "Procedure " << tokenized_content[1].value
+         << " is syntactically correct" << endl;
   }
-  
 }
 
 bool Parser::IsValidFile(string filepath) {
@@ -52,3 +53,21 @@ bool Parser::IsValidFile(string filepath) {
   return infile.good();
 }
 
+void Parser::ProcessProcedure(vector<Token> tokens, size_t start, size_t end) {
+  int statementNum = 1;
+  queue<Token> stmtQueue;
+  for (int i = 0; i <= end; i++) {
+    Token currToken = tokens[i];
+    // Check if it is type NAME and not a SIMPLE keyword
+    if (currToken.type == kName &&
+        !SimpleValidator::isKeyword(currToken.value)) {
+      // TODO: add to PKB VarTable
+      stmtQueue.push(currToken);
+    }
+    if (currToken.type == kSemicolon) {
+      // TODO: pop token out to form statement
+      // TODO: update PKB with statement and statementNum
+      statementNum++;
+    }
+  }
+}
