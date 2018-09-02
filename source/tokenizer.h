@@ -4,6 +4,7 @@
 #define SPA_TOKENIZER_H
 
 #include <regex>
+#include <tuple>
 #include <vector>
 
 using std::regex;
@@ -13,11 +14,20 @@ using std::vector;
 struct Token {
   int type;
   string value;
+
+  bool operator==(const Token& other) const {
+    return std::tie(type, value) == std::tie(other.type, other.value);
+  }
 };
 
 struct Result {
   size_t num_consumed_characters;
   struct Token token;
+
+  bool operator==(const Result& other) const {
+    return std::tie(num_consumed_characters, token) ==
+           std::tie(other.num_consumed_characters, other.token);
+  }
 };
 
 using TokenList = vector<Token>;
