@@ -29,5 +29,11 @@
     <ClCompile Include="test_ast.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_var_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_stmt_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
