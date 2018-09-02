@@ -18,8 +18,8 @@
     <ClCompile Include="..\source\tokenizer.cpp" />
     <ClCompile Include="..\source\proc_table.cpp" />
     <ClCompile Include="..\source\assign_table.cpp" />
-    <ClCompile Include="declaration.cpp" />
-    <ClCompile Include="query.cpp" />
+    <ClCompile Include="..\source\declaration.cpp" />
+    <ClCompile Include="..\source\query.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h" />
@@ -28,8 +28,8 @@
     <ClInclude Include="..\source\t_node.h" />
     <ClInclude Include="..\source\proc_table.h" />
     <ClInclude Include="..\source\assign_table.h" />
-    <ClInclude Include="declaration.h" />
-    <ClInclude Include="query.h" />
+    <ClInclude Include="..\source\declaration.h" />
+    <ClInclude Include="..\source\query.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
