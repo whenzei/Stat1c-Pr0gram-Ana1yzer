@@ -16,6 +16,7 @@ int PKB::InsertProc(string proc_name) { return proc_table_.Insert(proc_name); }
 vector<string> PKB::GetAllProc() { return proc_table_.List(); }
 
 int PKB::InsertAssign(int statement_number, string assign_statement) {
+  // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)
   return assign_table_.Insert(statement_number, assign_statement);
 }
 

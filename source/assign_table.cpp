@@ -16,7 +16,6 @@ int AssignTable::Insert(int statement_number, string assign_statement) {
   } else {
     assign_map_[statement_number] = assign_statement;
 	assign_vector_.push_back(to_string(statement_number));
-	// to-do: insert to statement table (to be added when Sophie's StmtTable class is ready)
     return 0;
   }
 }
