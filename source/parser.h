@@ -45,7 +45,7 @@ class Parser {
   /**
    * Reads the list of tokens representing a procedure and updates PKB
    */
-  void ProcessProcedure(vector<Token> tokens, size_t start, size_t end);
+  void ProcessProcedure(TokenList tokens, size_t start, size_t end);
 };
 
 #endif  // !SPA_PARSER_H

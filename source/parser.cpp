@@ -10,11 +10,8 @@
 #include "tokenizer.h"
 #include "parser.h"
 #include "pkb.h"
-<<<<<<< HEAD
 #include "simple_validator.h"
-#include "tokenizer.h"
-=======
->>>>>>> parser
+
 
 // Constructor
 Parser::Parser(string filepath) {
@@ -57,18 +54,18 @@ bool Parser::IsValidFile(string filepath) {
   return infile.good();
 }
 
-void Parser::ProcessProcedure(vector<Token> tokens, size_t start, size_t end) {
+void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end) {
   int statementNum = 1;
   queue<Token> stmtQueue;
   for (int i = 0; i <= end; i++) {
     Token currToken = tokens[i];
     // Check if it is type NAME and not a SIMPLE keyword
-    if (currToken.type == kName &&
+    if (currToken.type == Tokenizer::TokenType::kName &&
         !SimpleValidator::isKeyword(currToken.value)) {
       // TODO: add to PKB VarTable
       stmtQueue.push(currToken);
     }
-    if (currToken.type == kSemicolon) {
+    if (currToken.type == Tokenizer::TokenType::kSemicolon) {
       // TODO: pop token out to form statement
       // TODO: update PKB with statement and statementNum
       statementNum++;

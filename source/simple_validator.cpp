@@ -9,6 +9,7 @@ const string kCloseBraceSymbol = "}";
 
 const size_t kMinimalTokenSizeForPocedure = 4;
 
+
 const static string kKeywords[7] = {"procedure", "if",   "else", "while",
                                     "call",      "read", "print"};
 
@@ -36,24 +37,26 @@ bool SimpleValidator::validateProcedure(vector<Token> tokens, size_t start,
   // Check if first token is 'procedure', second token is of type NAME, third
   // token is '{', last token is '}'
   if ((tokens[start].value).compare(kKeywords[kProcedure]) != 0 ||
-      tokens[start + 1].type != kName ||
+      tokens[start + 1].type != Tokenizer::TokenType::kName ||
       (tokens[start + 2].value).compare(kOpenBraceSymbol) != 0 ||
       (tokens[end].value).compare(kCloseBraceSymbol) != 0) {
     return false;
   }
 
   for (size_t i = start + 3; i < end; i++) {
-    if (tokens[i].type == kAssignment) {
+    if (tokens[i].type == Tokenizer::TokenType::kAssignment) {
       // Check if the left of '=' is a name and the right of '=' is a digit or
       // name
-      if (tokens[i - 1].type != kName ||
-          (tokens[i + 1].type != kDigit && tokens[i + 1].type != kName)) {
+      if (tokens[i - 1].type != Tokenizer::TokenType::kName ||
+          (tokens[i + 1].type != Tokenizer::TokenType::kDigit &&
+           tokens[i + 1].type != Tokenizer::TokenType::kName)) {
         return false;
       }
     }
-    if (tokens[i].type == kName) {
+    if (tokens[i].type == Tokenizer::TokenType::kName) {
       // Check if a name or digit is followed by another name
-      if (tokens[i - 1].type == kName || tokens[i - 1].type == kDigit) {
+      if (tokens[i - 1].type == Tokenizer::TokenType::kName ||
+          tokens[i - 1].type == Tokenizer::TokenType::kDigit) {
         return false;
       }
       // Check if name is right before '}'
@@ -61,9 +64,10 @@ bool SimpleValidator::validateProcedure(vector<Token> tokens, size_t start,
         return false;
       }
     }
-    if (tokens[i].type == kDigit) {
+    if (tokens[i].type == Tokenizer::TokenType::kDigit) {
       // Check if a digit or name is followed by another digit
-      if (tokens[i - 1].type == kDigit || tokens[i - 1].type == kName) {
+      if (tokens[i - 1].type == Tokenizer::TokenType::kDigit ||
+          tokens[i - 1].type == Tokenizer::TokenType::kName) {
         return false;
       }
     }
