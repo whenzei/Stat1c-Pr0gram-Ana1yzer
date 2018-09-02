@@ -6,18 +6,18 @@
 
 using std::string;
 
-enum KeywordType {
-  kProcedure = 0,
-  kIf = 1,
-  kElse = 2,
-  kWhile = 3,
-  kCall = 4,
-  kRead = 5,
-  kPrint = 6
-};
 
 class SimpleValidator {
  public:
+  enum KeywordType {
+    kProcedure,
+    kIf,
+    kElse,
+    kWhile,
+    kCall,
+    kRead,
+    kPrint
+  };
   /**
    * Checks if string input is a SIMPLE keyword
    * @returns true if it is a SIMPLE keyword, false otherwise

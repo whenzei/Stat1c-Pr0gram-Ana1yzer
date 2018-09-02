@@ -4,11 +4,20 @@
 
 #include "simple_validator.h"
 
+enum KeywordType {
+  kProcedure = 0,
+  kIf = 1,
+  kElse = 2,
+  kWhile = 3,
+  kCall = 4,
+  kRead = 5,
+  kPrint = 6
+};
+
 const string kOpenBraceSymbol = "{";
 const string kCloseBraceSymbol = "}";
 
 const size_t kMinimalTokenSizeForPocedure = 4;
-
 
 const static string kKeywords[7] = {"procedure", "if",   "else", "while",
                                     "call",      "read", "print"};
