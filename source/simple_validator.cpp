@@ -26,7 +26,7 @@ bool SimpleValidator::isKeyword(int type, string input) {
   return kKeywords[type].compare(input) == 0;
 }
 
-bool SimpleValidator::validateProcedure(vector<Token> tokens, size_t start,
+bool SimpleValidator::validateProcedure(TokenList tokens, size_t start,
                                         size_t end) {
   size_t numTokens = end - start + 1;
 

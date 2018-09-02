@@ -37,7 +37,7 @@ class SimpleValidator {
    * procedure_name, '{' , .... , '}')
    * @returns true if list of tokens is syntactically correct, false otherwise.
    */
-  static bool validateProcedure(vector<Token> tokens, size_t start, size_t end);
+  static bool validateProcedure(TokenList tokens, size_t start, size_t end);
 };
 
 #endif
