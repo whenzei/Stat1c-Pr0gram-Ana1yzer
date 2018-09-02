@@ -11,19 +11,18 @@ const int kTempArraySize = 10;
 
 class VarTable {
 private:
-	string *var_table[kTempArraySize];
-	int num_var;
+  string *var_table[kTempArraySize];
+  int num_var;
 
 public:
-
   // Constructor
-	VarTable();
+  VarTable();
 
-	// Destructor
-	~VarTable();
+  // Destructor
+  ~VarTable();
   
-	// Takes in the variable name and inserts a new variable in the VarTable.
-	// Increments variable count. 
+  // Takes in the variable name and inserts a new variable in the VarTable.
+  // Increments variable count. 
   // Returns the index of the variable just added.
   int InsertVar(string var_name);
 

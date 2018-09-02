@@ -9,27 +9,27 @@ using std::string;
 
 class Statement {
 private:
-	string content;
-	int line_num;
+  string content;
+  int line_num;
 
 public: 
-	// Default constructor
-	Statement() {};
+  // Default constructor
+  Statement() {};
 
-	// Constructor
-	Statement(int index, string stmt) {
-		line_num = index;
-		content = stmt;
-	}
+  // Constructor
+  Statement(int index, string stmt) {
+    line_num = index;
+    content = stmt;
+  }
 
-	// Accessors
-	string GetContent() {
-		return content;
-	}
+  // Accessors
+  string GetContent() {
+    return content;
+  }
 
-	int GetLineNum() {
-		return line_num;
-	}
+  int GetLineNum() {
+    return line_num;
+  }
 };
 
 #endif !STATEMENT_H

@@ -12,24 +12,24 @@ const int kTempArraySize = 10;
 
 class StmtTable {
 private:
-	Statement* stmt_table[kTempArraySize];
-	int num_stmt;
+  Statement* stmt_table[kTempArraySize];
+  int num_stmt;
 
 public:
-	// Constructor
-	StmtTable();
+  // Constructor
+  StmtTable();
 
-	// Destructor
-	~StmtTable();
+  // Destructor
+  ~StmtTable();
 	
-	// Takes in the statement in string format and inserts it in the StmtTable.
-	// Increments statement count.
-	// Returns the index of the statement just added.
-	int InsertStmt(int line_num, string stmt);
+  // Takes in the statement in string format and inserts it in the StmtTable.
+  // Increments statement count.
+  // Returns the index of the statement just added.
+  int InsertStmt(int line_num, string stmt);
 
-	// Returns a pointer to a list of all line numbers of all statements in the StmtTable.
-	// Returns null if StmtTable is empty. 
-	int* GetAllStmtNums();
+  // Returns a pointer to a list of all line numbers of all statements in the StmtTable.
+  // Returns null if StmtTable is empty. 
+  int* GetAllStmtNums();
 };
 
 #endif !STMT_TABLE_H
