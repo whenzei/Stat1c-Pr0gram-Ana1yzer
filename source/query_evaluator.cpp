@@ -5,8 +5,6 @@
 #include "declaration.h"
 #include "query.h"
 #include "query_evaluator.h"
-#include "stmt_list.h"
-#include "var_table.h"
 
 using std::list;
 using std::string;
@@ -46,7 +44,7 @@ list<string> QueryEvaluator::GetResultFromQuery(Query query) {
   return results;
 }
 
-string FormatResultString(list<string> results) {
+string QueryEvaluator::FormatResultString(list<string> results) {
   string formatted_string;
   string index_flag = "";
 
@@ -58,9 +56,11 @@ string FormatResultString(list<string> results) {
     switch (select_type) {
       case DeclarationKeyword::kProcedure:
         // Format for procedure
+        formatted_string = "procedure ";
         break;
       case DeclarationKeyword::kVariable:
         // Format for variable
+        formatted_string = "variable ";
         break;
       case DeclarationKeyword::kAssign:
         index_flag = "#";
@@ -70,12 +70,11 @@ string FormatResultString(list<string> results) {
 
     // Loop through the results and format it into a single string
     for (auto &iter : results) {
+      // Insert the results into string, uses # if result is a number
       formatted_string += index_flag + iter;
 
       if (iter != results.back()) {
         formatted_string += ", ";
-      } else {
-        formatted_string += ".";
       }
     }
   }
