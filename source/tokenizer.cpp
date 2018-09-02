@@ -4,7 +4,7 @@
 
 #include "tokenizer.h"
 
-enum TokenTypes {
+enum TokenType {
   kNothing = 0,
   kDigit = 1,
   kName = 2,
@@ -62,7 +62,7 @@ TokenList Tokenizer::Tokenize(string input) {
 // If matched, num_consumed_characters = 1, and the relevant type and value is
 // returned, else, num_consumed_characters = 0, and returns enum kNothing with
 // empty string.
-Result Tokenizer::TokenizeCharacter(int type, char value, string input,
+Result Tokenizer::TokenizeCharacter(TokenType type, char value, string input,
                                     int current_index) {
   return (value == input[current_index]) ? Result({1, {type, string(1, value)}})
                                          : EmptyResult();
@@ -74,7 +74,7 @@ Result Tokenizer::TokenizeCharacter(int type, char value, string input,
 // Returns a Result with the structure [num_consumed_characters,
 // [type, value]] if matched and returns an empty result with
 // Tokenizer::EmptyResult() if no matches.
-Result Tokenizer::TokenizePattern(int type, regex pattern, string input,
+Result Tokenizer::TokenizePattern(TokenType type, regex pattern, string input,
                                   int current_index) {
   string value = string(1, input[current_index]);
   size_t num_consumed_characters = 0, input_len = input.size();

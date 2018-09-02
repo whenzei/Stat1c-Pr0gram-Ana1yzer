@@ -35,7 +35,7 @@ using TokenizerFunc = Result (*)(string, int);
 
 class Tokenizer {
  public:
-  enum TokenTypes {
+  enum TokenType {
     kNothing,
     kDigit,
     kName,
@@ -52,14 +52,13 @@ class Tokenizer {
   // Debug function, returns the contents of the token as a string
   static string Debug(Token);
 
- private:
   // Checks whether the current character at input[current_index]
   // matches with the supplied value.
   // Returns a Result with the structure [num_consumed_characters, [type,
   // value]] If matched, num_consumed_characters = 1, and the relevant type and
   // value is returned, else, num_consumed_characters = 0, and returns enum
   // kNothing with empty string.
-  static Result TokenizeCharacter(int type, char value, string input,
+  static Result TokenizeCharacter(TokenType type, char value, string input,
                                   int current_index = 0);
 
   // Checks whether the current character at input[current_index]
@@ -69,7 +68,7 @@ class Tokenizer {
   // [type, value]] If matched, num_consumed_characters, and the relevant type
   // and value is returned, else, num_consumed_characters = 0, and returns enum
   // kNothing with empty string.
-  static Result TokenizePattern(int type, regex pattern, string input,
+  static Result TokenizePattern(TokenType type, regex pattern, string input,
                                 int current_index = 0);
 
   // Checks if the current character at input[current_index] is a whitespace,
