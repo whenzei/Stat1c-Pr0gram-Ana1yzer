@@ -7,6 +7,8 @@
 #include <tokenizer.h>
 #include <vector>
 
+#include "pkb.h" 
+
 using std::string;
 using std::vector;
 
@@ -19,7 +21,7 @@ class Parser {
 
  public:
   /* Constructor */
-  Parser(string filepath);
+  Parser(string filepath, PKB pkb);
 
   ///* Destructor */
   //~Parser();
@@ -32,7 +34,7 @@ class Parser {
    */
   string ReadContentFromFile(string filepath);
 
-  void Parse();
+  void Parse(PKB pkb);
 
  private:
   /**
@@ -45,7 +47,7 @@ class Parser {
   /**
    * Reads the list of tokens representing a procedure and updates PKB
    */
-  void ProcessProcedure(TokenList tokens, size_t start, size_t end);
+  void ProcessProcedure(TokenList tokens, size_t start, size_t end, PKB pkb);
 };
 
 #endif  // !SPA_PARSER_H
