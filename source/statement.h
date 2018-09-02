@@ -12,10 +12,7 @@ private:
   string content_;
   int line_num_;
 
-public: 
-  // Default constructor
-  Statement() {};
-
+public:
   // Constructor
   Statement(int index, string stmt) {
     line_num_ = index;
