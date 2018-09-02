@@ -13,12 +13,15 @@ StmtTable::~StmtTable() {
   delete[] * stmt_table_;
 }
 
-// Prerequisite: The line number and statement are valid and non-null.
 int StmtTable::InsertStmt(int line_num, string stmt) {
+  for (int i = 0; i < num_stmt_; i++) {
+    if (stmt_table_[i]->GetLineNum == line_num) { return 0; }
+  }
+
   Statement newStmt(line_num, stmt);
   *stmt_table_[num_stmt_] = newStmt;
   num_stmt_++;
-  return (num_stmt_ -1);
+  return 1;
 }
 
 int* StmtTable::GetAllStmtNums() {

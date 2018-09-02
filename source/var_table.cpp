@@ -13,9 +13,13 @@ VarTable::~VarTable() {
 }
 
 int VarTable::InsertVar(string var_name) {
+  for (int i = 0; i < num_var_; i++) {
+    if (*var_table_[i] == var_name) { return 0; }
+  }
+
   *var_table_[num_var_] = var_name;
   num_var_++;
-  return (num_var_ -1);
+  return 1;
 }
 
 string* VarTable::GetAllVar() {
