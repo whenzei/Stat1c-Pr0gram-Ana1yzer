@@ -22,7 +22,7 @@ const size_t kMinimalTokenSizeForPocedure = 4;
 const static string kKeywords[7] = {"procedure", "if",   "else", "while",
                                     "call",      "read", "print"};
 
-bool SimpleValidator::isKeyword(string input) {
+bool SimpleValidator::IsKeyword(string input) {
   for (string keyword : kKeywords) {
     if (keyword.compare(input) == 0) {
       return true;
@@ -31,11 +31,11 @@ bool SimpleValidator::isKeyword(string input) {
   return false;
 }
 
-bool SimpleValidator::isKeyword(int type, string input) {
+bool SimpleValidator::IsKeyword(int type, string input) {
   return kKeywords[type].compare(input) == 0;
 }
 
-bool SimpleValidator::validateProcedure(TokenList tokens, size_t start,
+bool SimpleValidator::ValidateProcedure(TokenList tokens, size_t start,
                                         size_t end) {
   size_t numTokens = end - start + 1;
 

@@ -41,7 +41,7 @@ void Parser::Parse() {
     cout << Tokenizer::Debug(*token) << endl;
   }
 
-  if (SimpleValidator::validateProcedure(tokenized_content, 0,
+  if (SimpleValidator::ValidateProcedure(tokenized_content, 0,
                                          tokenized_content.size() - 1)) {
     // for debugging
     cout << "Procedure " << tokenized_content[1].value
@@ -61,7 +61,7 @@ void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end) {
     Token currToken = tokens[i];
     // Check if it is type NAME and not a SIMPLE keyword
     if (currToken.type == Tokenizer::TokenType::kName &&
-        !SimpleValidator::isKeyword(currToken.value)) {
+        !SimpleValidator::IsKeyword(currToken.value)) {
       // TODO: add to PKB VarTable
       stmtQueue.push(currToken);
     }

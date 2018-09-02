@@ -6,7 +6,6 @@
 
 using std::string;
 
-
 class SimpleValidator {
  public:
   enum KeywordType {
@@ -22,13 +21,13 @@ class SimpleValidator {
    * Checks if string input is a SIMPLE keyword
    * @returns true if it is a SIMPLE keyword, false otherwise
    */
-  static bool isKeyword(string input);
+  static bool IsKeyword(string input);
 
   /**
    * Checks if string input is a SIMPLE keyword of given type
    * @returns true if it is a SIMPLE keyword of given type, false otherwise
    */
-  static bool isKeyword(int type, string input);
+  static bool IsKeyword(int type, string input);
 
   /**
    * Checks if list of tokens is syntactically correct in SIMPLE language
@@ -37,7 +36,7 @@ class SimpleValidator {
    * procedure_name, '{' , .... , '}')
    * @returns true if list of tokens is syntactically correct, false otherwise.
    */
-  static bool validateProcedure(TokenList tokens, size_t start, size_t end);
+  static bool ValidateProcedure(TokenList tokens, size_t start, size_t end);
 };
 
 #endif
