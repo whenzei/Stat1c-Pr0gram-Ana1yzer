@@ -57,7 +57,7 @@ bool Parser::IsValidFile(string filepath) {
 void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end, PKB pkb) {
   int statementNum = 1;
   queue<Token> stmtQueue;
-  for (int i = 0; i <= end; i++) {
+  for (size_t i = 0; i <= end; i++) {
     Token currToken = tokens[i];
 
 				// Check if it is a 'procedure'
