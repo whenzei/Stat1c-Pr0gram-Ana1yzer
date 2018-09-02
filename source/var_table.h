@@ -11,8 +11,8 @@ const int kTempArraySize = 10;
 
 class VarTable {
 private:
-  string *var_table[kTempArraySize];
-  int num_var;
+  string *var_table_[kTempArraySize];
+  int num_var_;
 
 public:
   // Constructor

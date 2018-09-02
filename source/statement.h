@@ -9,8 +9,8 @@ using std::string;
 
 class Statement {
 private:
-  string content;
-  int line_num;
+  string content_;
+  int line_num_;
 
 public: 
   // Default constructor
@@ -18,17 +18,17 @@ public:
 
   // Constructor
   Statement(int index, string stmt) {
-    line_num = index;
-    content = stmt;
+    line_num_ = index;
+    content_ = stmt;
   }
 
   // Accessors
   string GetContent() {
-    return content;
+    return content_;
   }
 
   int GetLineNum() {
-    return line_num;
+    return line_num_;
   }
 };
 

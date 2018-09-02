@@ -12,8 +12,8 @@ const int kTempArraySize = 10;
 
 class StmtTable {
 private:
-  Statement* stmt_table[kTempArraySize];
-  int num_stmt;
+  Statement* stmt_table_[kTempArraySize];
+  int num_stmt_;
 
 public:
   // Constructor
