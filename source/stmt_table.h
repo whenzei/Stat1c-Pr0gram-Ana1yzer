@@ -22,9 +22,12 @@ public:
   // Destructor
   ~StmtTable();
 	
-  // Takes in the statement in string format and inserts it in the StmtTable.
+  // Takes in a statement in string format and its line number.
+  // Prerequisite: The line number and statement are valid and non-null.
+  // Checks if statement with the same line number already exists in the StmtTable and adds the statement if not.
   // Increments statement count.
-  // Returns the index of the statement just added.
+  // Returns 0 if a statement with the same line number already exists.
+  // Returns 1 if statement is successfully added to the StmtTable.
   int InsertStmt(int line_num, string stmt);
 
   // Returns a pointer to a list of all line numbers of all statements in the StmtTable.

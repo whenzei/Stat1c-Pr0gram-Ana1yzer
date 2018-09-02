@@ -21,9 +21,12 @@ public:
   // Destructor
   ~VarTable();
   
-  // Takes in the variable name and inserts a new variable in the VarTable.
+  // Takes in the variable name in string format.
+  // Prerequisite: The variable name is non-null.
+  // Checks if the same variable name already exists in the VarTable, then adds variable to the VarTable if not.
   // Increments variable count. 
-  // Returns the index of the variable just added.
+  // Returns 0 if the same variable already exists in the VarTable.
+  // Returns 1 if variable is successfully added to the VarTable.
   int InsertVar(string var_name);
 
   // Returns pointer to an array of all var_name in the VarTable. 
