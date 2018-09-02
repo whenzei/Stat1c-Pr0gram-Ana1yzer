@@ -36,19 +36,17 @@
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-<<<<<<< SPA/SPA.vcxproj.filters
-    <ClCompile Include="var_table.cpp">
+    <ClCompile Include="..\source\var_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stmt_table.cpp">
+    <ClCompile Include="..\source\stmt_table.cpp">
       <Filter>Source Files</Filter>
-=======
+    </ClCompile>  
     <ClCompile Include="query.cpp">
       <Filter>Source Files\pql</Filter>
     </ClCompile>
     <ClCompile Include="declaration.cpp">
       <Filter>Source Files\pql</Filter>
->>>>>>> SPA/SPA.vcxproj.filters
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,22 +62,20 @@
     <ClInclude Include="..\source\tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-<<<<<<< SPA/SPA.vcxproj.filters
-    <ClInclude Include="var_table.h">
+    <ClInclude Include="..\source\var_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stmt_table.h">
+    <ClInclude Include="..\source\stmt_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="statement.h">
+    <ClInclude Include="..\source\statement.h">
       <Filter>Header Files</Filter>
-=======
+    </ClInclude>
     <ClInclude Include="query.h">
       <Filter>Header Files\pql</Filter>
     </ClInclude>
     <ClInclude Include="declaration.h">
       <Filter>Header Files\pql</Filter>
->>>>>>> SPA/SPA.vcxproj.filters
     </ClInclude>
   </ItemGroup>
 </Project>
