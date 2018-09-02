@@ -17,6 +17,7 @@
     <ClCompile Include="..\source\t_node.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
     <ClCompile Include="declaration.cpp" />
+    <ClCompile Include="pql_parser.cpp" />
     <ClCompile Include="query.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +26,7 @@
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\t_node.h" />
     <ClInclude Include="declaration.h" />
+    <ClInclude Include="pql_parser.h" />
     <ClInclude Include="query.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
