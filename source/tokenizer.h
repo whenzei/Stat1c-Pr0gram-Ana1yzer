@@ -4,6 +4,7 @@
 #define SPA_TOKENIZER_H
 
 #include <regex>
+#include <tuple>
 #include <vector>
 
 using std::regex;
@@ -24,33 +25,51 @@ enum TokenTypes {
 struct Token {
   int type;
   string value;
+
+  bool operator==(const Token& other) const {
+    return std::tie(type, value) == std::tie(other.type, other.value);
+  }
 };
 
 struct Result {
   size_t num_consumed_characters;
   struct Token token;
+
+  bool operator==(const Result& other) const {
+    return std::tie(num_consumed_characters, token) ==
+           std::tie(other.num_consumed_characters, other.token);
+  }
 };
 
-class Tokenizer {
-  typedef Result (*TokenizerFunc)(string, int);
-  int num_functions;
+using TokenList = vector<Token>;
+using TokenizerFunc = Result (*)(string, int);
 
+class Tokenizer {
  public:
+  enum TokenType {
+    kNothing,
+    kDigit,
+    kName,
+    kBrace,
+    kSemicolon,
+    kAssignment,
+    kOperator,
+    kUnknown,
+  };
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-  // to tokenize the supplied input, returning a vector of Token
-  static vector<Token> Tokenize(string input);
+  // to tokenize the supplied input, returning a list of tokens
+  static TokenList Tokenize(string input);
 
   // Debug function, returns the contents of the token as a string
   static string Debug(Token);
 
- private:
   // Checks whether the current character at input[current_index]
   // matches with the supplied value.
   // Returns a Result with the structure [num_consumed_characters, [type,
   // value]] If matched, num_consumed_characters = 1, and the relevant type and
   // value is returned, else, num_consumed_characters = 0, and returns enum
   // kNothing with empty string.
-  static Result TokenizeCharacter(int type, char value, string input,
+  static Result TokenizeCharacter(TokenType type, char value, string input,
                                   int current_index = 0);
 
   // Checks whether the current character at input[current_index]
@@ -60,7 +79,7 @@ class Tokenizer {
   // [type, value]] If matched, num_consumed_characters, and the relevant type
   // and value is returned, else, num_consumed_characters = 0, and returns enum
   // kNothing with empty string.
-  static Result TokenizePattern(int type, regex pattern, string input,
+  static Result TokenizePattern(TokenType type, regex pattern, string input,
                                 int current_index = 0);
 
   // Checks if the current character at input[current_index] is a whitespace,
@@ -71,7 +90,7 @@ class Tokenizer {
   // Checks if input is a comment using regex and
   // returns a Result if true, with the num_consumed_characters to skip,
   // Tokenizer::EmptyResult() otherwise
-  static Result Tokenizer::SkipComments(string input, int current_index = 0);
+  static Result SkipComments(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize digits,
   // and returns the result as a Result struct

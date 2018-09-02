@@ -7,10 +7,14 @@
 #include <string>
 #include <vector>
 
+#include "tokenizer.h"
 #include "parser.h"
 #include "pkb.h"
+<<<<<<< HEAD
 #include "simple_validator.h"
 #include "tokenizer.h"
+=======
+>>>>>>> parser
 
 // Constructor
 Parser::Parser(string filepath) {
@@ -32,10 +36,10 @@ string Parser::ReadContentFromFile(string filepath) {
 
 void Parser::Parse() {
   // retrieve vector of tokens
-  vector<Token> tokenized_content = Tokenizer::Tokenize(content_);
+  TokenList tokenized_content = Tokenizer::Tokenize(content_);
 
   // if we want to debug
-  for (vector<Token>::const_iterator token = tokenized_content.begin();
+  for (TokenList::const_iterator token = tokenized_content.begin();
        token != tokenized_content.end(); ++token) {
     cout << Tokenizer::Debug(*token) << endl;
   }
