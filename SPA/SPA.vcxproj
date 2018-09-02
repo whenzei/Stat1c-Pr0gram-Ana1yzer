@@ -16,18 +16,18 @@
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\t_node.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
-    <ClCompile Include="declaration.cpp" />
-    <ClCompile Include="pql_parser.cpp" />
-    <ClCompile Include="query.cpp" />
+    <ClCompile Include="..\source\declaration.cpp" />
+    <ClCompile Include="..\source\pql_parser.cpp" />
+    <ClCompile Include="..\source\query.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\t_node.h" />
-    <ClInclude Include="declaration.h" />
-    <ClInclude Include="pql_parser.h" />
-    <ClInclude Include="query.h" />
+    <ClInclude Include="..\source\declaration.h" />
+    <ClInclude Include="..\source\pql_parser.h" />
+    <ClInclude Include="..\source\query.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

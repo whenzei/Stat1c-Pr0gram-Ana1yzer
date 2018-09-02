@@ -30,13 +30,13 @@
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="declaration.cpp">
+    <ClCompile Include="..\source\declaration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="pql_parser.cpp">
+    <ClCompile Include="..\source\pql_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="query.cpp">
+    <ClCompile Include="..\source\query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,13 +53,13 @@
     <ClInclude Include="..\source\tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="declaration.h">
+    <ClInclude Include="..\source\declaration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pql_parser.h">
+    <ClInclude Include="..\source\pql_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="query.h">
+    <ClInclude Include="..\source\query.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
