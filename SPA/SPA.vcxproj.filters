@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\pql">
+      <UniqueIdentifier>{23f9ccaf-cf33-42c0-8062-3d795c5482d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\pql">
+      <UniqueIdentifier>{58a32be6-c1ec-44bf-a3c7-72baee07f32d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\design_extractor.cpp">
@@ -30,11 +36,19 @@
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< SPA/SPA.vcxproj.filters
     <ClCompile Include="var_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stmt_table.cpp">
       <Filter>Source Files</Filter>
+=======
+    <ClCompile Include="query.cpp">
+      <Filter>Source Files\pql</Filter>
+    </ClCompile>
+    <ClCompile Include="declaration.cpp">
+      <Filter>Source Files\pql</Filter>
+>>>>>>> SPA/SPA.vcxproj.filters
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +64,7 @@
     <ClInclude Include="..\source\tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< SPA/SPA.vcxproj.filters
     <ClInclude Include="var_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +73,13 @@
     </ClInclude>
     <ClInclude Include="statement.h">
       <Filter>Header Files</Filter>
+=======
+    <ClInclude Include="query.h">
+      <Filter>Header Files\pql</Filter>
+    </ClInclude>
+    <ClInclude Include="declaration.h">
+      <Filter>Header Files\pql</Filter>
+>>>>>>> SPA/SPA.vcxproj.filters
     </ClInclude>
   </ItemGroup>
 </Project>
