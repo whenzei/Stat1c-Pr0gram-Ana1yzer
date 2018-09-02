@@ -17,6 +17,10 @@
     <ClCompile Include="..\source\simple_validator.cpp" />
     <ClCompile Include="..\source\t_node.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
+    <ClCompile Include="..\source\stmt_table.cpp" />
+    <ClCompile Include="..\source\var_table.cpp" />
+    <ClCompile Include="declaration.cpp" />
+    <ClCompile Include="query.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h" />
@@ -24,6 +28,11 @@
     <ClInclude Include="..\source\simple_validator.h" />
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\t_node.h" />
+    <ClInclude Include="..\source\statement.h" />
+    <ClInclude Include="..\source\stmt_table.h" />
+    <ClInclude Include="..\source\var_table.h" />
+    <ClInclude Include="declaration.h" />
+    <ClInclude Include="query.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
