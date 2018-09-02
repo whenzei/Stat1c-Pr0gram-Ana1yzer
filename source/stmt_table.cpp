@@ -6,7 +6,7 @@
 using std::string;
 
 StmtTable::StmtTable() {
-  num_stmt = 0;
+  num_stmt_ = 0;
 }
 
 StmtTable::~StmtTable() {
