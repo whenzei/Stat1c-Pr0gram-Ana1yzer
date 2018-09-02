@@ -18,7 +18,7 @@ StmtTable::~StmtTable() {
 
 int StmtTable::InsertStmt(int line_num, string stmt) {
   for (int i = 0; i < num_stmt_; i++) {
-    if (stmt_table_[i]->GetLineNum == line_num) { return kFail; }
+    if (stmt_table_[i]->GetLineNum() == line_num) { return kFail; }
   }
 
   Statement newStmt(line_num, stmt);
