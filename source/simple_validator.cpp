@@ -79,6 +79,10 @@ bool SimpleValidator::ValidateProcedure(TokenList tokens, size_t start,
           tokens[i - 1].type == Tokenizer::TokenType::kName) {
         return false;
       }
+      // Check if digit is right before '}'
+      if (tokens[i + 1].value.compare(kCloseBraceSymbol) == 0) {
+        return false;
+      }
     }
   }
   return true;
