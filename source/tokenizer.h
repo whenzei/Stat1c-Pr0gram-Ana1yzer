@@ -11,17 +11,6 @@ using std::regex;
 using std::string;
 using std::vector;
 
-enum TokenTypes {
-  kNothing = 0,
-  kDigit = 1,
-  kName = 2,
-  kBrace = 3,
-  kSemicolon = 4,
-  kAssignment = 5,
-  kOperator = 6,
-  kUnknown = 999,
-};
-
 struct Token {
   int type;
   string value;

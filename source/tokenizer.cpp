@@ -4,8 +4,6 @@
 
 #include "tokenizer.h"
 
-<<<<<<< HEAD
-=======
 enum TokenType {
   kNothing = 0,
   kDigit = 1,
@@ -17,7 +15,6 @@ enum TokenType {
   kUnknown = 999,
 };
 
->>>>>>> parser
 const int kNumberOfFunctions = 8;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
