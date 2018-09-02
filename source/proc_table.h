@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+using std::string;
+using std::vector;
 
 #ifndef SPA_PROC_TABLE_H
 #define SPA_PROC_TABLE_H

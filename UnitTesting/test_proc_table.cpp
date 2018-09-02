@@ -1,11 +1,13 @@
 #include <string>
+#include <vector>
 
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "proc_table.h"
 
-
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::string;
+using std::vector;
 
 namespace UnitTesting {
 

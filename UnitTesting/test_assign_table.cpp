@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include "stdafx.h"
@@ -6,6 +7,9 @@
 #include "assign_table.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 namespace UnitTesting {
 
@@ -21,7 +25,6 @@ TEST_CLASS(TestAssignTable) {
   const string kAssignStmt4 = "";
 
  public:
-
   TEST_METHOD(TestInsertSuccess) {
     AssignTable assign_table;
     int status = assign_table.Insert(kStmtNum1, kAssignStmt1);
@@ -55,8 +58,11 @@ TEST_CLASS(TestAssignTable) {
     AssignTable assign_table;
     assign_table.Insert(kStmtNum1, kAssignStmt1);
     vector<string> assign_table_result = assign_table.List();
-    Assert::AreEqual(to_string(kStmtNum1), assign_table_result.front());
+    stringstream stmt_num1_ss;
+    stmt_num1_ss << kStmtNum1;
+    Assert::AreEqual(stmt_num1_ss.str(), assign_table_result.front());
   }
+
   TEST_METHOD(TestListMultiple) {
     AssignTable assign_table;
     vector<string> assign_table_result;
@@ -64,9 +70,15 @@ TEST_CLASS(TestAssignTable) {
     assign_table.Insert(kStmtNum2, kAssignStmt2);
     assign_table.Insert(kStmtNum3, kAssignStmt3);
     assign_table_result = assign_table.List();
-    Assert::AreEqual(to_string(kStmtNum1), assign_table_result.at(0));
-    Assert::AreEqual(to_string(kStmtNum2), assign_table_result.at(1));
-    Assert::AreEqual(to_string(kStmtNum3), assign_table_result.at(2));
+    stringstream stmt_num1_ss;
+    stringstream stmt_num2_ss;
+    stringstream stmt_num3_ss;
+    stmt_num1_ss << kStmtNum1;
+    stmt_num2_ss << kStmtNum2;
+    stmt_num3_ss << kStmtNum3;
+    Assert::AreEqual(stmt_num1_ss.str(), assign_table_result.at(0));
+    Assert::AreEqual(stmt_num2_ss.str(), assign_table_result.at(1));
+    Assert::AreEqual(stmt_num3_ss.str(), assign_table_result.at(2));
   }
 };
 }  // namespace UnitTesting

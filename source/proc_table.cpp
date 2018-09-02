@@ -5,7 +5,8 @@
 
 #include "proc_table.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 bool ProcTable::Find(string proc_name) {
   for (vector<string>::iterator iter = proc_vector_.begin();

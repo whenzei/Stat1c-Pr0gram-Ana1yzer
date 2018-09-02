@@ -1,12 +1,16 @@
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
+#include <sstream>
 #include <vector>
 
 #include "assign_table.h"
 
-using namespace std;
+using std::map;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 int AssignTable::Insert(int statement_number, string assign_statement) {
   if (assign_statement.compare("") == 0) {
@@ -15,7 +19,9 @@ int AssignTable::Insert(int statement_number, string assign_statement) {
     return -1;
   } else {
     assign_map_[statement_number] = assign_statement;
-	assign_vector_.push_back(to_string(statement_number));
+    stringstream statement_number_ss;
+    statement_number_ss << statement_number;
+    assign_vector_.push_back(statement_number_ss.str());
     return 0;
   }
 }

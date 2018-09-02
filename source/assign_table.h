@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+using std::map;
+using std::string;
+using std::vector;
 
 #ifndef SPA_ASSIGN_TABLE_H
 #define SPA_ASSIGN_TABLE_H

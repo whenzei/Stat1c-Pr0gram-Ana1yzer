@@ -8,7 +8,8 @@
 #include "proc_table.h"
 #include "assign_table.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 /* sample code that came with pkb.h
 typedef short PROC;
