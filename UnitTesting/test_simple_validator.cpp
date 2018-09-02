@@ -22,26 +22,26 @@ TEST_CLASS(TestSimpleValidator) {
 
  public:
   TEST_METHOD(TestIsKeywordOneParamTrue) {
-    bool resultProcedure = SimpleValidator::IsKeyword(kWordProcedure);
-    Assert::AreEqual(true, resultProcedure);
+    bool result_procedure = SimpleValidator::IsKeyword(kWordProcedure);
+    Assert::AreEqual(true, result_procedure);
 
-    bool resultIf = SimpleValidator::IsKeyword(kWordIf);
-    Assert::AreEqual(true, resultIf);
+    bool result_if = SimpleValidator::IsKeyword(kWordIf);
+    Assert::AreEqual(true, result_if);
 
-    bool resultElse = SimpleValidator::IsKeyword(kWordElse);
-    Assert::AreEqual(true, resultElse);
+    bool result_else = SimpleValidator::IsKeyword(kWordElse);
+    Assert::AreEqual(true, result_else);
 
-    bool resultWhile = SimpleValidator::IsKeyword(kWordWhile);
-    Assert::AreEqual(true, resultWhile);
+    bool result_while = SimpleValidator::IsKeyword(kWordWhile);
+    Assert::AreEqual(true, result_while);
 
-    bool resultRead = SimpleValidator::IsKeyword(kWordRead);
-    Assert::AreEqual(true, resultRead);
+    bool result_read = SimpleValidator::IsKeyword(kWordRead);
+    Assert::AreEqual(true, result_read);
 
-    bool resultPrint = SimpleValidator::IsKeyword(kWordPrint);
-    Assert::AreEqual(true, resultPrint);
+    bool result_print = SimpleValidator::IsKeyword(kWordPrint);
+    Assert::AreEqual(true, result_print);
 
-    bool resultCall = SimpleValidator::IsKeyword(kWordCall);
-    Assert::AreEqual(true, resultCall);
+    bool result_call = SimpleValidator::IsKeyword(kWordCall);
+    Assert::AreEqual(true, result_call);
   }
 
   TEST_METHOD(TestIsKeywordProcedureOneParamFalse) {
@@ -62,34 +62,34 @@ TEST_CLASS(TestSimpleValidator) {
   }
 
   TEST_METHOD(TestValidateProcedureSuccess) {
-    string validProcedureString = "procedure test {\n a = b;\n b = c;\n c = d;\n}";
-    TokenList validProcedureTokens = Tokenizer::Tokenize(validProcedureString);
+    string valid_procedure_string = "procedure test {\n a = b;\n b = c;\n c = d;\n}";
+    TokenList valid_procedure_tokens = Tokenizer::Tokenize(valid_procedure_string);
     bool result = SimpleValidator::ValidateProcedure(
-        validProcedureTokens, 0, validProcedureTokens.size() - 1);
+        valid_procedure_tokens, 0, valid_procedure_tokens.size() - 1);
     Assert::AreEqual(true, result);
   }
 
   TEST_METHOD(TestValidateProcedureFail) {
-    string invalidProcedureStringOne = "procedure One {\n a = b\n c = d;\n}";
-    TokenList invalidProcedureTokensOne =
-        Tokenizer::Tokenize(invalidProcedureStringOne);
-    bool resultOne = SimpleValidator::ValidateProcedure(
-        invalidProcedureTokensOne, 0, invalidProcedureTokensOne.size() - 1);
-    Assert::AreEqual(false, resultOne);
+    string invalid_procedure_string_one = "procedure One {\n a = b\n c = d;\n}";
+    TokenList invalid_procedure_tokens_one =
+        Tokenizer::Tokenize(invalid_procedure_string_one);
+    bool result_one = SimpleValidator::ValidateProcedure(
+        invalid_procedure_tokens_one, 0, invalid_procedure_tokens_one.size() - 1);
+    Assert::AreEqual(false, result_one);
 
 				
-    string invalidProcedureStringTwo = "procedure bad {\n a = b;\n b = 3\n }";
-    TokenList invalidProcedureTokensTwo =
-        Tokenizer::Tokenize(invalidProcedureStringTwo);
+    string invalid_procedure_string_two = "procedure bad {\n a = b;\n b = 3\n }";
+    TokenList invalid_procedure_tokens_two =
+        Tokenizer::Tokenize(invalid_procedure_string_two);
     bool resultTwo = SimpleValidator::ValidateProcedure(
-        invalidProcedureTokensTwo, 0, invalidProcedureTokensTwo.size() - 1);
+        invalid_procedure_tokens_two, 0, invalid_procedure_tokens_two.size() - 1);
     Assert::AreEqual(false, resultTwo);
 
-    string invalidProcedureStringThree = "procedure bad {\n 3 = b;\n}";
-    TokenList invalidProcedureTokensThree =
-        Tokenizer::Tokenize(invalidProcedureStringOne);
+    string invalid_procedure_string_three = "procedure bad {\n 3 = b;\n}";
+    TokenList invalid_procedure_tokens_three =
+        Tokenizer::Tokenize(invalid_procedure_string_one);
     bool resultThree = SimpleValidator::ValidateProcedure(
-        invalidProcedureTokensThree, 0, invalidProcedureTokensThree.size() - 1);
+        invalid_procedure_tokens_three, 0, invalid_procedure_tokens_three.size() - 1);
     Assert::AreEqual(false, resultThree);
   }
 };
