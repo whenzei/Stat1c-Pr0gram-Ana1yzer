@@ -4,6 +4,9 @@
 
 using std::string;
 
+const int kSuccess = 0;
+const int kFail = -1;
+
 VarTable::VarTable() {
   num_var_ = 0;
 }
@@ -14,12 +17,12 @@ VarTable::~VarTable() {
 
 int VarTable::InsertVar(string var_name) {
   for (int i = 0; i < num_var_; i++) {
-    if (*var_table_[i] == var_name) { return 0; }
+    if (*var_table_[i] == var_name) { return kFail; }
   }
 
   *var_table_[num_var_] = var_name;
   num_var_++;
-  return 1;
+  return kSuccess;
 }
 
 string* VarTable::GetAllVar() {
