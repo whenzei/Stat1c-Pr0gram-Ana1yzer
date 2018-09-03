@@ -66,7 +66,7 @@ void PqlQuery::ParseStatement(string statement) {
   }
 
   string keyword = tokens[0];
-  if (keyword == "select") {
+  if (keyword == "Select") {
     var_name_ = tokens[1];
   } else if (keyword == "assign") {
     PqlDeclaration declaration(kAssign, tokens[1]);
