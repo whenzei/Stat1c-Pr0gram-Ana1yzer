@@ -23,7 +23,9 @@ TestWrapper::TestWrapper() {
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
-  Parser::Parser(filename, pkb_);
+  // attach pkb to parser
+  Parser parser(pkb_);
+  parser.Parse(filename);
   // ...rest of your code...
 }
 

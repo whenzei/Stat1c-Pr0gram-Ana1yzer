@@ -12,40 +12,48 @@
 #include "simple_validator.h"
 #include "tokenizer.h"
 
+const bool DEBUG_FLAG = true;
+
 // Constructor
-Parser::Parser(string filepath, PKB pkb) {
-  content_ = ReadContentFromFile(filepath);
-  Parse(pkb);
-}
+Parser::Parser(PKB pkb) { pkb_ = pkb; }
+
+// Setters
+void Parser::SetPkb(PKB pkb) { pkb_ = pkb; }
+
+// Getters
+TokenList Parser::GetTokenList() { return tokens_; }
+
+PKB Parser::GetPkb() { return pkb_; }
 
 string Parser::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
     cout << "File not found! Content is set to empty string" << endl;
-    return "";
+    return string();
   }
   // start reading file
   ifstream ifs(filepath);
-  string content((istreambuf_iterator<char>(ifs)),
-                 (istreambuf_iterator<char>()));
-  return content;
+  return string((istreambuf_iterator<char>(ifs)),
+                (istreambuf_iterator<char>()));
 }
 
-void Parser::Parse(PKB pkb) {
+void Parser::Parse(string filepath) {
+  // read content from file
+  string contents = ReadContentFromFile(filepath);
   // retrieve vector of tokens
-  TokenList tokenized_content = Tokenizer::Tokenize(content_);
+  tokens_ = Tokenizer::Tokenize(contents);
 
-  // if we want to debug
-  for (TokenList::const_iterator token = tokenized_content.begin();
-       token != tokenized_content.end(); ++token) {
-    cout << Tokenizer::Debug(*token) << endl;
+  if (DEBUG_FLAG) {
+    for (Token& token : tokens_) {
+      cout << Tokenizer::Debug(token) << endl;
+    }
   }
 
-  if (SimpleValidator::ValidateProcedure(tokenized_content, 0,
-                                         tokenized_content.size() - 1)) {
-    // for debugging
-    cout << "Procedure " << tokenized_content[1].value
-         << " is syntactically correct" << endl;
-    ProcessProcedure(tokenized_content, 0, tokenized_content.size() - 1, pkb);
+  if (SimpleValidator::ValidateProcedure(tokens_, 0, tokens_.size() - 1)) {
+    if (DEBUG_FLAG) {
+      cout << "Procedure " << tokens_[1].value << " is syntactically correct"
+           << endl;
+    }
+    ProcessProcedure(0, tokens_.size() - 1);
   }
 }
 
@@ -54,24 +62,27 @@ bool Parser::IsValidFile(string filepath) {
   return infile.good();
 }
 
-void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end,
-                              PKB pkb) {
+void Parser::ProcessProcedure(size_t start, size_t end) {
   int statementNum = 1;
 
-		// Second index from start will always be a procedure name 
-  std::cout << "Procedure added: " << tokens[start + 1].value << endl;
-		// TODO: add procedure name to PKB's ProcTable
+  // Second index from start will always be a procedure name
+  if (DEBUG_FLAG) {
+    std::cout << "Procedure added: " << tokens_[start + 1].value << endl;
+  }
+  // TODO: add procedure name to PKB's ProcTable
 
   queue<Token> stmtQueue;
-		// Starts at 4th index and ends at 2nd last index
+  // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
-    Token currToken = tokens[i];
+    Token currToken = tokens_[i];
 
     // Check if it is type NAME and not a SIMPLE keyword
     if (currToken.type == Tokenizer::TokenType::kName &&
         !SimpleValidator::IsKeyword(currToken.value)) {
       // TODO: add to PKB's VarTable
-      std::cout << "Variable added: " << currToken.value << endl;
+      if (DEBUG_FLAG) {
+        std::cout << "Variable added: " << currToken.value << endl;
+      }
     }
 
     if (currToken.type == Tokenizer::TokenType::kSemicolon) {
@@ -83,9 +94,12 @@ void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end,
         stmtQueue.pop();
       }
       statement += currToken.value;
-      std::cout << "Statment " << statementNum << " added: "<< statement << endl;
+      if (DEBUG_FLAG) {
+        std::cout << "Statement " << statementNum << " added: " << statement
+                  << endl;
+      }
       statementNum++;
-						continue;
+      continue;
     }
     stmtQueue.push(currToken);
   }
