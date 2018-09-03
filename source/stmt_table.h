@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef STMT_TABLE_H
+#define STMT_TABLE_H
+
 #include "statement.h"
 
 #include <string>
@@ -7,9 +11,6 @@
 using std::string;
 
 const int kTempArraySize = 10;
-
-#ifndef STMT_TABLE_H
-#define STMT_TABLE_H
 
 class StmtTable {
   Statement stmt_table_[kTempArraySize];

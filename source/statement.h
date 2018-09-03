@@ -1,11 +1,11 @@
 #pragma once
 
+#ifndef STATEMENT_H
+#define STATEMENT_H
+
 #include <string>
 
 using std::string;
-
-#ifndef STATEMENT_H
-#define STATEMENT_H
 
 class Statement {
 private:

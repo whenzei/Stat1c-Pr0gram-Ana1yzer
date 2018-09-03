@@ -1,16 +1,16 @@
 #pragma once
 
+#ifndef SPA_PROC_TABLE_H
+#define SPA_PROC_TABLE_H
+
 #include <string>
 #include <list>
 
 using std::string;
 using std::list;
 
-typedef string ProcName;
-typedef list<string> ProcList;
-
-#ifndef SPA_PROC_TABLE_H
-#define SPA_PROC_TABLE_H
+using ProcName = string;
+using ProcList = list<string>;
 
 /**
  * The procedure table class for the PKB component

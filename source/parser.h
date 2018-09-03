@@ -4,7 +4,6 @@
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
 
-#include <vector>
 using std::string;
 
 /**

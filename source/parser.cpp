@@ -1,14 +1,14 @@
 #pragma once
 
+#include "tokenizer.h"
+#include "parser.h"
+#include "pkb.h"
+
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-
-#include "tokenizer.h"
-#include "parser.h"
-#include "pkb.h"
 
 using std::cout;
 using std::endl;

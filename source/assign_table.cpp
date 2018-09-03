@@ -1,8 +1,7 @@
 #pragma once
 
-#include <sstream>
-
 #include "assign_table.h"
+#include <sstream>
 
 using std::stringstream;
 
