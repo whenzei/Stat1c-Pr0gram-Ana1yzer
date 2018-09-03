@@ -19,8 +19,8 @@
     <ClCompile Include="..\source\assign_table.cpp" />
     <ClCompile Include="..\source\stmt_table.cpp" />
     <ClCompile Include="..\source\var_table.cpp" />
-    <ClCompile Include="..\source\declaration.cpp" />
-    <ClCompile Include="..\source\query.cpp" />
+    <ClCompile Include="..\source\pql_declaration.cpp" />
+    <ClCompile Include="..\source\pql_query.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h" />
@@ -31,8 +31,8 @@
     <ClInclude Include="..\source\statement.h" />
     <ClInclude Include="..\source\stmt_table.h" />
     <ClInclude Include="..\source\var_table.h" />
-    <ClInclude Include="..\source\declaration.h" />
-    <ClInclude Include="..\source\query.h" />
+    <ClInclude Include="..\source\pql_declaration.h" />
+    <ClInclude Include="..\source\pql_query.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

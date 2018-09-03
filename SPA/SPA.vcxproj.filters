@@ -39,10 +39,10 @@
     <ClCompile Include="..\source\stmt_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\declaration.cpp">
+    <ClCompile Include="..\source\pql_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\query.cpp">
+    <ClCompile Include="..\source\pql_declaration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +71,10 @@
     <ClInclude Include="..\source\statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\declaration.h">
+    <ClInclude Include="..\source\pql_query.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\query.h">
+    <ClInclude Include="..\source\pql_declaration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
