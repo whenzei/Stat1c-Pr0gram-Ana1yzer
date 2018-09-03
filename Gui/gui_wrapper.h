@@ -5,13 +5,17 @@
 #include <list>
 #include <string>
 
+#include "../source/pkb.h"
+
 class GUIWrapper {
+  PKB pkb_;
+
  public:
   // default constructor
   GUIWrapper();
 
   // destructor
-  ~GUIWrapper();
+  //~GUIWrapper();
 
   // method for parsing the SIMPLE source
   virtual void parse(std::string filename);

@@ -4,10 +4,10 @@
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
 
-#include <tokenizer.h>
 #include <vector>
 
 #include "pkb.h"
+#include "tokenizer.h"
 
 using std::string;
 using std::vector;
@@ -20,6 +20,7 @@ class Parser {
 
  public:
   // Constructor
+  Parser();
   Parser(PKB pkb);
 
   // Destructor

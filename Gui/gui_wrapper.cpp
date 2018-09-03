@@ -1,4 +1,5 @@
 #include "gui_wrapper.h"
+#include "../source/parser.h"
 
 #include <iostream>
 
@@ -6,11 +7,14 @@
 GUIWrapper::GUIWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+  pkb_ = PKB();
 }
 
 // method for parsing the SIMPLE source
 void GUIWrapper::parse(std::string filename) {
   // call your parser to do the parsing
+  Parser parser_(pkb_);
+  parser_.Parse(filename);
   std::cout << "parsed " << filename << std::endl;
   // ...rest of your code...
 }

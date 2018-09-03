@@ -10,8 +10,8 @@
 #include "parser.h"
 #include "pkb.h"
 #include "simple_validator.h"
-#include "tokenizer.h"
 #include "statement.h"
+#include "tokenizer.h"
 
 const bool DEBUG_FLAG = true;
 
@@ -22,6 +22,7 @@ using std::istreambuf_iterator;
 using std::queue;
 
 // Constructor
+Parser::Parser() {}
 Parser::Parser(PKB pkb) { pkb_ = pkb; }
 
 // Setters
@@ -74,7 +75,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
   // Second index from start will always be a procedure name
   string procedure_name = tokens_[start + 1].value;
-		if (DEBUG_FLAG) {
+  if (DEBUG_FLAG) {
     std::cout << "Procedure added: " << procedure_name << endl;
   }
 
@@ -104,7 +105,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
       }
       statement += currToken.value;
 
-						pkb_.InsertAssignStmt(statementNum, statement);
+      pkb_.InsertAssignStmt(statementNum, statement);
 
       if (DEBUG_FLAG) {
         std::cout << "Statement " << statementNum << " added: " << statement
