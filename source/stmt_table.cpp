@@ -1,10 +1,6 @@
 #include "stmt_table.h"
 #include "statement.h"
 
-#include <string>
-
-using std::string;
-
 const int kSuccess = 0;
 const int kFail = -1;
 

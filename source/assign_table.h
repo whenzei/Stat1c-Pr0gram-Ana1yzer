@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef SPA_ASSIGN_TABLE_H
+#define SPA_ASSIGN_TABLE_H
+
 #include <map>
 #include <string>
 #include <list>
@@ -8,12 +11,9 @@ using std::map;
 using std::string;
 using std::list;
 
-typedef int StmtNum;
-typedef string Stmt;
-typedef list<string> StmtList;
-
-#ifndef SPA_ASSIGN_TABLE_H
-#define SPA_ASSIGN_TABLE_H
+using StmtNum = int;
+using Stmt = string;
+using StmtList = list<string>;
 
 /**
  * The assignment table class for the PKB component

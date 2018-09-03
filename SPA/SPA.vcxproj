@@ -14,7 +14,6 @@
     <ClCompile Include="..\source\design_extractor.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
-    <ClCompile Include="..\source\t_node.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
     <ClCompile Include="..\source\proc_table.cpp" />
     <ClCompile Include="..\source\assign_table.cpp" />
@@ -27,7 +26,6 @@
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\tokenizer.h" />
-    <ClInclude Include="..\source\t_node.h" />
     <ClInclude Include="..\source\proc_table.h" />
     <ClInclude Include="..\source\assign_table.h" />
     <ClInclude Include="..\source\statement.h" />
