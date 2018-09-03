@@ -170,20 +170,14 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="test_ast.cpp" />
-<<<<<<< HEAD
     <ClCompile Include="test_simple_validator.cpp" />
-=======
     <ClCompile Include="test_stmt_table.cpp" />
     <ClCompile Include="test_var_table.cpp" />
->>>>>>> iter1_sophie
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPA\SPA.vcxproj">
       <Project>{dc21a1ea-d2c6-4d14-a2b4-e025b64bde81}</Project>
-<<<<<<< HEAD
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-=======
->>>>>>> iter1_sophie
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
