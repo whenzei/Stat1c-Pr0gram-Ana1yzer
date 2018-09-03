@@ -23,6 +23,10 @@ class PqlQuery {
   /* Constructor */
   PqlQuery(string);
 
+  /* Setters */
+  void AddDeclaration(PqlDeclaration);
+  void SetVarName(string);
+
   /* Getters */
   vector<PqlDeclaration> GetDeclarations();
   string GetVarName();

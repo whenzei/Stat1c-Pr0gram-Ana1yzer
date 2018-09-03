@@ -10,6 +10,12 @@ PqlQuery::PqlQuery(string content) {
   Parse(content);
 }
 
+void PqlQuery::AddDeclaration(PqlDeclaration declaration) {
+  declarations_.push_back(declaration);
+}
+
+void PqlQuery::SetVarName(string var_name) { this->var_name_ = var_name; }
+
 vector<PqlDeclaration> PqlQuery::GetDeclarations() { return declarations_; }
 
 string PqlQuery::GetVarName() { return var_name_; }
