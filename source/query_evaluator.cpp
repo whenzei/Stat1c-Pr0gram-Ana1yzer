@@ -37,7 +37,7 @@ list<string> QueryEvaluator::GetResultFromQuery(Query query, PKB pkb) {
         case DeclarationKeyword::kAssign:
           // Get all statement number of statement which contains assignment
           // from PKB and store into results list
-          list<string> result_list = pkb.GetAllAssign();
+          list<string> result_list = pkb.GetAllAssignStmt();
           std::copy(result_list.begin(), result_list.end(),
                     std::back_inserter(results));
           break;
