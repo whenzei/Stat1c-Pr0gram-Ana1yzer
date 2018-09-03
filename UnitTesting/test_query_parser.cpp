@@ -6,8 +6,11 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::string;
 
 namespace UnitTesting {
+  /*
+  This test the parsing logic for PQL.
+  */
 	TEST_CLASS(TestQueryParser) {
-public:
+  public:
 	TEST_METHOD(TestEmptyQuery) {
 		string content = "";
 		Query query(content);

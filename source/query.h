@@ -7,10 +7,13 @@
 using std::string;
 using std::vector;
 
+/*
+This class parses and stores the PQL query, including the declarations and 'Select' statement.
+*/
 class Query {
  private:
-  vector<Declaration> declarations_;
-  string var_name_;
+  vector<Declaration> declarations_; // the list of declarations
+  string var_name_; // the variable name of the 'Select' statement
 
   /* Parsing */
   void Parse(string);
