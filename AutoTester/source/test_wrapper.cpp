@@ -38,5 +38,5 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
   QueryEvaluator qe;
   // store the answers to the query in the results list (it is initially empty)
   // each result must be a string.
-  results = qe.GetResultFromQuery(query, pkb_);
+  results = qe.GetResultFromQuery(pql_query, pkb_);
 }
