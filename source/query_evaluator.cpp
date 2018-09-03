@@ -15,9 +15,9 @@ DeclarationKeyword select_type;
 
 QueryEvaluator::QueryEvaluator() {}
 
-list<string> QueryEvaluator::GetResultFromQuery(Query query, PKB pkb) {
+list<string> QueryEvaluator::GetResultFromQuery(PqlQuery query, PKB pkb) {
   string select_var_name = query.GetVarName();
-  vector<Declaration> declarations = query.GetDeclarations();
+  vector<PqlDeclaration> declarations = query.GetDeclarations();
   list<string> results;
 
   // Find out what the user is selecting by going through the list of
@@ -28,13 +28,13 @@ list<string> QueryEvaluator::GetResultFromQuery(Query query, PKB pkb) {
       select_type = iter.GetKeyword();
 
       switch (select_type) {
-        case DeclarationKeyword::kProcedure:
+        case PqlDeclarationKeyword::kProcedure:
           // Get all procedures name from PKB and store into results list
           break;
-        case DeclarationKeyword::kVariable:
+        case PqlDeclarationKeyword::kVariable:
           // Get all variable name from PKB and store into results list
           break;
-        case DeclarationKeyword::kAssign:
+        case PqlDeclarationKeyword::kAssign:
           // Get all statement number of statement which contains assignment
           // from PKB and store into results list
           list<string> result_list = pkb.GetAllAssignStmt();
@@ -58,15 +58,15 @@ string QueryEvaluator::FormatResultString(list<string> results) {
   } else {
     // Check the type of the result
     switch (select_type) {
-      case DeclarationKeyword::kProcedure:
+      case PqlDeclarationKeyword::kProcedure:
         // Format for procedure
         formatted_string = "procedure ";
         break;
-      case DeclarationKeyword::kVariable:
+      case PqlDeclarationKeyword::kVariable:
         // Format for variable
         formatted_string = "variable ";
         break;
-      case DeclarationKeyword::kAssign:
+      case PqlDeclarationKeyword::kAssign:
         index_flag = "#";
         formatted_string = "statement ";
         break;

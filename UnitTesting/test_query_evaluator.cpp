@@ -15,12 +15,16 @@ namespace UnitTesting {
 TEST_CLASS(TestQueryEvaluator){
 
 	public :
-	DeclarationKeyword keyword_assign = DeclarationKeyword::kAssign;
-	DeclarationKeyword keyword_variable = DeclarationKeyword::kVariable;
-	DeclarationKeyword keyword_procedure = DeclarationKeyword::kProcedure;
-	Declaration declr_assign = Declaration::Declaration(keyword_assign, "a");
-	Declaration declr_variable = Declaration::Declaration(keyword_variable, "v");
-	Declaration declr_procedure = Declaration::Declaration(keyword_procedure, "p");
+  PqlDeclarationKeyword keyword_assign = PqlDeclarationKeyword::kAssign;
+         PqlDeclarationKeyword keyword_variable =
+             PqlDeclarationKeyword::kVariable;
+  PqlDeclarationKeyword keyword_procedure = PqlDeclarationKeyword::kProcedure;
+         PqlDeclaration declr_assign =
+      PqlDeclaration::PqlDeclaration(keyword_assign, "a");
+  PqlDeclaration declr_variable =
+             PqlDeclaration::PqlDeclaration(keyword_variable, "v");
+         PqlDeclaration declr_procedure =
+      PqlDeclaration::PqlDeclaration(keyword_procedure, "p");
 	TEST_METHOD(TestGetResultFromQuery){
 	// TODO: Your test code here
 	QueryEvaluator qe;
@@ -28,11 +32,11 @@ TEST_CLASS(TestQueryEvaluator){
 
 	pkb.PKB::InsertAssignStmt(1, "x = y");
 	
-	Query q;
-	q.Query::SetVarName("a");
-    q.Query::AddDeclaration(declr_variable);
-    q.Query::AddDeclaration(declr_assign);
-    q.Query::AddDeclaration(declr_procedure);
+	PqlQuery q;
+        q.PqlQuery::SetVarName("a");
+        q.PqlQuery::AddDeclaration(declr_variable);
+        q.PqlQuery::AddDeclaration(declr_assign);
+        q.PqlQuery::AddDeclaration(declr_procedure);
 
 	std::list<std::string> resultlist = qe.QueryEvaluator::GetResultFromQuery(q, pkb);
 
