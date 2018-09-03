@@ -56,9 +56,11 @@ TEST_CLASS(TestProcTable) {
     proc_table.InsertProcName(kProcName2);
     proc_table.InsertProcName(kProcName3);
     ProcList proc_table_result = proc_table.GetProcTable();
-    Assert::AreEqual(kProcName1, proc_table_result.at(0));
-    Assert::AreEqual(kProcName2, proc_table_result.at(1));
-    Assert::AreEqual(kProcName3, proc_table_result.at(2));
+    Assert::AreEqual(kProcName1, proc_table_result.front());
+    ProcList::iterator iter = proc_table_result.begin();
+    iter++;
+    Assert::AreEqual(kProcName2, *iter);
+    Assert::AreEqual(kProcName3, proc_table_result.back());
   }
 };
 }  // namespace UnitTesting

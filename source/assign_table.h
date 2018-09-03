@@ -2,15 +2,15 @@
 
 #include <map>
 #include <string>
-#include <vector>
+#include <list>
 
 using std::map;
 using std::string;
-using std::vector;
+using std::list;
 
 typedef int StmtNum;
 typedef string Stmt;
-typedef vector<string> StmtList;
+typedef list<string> StmtList;
 
 #ifndef SPA_ASSIGN_TABLE_H
 #define SPA_ASSIGN_TABLE_H

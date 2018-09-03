@@ -1,15 +1,9 @@
-#include <string>
-#include <sstream>
-#include <vector>
-
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "assign_table.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using std::string;
 using std::stringstream;
-using std::vector;
 
 namespace UnitTesting {
 
@@ -76,9 +70,11 @@ TEST_CLASS(TestAssignTable) {
     stmt_num1_ss << kStmtNum1;
     stmt_num2_ss << kStmtNum2;
     stmt_num3_ss << kStmtNum3;
-    Assert::AreEqual(stmt_num1_ss.str(), assign_table_result.at(0));
-    Assert::AreEqual(stmt_num2_ss.str(), assign_table_result.at(1));
-    Assert::AreEqual(stmt_num3_ss.str(), assign_table_result.at(2));
+    Assert::AreEqual(stmt_num1_ss.str(), assign_table_result.front());
+    StmtList::iterator iter = assign_table_result.begin();
+    iter++;
+    Assert::AreEqual(stmt_num2_ss.str(), *iter);
+    Assert::AreEqual(stmt_num3_ss.str(), assign_table_result.back());
   }
 };
 }  // namespace UnitTesting

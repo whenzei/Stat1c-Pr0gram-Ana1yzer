@@ -1,13 +1,13 @@
 #pragma once
 
 #include <string>
-#include <vector>
+#include <list>
 
 using std::string;
-using std::vector;
+using std::list;
 
 typedef string ProcName;
-typedef vector<string> ProcList;
+typedef list<string> ProcList;
 
 #ifndef SPA_PROC_TABLE_H
 #define SPA_PROC_TABLE_H

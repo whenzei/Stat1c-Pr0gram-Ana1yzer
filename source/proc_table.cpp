@@ -15,7 +15,7 @@ int ProcTable::InsertProcName(ProcName proc_name) {
 
 ProcList ProcTable::GetProcTable() { return proc_vector_; }
 
-bool ProcTable::FindProcName(string proc_name) {
+bool ProcTable::FindProcName(ProcName proc_name) {
   for (ProcName& element: proc_vector_) {
     if (proc_name.compare(element) == 0) {
       return true;
