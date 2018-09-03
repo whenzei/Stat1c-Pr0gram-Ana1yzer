@@ -7,10 +7,7 @@ using std::cout;
 using std::endl;
 
 PqlQuery::PqlQuery(string content) {
-  if (content != "")
-    Parse(content);
-  else
-    cout << "Query cannot be empty!" << endl;
+  Parse(content);
 }
 
 vector<PqlDeclaration> PqlQuery::GetDeclarations() { return declarations_; }
