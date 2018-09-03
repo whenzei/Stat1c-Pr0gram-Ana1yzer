@@ -11,6 +11,7 @@
 #include "pkb.h"
 #include "simple_validator.h"
 #include "tokenizer.h"
+#include "statement.h"
 
 const bool DEBUG_FLAG = true;
 
@@ -72,12 +73,15 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
   int statementNum = 1;
 
   // Second index from start will always be a procedure name
-  if (DEBUG_FLAG) {
-    std::cout << "Procedure added: " << tokens_[start + 1].value << endl;
+  string procedure_name = tokens_[start + 1].value;
+		if (DEBUG_FLAG) {
+    std::cout << "Procedure added: " << procedure_name << endl;
   }
-  // TODO: add procedure name to PKB's ProcTable
+
+  pkb_.InsertProc(procedure_name);
 
   queue<Token> stmtQueue;
+
   // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
     Token currToken = tokens_[i];
@@ -92,7 +96,6 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     }
 
     if (currToken.type == Tokenizer::TokenType::kSemicolon) {
-      // TODO: update PKB's StmtTable with statement and statementNum
       string statement = "";
       while (!stmtQueue.empty()) {
         Token token = stmtQueue.front();
@@ -100,6 +103,9 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
         stmtQueue.pop();
       }
       statement += currToken.value;
+
+						pkb_.InsertAssignStmt(statementNum, statement);
+
       if (DEBUG_FLAG) {
         std::cout << "Statement " << statementNum << " added: " << statement
                   << endl;
