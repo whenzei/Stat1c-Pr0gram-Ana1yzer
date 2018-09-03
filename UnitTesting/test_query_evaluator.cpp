@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "pkb.h"
 #include "pql_declaration.h"
 #include "pql_query.h"
-#include "pkb.h"
 #include "query_evaluator.h"
 
 #include <list>
@@ -12,42 +12,37 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestQueryEvaluator){
-
-	public :
+TEST_CLASS(TestQueryEvaluator) {
+ public:
   PqlDeclarationKeyword keyword_assign = PqlDeclarationKeyword::kAssign;
-         PqlDeclarationKeyword keyword_variable =
-             PqlDeclarationKeyword::kVariable;
+  PqlDeclarationKeyword keyword_variable = PqlDeclarationKeyword::kVariable;
   PqlDeclarationKeyword keyword_procedure = PqlDeclarationKeyword::kProcedure;
-         PqlDeclaration declr_assign =
+  PqlDeclaration declr_assign =
       PqlDeclaration::PqlDeclaration(keyword_assign, "a");
   PqlDeclaration declr_variable =
-             PqlDeclaration::PqlDeclaration(keyword_variable, "v");
-         PqlDeclaration declr_procedure =
+      PqlDeclaration::PqlDeclaration(keyword_variable, "v");
+  PqlDeclaration declr_procedure =
       PqlDeclaration::PqlDeclaration(keyword_procedure, "p");
-	TEST_METHOD(TestGetResultFromQuery){
-	// TODO: Your test code here
-	QueryEvaluator qe;
-	PKB pkb;
+  TEST_METHOD(TestGetResultFromQuery) {
+    // TODO: Your test code here
+    QueryEvaluator qe;
+    PKB pkb;
 
-	pkb.PKB::InsertAssignStmt(1, "x = y");
-	
-	PqlQuery q;
-        q.PqlQuery::SetVarName("a");
-        q.PqlQuery::AddDeclaration(declr_variable);
-        q.PqlQuery::AddDeclaration(declr_assign);
-        q.PqlQuery::AddDeclaration(declr_procedure);
+    pkb.PKB::InsertAssignStmt(1, "x = y");
 
-	std::list<std::string> resultlist = qe.QueryEvaluator::GetResultFromQuery(q, pkb);
+    PqlQuery q;
+    q.SetVarName("a");
+    q.AddDeclaration(declr_variable);
+    q.AddDeclaration(declr_assign);
+    q.AddDeclaration(declr_procedure);
 
-	std::string first_result = resultlist.front();
+    list<string> resultlist = qe.GetResultFromQuery(q, pkb);
 
-	std::string expected_result = "1";
+    string first_result = resultlist.front();
 
-	Assert::AreEqual(expected_result, first_result);
-        Assert::AreEqual(expected_result, first_result);
+    string expected_result = "1";
 
-	}
-
+    Assert::AreEqual(expected_result, first_result);
+  }
 };
-}
+}  // namespace UnitTesting

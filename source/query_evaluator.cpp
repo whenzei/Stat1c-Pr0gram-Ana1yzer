@@ -11,7 +11,7 @@ using std::list;
 using std::string;
 using std::vector;
 
-DeclarationKeyword select_type;
+PqlDeclarationKeyword select_type;
 
 QueryEvaluator::QueryEvaluator() {}
 
@@ -26,10 +26,14 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery query, PKB pkb) {
     // Check if there is a match between the selection and declaration
     if (select_var_name.compare(iter.GetVarName()) == 0) {
       select_type = iter.GetKeyword();
+      list<string> result_list;
 
       switch (select_type) {
         case PqlDeclarationKeyword::kProcedure:
           // Get all procedures name from PKB and store into results list
+          result_list = pkb.GetAllProc();
+          std::copy(result_list.begin(), result_list.end(),
+                    std::back_inserter(results));
           break;
         case PqlDeclarationKeyword::kVariable:
           // Get all variable name from PKB and store into results list
@@ -37,7 +41,7 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery query, PKB pkb) {
         case PqlDeclarationKeyword::kAssign:
           // Get all statement number of statement which contains assignment
           // from PKB and store into results list
-          list<string> result_list = pkb.GetAllAssignStmt();
+          result_list = pkb.GetAllAssignStmt();
           std::copy(result_list.begin(), result_list.end(),
                     std::back_inserter(results));
           break;

@@ -6,9 +6,9 @@
 using std::cout;
 using std::endl;
 
-PqlQuery::PqlQuery(string content) {
-  Parse(content);
-}
+PqlQuery::PqlQuery() {}
+
+PqlQuery::PqlQuery(string content) { Parse(content); }
 
 void PqlQuery::AddDeclaration(PqlDeclaration declaration) {
   declarations_.push_back(declaration);
