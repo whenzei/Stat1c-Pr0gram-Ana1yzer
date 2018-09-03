@@ -54,29 +54,39 @@ bool Parser::IsValidFile(string filepath) {
   return infile.good();
 }
 
-void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end, PKB pkb) {
+void Parser::ProcessProcedure(TokenList tokens, size_t start, size_t end,
+                              PKB pkb) {
   int statementNum = 1;
-  queue<Token> stmtQueue;
-  for (size_t i = 0; i <= end; i++) {
-    Token currToken = tokens[i];
 
-				// Check if it is a 'procedure'
-    if (currToken.type == Tokenizer::TokenType::kName &&
-        SimpleValidator::IsKeyword(SimpleValidator::KeywordType::kProcedure,
-                                   currToken.value)) {
-    }
+		// Second index from start will always be a procedure name 
+  std::cout << "Procedure added: " << tokens[start + 1].value << endl;
+		// TODO: add procedure name to PKB's ProcTable
+
+  queue<Token> stmtQueue;
+		// Starts at 4th index and ends at 2nd last index
+  for (size_t i = start + 3; i < end; i++) {
+    Token currToken = tokens[i];
 
     // Check if it is type NAME and not a SIMPLE keyword
     if (currToken.type == Tokenizer::TokenType::kName &&
         !SimpleValidator::IsKeyword(currToken.value)) {
-      // TODO: add to PKB VarTable
-      stmtQueue.push(currToken);
+      // TODO: add to PKB's VarTable
+      std::cout << "Variable added: " << currToken.value << endl;
     }
 
     if (currToken.type == Tokenizer::TokenType::kSemicolon) {
-      // TODO: pop token out to form statement
-      // TODO: update PKB with statement and statementNum
+      // TODO: update PKB's StmtTable with statement and statementNum
+      string statement = "";
+      while (!stmtQueue.empty()) {
+        Token token = stmtQueue.front();
+        statement += token.value;
+        stmtQueue.pop();
+      }
+      statement += currToken.value;
+      std::cout << "Statment " << statementNum << " added: "<< statement << endl;
       statementNum++;
+						continue;
     }
+    stmtQueue.push(currToken);
   }
 }
