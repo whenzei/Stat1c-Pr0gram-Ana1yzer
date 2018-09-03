@@ -10,6 +10,11 @@
 #include "parser.h"
 #include "pkb.h"
 
+using std::cout;
+using std::endl;
+using std::ifstream;
+using std::istreambuf_iterator;
+
 // Constructor
 Parser::Parser(string filepath) {
   content_ = ReadContentFromFile(filepath);
