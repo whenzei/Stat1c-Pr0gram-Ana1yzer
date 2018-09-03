@@ -13,8 +13,11 @@ private:
   int line_num_;
 
 public:
+  Statement() {
+  }
+
   // Constructor
-  Statement(int index, string stmt) {
+  Statement(int index, string& stmt) {
     line_num_ = index;
     content_ = stmt;
   }

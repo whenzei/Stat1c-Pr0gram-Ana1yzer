@@ -2,6 +2,7 @@
 #include "statement.h"
 
 #include <string>
+#include <vector>
 
 using std::string;
 
@@ -11,16 +12,12 @@ const int kTempArraySize = 10;
 #define STMT_TABLE_H
 
 class StmtTable {
-private:
-  Statement* stmt_table_[kTempArraySize];
-  int num_stmt_;
+  Statement stmt_table_[kTempArraySize];
+  int num_stmt_ = 0;
 
 public:
   // Constructor
   StmtTable();
-
-  // Destructor
-  ~StmtTable();
 	
   // Takes in a statement in string format and its line number.
   // Prerequisite: The line number and statement are valid and non-null.
@@ -30,9 +27,8 @@ public:
   // Returns 1 if statement is successfully added to the StmtTable.
   int InsertStmt(int line_num, string stmt);
 
-  // Returns a pointer to a list of all line numbers of all statements in the StmtTable.
-  // Returns null if StmtTable is empty. 
-  int* GetAllStmtNums();
+  // Returns a vector of all line numbers of all statements in the StmtTable.
+  std::vector<int> GetAllStmtNums();
 };
 
 #endif !STMT_TABLE_H

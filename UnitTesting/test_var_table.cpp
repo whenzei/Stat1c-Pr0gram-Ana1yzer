@@ -40,12 +40,5 @@ TEST_CLASS(TestVarTable) {
     Assert::AreEqual(kSampleVar1, result_table[0]);
     Assert::AreEqual(kSampleVar2, result_table[1]);
   }
-
-  TEST_METHOD(TestGetAllVarEmpty) {
-    VarTable var_table;
-    string result = *var_table.GetAllVar();
-    Assert::AreEqual(string(NULL), result);
-  }
-
 };
 }
