@@ -14,6 +14,12 @@
 
 const bool DEBUG_FLAG = true;
 
+using std::cout;
+using std::endl;
+using std::ifstream;
+using std::istreambuf_iterator;
+using std::queue;
+
 // Constructor
 Parser::Parser(PKB pkb) { pkb_ = pkb; }
 

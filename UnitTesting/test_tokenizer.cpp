@@ -1,9 +1,8 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
 #include "tokenizer.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using std::string;
 
 namespace UnitTesting {
 TEST_CLASS(TestTokenizer){
