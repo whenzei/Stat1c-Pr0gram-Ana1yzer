@@ -1,26 +1,28 @@
 #ifndef PQL_QUERY_H
 #define PQL_QUERY_H
 
-#include "pql_declaration.h"
 #include <string>
 #include <vector>
+#include "pql_declaration.h"
 using std::string;
 using std::vector;
 
 /*
-This class parses and stores the PQL query, including the declarations and 'Select' statement.
+This class parses and stores the PQL query, including the declarations and
+'Select' statement.
 */
 class PqlQuery {
  private:
-  vector<PqlDeclaration> declarations_; // the list of declarations
-  string var_name_; // the variable name of the 'Select' statement
+  vector<PqlDeclaration> declarations_;  // the list of declarations
+  string var_name_;  // the variable name of the 'Select' statement
 
   /* Parsing */
   void Parse(string);
   void ParseStatement(string);
 
-  public:
+ public:
   /* Constructor */
+  PqlQuery();
   PqlQuery(string);
 
   /* Setters */
