@@ -1,5 +1,5 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
 #include "var_table.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

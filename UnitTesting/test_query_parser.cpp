@@ -1,5 +1,5 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
 #include "pql_query.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

@@ -4,11 +4,15 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <pkb.h>
 
 // include your other headers here
 #include "abstract_wrapper.h"
 
 class TestWrapper : public AbstractWrapper {
+ private:
+  PKB pkb_;
+
  public:
   // default constructor
   TestWrapper();

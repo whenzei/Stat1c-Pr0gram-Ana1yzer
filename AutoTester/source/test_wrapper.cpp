@@ -15,12 +15,17 @@ volatile bool TestWrapper::GlobalStop = false;
 TestWrapper::TestWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
+
+  // PKB initialization
+  pkb_ = PKB();
 }
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
-  Parser parser(filename);
+  // attach pkb to parser
+  Parser parser(pkb_);
+  parser.Parse(filename);
   // ...rest of your code...
 }
 
