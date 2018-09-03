@@ -16,60 +16,60 @@ namespace UnitTesting {
 TEST_CLASS(TestAssignTable) {
   const int kSuccess = 0;
   const int kFail = -1;
-  const int kStmtNum1 = 2;
-  const int kStmtNum2 = 4;
-  const int kStmtNum3 = 5;
-  const string kAssignStmt1 = "a = 3";
-  const string kAssignStmt2 = "b = 4";
-  const string kAssignStmt3 = "c = 5";
-  const string kAssignStmt4 = "";
+  const StmtNum kStmtNum1 = 2;
+  const StmtNum kStmtNum2 = 4;
+  const StmtNum kStmtNum3 = 5;
+  const Stmt kAssignStmt1 = "a = 3";
+  const Stmt kAssignStmt2 = "b = 4";
+  const Stmt kAssignStmt3 = "c = 5";
+  const Stmt kAssignStmt4 = "";
 
  public:
   TEST_METHOD(TestInsertSuccess) {
     AssignTable assign_table;
-    int status = assign_table.Insert(kStmtNum1, kAssignStmt1);
+    int status = assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt1);
     Assert::AreEqual(kSuccess, status);
   }
 
   TEST_METHOD(TestInsertEmpty) {
     AssignTable assign_table;
-    int status = assign_table.Insert(kStmtNum1, kAssignStmt4);
+    int status = assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt4);
     Assert::AreEqual(kFail, status);
   }
 
   TEST_METHOD(TestInsertDuplicate) {
     AssignTable assign_table;
-    assign_table.Insert(kStmtNum1, kAssignStmt1);
-    int status = assign_table.Insert(kStmtNum1, kAssignStmt2);
+    assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt1);
+    int status = assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt2);
     Assert::AreEqual(kFail, status);
   }
 
   TEST_METHOD(TestInsertMultiple) {
     AssignTable assign_table;
-    int status_1 = assign_table.Insert(kStmtNum1, kAssignStmt1);
-    int status_2 = assign_table.Insert(kStmtNum2, kAssignStmt2);
-    int status_3 = assign_table.Insert(kStmtNum3, kAssignStmt3);
+    int status_1 = assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt1);
+    int status_2 = assign_table.InsertAssignStmt(kStmtNum2, kAssignStmt2);
+    int status_3 = assign_table.InsertAssignStmt(kStmtNum3, kAssignStmt3);
     Assert::AreEqual(kSuccess, status_1);
     Assert::AreEqual(kSuccess, status_2);
     Assert::AreEqual(kSuccess, status_3);
   }
 
-  TEST_METHOD(TestList) {
+  TEST_METHOD(TestGetAssignTable) {
     AssignTable assign_table;
-    assign_table.Insert(kStmtNum1, kAssignStmt1);
-    vector<string> assign_table_result = assign_table.List();
+    assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt1);
+    StmtList assign_table_result = assign_table.GetAssignTable();
     stringstream stmt_num1_ss;
     stmt_num1_ss << kStmtNum1;
     Assert::AreEqual(stmt_num1_ss.str(), assign_table_result.front());
   }
 
-  TEST_METHOD(TestListMultiple) {
+  TEST_METHOD(TestGetAssignTableMultiple) {
     AssignTable assign_table;
-    vector<string> assign_table_result;
-    assign_table.Insert(kStmtNum1, kAssignStmt1);
-    assign_table.Insert(kStmtNum2, kAssignStmt2);
-    assign_table.Insert(kStmtNum3, kAssignStmt3);
-    assign_table_result = assign_table.List();
+    StmtList assign_table_result;
+    assign_table.InsertAssignStmt(kStmtNum1, kAssignStmt1);
+    assign_table.InsertAssignStmt(kStmtNum2, kAssignStmt2);
+    assign_table.InsertAssignStmt(kStmtNum3, kAssignStmt3);
+    assign_table_result = assign_table.GetAssignTable();
     stringstream stmt_num1_ss;
     stringstream stmt_num2_ss;
     stringstream stmt_num3_ss;

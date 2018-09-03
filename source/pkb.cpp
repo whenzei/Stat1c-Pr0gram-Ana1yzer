@@ -1,30 +1,16 @@
 #pragma once
 
-#include <stdio.h>
-#include <iostream>
-#include <string>
-#include <vector>
-
-using std::string;
-using std::vector;
-
 #include "pkb.h"
 #include "proc_table.h"
 #include "assign_table.h"
 
-int PKB::InsertProc(string proc_name) { return proc_table_.Insert(proc_name); }
+int PKB::InsertProc(ProcName proc_name) { return proc_table_.InsertProcName(proc_name); }
 
-vector<string> PKB::GetAllProc() { return proc_table_.List(); }
+ProcList PKB::GetAllProc() { return proc_table_.GetProcTable(); }
 
-int PKB::InsertAssign(int statement_number, string assign_statement) {
+int PKB::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
   // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)
-  return assign_table_.Insert(statement_number, assign_statement);
+  return assign_table_.InsertAssignStmt(statement_number, assign_statement);
 }
 
-vector<string> PKB::GetAllAssign() { return assign_table_.List(); }
-
-/* original sample methods that came with pkb.cpp
-int PKB::SetProcToAst(PROC p, TNode * r) { return NULL; }
-
-TNode* PKB::GetRootAst(PROC p) { return NULL; }
-*/
+StmtList PKB::GetAllAssignStmt() { return assign_table_.GetAssignTable(); }

@@ -1,27 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include "proc_table.h"
 
-using std::string;
-using std::vector;
-
-bool ProcTable::Find(string proc_name) {
-  for (vector<string>::iterator iter = proc_vector_.begin();
-       iter != proc_vector_.end(); iter++) {
-    if (proc_name.compare(*iter) == 0) {
-      return true;
-    }
-  }
-  return false; 
-}
-
-int ProcTable::Insert(string proc_name) {
+int ProcTable::InsertProcName(ProcName proc_name) {
   if (proc_name.compare("") == 0) {
     return -1;
-  } else if (Find(proc_name)) {
+  } else if (FindProcName(proc_name)) {
     return -1;
   } else {
     proc_vector_.push_back(proc_name);
@@ -29,4 +13,13 @@ int ProcTable::Insert(string proc_name) {
   }
 }
 
-vector<string> ProcTable::List() { return proc_vector_; }
+ProcList ProcTable::GetProcTable() { return proc_vector_; }
+
+bool ProcTable::FindProcName(string proc_name) {
+  for (ProcName& element: proc_vector_) {
+    if (proc_name.compare(element) == 0) {
+      return true;
+    }
+  }
+  return false;
+}

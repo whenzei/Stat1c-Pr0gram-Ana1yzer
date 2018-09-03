@@ -8,6 +8,10 @@ using std::map;
 using std::string;
 using std::vector;
 
+typedef int StmtNum;
+typedef string Stmt;
+typedef vector<string> StmtList;
+
 #ifndef SPA_ASSIGN_TABLE_H
 #define SPA_ASSIGN_TABLE_H
 
@@ -16,9 +20,9 @@ using std::vector;
  * Used to store assign statements that are passed into PKB from the parser
  */
 class AssignTable {
- private:
-  map<int, string> assign_map_;
-  vector<string> assign_vector_;
+  
+  map<StmtNum, Stmt> assign_map_;
+  StmtList assign_vector_;
 
  public:
   /**
@@ -30,14 +34,14 @@ class AssignTable {
    * @returns -1 if the assign statement is empty
    * @returns -1 if the statement number was already in the table
    */
-  int Insert(int statement_number, string assign_statement);
+  int InsertAssignStmt(StmtNum statement_number, Stmt assign_statement);
 
   /**
    * get statement numbers for all assign statements stored inside assignment
    * table
    * @returns the vector of statement numbers(can be empty)
    */
-  vector<string> List();
+  StmtList GetAssignTable();
 };
 
 #endif  // !SPA_ASSIGN_TABLE_H
