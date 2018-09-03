@@ -1,21 +1,21 @@
 
 #pragma once
 
-#include <vector>
-
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
+
+using std::string;
 
 /**
  * The parser class for the front end component
  * Used to parse file contents and pass the parsed content to the PKB component
  */
 class Parser {
-  std::string content_;
+  string content_;
 
  public:
   /* Constructor */
-  Parser(std::string filepath);
+  Parser(string filepath);
 
   ///* Destructor */
   //~Parser();
@@ -26,7 +26,7 @@ class Parser {
    * @param filepath the filepath of the file to be parsed
    * @returns file content as a string if file exists, or empty string otherwise
    */
-  std::string ReadContentFromFile(std::string filepath);
+  string ReadContentFromFile(string filepath);
 
   void Parse();
 
@@ -36,7 +36,7 @@ class Parser {
    * @param filepath the filepath of the file to be located
    * @returns true if file exists, false otherwise
    */
-  bool IsValidFile(std::string filepath);
+  bool IsValidFile(string filepath);
 };
 
 #endif  // !SPA_PARSER_H

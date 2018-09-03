@@ -24,10 +24,25 @@
     <ClCompile Include="..\source\pkb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\t_node.cpp">
+    <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\tokenizer.cpp">
+    <ClCompile Include="..\source\proc_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\assign_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\var_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\stmt_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_query.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_declaration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\query_evaluator.cpp">
@@ -41,10 +56,28 @@
     <ClInclude Include="..\source\pkb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\t_node.h">
+    <ClInclude Include="..\source\tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\tokenizer.h">
+    <ClInclude Include="..\source\proc_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\assign_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\var_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\stmt_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\statement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_query.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_declaration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\query_evaluator.h">
