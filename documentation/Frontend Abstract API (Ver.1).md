@@ -26,6 +26,13 @@
 | -------- | 
 | Parser(**PKB** pkb)<br>***Description:***  Creates a new instance of `Parser` and connects to the referenced `PKB`.
 
+| **API** | 
+| -------- | 
+| **VOID** Parse(STRING filepath) <br> ***Description:*** Parses the file located at filepath and stores the resulting `TOKEN_LIST` into member variable. If file is not found, stores empty list. |
+| **TOKEN_LIST** GetTokenList() <br> ***Description:*** Getter method, returns the Parser's token list. |
+| **PKB** GetPkb() <br> ***Description:*** Getter method, returns the Parser's `PKB` instance. |
+| **VOID** SetPkb(PKB pkb) <br> ***Description:*** Setter method, sets the Parser's `PKB` instance to the referenced pkb. |
+
 ## SimpleValidator
 **Overview:** SimpleValidator performs syntax validation.
 
