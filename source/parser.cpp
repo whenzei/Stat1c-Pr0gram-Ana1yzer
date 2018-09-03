@@ -17,6 +17,13 @@ const bool DEBUG_FLAG = true;
 // Constructor
 Parser::Parser(PKB pkb) { pkb_ = pkb; }
 
+// Setters
+void Parser::SetPkb(PKB pkb) {}
+
+// Getters
+TokenList Parser::GetTokenList() { return TokenList(); }
+
+PKB Parser::GetPkb() { return PKB(); }
 
 string Parser::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
