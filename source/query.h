@@ -12,13 +12,13 @@ class Query {
   vector<Declaration> declarations;
   string var_name;
 
+  /* Parsing */
+  void Parse(string);
+  void ParseStatement(string);
+
   public:
   /* Constructor */
-  Query();
-
-  /* Setters */
-  void AddDeclaration(Declaration);
-  void SetVarName(string);
+  Query(string);
 
   /* Getters */
   vector<Declaration> GetDeclarations();

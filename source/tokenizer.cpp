@@ -121,7 +121,9 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
-// closing brace, and returns the result as a Result struct
+// closing brace, and returns the result as a Result struct.
+// Note that it will only tokenize a single brace at a time, e.g. "{{" will be
+// returned as two separate results
 Result Tokenizer::TokenizeBraces(string input, int current_index) {
   return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
 }

@@ -90,7 +90,9 @@ class Tokenizer {
   static Result TokenizeNames(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
-  // and closing brace, and returns the result as a Result struct
+  // and closing brace, and returns the result as a Result struct.
+  // Note that it will only tokenize a single brace at a time, e.g. "{{" will be
+  // returned as two separate results
   static Result TokenizeBraces(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators

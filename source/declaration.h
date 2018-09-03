@@ -1,7 +1,6 @@
 #ifndef DECLARATION_H
 #define DECLARATION_H
 
-#include <iostream>
 #include <string>
 using std::string;
 
