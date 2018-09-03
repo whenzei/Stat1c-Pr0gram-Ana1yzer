@@ -23,15 +23,15 @@ using std::queue;
 
 // Constructor
 Parser::Parser() {}
-Parser::Parser(PKB pkb) { pkb_ = pkb; }
+Parser::Parser(PKB* pkb) { pkb_ = pkb; }
 
 // Setters
-void Parser::SetPkb(PKB pkb) { pkb_ = pkb; }
+void Parser::SetPkb(PKB* pkb) { pkb_ = pkb; }
 
 // Getters
 TokenList Parser::GetTokenList() { return tokens_; }
 
-PKB Parser::GetPkb() { return pkb_; }
+PKB Parser::GetPkb() { return *pkb_; }
 
 string Parser::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
@@ -79,7 +79,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     std::cout << "Procedure added: " << procedure_name << endl;
   }
 
-  pkb_.InsertProc(procedure_name);
+  pkb_->InsertProc(procedure_name);
 
   queue<Token> stmtQueue;
 
@@ -105,7 +105,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
       }
       statement += currToken.value;
 
-      pkb_.InsertAssignStmt(statementNum, statement);
+      pkb_->InsertAssignStmt(statementNum, statement);
 
       if (DEBUG_FLAG) {
         std::cout << "Statement " << statementNum << " added: " << statement

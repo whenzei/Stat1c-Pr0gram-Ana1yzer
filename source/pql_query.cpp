@@ -72,6 +72,6 @@ void PqlQuery::ParseStatement(string statement) {
     PqlDeclaration declaration(kAssign, tokens[1]);
     declarations_.push_back(declaration);
   } else {
-    cout << "Invalid query keyword." << endl;
+    cout << "Invalid query keyword: " << keyword << endl;
   }
 }
