@@ -18,12 +18,12 @@ const bool DEBUG_FLAG = true;
 Parser::Parser(PKB pkb) { pkb_ = pkb; }
 
 // Setters
-void Parser::SetPkb(PKB pkb) {}
+void Parser::SetPkb(PKB pkb) { pkb_ = pkb; }
 
 // Getters
-TokenList Parser::GetTokenList() { return TokenList(); }
+TokenList Parser::GetTokenList() { return tokens_; }
 
-PKB Parser::GetPkb() { return PKB(); }
+PKB Parser::GetPkb() { return pkb_; }
 
 string Parser::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
