@@ -11,15 +11,12 @@ const int kTempArraySize = 10;
 
 class VarTable {
 private:
-  string *var_table_[kTempArraySize];
+  string var_table_[kTempArraySize];
   int num_var_;
 
 public:
   // Constructor
   VarTable();
-
-  // Destructor
-  ~VarTable();
   
   // Takes in the variable name in string format.
   // Prerequisite: The variable name is non-null.
@@ -30,7 +27,6 @@ public:
   int InsertVar(string var_name);
 
   // Returns pointer to an array of all var_name in the VarTable. 
-  // Returns null if VarTable is empty.
   string* VarTable::GetAllVar();
 };
 
