@@ -15,8 +15,8 @@ This class stores the infomation of a single declaration in PQL.
 */
 class Declaration {
  private:
-  DeclarationKeyword keyword;
-  string var_name;
+  DeclarationKeyword keyword_;
+  string var_name_;
 
 public:
   /* Constructor */

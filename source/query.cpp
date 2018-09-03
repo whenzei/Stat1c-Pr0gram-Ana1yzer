@@ -14,9 +14,9 @@ Query::Query(string content) {
     cout << "Query cannot be empty!" << endl;
 }
 
-vector<Declaration> Query::GetDeclarations() { return declarations; }
+vector<Declaration> Query::GetDeclarations() { return declarations_; }
 
-string Query::GetVarName() { return var_name; }
+string Query::GetVarName() { return var_name_; }
 
 void Query::Parse(string content) {
   if (content == "") {
@@ -65,10 +65,10 @@ void Query::ParseStatement(string statement) {
 
   string keyword = tokens[0];
   if (keyword == "Select") {
-    var_name = tokens[1];
+    var_name_ = tokens[1];
   } else if (keyword == "assign") {
     Declaration declaration(kAssign, tokens[1]);
-    declarations.push_back(declaration);
+    declarations_.push_back(declaration);
   } else {
     cout << "Invalid query keyword." << endl;
   }

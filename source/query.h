@@ -9,8 +9,8 @@ using std::vector;
 
 class Query {
  private:
-  vector<Declaration> declarations;
-  string var_name;
+  vector<Declaration> declarations_;
+  string var_name_;
 
   /* Parsing */
   void Parse(string);
