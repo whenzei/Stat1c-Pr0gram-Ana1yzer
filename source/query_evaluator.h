@@ -6,8 +6,10 @@
 #include <list>
 #include <string>
 
-#include "declaration.h"
-#include "query.h"
+#include "pkb.h"
+#include "pql_declaration.h"
+#include "pql_query.h"
+#include "query_evaluator.h"
 
 using std::list;
 using std::string;
@@ -25,7 +27,7 @@ class QueryEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromQuery(Query query);
+  list<string> GetResultFromQuery(Query query, PKB pkb);
 
   /**
    * Use the results from @GetResultFromQuery

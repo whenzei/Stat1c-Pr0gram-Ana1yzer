@@ -2,8 +2,9 @@
 #include <string>
 #include <vector>
 
-#include "declaration.h"
-#include "query.h"
+#include "pkb.h"
+#include "pql_declaration.h"
+#include "pql_query.h"
 #include "query_evaluator.h"
 
 using std::list;
@@ -14,7 +15,7 @@ DeclarationKeyword select_type;
 
 QueryEvaluator::QueryEvaluator() {}
 
-list<string> QueryEvaluator::GetResultFromQuery(Query query) {
+list<string> QueryEvaluator::GetResultFromQuery(Query query, PKB pkb) {
   string select_var_name = query.GetVarName();
   vector<Declaration> declarations = query.GetDeclarations();
   list<string> results;
@@ -36,6 +37,9 @@ list<string> QueryEvaluator::GetResultFromQuery(Query query) {
         case DeclarationKeyword::kAssign:
           // Get all statement number of statement which contains assignment
           // from PKB and store into results list
+          list<string> result_vector = pkb.GetAllAssign();
+          std::copy(result_vector.begin(), result_vector.end(),
+                    std::back_inserter(results));
           break;
       }
       break;
