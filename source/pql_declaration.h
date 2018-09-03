@@ -1,10 +1,10 @@
-#ifndef DECLARATION_H
-#define DECLARATION_H
+#ifndef PQL_DECLARATION_H
+#define PQL_DECLARATION_H
 
 #include <string>
 using std::string;
 
-enum DeclarationKeyword {
+enum PqlDeclarationKeyword {
 	kProcedure = 0,
 	kVariable,
 	kAssign
@@ -13,17 +13,17 @@ enum DeclarationKeyword {
 /*
 This class stores the infomation of a single declaration in PQL.
 */
-class Declaration {
+class PqlDeclaration {
  private:
-  DeclarationKeyword keyword_; // the keyword of the declaration
+  PqlDeclarationKeyword keyword_; // the keyword of the declaration
   string var_name_; // the variable name of the declaration
 
 public:
   /* Constructor */
-  Declaration(DeclarationKeyword, string);
+  PqlDeclaration(PqlDeclarationKeyword, string);
 
   /* Getters */
-  DeclarationKeyword GetKeyword();
+  PqlDeclarationKeyword GetKeyword();
   string GetVarName();
 };
 

@@ -1,5 +1,4 @@
-#include "query.h"
-#include "declaration.h"
+#include "pql_query.h"
 
 #include <iostream>
 #include <sstream>
@@ -7,18 +6,18 @@
 using std::cout;
 using std::endl;
 
-Query::Query(string content) {
+PqlQuery::PqlQuery(string content) {
   if (content != "")
     Parse(content);
   else
     cout << "Query cannot be empty!" << endl;
 }
 
-vector<Declaration> Query::GetDeclarations() { return declarations_; }
+vector<PqlDeclaration> PqlQuery::GetDeclarations() { return declarations_; }
 
-string Query::GetVarName() { return var_name_; }
+string PqlQuery::GetVarName() { return var_name_; }
 
-void Query::Parse(string content) {
+void PqlQuery::Parse(string content) {
   if (content == "") {
     cout << "Query cannot be empty." << endl;
     return;
@@ -44,7 +43,7 @@ void Query::Parse(string content) {
   }
 }
 
-void Query::ParseStatement(string statement) {
+void PqlQuery::ParseStatement(string statement) {
   if (statement == "") {
     cout << "Invalid query syntax." << endl;
     return;
@@ -67,7 +66,7 @@ void Query::ParseStatement(string statement) {
   if (keyword == "Select") {
     var_name_ = tokens[1];
   } else if (keyword == "assign") {
-    Declaration declaration(kAssign, tokens[1]);
+    PqlDeclaration declaration(kAssign, tokens[1]);
     declarations_.push_back(declaration);
   } else {
     cout << "Invalid query keyword." << endl;
