@@ -66,12 +66,12 @@ void PqlQuery::ParseStatement(string statement) {
   }
 
   string keyword = tokens[0];
-  if (keyword == "Select") {
+  if (keyword == "select") {
     var_name_ = tokens[1];
   } else if (keyword == "assign") {
     PqlDeclaration declaration(kAssign, tokens[1]);
     declarations_.push_back(declaration);
   } else {
-    cout << "Invalid query keyword." << endl;
+    cout << "Invalid query keyword: " << keyword << endl;
   }
 }

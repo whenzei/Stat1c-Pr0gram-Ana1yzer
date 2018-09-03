@@ -25,7 +25,7 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
   // attach pkb to parser
-  Parser parser(pkb_);
+  Parser parser(&pkb_);
   parser.Parse(filename);
   // ...rest of your code...
 }

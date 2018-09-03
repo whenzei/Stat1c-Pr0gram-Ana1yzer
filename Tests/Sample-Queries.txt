@@ -1,5 +1,5 @@
 1 - comment
 assign a;
-Select a;
+select a;
 1, 2
 5000

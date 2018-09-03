@@ -15,7 +15,7 @@ GUIWrapper::GUIWrapper() {
 // method for parsing the SIMPLE source
 void GUIWrapper::parse(std::string filename) {
   // call your parser to do the parsing
-  Parser parser_(pkb_);
+  Parser parser_(&pkb_);
   parser_.Parse(filename);
   std::cout << "parsed " << filename << std::endl;
   // ...rest of your code...

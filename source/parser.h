@@ -15,19 +15,19 @@ using std::vector;
 // The parser class for the front end component
 // Used to parse file contents and pass the parsed content to the PKB component
 class Parser {
-  PKB pkb_;
+  PKB* pkb_;
   TokenList tokens_;
 
  public:
   // Constructor
   Parser();
-  Parser(PKB pkb);
+  Parser(PKB* pkb);
 
   // Destructor
   //~Parser();
 
   // Setters
-  void SetPkb(PKB pkb);
+  void SetPkb(PKB* pkb);
 
   // Getters
   TokenList GetTokenList();
