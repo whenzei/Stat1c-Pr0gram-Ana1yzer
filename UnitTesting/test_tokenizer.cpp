@@ -166,17 +166,24 @@ TEST_CLASS(TestTokenizer){
 	}
 
 	TEST_METHOD(TestTokenizeEquals) {
-		string kTestInput("a==b;");
-		Tokenizer::TokenType kTestType(Tokenizer::TokenType::kAssignment);
+		string kTestInput("a===b=c;");
+		Tokenizer::TokenType kTestType(Tokenizer::TokenType::kConditional);
 
 		// should return empty result if given a name
 		Result actual_result = Tokenizer::TokenizeEquals(kTestInput, 0);
 		Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 
-		// tokenizes an equal at a time
+		// tokenizes an conditional, and at most 2 equals signs - a[==]=b=c
 		actual_result = Tokenizer::TokenizeEquals(kTestInput, 1);
-		Result expected_result({ 1, {kTestType, "="} });
+		Result expected_result({ 2, {kTestType, "=="} });
 		Assert::IsTrue(actual_result == expected_result);
+
+		// tokenizes an assignment - a===b[=]c
+		kTestType = Tokenizer::TokenType::kAssignment;
+		actual_result = Tokenizer::TokenizeEquals(kTestInput, 5);
+		expected_result = Result({ 1, {kTestType, "="} });
+		Assert::IsTrue(actual_result == expected_result);
+
 	}
 
 	TEST_METHOD(TestTokenize) {

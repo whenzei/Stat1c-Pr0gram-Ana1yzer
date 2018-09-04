@@ -12,17 +12,25 @@ enum TokenType {
   kSemicolon = 4,
   kAssignment = 5,
   kOperator = 6,
-  kUnknown = 999,
+  kBracket = 7,
+  kConditional = 8,
+  kUnknown = 9,
 };
 
-const int kNumberOfFunctions = 8;
+static const string kTokenTypeNames[] = {
+    "nothing",    "digit",    "name",    "brace",       "semicolon",
+    "assignment", "operator", "bracket", "conditional", "unknown"};
+
+const int kNumberOfFunctions = 10;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
 TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
-      &SkipComments,   &SkipWhitespace,    &TokenizeDigits, &TokenizeNames,
-      &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals, &TokenizeOperators};
+      &SkipComments,        &SkipWhitespace,    &TokenizeDigits,
+      &TokenizeNames,       &TokenizeBraces,    &TokenizeSemicolon,
+      &TokenizeEquals,      &TokenizeOperators, &TokenizeBrackets,
+      &TokenizeConditionals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -128,7 +136,15 @@ Result Tokenizer::TokenizeBraces(string input, int current_index) {
   return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
 }
 
-// Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
+// and closing brackets ("(" and ")"), and returns the result as a Result
+// struct. Note that it will only tokenize a single bracket at a time, e.g. "(("
+// will be returned as two separate results
+Result Tokenizer::TokenizeBrackets(string input, int current_index) {
+  return TokenizePattern(kBracket, regex{R"([()])"}, input, current_index);
+}
+
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize operators
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeOperators(string input, int current_index) {
   return TokenizePattern(kOperator, regex{R"([+-/%*])"}, input, current_index);
@@ -140,41 +156,38 @@ Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
   return TokenizeCharacter(kSemicolon, ';', input, current_index);
 }
 
-// Uses Tokenizer::TokenizeCharacter(...) with '=' as the supplied value to
-// tokenize the equals sign, and returns the result as a Result struct
+// Uses Tokenizer::TokenizePattern(...) with regex to
+// tokenize the equals symbol, returns a result with kConditional type if "=="
+// matches, and kAssignment type if a single '=' is matched.
 Result Tokenizer::TokenizeEquals(string input, int current_index) {
-  return TokenizeCharacter(kAssignment, '=', input, current_index);
+  Result result(
+      TokenizePattern(kAssignment, regex{R"(==?)"}, input, current_index));
+  if (result.num_consumed_characters == 2) {
+    result.token.type = kConditional;
+  }
+
+  return result;
 }
 
-// Helper function to return empty result, meaning tokenization did not find a
-// match
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditionals
+// (">", "<", "!=", ">=", "<=") and returns the result as a Result struct
+Result Tokenizer::TokenizeConditionals(string input, int current_index) {
+  // check if it is of the form !=
+  Result result(
+      TokenizePattern(kConditional, regex("[!]=?"), input, current_index));
+  if (result.num_consumed_characters == 2) {
+    // must be exactly of the form !=, if not try to tokenize with [><]
+    return result;
+  }
+  return TokenizePattern(kConditional, regex{R"([><]=?)"}, input,
+                         current_index);
+}
+
+// Helper function to return empty result, meaning
+// tokenization did not find a match
 Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
-  string type;
-
-  switch (token.type) {
-    case 1:
-      type = "<DIGIT>";
-      break;
-    case 2:
-      type = "<NAME>";
-      break;
-    case 3:
-      type = "<BRACE>";
-      break;
-    case 4:
-      type = "<SEMICOLON>";
-      break;
-    case 5:
-      type = "<ASSIGNMENT>";
-      break;
-    case 6:
-      type = "<OPERATOR>";
-      break;
-    default:
-      type = "<UNKNOWN>";
-  }
-  return type + token.value;
+  return "<" + kTokenTypeNames[token.type] + "> " + token.value;
 }
