@@ -171,6 +171,9 @@ Result Tokenizer::TokenizeEquals(string input, int current_index) {
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditionals
 // (">", "<", "!=", ">=", "<=") and returns the result as a Result struct
+// Precondition: This function must be after Tokenizer::TokenizeEquals if used
+// in a function pointer array, or "=" will be classified as a kConditional type
+// instead of kAssignment type due to regex.
 Result Tokenizer::TokenizeConditionals(string input, int current_index) {
   // check if it is of the form !=
   Result result(
@@ -179,7 +182,7 @@ Result Tokenizer::TokenizeConditionals(string input, int current_index) {
     // must be exactly of the form !=, if not try to tokenize with [><]
     return result;
   }
-  return TokenizePattern(kConditional, regex{R"([><]=?)"}, input,
+  return TokenizePattern(kConditional, regex{R"([><=]=?)"}, input,
                          current_index);
 }
 
