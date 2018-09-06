@@ -7,7 +7,6 @@
 #include <string>
 
 #include "pkb.h"
-#include "pql_declaration.h"
 #include "pql_query.h"
 #include "query_evaluator.h"
 
@@ -27,7 +26,7 @@ class QueryEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromQuery(PqlQuery query, PKB pkb);
+  list<string> GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
    * Use the results from @GetResultFromQuery

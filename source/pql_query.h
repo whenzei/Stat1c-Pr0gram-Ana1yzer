@@ -3,9 +3,24 @@
 
 #include <string>
 #include <vector>
-#include "pql_declaration.h"
+#include <map>
 using std::string;
 using std::vector;
+using std::map;
+
+enum PqlDeclarationEntity {
+  kStmt = 0,
+  kRead,
+  kPrint,
+  kCall,
+  kWhile,
+  kIf,
+  kAssign,
+  kVariable,
+  kConstant,
+  kProgline,
+  kProcedure
+};
 
 /*
 This class parses and stores the PQL query, including the declarations and
@@ -13,24 +28,19 @@ This class parses and stores the PQL query, including the declarations and
 */
 class PqlQuery {
  private:
-  vector<PqlDeclaration> declarations_;  // the list of declarations
+  map<string, PqlDeclarationEntity> declarations_; // the list of declarations
   string var_name_;  // the variable name of the 'Select' statement
-
-  /* Parsing */
-  void Parse(string);
-  void ParseStatement(string);
 
  public:
   /* Constructor */
   PqlQuery();
-  PqlQuery(string);
 
   /* Setters */
-  void AddDeclaration(PqlDeclaration);
+  void AddDeclaration(PqlDeclarationEntity, string);
   void SetVarName(string);
 
   /* Getters */
-  vector<PqlDeclaration> GetDeclarations();
+  map<string, PqlDeclarationEntity> GetDeclarations();
   string GetVarName();
 };
 
