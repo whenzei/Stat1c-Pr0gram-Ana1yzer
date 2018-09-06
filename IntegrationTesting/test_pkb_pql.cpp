@@ -22,7 +22,7 @@ TEST_CLASS(TestPKBPQL){
 			pkb.InsertAssignStmt(8, "i = j");
 
 			QueryEvaluator qe;
-			string user_query = "assign a; Select a;";
+			string user_query = "assign a; Select a";
       PqlQuery* query = new PqlQuery();
       PqlParser::Parse(user_query, query);
 

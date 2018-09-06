@@ -20,6 +20,7 @@ void PqlParser::Parse(string content, PqlQuery* query) {
     statements.push_back(content.substr(last, next - last));
     last = next + 1;
   }
+  statements.push_back(content.substr(last));
 
   if (statements.size() == 0) {
     cout << "Invalid query syntax. Possibly missing semicolon." << endl;

@@ -29,7 +29,7 @@ public:
   }
 
   TEST_METHOD(TestAssignSelect) {
-	  string content = "assign a; Select a;";
+	  string content = "assign a; Select a";
     PqlQuery* query = new PqlQuery();
     PqlParser::Parse(content, query);
     Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
