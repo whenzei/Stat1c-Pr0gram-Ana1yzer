@@ -113,7 +113,7 @@ void PqlParser::ParseDeclaration(vector<string> tokens, PqlQuery* query) {
     // TODO: check for grammar
 
     // add to declarations
-    query->AddDeclaration(kAssign, tokens[i]);
+    query->AddDeclaration(entity, tokens[i]);
   }
   
 }
