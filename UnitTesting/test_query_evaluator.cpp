@@ -9,8 +9,6 @@
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-using std::make_pair;
-using std::pair;
 
 namespace UnitTesting {
 TEST_CLASS(TestQueryEvaluator) {
