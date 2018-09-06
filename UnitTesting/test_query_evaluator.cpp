@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "pkb.h"
-#include "pql_declaration.h"
 #include "pql_query.h"
 #include "query_evaluator.h"
 
@@ -10,19 +9,15 @@
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::make_pair;
+using std::pair;
 
 namespace UnitTesting {
 TEST_CLASS(TestQueryEvaluator) {
  public:
-  PqlDeclarationKeyword keyword_assign = PqlDeclarationKeyword::kAssign;
-  PqlDeclarationKeyword keyword_variable = PqlDeclarationKeyword::kVariable;
-  PqlDeclarationKeyword keyword_procedure = PqlDeclarationKeyword::kProcedure;
-  PqlDeclaration declr_assign =
-      PqlDeclaration::PqlDeclaration(keyword_assign, "a");
-  PqlDeclaration declr_variable =
-      PqlDeclaration::PqlDeclaration(keyword_variable, "v");
-  PqlDeclaration declr_procedure =
-      PqlDeclaration::PqlDeclaration(keyword_procedure, "p");
+  PqlDeclarationEntity keyword_assign = PqlDeclarationEntity::kAssign;
+  PqlDeclarationEntity keyword_variable = PqlDeclarationEntity::kVariable;
+  PqlDeclarationEntity keyword_procedure = PqlDeclarationEntity::kProcedure;
   TEST_METHOD(TestGetResultFromQuery) {
     // TODO: Your test code here
     QueryEvaluator qe;
@@ -30,11 +25,11 @@ TEST_CLASS(TestQueryEvaluator) {
 
     pkb.PKB::InsertAssignStmt(1, "x = y");
 
-    PqlQuery q;
-    q.SetVarName("a");
-    q.AddDeclaration(declr_variable);
-    q.AddDeclaration(declr_assign);
-    q.AddDeclaration(declr_procedure);
+    PqlQuery* q = new PqlQuery();
+    q->SetVarName("a");
+    q->AddDeclaration(keyword_assign, "a");
+    q->AddDeclaration(keyword_variable, "v");
+    q->AddDeclaration(keyword_procedure, "p");
 
     list<string> resultlist = qe.GetResultFromQuery(q, pkb);
 

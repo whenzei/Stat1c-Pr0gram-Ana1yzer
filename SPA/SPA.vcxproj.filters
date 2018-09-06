@@ -45,10 +45,13 @@
     <ClCompile Include="..\source\pql_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\pql_declaration.cpp">
+    <ClCompile Include="..\source\query_evaluator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\query_evaluator.cpp">
+    <ClCompile Include="..\source\t_node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,10 +86,10 @@
     <ClInclude Include="..\source\pql_query.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_declaration.h">
+    <ClInclude Include="..\source\query_evaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\query_evaluator.h">
+    <ClInclude Include="..\source\pql_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

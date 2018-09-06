@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "pql_parser.h"
 #include "pql_query.h"
 #include "pkb.h"
 #include "query_evaluator.h"
@@ -22,7 +23,8 @@ TEST_CLASS(TestPKBPQL){
 
 			QueryEvaluator qe;
 			string user_query = "assign a; Select a;";
-			PqlQuery query(user_query);
+      PqlQuery* query = new PqlQuery();
+      PqlParser::Parse(user_query, query);
 
 			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
 			string output = qe.FormatResultString(resultlist);
