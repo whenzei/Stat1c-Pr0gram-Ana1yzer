@@ -28,34 +28,92 @@ void PqlParser::Parse(string content, PqlQuery* query) {
 
   for (vector<string>::const_iterator i = statements.begin();
     i != statements.end(); ++i) {
-    string statement = *i;
-    if (statement == "") {
-      cout << "Invalid query syntax." << endl;
-      return;
-    }
+    ParseStatement(*i, query, i+1 == statements.end());
+  }
+}
 
-    vector<string> tokens;
+void PqlParser::ParseStatement(string statement, PqlQuery* query, bool isLast) {
+  if (statement == "") {
+    cout << "Invalid query syntax." << endl;
+    return;
+  }
 
-    std::stringstream stream(statement);
-    string token;
-    while (std::getline(stream, token, ' ')) {
-      if (token != "") tokens.push_back(token);
-    }
+  vector<string> tokens;
 
-    if (tokens.size() == 0 || tokens.size() > 2) {
-      cout << "Invalid query syntax." << endl;
-      return;
-    }
+  std::stringstream stream(statement);
+  string token;
+  while (std::getline(stream, token, ' ')) {
+    if (token != "") tokens.push_back(token);
+  }
 
-    string keyword = tokens[0];
-    if (keyword == "Select") {
-      query->SetVarName(tokens[1]);
-    }
-    else if (keyword == "assign") {
-      query->AddDeclaration(kAssign, tokens[1]);
+  if (tokens.size() == 0) {
+    cout << "Invalid query syntax." << endl;
+    return;
+  } else {
+    if (tokens[0] == "Select") {
+      if (isLast) {
+        ParseSelect(tokens, query);
+      } else {
+        cout << "Select clause must be the last statement." << endl;
+        return;
+      }
     }
     else {
-      cout << "Invalid query keyword: " << keyword << endl;
+      ParseDeclaration(tokens, query);
     }
   }
+}
+
+void PqlParser::ParseSelect(vector<string> tokens, PqlQuery* query) {
+  // TODO: check for grammar
+
+  // set variable name
+  query->SetVarName(tokens[1]);
+}
+
+void PqlParser::ParseDeclaration(vector<string> tokens, PqlQuery* query) {
+  string entity_raw = tokens[0];
+  PqlDeclarationEntity entity;
+
+  if (entity_raw == "stmt") {
+    entity = kStmt;
+  } 
+  else if (entity_raw == "read") {
+    entity = kRead;
+  } 
+  else if (entity_raw == "print") {
+    entity = kPrint;
+  } 
+  else if (entity_raw == "call") {
+    entity = kCall;
+  } 
+  else if (entity_raw == "while") {
+    entity = kWhile;
+  }
+  else if (entity_raw == "if") {
+    entity = kIf;
+  }
+  else if (entity_raw == "assign") {
+    entity = kAssign;
+  }
+  else if (entity_raw == "variable") {
+    entity = kVariable;
+  }
+  else if (entity_raw == "constant") {
+    entity = kConstant;
+  }
+  else if (entity_raw == "prog_line") {
+    entity = kProgline;
+  }
+  else if (entity_raw == "procedure") {
+    entity = kProcedure;
+  }
+
+  for (int i = 1; i < tokens.size(); i++) {
+    // TODO: check for grammar
+
+    // add to declarations
+    query->AddDeclaration(kAssign, tokens[i]);
+  }
+  
 }
