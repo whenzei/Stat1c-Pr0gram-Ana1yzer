@@ -4,6 +4,7 @@
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
 
+#include <string>
 #include <vector>
 
 #include "pkb.h"
@@ -51,6 +52,8 @@ class Parser {
 
   // Reads the list of tokens representing a procedure and updates PKB
   void ProcessProcedure(size_t start, size_t end);
+
+  string GetStmtFromList(vector<Token> list);
 };
 
 #endif  // !SPA_PARSER_H

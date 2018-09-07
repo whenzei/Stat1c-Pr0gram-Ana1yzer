@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <queue>
-#include <string>
-#include <vector>
 
 #include "parser.h"
 #include "pkb.h"
@@ -19,7 +16,8 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 using std::istreambuf_iterator;
-using std::queue;
+
+using tt = Tokenizer::TokenType;
 
 // Constructor
 Parser::Parser() {}
@@ -72,6 +70,7 @@ bool Parser::IsValidFile(string filepath) {
 
 void Parser::ProcessProcedure(size_t start, size_t end) {
   StmtNum stmt_num = 1;
+  int stmt_list_index = 0;
 
   // Second index from start will always be a procedure name
   string procedure_name = tokens_[start + 1].value;
@@ -81,33 +80,23 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
   pkb_->InsertProc(procedure_name);
 
-  queue<Token> stmt_queue;
+  vector<Token> stmt_list;
 
   // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
     Token curr_token = tokens_[i];
+    stmt_list.push_back(curr_token);
 
-    // Check if it is type NAME and not a SIMPLE keyword
-    if (curr_token.type == Tokenizer::TokenType::kName) {
-      // TODO: add to PKB's VarTable
-      if (DEBUG_FLAG) {
-        std::cout << "Variable added: " << curr_token.value << endl;
-      }
-    }
+    if (curr_token.type == tt::kSemicolon || curr_token.value == "{") {
+      Token first_token = stmt_list[0];
+      string statement = GetStmtFromList(stmt_list);
 
-    if (curr_token.type == Tokenizer::TokenType::kSemicolon ||
-        curr_token.value == "{") {
-      string statement = "";
-      Token first_token = stmt_queue.front();
-      while (!stmt_queue.empty()) {
-        statement += stmt_queue.front().value;
-        stmt_queue.pop();
-      }
-      statement += curr_token.value;
+	  // clean stmt_list again
+	  stmt_list.clear();
 
       switch (first_token.type) {
         // if it starts with a name, it must be an assignment
-        case Tokenizer::TokenType::kName:
+        case tt::kName:
           pkb_->InsertAssignStmt(stmt_num, statement);
           if (DEBUG_FLAG) {
             std::cout << "Statement " << stmt_num << " added: " << statement
@@ -115,24 +104,32 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
           }
           stmt_num++;
           break;
-        case Tokenizer::TokenType::kKeyword:
+        case tt::kKeyword:
           // todo: add to relevant tables like IfTable, etc
           if (DEBUG_FLAG) {
-            std::cout << "Keyword statement " << stmt_num
+            cout << "Keyword statement " << stmt_num
                       << " added: " << statement << endl;
           }
           stmt_num++;
           break;
         // if it starts with a brace, it must be "}" and an else block
-        case Tokenizer::TokenType::kBrace:
+        case tt::kBrace:
           // don't do anything
           if (DEBUG_FLAG) {
-            std::cout << "Else statement IGNORED: " << statement << endl;
+            cout << "Else statement IGNORED: " << statement << endl;
           }
           break;
       }
       continue;
     }
-    stmt_queue.push(curr_token);
   }
+}
+
+string Parser::GetStmtFromList(vector<Token> list) {
+  string stmt = string();
+  for (Token token : list) {
+    stmt += token.value;
+  }
+
+  return stmt;
 }
