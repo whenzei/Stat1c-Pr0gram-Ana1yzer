@@ -131,11 +131,15 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
   }
 }
 
-string Parser::GetStmtFromList(vector<Token> list) {
-  string stmt = string();
-  for (Token token : list) {
-    stmt += token.value;
+StmtVariables Parser::GetVariablesFromStmt(vector<Token> stmt) {
+  string lhs_var = stmt[0].value;
+  unordered_set<string> rhs_vars;
+
+  for (size_t i = 1; i < stmt.size(); i++) {
+    if (stmt[i].type == tt::kName) {
+      rhs_vars.insert(stmt[i].value);
+    }
   }
 
-  return stmt;
+  return StmtVariables({lhs_var, rhs_vars});
 }

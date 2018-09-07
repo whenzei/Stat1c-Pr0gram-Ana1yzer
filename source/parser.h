@@ -6,12 +6,19 @@
 
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 #include "pkb.h"
 #include "tokenizer.h"
 
 using std::string;
 using std::vector;
+using std::unordered_set;
+
+struct StmtVariables {
+	string lhs_variable;
+	unordered_set<string> rhs_variables;
+};
 
 // The parser class for the front end component
 // Used to parse file contents and pass the parsed content to the PKB component
@@ -53,7 +60,7 @@ class Parser {
   // Reads the list of tokens representing a procedure and updates PKB
   void ProcessProcedure(size_t start, size_t end);
 
-  string GetStmtFromList(vector<Token> list);
+  StmtVariables Parser::GetVariablesFromStmt(vector<Token> stmt);
 };
 
 #endif  // !SPA_PARSER_H
