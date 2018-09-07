@@ -61,7 +61,9 @@ class Parser {
   // Reads the list of tokens representing a procedure and updates PKB
   void ProcessProcedure(size_t start, size_t end);
 
-  StmtAssignInfo Parser::GetAssignmentInfo(vector<Token> stmt);
+  StmtAssignInfo GetAssignmentInfo(TokenList stmt);
+
+  unordered_set<string> GetControlVariables(TokenList stmt);
 };
 
 #endif  // !SPA_PARSER_H

@@ -80,7 +80,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
   pkb_->InsertProc(procedure_name);
 
-  vector<Token> stmt_list;
+  TokenList stmt_list;
 
   // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
@@ -106,8 +106,8 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
         // "x" : VAR_NAME on the left hand side
         // <> : LIST_OF_VAR_NAME on the right hand side
         /*pkb_->InsertAssignStmt(stmt_num, stmt_list_index,
-                                                       stmt_vars.lhs_variable,
-                                                       stmt_vars.rhs_variables);*/
+                                                       stmt_info.lhs_variable,
+                                                       stmt_info.rhs_variables);*/
         if (DEBUG_FLAG) {
           string rhs_vars = string();
           for (string element : stmt_info.rhs_variables) {
@@ -125,10 +125,28 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
         stmt_num++;
       } else if (first_token.type == tt::kKeyword) {
         // todo: add to relevant tables like IfTable, etc
-        if (first_token.value == "while" || first_token.value == "if")
-          if (DEBUG_FLAG) {
-            cout << "Keyword statement " << stmt_num << " added: " << endl;
+        if (first_token.value == "while" || first_token.value == "if") {
+          /*InsertWhileStmt(3, 0, <"i">)
+          3: STMT_NUM
+          0 : STMTLIST_INDEX
+          <“i”> : LIST_OF_VAR_NAME used as control variables*/
+          unordered_set<string> control_vars = GetControlVariables(stmt_list);
+
+          if (first_token.value == "while") {
+            // pkb_->InsertWhileStmt(stmt_num, stmt_list_index, control_vars);
+          } else {
+            // pkb_->InsertIfStmt(stmt_num, stmt_list_index, control_vars);
           }
+
+          if (DEBUG_FLAG) {
+            string control_str = string();
+            for (string element : control_vars) {
+              control_str += element;
+            }
+            cout << first_token.value << " keyword statement " << stmt_num
+                 << " added, control_vars: " << control_str << endl;
+          }
+        }
         stmt_num++;
       } else if (first_token.type == tt::kBrace) {
         // if it starts with a brace, it must be "}" and an else block
@@ -144,7 +162,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
   }
 }
 
-StmtAssignInfo Parser::GetAssignmentInfo(vector<Token> stmt) {
+StmtAssignInfo Parser::GetAssignmentInfo(TokenList stmt) {
   string lhs_var = stmt[0].value;
   unordered_set<string> rhs_vars;
   unordered_set<string> rhs_consts;
@@ -158,4 +176,16 @@ StmtAssignInfo Parser::GetAssignmentInfo(vector<Token> stmt) {
   }
 
   return StmtAssignInfo({lhs_var, rhs_vars, rhs_consts});
+}
+
+unordered_set<string> Parser::GetControlVariables(TokenList stmt) {
+  unordered_set<string> control_vars;
+
+  for (Token token : stmt) {
+    if (token.type == tt::kName) {
+      control_vars.insert(token.value);
+    }
+  }
+
+  return control_vars;
 }
