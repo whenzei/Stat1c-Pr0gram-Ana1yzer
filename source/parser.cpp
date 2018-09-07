@@ -71,7 +71,7 @@ bool Parser::IsValidFile(string filepath) {
 }
 
 void Parser::ProcessProcedure(size_t start, size_t end) {
-  int statementNum = 1;
+  StmtNum stmt_num = 1;
 
   // Second index from start will always be a procedure name
   string procedure_name = tokens_[start + 1].value;
@@ -81,38 +81,58 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
   pkb_->InsertProc(procedure_name);
 
-  queue<Token> stmtQueue;
+  queue<Token> stmt_queue;
 
   // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
-    Token currToken = tokens_[i];
+    Token curr_token = tokens_[i];
 
     // Check if it is type NAME and not a SIMPLE keyword
-    if (currToken.type == Tokenizer::TokenType::kName) {
+    if (curr_token.type == Tokenizer::TokenType::kName) {
       // TODO: add to PKB's VarTable
       if (DEBUG_FLAG) {
-        std::cout << "Variable added: " << currToken.value << endl;
+        std::cout << "Variable added: " << curr_token.value << endl;
       }
     }
 
-    if (currToken.type == Tokenizer::TokenType::kSemicolon) {
+    if (curr_token.type == Tokenizer::TokenType::kSemicolon ||
+        curr_token.value == "{") {
       string statement = "";
-      while (!stmtQueue.empty()) {
-        Token token = stmtQueue.front();
-        statement += token.value;
-        stmtQueue.pop();
+      Token first_token = stmt_queue.front();
+      while (!stmt_queue.empty()) {
+        statement += stmt_queue.front().value;
+        stmt_queue.pop();
       }
-      statement += currToken.value;
+      statement += curr_token.value;
 
-      pkb_->InsertAssignStmt(statementNum, statement);
-
-      if (DEBUG_FLAG) {
-        std::cout << "Statement " << statementNum << " added: " << statement
-                  << endl;
+      switch (first_token.type) {
+        // if it starts with a name, it must be an assignment
+        case Tokenizer::TokenType::kName:
+          pkb_->InsertAssignStmt(stmt_num, statement);
+          if (DEBUG_FLAG) {
+            std::cout << "Statement " << stmt_num << " added: " << statement
+                      << endl;
+          }
+          stmt_num++;
+          break;
+        case Tokenizer::TokenType::kKeyword:
+          // todo: add to relevant tables like IfTable, etc
+          if (DEBUG_FLAG) {
+            std::cout << "Keyword statement " << stmt_num
+                      << " added: " << statement << endl;
+          }
+          stmt_num++;
+          break;
+        // if it starts with a brace, it must be "}" and an else block
+        case Tokenizer::TokenType::kBrace:
+          // don't do anything
+          if (DEBUG_FLAG) {
+            std::cout << "Else statement IGNORED: " << statement << endl;
+          }
+          break;
       }
-      statementNum++;
       continue;
     }
-    stmtQueue.push(currToken);
+    stmt_queue.push(curr_token);
   }
 }
