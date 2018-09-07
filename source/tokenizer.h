@@ -47,6 +47,7 @@ class Tokenizer {
     kConditional,
 	kRelational,
 	kKeyword,
+	kEOF,
     kUnknown,
   };
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits

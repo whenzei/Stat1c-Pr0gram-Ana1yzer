@@ -17,13 +17,14 @@ enum TokenType {
   kConditional = 8,
   kRelational = 9,
   kKeyword = 10,
-  kUnknown = 11,
+  kEOF = 11,
+  kUnknown = 12
 };
 
 static const string kTokenTypeNames[] = {
-    "nothing",     "digit",      "name",     "brace",
-    "semicolon",   "assignment", "operator", "bracket",
-    "conditional", "relational", "keyword",  "unknown"};
+    "nothing",    "digit",       "name",    "brace",       "semicolon",
+    "assignment", "operator",    "bracket", "conditional", "relational",
+    "keyword",    "END_OF_FILE", "unknown"};
 
 const int kNumberOfFunctions = 10;
 
@@ -35,9 +36,9 @@ const std::unordered_set<string> kKeywords({"procedure", "read", "call",
 // to tokenize the supplied input, returning a list of Tokens
 TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
-      &SkipComments,        &SkipWhitespace,    &TokenizeDigits,
-      &TokenizeNames,       &TokenizeBraces,    &TokenizeSemicolon,
-      &TokenizeEquals,      &TokenizeOperators, &TokenizeBrackets,
+      &SkipComments,       &SkipWhitespace,    &TokenizeDigits,
+      &TokenizeNames,      &TokenizeBraces,    &TokenizeSemicolon,
+      &TokenizeEquals,     &TokenizeOperators, &TokenizeBrackets,
       &TokenizeRelationals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
@@ -68,6 +69,9 @@ TokenList Tokenizer::Tokenize(string input) {
       tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
     }
   }
+
+  // ADD END OF FILE TOKEN
+  tokens.push_back(Token({kEOF, string()}));
 
   return tokens;
 }
@@ -132,11 +136,11 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
-                         current_index);
+  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
+                                  input, current_index);
 
   if (kKeywords.count(result.token.value)) {
-	  result.token.type = kKeyword;
+    result.token.type = kKeyword;
   }
 
   return result;
