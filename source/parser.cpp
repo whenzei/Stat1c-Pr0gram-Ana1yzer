@@ -99,7 +99,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
       // if it starts with a name, it must be an assignment
       if (first_token.type == tt::kName) {
-        StmtVariables stmt_vars = GetVariablesFromStmt(stmt_list);
+        StmtAssignInfo stmt_info = GetAssignmentInfo(stmt_list);
         // InsertAssignStmt(1, 0, "x", <>)
         // 1 : STMT_NUM
         // 1 : STMTLIST_INDEX
@@ -109,13 +109,18 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
                                                        stmt_vars.lhs_variable,
                                                        stmt_vars.rhs_variables);*/
         if (DEBUG_FLAG) {
-          string rhs = string();
-          for (string element : stmt_vars.rhs_variables) {
-            rhs += element;
+          string rhs_vars = string();
+          for (string element : stmt_info.rhs_variables) {
+            rhs_vars += element;
+          }
+          string rhs_consts = string();
+          for (string element : stmt_info.rhs_constants) {
+            rhs_consts += element;
           }
           cout << "Assignment statement " << stmt_num << " added, list index "
-               << stmt_list_index << ", lhs: " << stmt_vars.lhs_variable
-               << ", rhs: " << rhs << endl;
+               << stmt_list_index << ", lhs: " << stmt_info.lhs_variable
+               << ", rhs_vars: " << rhs_vars << ", rhs_consts: " << rhs_consts
+               << endl;
         }
         stmt_num++;
       } else if (first_token.type == tt::kKeyword) {
@@ -139,15 +144,18 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
   }
 }
 
-StmtVariables Parser::GetVariablesFromStmt(vector<Token> stmt) {
+StmtAssignInfo Parser::GetAssignmentInfo(vector<Token> stmt) {
   string lhs_var = stmt[0].value;
   unordered_set<string> rhs_vars;
+  unordered_set<string> rhs_consts;
 
   for (size_t i = 1; i < stmt.size(); i++) {
     if (stmt[i].type == tt::kName) {
       rhs_vars.insert(stmt[i].value);
+    } else if (stmt[i].type == tt::kDigit) {
+      rhs_consts.insert(stmt[i].value);
     }
   }
 
-  return StmtVariables({lhs_var, rhs_vars});
+  return StmtAssignInfo({lhs_var, rhs_vars, rhs_consts});
 }

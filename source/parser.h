@@ -15,9 +15,10 @@ using std::string;
 using std::vector;
 using std::unordered_set;
 
-struct StmtVariables {
+struct StmtAssignInfo {
 	string lhs_variable;
 	unordered_set<string> rhs_variables;
+	unordered_set<string> rhs_constants;
 };
 
 // The parser class for the front end component
@@ -60,7 +61,7 @@ class Parser {
   // Reads the list of tokens representing a procedure and updates PKB
   void ProcessProcedure(size_t start, size_t end);
 
-  StmtVariables Parser::GetVariablesFromStmt(vector<Token> stmt);
+  StmtAssignInfo Parser::GetAssignmentInfo(vector<Token> stmt);
 };
 
 #endif  // !SPA_PARSER_H
