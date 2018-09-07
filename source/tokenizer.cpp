@@ -1,5 +1,6 @@
 #include <cctype>
 #include <regex>
+#include <unordered_set>
 #include <vector>
 
 #include "tokenizer.h"
@@ -25,6 +26,10 @@ static const string kTokenTypeNames[] = {
     "conditional", "relational", "keyword",  "unknown"};
 
 const int kNumberOfFunctions = 10;
+
+const std::unordered_set<string> kKeywords({"procedure", "read", "call",
+                                            "print", "if", "then", "else",
+                                            "while"});
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
@@ -127,8 +132,14 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
+  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
                          current_index);
+
+  if (kKeywords.count(result.token.value)) {
+	  result.token.type = kKeyword;
+  }
+
+  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
