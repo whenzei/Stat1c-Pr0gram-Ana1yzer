@@ -114,7 +114,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
             rhs_vars += element;
           }
           string rhs_consts = string();
-          for (string element : stmt_info.rhs_constants) {
+          for (Variable element : stmt_info.rhs_constants) {
             rhs_consts += element;
           }
           cout << "Assignment statement " << stmt_num << " added, list index "
@@ -130,7 +130,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
           3: STMT_NUM
           0 : STMTLIST_INDEX
           <“i”> : LIST_OF_VAR_NAME used as control variables*/
-          unordered_set<string> control_vars = GetControlVariables(stmt_list);
+          VariableSet control_vars = GetControlVariables(stmt_list);
 
           if (first_token.value == "while") {
             // pkb_->InsertWhileStmt(stmt_num, stmt_list_index, control_vars);
@@ -140,7 +140,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
           if (DEBUG_FLAG) {
             string control_str = string();
-            for (string element : control_vars) {
+            for (Variable element : control_vars) {
               control_str += element;
             }
             cout << first_token.value << " keyword statement " << stmt_num
@@ -164,8 +164,8 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
 
 StmtAssignInfo Parser::GetAssignmentInfo(TokenList stmt) {
   string lhs_var = stmt[0].value;
-  unordered_set<string> rhs_vars;
-  unordered_set<string> rhs_consts;
+  VariableSet rhs_vars;
+  VariableSet rhs_consts;
 
   for (size_t i = 1; i < stmt.size(); i++) {
     if (stmt[i].type == tt::kName) {
@@ -178,8 +178,8 @@ StmtAssignInfo Parser::GetAssignmentInfo(TokenList stmt) {
   return StmtAssignInfo({lhs_var, rhs_vars, rhs_consts});
 }
 
-unordered_set<string> Parser::GetControlVariables(TokenList stmt) {
-  unordered_set<string> control_vars;
+VariableSet Parser::GetControlVariables(TokenList stmt) {
+  VariableSet control_vars;
 
   for (Token token : stmt) {
     if (token.type == tt::kName) {

@@ -15,10 +15,13 @@ using std::string;
 using std::vector;
 using std::unordered_set;
 
+using Variable = string;
+using VariableSet = unordered_set<string>;
+
 struct StmtAssignInfo {
-	string lhs_variable;
-	unordered_set<string> rhs_variables;
-	unordered_set<string> rhs_constants;
+	Variable lhs_variable;
+	VariableSet rhs_variables;
+	VariableSet rhs_constants;
 };
 
 // The parser class for the front end component
@@ -63,7 +66,7 @@ class Parser {
 
   StmtAssignInfo GetAssignmentInfo(TokenList stmt);
 
-  unordered_set<string> GetControlVariables(TokenList stmt);
+  VariableSet GetControlVariables(TokenList stmt);
 };
 
 #endif  // !SPA_PARSER_H
