@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
+#include <stack>
 
 #include "parser.h"
 #include "pkb.h"
@@ -16,6 +17,7 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 using std::istreambuf_iterator;
+using std::stack;
 
 using tt = Tokenizer::TokenType;
 
@@ -70,7 +72,7 @@ bool Parser::IsValidFile(string filepath) {
 
 void Parser::ProcessProcedure(size_t start, size_t end) {
   StmtNum stmt_num = 1;
-  int stmt_list_index = 0;
+  stack<string> indent_stack{};
 
   // Second index from start will always be a procedure name
   string procedure_name = tokens_[start + 1].value;
@@ -85,16 +87,20 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
   // Starts at 4th index and ends at 2nd last index
   for (size_t i = start + 3; i < end; i++) {
     Token curr_token = tokens_[i];
-    stmt_list.push_back(curr_token);
 
-    if (curr_token.value == "{") {
-      stmt_list_index++;  // increase indentation
+    if (curr_token.value == "{" || curr_token.value == "else") {
+      indent_stack.push(curr_token.value);
     } else if (curr_token.value == "}") {
-      // will work even in cases like "} else {", since it keeps indentation
-      stmt_list_index <= 0 ? stmt_list_index = 0 : stmt_list_index--;
+      indent_stack.pop();
+      if (!indent_stack.empty() && indent_stack.top() == "else") {
+        indent_stack.pop();
+      }
+    } else {
+      stmt_list.push_back(curr_token);
     }
 
-    if (curr_token.type == tt::kSemicolon || curr_token.value == "{") {
+    if (stmt_list.size() > 0 &&
+        (curr_token.type == tt::kSemicolon || curr_token.value == "{")) {
       Token first_token = stmt_list[0];
 
       // if it starts with a name, it must be an assignment
@@ -117,8 +123,9 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
           for (Variable element : stmt_info.rhs_constants) {
             rhs_consts += element;
           }
-          cout << "Assignment statement " << stmt_num << " added, list index "
-               << stmt_list_index << ", lhs: " << stmt_info.lhs_variable
+          cout << "Assignment statement " << stmt_num
+               << " added, indent_lvl: " << indent_stack.size()
+               << ", lhs: " << stmt_info.lhs_variable
                << ", rhs_vars: " << rhs_vars << ", rhs_consts: " << rhs_consts
                << endl;
         }
@@ -132,10 +139,14 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
           <“i”> : LIST_OF_VAR_NAME used as control variables*/
           VariableSet control_vars = GetControlVariables(stmt_list);
 
+          // remember to remove 1 indentation level because it just added one up
+          // top before coming down
           if (first_token.value == "while") {
-            // pkb_->InsertWhileStmt(stmt_num, stmt_list_index, control_vars);
+            // pkb_->InsertWhileStmt(stmt_num, indent_stack.size() - 1,
+            // control_vars);
           } else {
-            // pkb_->InsertIfStmt(stmt_num, stmt_list_index, control_vars);
+            // pkb_->InsertIfStmt(stmt_num, indent_stack.size() - 1,
+            // control_vars);
           }
 
           if (DEBUG_FLAG) {
@@ -144,16 +155,14 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
               control_str += element;
             }
             cout << first_token.value << " keyword statement " << stmt_num
-                 << " added, control_vars: " << control_str << endl;
+                 << " added, control_vars: " << control_str
+                 << ", indent_lvl: " << indent_stack.size() - 1 << endl;
           }
         }
         stmt_num++;
       } else if (first_token.type == tt::kBrace) {
-        // if it starts with a brace, it must be "}" and an else block
-        // don't do anything
-        if (DEBUG_FLAG) {
-          cout << "Else statement IGNORED: " << endl;
-        }
+        // this should not happen, since braces are not pushed into the
+        // stmt_list
       }
 
       // clean stmt_list again
