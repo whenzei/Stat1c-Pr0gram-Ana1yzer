@@ -88,8 +88,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     Token currToken = tokens_[i];
 
     // Check if it is type NAME and not a SIMPLE keyword
-    if (currToken.type == Tokenizer::TokenType::kName &&
-        !SimpleValidator::IsKeyword(currToken.value)) {
+    if (currToken.type == Tokenizer::TokenType::kName) {
       // TODO: add to PKB's VarTable
       if (DEBUG_FLAG) {
         std::cout << "Variable added: " << currToken.value << endl;
