@@ -2,8 +2,14 @@ procedure one {
 	a= b;
 	c  = d; \\comments here
 	if(a!=b) then {
-		d		= e;
+		d		= d + e + f;
+
+		if (e == c) then {
+			g = c + a;
+		} else {
+			c = g + a;
+		}
 		}else {
-			e 		=f;
+			e 		=f + 22;
 	}
 }
