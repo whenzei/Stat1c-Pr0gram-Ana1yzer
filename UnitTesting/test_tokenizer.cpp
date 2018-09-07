@@ -122,6 +122,14 @@ TEST_METHOD(TestTokenizeNames) {
   kTestInput = "3startswithdigit";
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
+
+  // keywords are detected
+  kTestInput = "procedure";
+  kTestType = Tokenizer::TokenType::kKeyword;
+  actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
+  expected_result = Result({ 9, {kTestType, "procedure"} });
+  Assert::IsTrue(actual_result == expected_result);
+
 }
 
 TEST_METHOD(TestTokenizeBraces) {
