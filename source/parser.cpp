@@ -87,6 +87,12 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     Token curr_token = tokens_[i];
     stmt_list.push_back(curr_token);
 
+    if (curr_token.value == "{") {
+      stmt_list_index++;  // increase indentation
+    } else if (curr_token.value == "}") {
+      // will work even in cases like "} else {", since it keeps indentation
+      stmt_list_index <= 0 ? stmt_list_index = 0 : stmt_list_index--;
+    }
     if (curr_token.type == tt::kSemicolon || curr_token.value == "{") {
       Token first_token = stmt_list[0];
       string statement = GetStmtFromList(stmt_list);
