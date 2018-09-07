@@ -1,6 +1,7 @@
 #include "test_wrapper.h"
 #include "parser.h"
 #include "pql_parser.h"
+#include "../SPA/parser2.h"
 #include "pql_query.h"
 #include "query_evaluator.h"
 
@@ -26,7 +27,7 @@ TestWrapper::TestWrapper() {
 void TestWrapper::parse(std::string filename) {
   // call your parser to do the parsing
   // attach pkb to parser
-  Parser parser(&pkb_);
+  Parser2 parser(&pkb_);
   parser.Parse(filename);
   // ...rest of your code...
 }
