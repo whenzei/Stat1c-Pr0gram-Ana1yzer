@@ -93,40 +93,48 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
       // will work even in cases like "} else {", since it keeps indentation
       stmt_list_index <= 0 ? stmt_list_index = 0 : stmt_list_index--;
     }
+
     if (curr_token.type == tt::kSemicolon || curr_token.value == "{") {
       Token first_token = stmt_list[0];
-      string statement = GetStmtFromList(stmt_list);
 
-	  // clean stmt_list again
-	  stmt_list.clear();
-
-      switch (first_token.type) {
-        // if it starts with a name, it must be an assignment
-        case tt::kName:
-          pkb_->InsertAssignStmt(stmt_num, statement);
-          if (DEBUG_FLAG) {
-            std::cout << "Statement " << stmt_num << " added: " << statement
-                      << endl;
+      // if it starts with a name, it must be an assignment
+      if (first_token.type == tt::kName) {
+        StmtVariables stmt_vars = GetVariablesFromStmt(stmt_list);
+        // InsertAssignStmt(1, 0, "x", <>)
+        // 1 : STMT_NUM
+        // 1 : STMTLIST_INDEX
+        // "x" : VAR_NAME on the left hand side
+        // <> : LIST_OF_VAR_NAME on the right hand side
+        /*pkb_->InsertAssignStmt(stmt_num, stmt_list_index,
+                                                       stmt_vars.lhs_variable,
+                                                       stmt_vars.rhs_variables);*/
+        if (DEBUG_FLAG) {
+          string rhs = string();
+          for (string element : stmt_vars.rhs_variables) {
+            rhs += element;
           }
-          stmt_num++;
-          break;
-        case tt::kKeyword:
-          // todo: add to relevant tables like IfTable, etc
+          cout << "Assignment statement " << stmt_num << " added, list index "
+               << stmt_list_index << ", lhs: " << stmt_vars.lhs_variable
+               << ", rhs: " << rhs << endl;
+        }
+        stmt_num++;
+      } else if (first_token.type == tt::kKeyword) {
+        // todo: add to relevant tables like IfTable, etc
+        if (first_token.value == "while" || first_token.value == "if")
           if (DEBUG_FLAG) {
-            cout << "Keyword statement " << stmt_num
-                      << " added: " << statement << endl;
+            cout << "Keyword statement " << stmt_num << " added: " << endl;
           }
-          stmt_num++;
-          break;
+        stmt_num++;
+      } else if (first_token.type == tt::kBrace) {
         // if it starts with a brace, it must be "}" and an else block
-        case tt::kBrace:
-          // don't do anything
-          if (DEBUG_FLAG) {
-            cout << "Else statement IGNORED: " << statement << endl;
-          }
-          break;
+        // don't do anything
+        if (DEBUG_FLAG) {
+          cout << "Else statement IGNORED: " << endl;
+        }
       }
-      continue;
+
+      // clean stmt_list again
+      stmt_list.clear();
     }
   }
 }
