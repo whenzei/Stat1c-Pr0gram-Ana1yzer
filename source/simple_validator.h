@@ -8,26 +8,7 @@ using std::string;
 
 class SimpleValidator {
  public:
-  enum KeywordType {
-    kProcedure,
-    kIf,
-    kElse,
-    kWhile,
-    kCall,
-    kRead,
-    kPrint
-  };
-  /**
-   * Checks if string input is a SIMPLE keyword
-   * @returns true if it is a SIMPLE keyword, false otherwise
-   */
-  static bool IsKeyword(string input);
-
-  /**
-   * Checks if string input is a SIMPLE keyword of given type
-   * @returns true if it is a SIMPLE keyword of given type, false otherwise
-   */
-  static bool IsKeyword(int type, string input);
+  enum KeywordType { kProcedure, kIf, kElse, kWhile, kCall, kRead, kPrint };
 
   /**
    * Checks if list of tokens is syntactically correct in SIMPLE language
@@ -37,6 +18,23 @@ class SimpleValidator {
    * @returns true if list of tokens is syntactically correct, false otherwise.
    */
   static bool ValidateProcedure(TokenList tokens, size_t start, size_t end);
+
+ private:
+  /**
+   *	Checks if the '=' (current index of token list) only has LHS as kName,
+   *and RHS as kNAME | kDigit
+   */
+  static bool IsValidAssignmentPos(TokenList tokens, size_t currIndex);
+
+  /**
+   * Checks if the NAME (current index of token list) causes syntax error
+   */
+  static bool IsValidNamePos(TokenList tokens, size_t currIndex);
+
+  /**
+   * Checks if the DIGIT (current index of token list) causes syntax error
+   */
+  static bool IsValidDigitPos(TokenList tokens, size_t currIndex);
 };
 
 #endif
