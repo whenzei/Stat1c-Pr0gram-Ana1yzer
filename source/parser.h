@@ -4,13 +4,25 @@
 #ifndef SPA_PARSER_H
 #define SPA_PARSER_H
 
+#include <string>
 #include <vector>
+#include <unordered_set>
 
 #include "pkb.h"
 #include "tokenizer.h"
 
 using std::string;
 using std::vector;
+using std::unordered_set;
+
+using Variable = string;
+using VariableSet = unordered_set<string>;
+
+struct StmtAssignInfo {
+	Variable lhs_variable;
+	VariableSet rhs_variables;
+	VariableSet rhs_constants;
+};
 
 // The parser class for the front end component
 // Used to parse file contents and pass the parsed content to the PKB component
@@ -51,6 +63,10 @@ class Parser {
 
   // Reads the list of tokens representing a procedure and updates PKB
   void ProcessProcedure(size_t start, size_t end);
+
+  StmtAssignInfo GetAssignmentInfo(TokenList stmt);
+
+  VariableSet GetControlVariables(TokenList stmt);
 };
 
 #endif  // !SPA_PARSER_H

@@ -1,5 +1,6 @@
 #include <cctype>
 #include <regex>
+#include <unordered_set>
 #include <vector>
 
 #include "tokenizer.h"
@@ -12,17 +13,33 @@ enum TokenType {
   kSemicolon = 4,
   kAssignment = 5,
   kOperator = 6,
-  kUnknown = 999,
+  kBracket = 7,
+  kConditional = 8,
+  kRelational = 9,
+  kKeyword = 10,
+  kEOF = 11,
+  kUnknown = 12
 };
 
-const int kNumberOfFunctions = 8;
+static const string kTokenTypeNames[] = {
+    "nothing",    "digit",       "name",    "brace",       "semicolon",
+    "assignment", "operator",    "bracket", "conditional", "relational",
+    "keyword",    "END_OF_FILE", "unknown"};
+
+const int kNumberOfFunctions = 10;
+
+const std::unordered_set<string> kKeywords({"procedure", "read", "call",
+                                            "print", "if", "then", "else",
+                                            "while"});
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
 TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
-      &SkipComments,   &SkipWhitespace,    &TokenizeDigits, &TokenizeNames,
-      &TokenizeBraces, &TokenizeSemicolon, &TokenizeEquals, &TokenizeOperators};
+      &SkipComments,       &SkipWhitespace,    &TokenizeDigits,
+      &TokenizeNames,      &TokenizeBraces,    &TokenizeSemicolon,
+      &TokenizeEquals,     &TokenizeOperators, &TokenizeBrackets,
+      &TokenizeRelationals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -52,6 +69,9 @@ TokenList Tokenizer::Tokenize(string input) {
       tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
     }
   }
+
+  // ADD END OF FILE TOKEN
+  tokens.push_back(Token({kEOF, string()}));
 
   return tokens;
 }
@@ -116,8 +136,14 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
-                         current_index);
+  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
+                                  input, current_index);
+
+  if (kKeywords.count(result.token.value)) {
+    result.token.type = kKeyword;
+  }
+
+  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
@@ -128,7 +154,15 @@ Result Tokenizer::TokenizeBraces(string input, int current_index) {
   return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
 }
 
-// Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
+// and closing brackets ("(" and ")"), and returns the result as a Result
+// struct. Note that it will only tokenize a single bracket at a time, e.g. "(("
+// will be returned as two separate results
+Result Tokenizer::TokenizeBrackets(string input, int current_index) {
+  return TokenizePattern(kBracket, regex{R"([()])"}, input, current_index);
+}
+
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize operators
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeOperators(string input, int current_index) {
   return TokenizePattern(kOperator, regex{R"([+-/%*])"}, input, current_index);
@@ -140,41 +174,42 @@ Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
   return TokenizeCharacter(kSemicolon, ';', input, current_index);
 }
 
-// Uses Tokenizer::TokenizeCharacter(...) with '=' as the supplied value to
-// tokenize the equals sign, and returns the result as a Result struct
+// Uses Tokenizer::TokenizePattern(...) with regex to
+// tokenize the equals symbol, returns a result with kConditional type if "=="
+// matches, and kAssignment type if a single '=' is matched.
 Result Tokenizer::TokenizeEquals(string input, int current_index) {
-  return TokenizeCharacter(kAssignment, '=', input, current_index);
+  Result result(
+      TokenizePattern(kAssignment, regex{R"(==?)"}, input, current_index));
+  if (result.num_consumed_characters == 2) {
+    result.token.type = kConditional;
+  }
+
+  return result;
 }
 
-// Helper function to return empty result, meaning tokenization did not find a
-// match
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+// expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
+// struct
+// Precondition: This function must be after Tokenizer::TokenizeEquals if
+// used in a function pointer array, or "=" will be classified as a kConditional
+// type instead of kAssignment type due to regex.
+Result Tokenizer::TokenizeRelationals(string input, int current_index) {
+  // check if it is of the form !=
+  Result result(
+      TokenizePattern(kRelational, regex("[!]=?"), input, current_index));
+  if (result.num_consumed_characters == 2) {
+    // must be exactly of the form !=, if not try to tokenize with [><]
+    return result;
+  }
+  return TokenizePattern(kRelational, regex{R"([><=]=?)"}, input,
+                         current_index);
+}
+
+// Helper function to return empty result, meaning
+// tokenization did not find a match
 Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
-  string type;
-
-  switch (token.type) {
-    case 1:
-      type = "<DIGIT>";
-      break;
-    case 2:
-      type = "<NAME>";
-      break;
-    case 3:
-      type = "<BRACE>";
-      break;
-    case 4:
-      type = "<SEMICOLON>";
-      break;
-    case 5:
-      type = "<ASSIGNMENT>";
-      break;
-    case 6:
-      type = "<OPERATOR>";
-      break;
-    default:
-      type = "<UNKNOWN>";
-  }
-  return type + token.value;
+  return "<" + kTokenTypeNames[token.type] + "> " + token.value;
 }
