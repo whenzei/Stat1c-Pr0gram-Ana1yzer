@@ -7,11 +7,11 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 TEST_CLASS(TestTokenizer) {
 public:
+
 TEST_METHOD(TestEmptyResult) {
   Result expected_result({0, {Tokenizer::TokenType::kNothing}});
   Assert::IsTrue(expected_result == Tokenizer::EmptyResult());
 }
-
 TEST_METHOD(TestTokenizeCharacter) {
   string kTestInput("hello world");
   Tokenizer::TokenType kTestType(Tokenizer::TokenType::kName);
@@ -260,17 +260,47 @@ TEST_METHOD(TestTokenize) {
       "procedure two { if(a!=b) then { d \t\n= e;}else { e =\t "
       "\n	 f;}}");
 
+  // to make expected_tokens easier to read, abbreviate to tt;
+  using tt = Tokenizer::TokenType;
+
   TokenList actual_tokens = Tokenizer::Tokenize(kTestInput);
   Assert::IsTrue(actual_tokens.size() == 36);
-  TokenList expected_tokens(
-      {{2, "procedure"}, {2, "one"},  {3, "{"},         {2, "a"},    {5, "="},
-       {2, "b"},         {4, ";"},    {2, "c"},         {5, "="},    {2, "d"},
-       {4, ";"},         {3, "}"},    {2, "procedure"}, {2, "two"},  {3, "{"},
-       {2, "if"},        {7, "("},    {2, "a"},         {8, "!="},   {2, "b"},
-       {7, ")"},         {2, "then"}, {3, "{"},         {2, "d"},    {5, "="},
-       {2, "e"},         {4, ";"},    {3, "}"},         {2, "else"}, {3, "{"},
-       {2, "e"},         {5, "="},    {2, "f"},         {4, ";"},    {3, "}"},
-       {3, "}"}});
+  TokenList expected_tokens({{tt::kKeyword, "procedure"},
+                             {tt::kName, "one"},
+                             {tt::kBrace, "{"},
+                             {tt::kName, "a"},
+                             {tt::kAssignment, "="},
+                             {tt::kName, "b"},
+                             {tt::kSemicolon, ";"},
+                             {tt::kName, "c"},
+                             {tt::kAssignment, "="},
+                             {tt::kName, "d"},
+                             {tt::kSemicolon, ";"},
+                             {tt::kBrace, "}"},
+                             {tt::kKeyword, "procedure"},
+                             {tt::kName, "two"},
+                             {tt::kBrace, "{"},
+                             {tt::kKeyword, "if"},
+                             {tt::kBracket, "("},
+                             {tt::kName, "a"},
+                             {tt::kRelational, "!="},
+                             {tt::kName, "b"},
+                             {tt::kBracket, ")"},
+                             {tt::kKeyword, "then"},
+                             {tt::kBrace, "{"},
+                             {tt::kName, "d"},
+                             {tt::kAssignment, "="},
+                             {tt::kName, "e"},
+                             {tt::kSemicolon, ";"},
+                             {tt::kBrace, "}"},
+                             {tt::kKeyword, "else"},
+                             {tt::kBrace, "{"},
+                             {tt::kName, "e"},
+                             {tt::kAssignment, "="},
+                             {tt::kName, "f"},
+                             {tt::kSemicolon, ";"},
+                             {tt::kBrace, "}"},
+                             {tt::kBrace, "}"}});
 
   Assert::IsTrue(actual_tokens == expected_tokens);
 }
