@@ -45,6 +45,7 @@ class Tokenizer {
     kOperator,
     kBracket,
     kConditional,
+	kRelational,
     kUnknown,
   };
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
@@ -116,10 +117,10 @@ class Tokenizer {
   // matches, and kAssignment type if a single '=' is matched.
   static Result TokenizeEquals(string input, int current_index = 0);
 
-  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditionals
-  // (">", "<", "!=", ">=", "<=") and returns the result as a Result struct
-  static Result Tokenizer::TokenizeConditionals(string input,
-                                                int current_index);
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+  // expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
+  // struct
+  static Result Tokenizer::TokenizeRelationals(string input, int current_index);
 
   // Helper function to return empty result, meaning tokenization did not find a
   // match

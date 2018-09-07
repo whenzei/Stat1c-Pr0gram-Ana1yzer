@@ -14,12 +14,15 @@ enum TokenType {
   kOperator = 6,
   kBracket = 7,
   kConditional = 8,
-  kUnknown = 9,
+  kRelational = 9,
+  kKeyword = 10,
+  kUnknown = 11,
 };
 
 static const string kTokenTypeNames[] = {
-    "nothing",    "digit",    "name",    "brace",       "semicolon",
-    "assignment", "operator", "bracket", "conditional", "unknown"};
+    "nothing",     "digit",      "name",     "brace",
+    "semicolon",   "assignment", "operator", "bracket",
+    "conditional", "relational", "keyword",  "unknown"};
 
 const int kNumberOfFunctions = 10;
 
@@ -30,7 +33,7 @@ TokenList Tokenizer::Tokenize(string input) {
       &SkipComments,        &SkipWhitespace,    &TokenizeDigits,
       &TokenizeNames,       &TokenizeBraces,    &TokenizeSemicolon,
       &TokenizeEquals,      &TokenizeOperators, &TokenizeBrackets,
-      &TokenizeConditionals};
+      &TokenizeRelationals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -169,20 +172,21 @@ Result Tokenizer::TokenizeEquals(string input, int current_index) {
   return result;
 }
 
-// Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditionals
-// (">", "<", "!=", ">=", "<=") and returns the result as a Result struct
-// Precondition: This function must be after Tokenizer::TokenizeEquals if used
-// in a function pointer array, or "=" will be classified as a kConditional type
-// instead of kAssignment type due to regex.
-Result Tokenizer::TokenizeConditionals(string input, int current_index) {
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+// expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
+// struct
+// Precondition: This function must be after Tokenizer::TokenizeEquals if
+// used in a function pointer array, or "=" will be classified as a kConditional
+// type instead of kAssignment type due to regex.
+Result Tokenizer::TokenizeRelationals(string input, int current_index) {
   // check if it is of the form !=
   Result result(
-      TokenizePattern(kConditional, regex("[!]=?"), input, current_index));
+      TokenizePattern(kRelational, regex("[!]=?"), input, current_index));
   if (result.num_consumed_characters == 2) {
     // must be exactly of the form !=, if not try to tokenize with [><]
     return result;
   }
-  return TokenizePattern(kConditional, regex{R"([><=]=?)"}, input,
+  return TokenizePattern(kRelational, regex{R"([><=]=?)"}, input,
                          current_index);
 }
 

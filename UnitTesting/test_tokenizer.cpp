@@ -162,47 +162,46 @@ TEST_METHOD(TestTokenizeBrackets) {
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 }
 
-TEST_METHOD(TestTokenizeConditionals) {
+TEST_METHOD(TestTokenizeRelationals) {
   string kTestInput("a >=== b");
-  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kConditional);
+  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kRelational);
 
-  // returns empty result for non conditionals (testing only characters)
-  Result actual_result = Tokenizer::TokenizeConditionals(kTestInput, 0);
+  // returns empty result for non rel_expr (testing only characters)
+  Result actual_result = Tokenizer::TokenizeRelationals(kTestInput, 0);
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 
-  // should detect the ">=" conditional
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  // should detect the ">=" relatonal
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   Result expected_result({2, {kTestType, ">="}});
   Assert::IsTrue(actual_result == expected_result);
 
-  // should detect the "<=" conditional
+  // should detect the "<=" relational
   kTestInput = "a <=== b";
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   expected_result = Result({2, {kTestType, "<="}});
   Assert::IsTrue(actual_result == expected_result);
 
-  // should detect just a single "<" conditional character
+  // should detect just a single "<" relational character
   kTestInput = "a <<< b";
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   expected_result = Result({1, {kTestType, "<"}});
   Assert::IsTrue(actual_result == expected_result);
 
-  // should detect just a single ">" conditional character
+  // should detect just a single ">" relational character
   kTestInput = "a >>> b";
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   expected_result = Result({1, {kTestType, ">"}});
   Assert::IsTrue(actual_result == expected_result);
 
-  // should detect just the "!=" conditional
+  // should detect just the "!=" relational
   kTestInput = "a !== b";
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   expected_result = Result({2, {kTestType, "!="}});
   Assert::IsTrue(actual_result == expected_result);
 
-  // should detect a == conditional (even if TokenizeEquals already does it)
-  // should detect just the "!=" conditional
+  // should detect a "==" relational (even if TokenizeEquals already does it)
   kTestInput = "a === b";
-  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 2);
+  actual_result = Tokenizer::TokenizeRelationals(kTestInput, 2);
   expected_result = Result({2, {kTestType, "=="}});
   Assert::IsTrue(actual_result == expected_result);
 }
