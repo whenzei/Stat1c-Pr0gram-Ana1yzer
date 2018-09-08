@@ -29,7 +29,7 @@ class ProcList {
 
   // get all procedure names stored inside procedure list
   // @returns the list of procedure names (can be empty)
-  ProcNameList GetProcNameList();
+  ProcNameList GetAllProcName();
 
  private: 
   // checks whether the given procedure name is already in the procedure table

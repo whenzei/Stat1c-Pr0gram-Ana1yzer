@@ -6,9 +6,13 @@
 
 bool PKB::InsertProcName(ProcName proc_name) { return proc_list_.InsertProcName(proc_name); }
 
-ProcNameList PKB::GetAllProcName() { return proc_list_.GetProcNameList(); }
+ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
 
 VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+
+bool PKB::InsertConstValue(ConstValue const_value) { return const_list_.InsertConstValue(const_value); }
+
+ConstValueList PKB::GetAllConstValue() { return const_list_.GetAllConstValue(); }
 
 int PKB::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
   // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)

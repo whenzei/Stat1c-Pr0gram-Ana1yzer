@@ -13,7 +13,7 @@ bool ProcList::InsertProcName(ProcName proc_name) {
   }
 }
 
-ProcNameList ProcList::GetProcNameList() { return proc_name_list_; }
+ProcNameList ProcList::GetAllProcName() { return proc_name_list_; }
 
 bool ProcList::FindProcName(ProcName proc_name) {
   for (ProcName& element: proc_name_list_) {

@@ -45,7 +45,7 @@ TEST_CLASS(TestProcList) {
   TEST_METHOD(TestGetProcList) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);
-    ProcNameList proc_list_result = proc_list.GetProcNameList();
+    ProcNameList proc_list_result = proc_list.GetAllProcName();
     Assert::AreEqual(kProcName1, proc_list_result.front());
   }
   TEST_METHOD(TestGetProcListMultiple) {
@@ -53,7 +53,7 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     proc_list.InsertProcName(kProcName3);
-    ProcNameList proc_list_result = proc_list.GetProcNameList();
+    ProcNameList proc_list_result = proc_list.GetAllProcName();
     Assert::AreEqual(kProcName1, proc_list_result.front());
     ProcNameList::iterator iter = proc_list_result.begin();
     iter++;

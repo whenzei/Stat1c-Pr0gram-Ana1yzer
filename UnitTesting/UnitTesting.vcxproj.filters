@@ -38,6 +38,9 @@
     <ClCompile Include="test_var_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_const_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="test_stmt_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

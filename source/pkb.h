@@ -3,6 +3,7 @@
 #include "assign_table.h"
 #include "proc_list.h"
 #include "var_list.h"
+#include "const_list.h"
 
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
@@ -12,12 +13,13 @@ class PKB {
   ProcList proc_list_;
   AssignTable assign_table_;
   VarList var_list_; //TODO: update var list when doing insertion of stmts
+  ConstList const_list_;
 
  public:
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
   // @returns true if the procedure name cannot be found in the list and is
-  // successfully inserted false if the procedure name is empty false if the
+  // successfully inserted, false if the procedure name is empty, false if the
   // procedure name was already inside the list
   bool InsertProcName(ProcName proc_name);
 
@@ -28,6 +30,16 @@ class PKB {
   // get all variable names stored inside variable list
   // @returns the list of variable names (can be empty)
   VarNameList GetAllVarName();
+
+  // inserts the given constant value into the constant list
+  // @param const_value the constatnt value to be inserted
+  // @returns true if the constant value cannot be found in the list and is
+  // successfully inserted, false if the value was already in the list
+  bool InsertConstValue(ConstValue const_value);
+
+  // get all constant values stored inside constant list
+  // @returns the list of constant values (can be empty)
+  ConstValueList GetAllConstValue();
 
   /**
    * inserts the given assign statement into the assignment table
