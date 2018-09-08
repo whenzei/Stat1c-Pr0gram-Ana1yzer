@@ -10,9 +10,9 @@ namespace UnitTesting {
 TEST_CLASS(TestAssignTable) {
   const int kSuccess = 0;
   const int kFail = -1;
-  const StmtNum kStmtNum1 = 2;
-  const StmtNum kStmtNum2 = 4;
-  const StmtNum kStmtNum3 = 5;
+  const StmtNumInt kStmtNum1 = 2;
+  const StmtNumInt kStmtNum2 = 4;
+  const StmtNumInt kStmtNum3 = 5;
   const Stmt kAssignStmt1 = "a = 3";
   const Stmt kAssignStmt2 = "b = 4";
   const Stmt kAssignStmt3 = "c = 5";

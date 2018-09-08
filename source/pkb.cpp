@@ -14,7 +14,7 @@ bool PKB::InsertConstValue(ConstValue const_value) { return const_list_.InsertCo
 
 ConstValueList PKB::GetAllConstValue() { return const_list_.GetAllConstValue(); }
 
-int PKB::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
+int PKB::InsertAssignStmt(StmtNumInt statement_number, Stmt assign_statement) {
   // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)
   return assign_table_.InsertAssignStmt(statement_number, assign_statement);
 }

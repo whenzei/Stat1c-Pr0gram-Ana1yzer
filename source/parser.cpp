@@ -10,7 +10,6 @@
 #include "parser.h"
 #include "pkb.h"
 #include "simple_validator.h"
-#include "statement.h"
 #include "tokenizer.h"
 
 const bool DEBUG_FLAG = true;

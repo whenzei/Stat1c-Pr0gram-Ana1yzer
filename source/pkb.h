@@ -4,6 +4,7 @@
 #include "proc_list.h"
 #include "var_list.h"
 #include "const_list.h"
+#include "stmt_table.h"
 
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
@@ -12,8 +13,9 @@ class PKB {
  private:
   ProcList proc_list_;
   AssignTable assign_table_;
-  VarList var_list_; //TODO: update var list when doing insertion of stmts
+  VarList var_list_; //TODO: insert vars to var list in all InsertXxStmt functions
   ConstList const_list_;
+  StmtTable stmt_table_; //TODO: insert stmt to stmt table in all InsertXxStmt functions
 
  public:
   // inserts the given procedure name into the procedure list
@@ -50,7 +52,7 @@ class PKB {
    * @returns -1 if the assign statement is empty
    * @returns -1 if the statement number was already in the table
    */
-  int InsertAssignStmt(StmtNum statement_number, Stmt assign_statement);
+  int InsertAssignStmt(StmtNumInt statement_number, Stmt assign_statement);
 
   /**
    * get statement numbers for all assign statements stored inside assignment

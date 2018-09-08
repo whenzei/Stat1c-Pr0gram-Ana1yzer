@@ -11,7 +11,7 @@ using std::map;
 using std::string;
 using std::list;
 
-using StmtNum = int;
+using StmtNumInt = int;
 using Stmt = string;
 using StmtList = list<string>;
 
@@ -21,7 +21,7 @@ using StmtList = list<string>;
  */
 class AssignTable {
   
-  map<StmtNum, Stmt> assign_map_;
+  map<StmtNumInt, Stmt> assign_map_;
   StmtList assign_vector_;
 
  public:
@@ -34,7 +34,7 @@ class AssignTable {
    * @returns -1 if the assign statement is empty
    * @returns -1 if the statement number was already in the table
    */
-  int InsertAssignStmt(StmtNum statement_number, Stmt assign_statement);
+  int InsertAssignStmt(StmtNumInt statement_number, Stmt assign_statement);
 
   /**
    * get statement numbers for all assign statements stored inside assignment

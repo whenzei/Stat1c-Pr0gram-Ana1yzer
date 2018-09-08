@@ -5,7 +5,7 @@
 
 using std::stringstream;
 
-int AssignTable::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
+int AssignTable::InsertAssignStmt(StmtNumInt statement_number, Stmt assign_statement) {
   if (assign_statement.compare("") == 0) {
     return -1;
   } else if (assign_map_.find(statement_number) != assign_map_.end()) {

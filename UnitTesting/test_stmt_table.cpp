@@ -7,43 +7,60 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace UnitTesting {
 
 TEST_CLASS(TestStmtTable) {
-  const int kSuccess = 0;
-  const int kFailure = -1;
-  const int kSampleStmtIdx1 = 3;
-  const int kSampleStmtIdx2 = 4;
-  const string kSampleStmt1 = "a = b";
-  const string kSampleStmt2 = "c = d";
+  const StmtNum kStmtNum1 = "1";
+  const StmtNum kStmtNum2 = "2";
+  const StmtNum kStmtNum3 = "3";
+  const StmtNum kStmtNum4 = "";
+  const StmtListIndex kStmtListIndex1 = 0;
+  const StmtListIndex kStmtListIndex2 = 1;
+  const StmtListIndex kStmtListIndex3 = 2;
+  
   TEST_METHOD(TestInsertStmt) {
     StmtTable stmt_table;
-    int result = stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    Assert::AreEqual(kSuccess, result);
+    bool result = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
+    Assert::AreEqual(true, result);
   }
 
-  TEST_METHOD(TestInsertStmtExactDuplicate) {
+  TEST_METHOD(TestInsertStmtEmpty) {
     StmtTable stmt_table;
-    stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    int result = stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    Assert::AreEqual(kFailure, result);
+    bool result = stmt_table.InsertStmt(kStmtNum4, kStmtListIndex1);
+    Assert::AreEqual(false, result);
   }
+
   TEST_METHOD(TestInsertStmtDuplicate) {
     StmtTable stmt_table;
-    stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    int result = stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt2);
-    Assert::AreEqual(kFailure, result);
+    stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
+    bool result = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex2);
+    Assert::AreEqual(false, result);
   }
-  TEST_METHOD(TestGetAllStmtNumsSingle) {
+
+  TEST_METHOD(TestInsertStmtMultiple) {
     StmtTable stmt_table;
-    stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    std::vector<int> stmt_nums = stmt_table.GetAllStmtNums();
-    Assert::AreEqual(kSampleStmtIdx1, stmt_nums.at(0));
+    bool result1 = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
+    bool result2 = stmt_table.InsertStmt(kStmtNum2, kStmtListIndex2);
+    bool result3 = stmt_table.InsertStmt(kStmtNum3, kStmtListIndex3);
+    Assert::AreEqual(true, result1);
+    Assert::AreEqual(true, result2);
+    Assert::AreEqual(true, result3);
   }
-  TEST_METHOD(TestGetAllStmtNumsMultiple) {
+
+  TEST_METHOD(TestCheckStmtListIndex) {
     StmtTable stmt_table;
-    stmt_table.InsertStmt(kSampleStmtIdx1, kSampleStmt1);
-    stmt_table.InsertStmt(kSampleStmtIdx2, kSampleStmt1);
-    std::vector<int> stmt_nums = stmt_table.GetAllStmtNums();
-    Assert::AreEqual(kSampleStmtIdx1, stmt_nums.at(0));
-    Assert::AreEqual(kSampleStmtIdx2, stmt_nums.at(1));
+    stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
+    StmtListIndex result = stmt_table.GetStmtListIndex(kStmtNum1);
+    Assert::AreEqual(kStmtListIndex1, result);
+  }
+  TEST_METHOD(TestCheckStmtListIndexMultiple) {
+    StmtTable stmt_table;
+    stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
+    stmt_table.InsertStmt(kStmtNum2, kStmtListIndex2);
+    stmt_table.InsertStmt(kStmtNum3, kStmtListIndex3);
+    StmtListIndex result1 = stmt_table.GetStmtListIndex(kStmtNum1);
+    Assert::AreEqual(kStmtListIndex1, result1);
+    StmtListIndex result2 = stmt_table.GetStmtListIndex(kStmtNum2);
+    Assert::AreEqual(kStmtListIndex2, result2);
+    StmtListIndex result3 = stmt_table.GetStmtListIndex(kStmtNum3);
+    Assert::AreEqual(kStmtListIndex3, result3);
   }
 };
 }
