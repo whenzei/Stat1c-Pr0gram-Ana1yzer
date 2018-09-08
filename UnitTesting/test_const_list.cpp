@@ -17,25 +17,25 @@ TEST_CLASS(TestConstList) {
  public:
   TEST_METHOD(TestInsertSuccess) {
     ConstList const_list;
-    bool status = const_list.InsertConstValue(kConstValue1);
-    Assert::AreEqual(true, status);
+    bool result = const_list.InsertConstValue(kConstValue1);
+    Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestInsertDuplicate) {
     ConstList const_list;
     const_list.InsertConstValue(kConstValue1);
-    bool status = const_list.InsertConstValue(kConstValue1);
-    Assert::AreEqual(false, status);
+    bool result = const_list.InsertConstValue(kConstValue1);
+    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestInsertMultiple) {
     ConstList const_list;
-    bool status_1 = const_list.InsertConstValue(kConstValue1);
-    bool status_2 = const_list.InsertConstValue(kConstValue2);
-    bool status_3 = const_list.InsertConstValue(kConstValue3);
-    Assert::AreEqual(true, status_1);
-    Assert::AreEqual(true, status_2);
-    Assert::AreEqual(true, status_3);
+    bool result_1 = const_list.InsertConstValue(kConstValue1);
+    bool result_2 = const_list.InsertConstValue(kConstValue2);
+    bool result_3 = const_list.InsertConstValue(kConstValue3);
+    Assert::IsTrue(result_1);
+    Assert::IsTrue(result_2);
+    Assert::IsTrue(result_3);
   }
 
   TEST_METHOD(TestGetConstValueList) {

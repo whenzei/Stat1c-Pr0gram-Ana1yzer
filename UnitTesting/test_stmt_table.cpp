@@ -18,20 +18,20 @@ TEST_CLASS(TestStmtTable) {
   TEST_METHOD(TestInsertStmt) {
     StmtTable stmt_table;
     bool result = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
-    Assert::AreEqual(true, result);
+    Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestInsertStmtEmpty) {
     StmtTable stmt_table;
     bool result = stmt_table.InsertStmt(kStmtNum4, kStmtListIndex1);
-    Assert::AreEqual(false, result);
+    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestInsertStmtDuplicate) {
     StmtTable stmt_table;
     stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
     bool result = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex2);
-    Assert::AreEqual(false, result);
+    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestInsertStmtMultiple) {
@@ -39,9 +39,9 @@ TEST_CLASS(TestStmtTable) {
     bool result1 = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
     bool result2 = stmt_table.InsertStmt(kStmtNum2, kStmtListIndex2);
     bool result3 = stmt_table.InsertStmt(kStmtNum3, kStmtListIndex3);
-    Assert::AreEqual(true, result1);
-    Assert::AreEqual(true, result2);
-    Assert::AreEqual(true, result3);
+    Assert::IsTrue(result1);
+    Assert::IsTrue(result2);
+    Assert::IsTrue(result3);
   }
 
   TEST_METHOD(TestCheckStmtListIndex) {

@@ -54,11 +54,19 @@ class PKB {
   // @param stmt_num_int the statement number of the assign statement
   // @param stmtlist_index the statement list index the assign statement belongs to
   // @param lfs_var_name the variable name on the left hand side of the assign statement
-  // @param rfs_var_name the list of variable names on the right hand side of the assign
+  // @param rfs_var_name_list the list of variable names on the right hand side of the assign
   // statement
   // @returns true if the statement number cannot be found in the table and the assign 
   // statement is successfully inserted, false otherwise
   bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName lfs_var_name, VarNameList rhs_var_name_list);
+
+  // inserts the given while statement into the StmtTable, StmtTypeList and StmtListTable
+  // @param stmt_num_int the statement number of the while statement
+  // @param stmtlist_index the statement list index the while statement belongs to
+  // @param control_var_name_list the list of control variables of the while statement
+  // @returns the StmtListIndex of the child stmtlist if the while statement is inserted
+  // successfully, -1 if insertion fails (while statement was already inside StmtTable)
+  StmtListIndex InsertWhileStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarNameList control_var_name_list);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)

@@ -16,20 +16,20 @@ TEST_CLASS(TestProcList) {
   TEST_METHOD(TestInsertSuccess) {
     ProcList proc_list;
     bool status = proc_list.InsertProcName(kProcName1);
-    Assert::AreEqual(true, status);
+    Assert::IsTrue(status);
   }
 
   TEST_METHOD(TestInsertEmpty) {
     ProcList proc_list;
     bool status = proc_list.InsertProcName(kProcName4);
-    Assert::AreEqual(false, status);
+    Assert::IsFalse(status);
   }
 
   TEST_METHOD(TestInsertDuplicate) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);
     bool status = proc_list.InsertProcName(kProcName1);
-    Assert::AreEqual(false, status);
+    Assert::IsFalse(status);
   }
 
   TEST_METHOD(TestInsertMultiple) {
@@ -37,9 +37,9 @@ TEST_CLASS(TestProcList) {
     bool status_1 = proc_list.InsertProcName(kProcName1);
     bool status_2 = proc_list.InsertProcName(kProcName2);
     bool status_3 = proc_list.InsertProcName(kProcName3);
-    Assert::AreEqual(true, status_1);
-    Assert::AreEqual(true, status_2);
-    Assert::AreEqual(true, status_3);
+    Assert::IsTrue(status_1);
+    Assert::IsTrue(status_2);
+    Assert::IsTrue(status_3);
   }
 
   TEST_METHOD(TestGetProcList) {

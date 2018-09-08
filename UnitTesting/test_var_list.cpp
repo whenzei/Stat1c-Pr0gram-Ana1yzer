@@ -14,20 +14,20 @@ TEST_CLASS(TestVarList) {
   TEST_METHOD(TestInsertSingleVar) {
     VarList var_list;
     bool result = var_list.InsertVarName(kSampleVar1);
-    Assert::AreEqual(true, result);
+    Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestInsertDuplicate) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
     bool result = var_list.InsertVarName(kSampleVar1);
-    Assert::AreEqual(false, result);
+    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestInsertEmpty) {
     VarList var_list;
     bool result = var_list.InsertVarName(kSampleVar3);
-    Assert::AreEqual(false, result);
+    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestGetAllVarSingle) {
