@@ -13,6 +13,11 @@ procedure one {
     
     g = f;                         \\ 0
     while (a < b) {                \\ 0
-        a = a + 1;                 \\ ????
-    }    
+        a = a + 1;                 \\ 5
+        if (s == t) then {         \\ 5
+            s = s + 1;             \\ 6
+        } else { 
+            t = t + 1;             \\ 7
+        }
+    }
 } 
