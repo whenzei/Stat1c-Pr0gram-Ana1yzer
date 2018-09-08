@@ -24,7 +24,8 @@ TEST_CLASS(TestPKBPQL){
 			QueryEvaluator qe;
 			string user_query = "assign a; Select a";
       PqlQuery* query = new PqlQuery();
-      PqlParser::Parse(user_query, query);
+      PqlParser parser(user_query, query);
+      parser.Parse();
 
 			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
 			string output = qe.FormatResultString(resultlist);

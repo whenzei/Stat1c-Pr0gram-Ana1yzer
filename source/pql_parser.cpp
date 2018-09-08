@@ -1,42 +1,46 @@
 #include "pql_parser.h"
+#include "pql_validator.h"
 
-#include <iostream>
 #include <sstream>
+#include <iostream>
 
-using std::cout;
-using std::endl;
+PqlParser::PqlParser(string queryText, PqlQuery* query) {
+  queryText_ = queryText;
+  query_ = query;
+}
 
-void PqlParser::Parse(string content, PqlQuery* query) {
-  if (content == "") {
-    cout << "Query cannot be empty." << endl;
-    return;
+bool PqlParser::Parse() {
+  if (queryText_ == "") {
+    errorMessage_ = "Query can not be empty.";
+    return false;
   }
 
   vector<string> statements;
 
   size_t last = 0;
   size_t next = 0;
-  while ((next = content.find(';', last)) != string::npos) {
-    statements.push_back(content.substr(last, next - last));
+  while ((next = queryText_.find(';', last)) != string::npos) {
+    statements.push_back(queryText_.substr(last, next - last));
     last = next + 1;
   }
-  statements.push_back(content.substr(last));
-
-  if (statements.size() == 0) {
-    cout << "Invalid query syntax. Possibly missing semicolon." << endl;
-    return;
-  }
+  statements.push_back(queryText_.substr(last));
 
   for (vector<string>::const_iterator i = statements.begin();
     i != statements.end(); ++i) {
-    ParseStatement(*i, query, i+1 == statements.end());
+    if (!ParseStatement(*i, i+1 == statements.end())) return false;
   }
+
+  return true;
 }
 
-void PqlParser::ParseStatement(string statement, PqlQuery* query, bool isLast) {
+bool PqlParser::ParseStatement(string statement, bool isLast) {
   if (statement == "") {
-    cout << "Invalid query syntax." << endl;
-    return;
+    if (isLast) {
+      errorMessage_ = "Missing select statement.";
+    } else {
+      errorMessage_ = "Declaration can not be empty.";
+    }
+    return false;
   }
 
   vector<string> tokens;
@@ -48,31 +52,35 @@ void PqlParser::ParseStatement(string statement, PqlQuery* query, bool isLast) {
   }
 
   if (tokens.size() == 0) {
-    cout << "Invalid query syntax." << endl;
-    return;
+    errorMessage_ = "Statements can not be empty.";
+    return false;
   } else {
     if (tokens[0] == "Select") {
       if (isLast) {
-        ParseSelect(tokens, query);
+        if (!ParseSelect(tokens)) return false;
       } else {
-        cout << "Select clause must be the last statement." << endl;
-        return;
+        errorMessage_ = "Select clause must be the last statement.";
+        return false;
       }
     }
     else {
-      ParseDeclaration(tokens, query);
+      if (!ParseDeclaration(tokens)) return false;
     }
   }
+
+  return true;
 }
 
-void PqlParser::ParseSelect(vector<string> tokens, PqlQuery* query) {
+bool PqlParser::ParseSelect(vector<string> tokens) {
   // TODO: check for grammar
 
   // set variable name
-  query->SetVarName(tokens[1]);
+  query_->SetVarName(tokens[1]);
+
+  return true;
 }
 
-void PqlParser::ParseDeclaration(vector<string> tokens, PqlQuery* query) {
+bool PqlParser::ParseDeclaration(vector<string> tokens) {
   string entity_raw = tokens[0];
   PqlDeclarationEntity entity;
 
@@ -108,13 +116,40 @@ void PqlParser::ParseDeclaration(vector<string> tokens, PqlQuery* query) {
   }
   else if (entity_raw == "procedure") {
     entity = kProcedure;
+  } else {
+    errorMessage_ = "Invalid declaration entity.";
+    return false;
   }
 
   for (int i = 1; i < tokens.size(); i++) {
-    // TODO: check for grammar
+    string synonym = tokens[i];
+    
+    // check for comma
+    if (i != tokens.size() - 1) {
+      if (synonym.back() != ',') {
+        errorMessage_ = "Missing comma in declaration synonyms.";
+        return false;
+      } else {
+        synonym = synonym.substr(0, synonym.size() - 1);
+      }
+    }
 
-    // add to declarations
-    query->AddDeclaration(entity, tokens[i]);
+    // check for grammar
+    if (PqlValidator::ValidateIdent(synonym)) {
+      // add to declarations
+      if (!query_->AddDeclaration(entity, synonym)) {
+        errorMessage_ = "Duplicated declaration synonym.";
+        return false;
+      }
+    } else {
+      errorMessage_ = "Declaration synonym has to be in IDENT format.";
+      return false;
+    }
   }
-  
+
+  return true;
+}
+
+string PqlParser::GetErrorMessage() {
+  return errorMessage_;
 }
