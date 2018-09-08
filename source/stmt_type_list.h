@@ -32,6 +32,7 @@ class StmtTypeList {
   static const StmtType kSizeOfVector = 6;
   
  public:
+  // constructor
   StmtTypeList();
 
   // Insert an assign statement into the StmtTypeList
