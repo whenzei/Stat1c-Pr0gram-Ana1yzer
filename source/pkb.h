@@ -68,6 +68,30 @@ class PKB {
   // successfully, -1 if insertion fails (while statement was already inside StmtTable)
   StmtListIndex InsertWhileStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarNameList control_var_name_list);
 
+  // inserts the given if statement into the StmtTable, StmtTypeList and StmtListTable
+  // @param stmt_num_int the statement number of the if statement
+  // @param stmtlist_index the statement list index the if statement belongs to
+  // @param control_var_name_list the list of control variables of the if statement
+  // @returns <then_stmtlist_index, else_stmtlist_index> of the if statement if it is
+  // inserted successfully, -1 if insertion fails (if statement was already inside StmtTable)
+  pair<StmtListIndex, StmtListIndex> InsertIfStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarNameList control_var_name_list);
+
+  // inserts the given read statement into the StmtTable, StmtTypeList and StmtListTable
+  // @param stmt_num_int the statement number of the read statement
+  // @param stmtlist_index the statement list index the read statement belongs to
+  // @param var_name the read variable
+  // @returns true if the read statement is inserted successfully, false if insertion fails 
+  // (read statement was already inside StmtTable)
+  bool InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName var_name);
+
+  // inserts the given print statement into the StmtTable, StmtTypeList and StmtListTable
+  // @param stmt_num_int the statement number of the print statement
+  // @param stmtlist_index the statement list index the print statement belongs to
+  // @param var_name the printed variable
+  // @returns true if the print statement is inserted successfully, false if
+  // insertion fails (print statement was already inside StmtTable)
+  bool InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName var_name);
+
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
