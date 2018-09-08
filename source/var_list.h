@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef VAR_LIST_H
-#define VAR_LIST_H
+#ifndef SPA_VAR_LIST_H
+#define SPA_VAR_LIST_H
 
 #include <string>
 #include <list>
@@ -36,4 +36,4 @@ class VarList {
   bool InsertVarName(VarName var_name);
 };
 
-#endif !VAR_LIST_H
+#endif !SPA_VAR_LIST_H

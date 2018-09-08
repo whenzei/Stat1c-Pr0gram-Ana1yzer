@@ -45,6 +45,9 @@
     <ClCompile Include="..\source\stmt_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\stmtlist_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pql_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\stmt_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\stmtlist_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\statement.h">

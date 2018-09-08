@@ -5,6 +5,7 @@
 #include "var_list.h"
 #include "const_list.h"
 #include "stmt_table.h"
+#include "stmtlist_table.h"
 
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
@@ -16,6 +17,7 @@ class PKB {
   VarList var_list_; //TODO: insert vars to var list in all InsertXxStmt functions
   ConstList const_list_;
   StmtTable stmt_table_; //TODO: insert stmt to stmt table in all InsertXxStmt functions
+  StmtListTable stmtlist_table_; //TODO: insert stmt to stmtlist table in all InsertXxStmt functions
 
  public:
   // inserts the given procedure name into the procedure list

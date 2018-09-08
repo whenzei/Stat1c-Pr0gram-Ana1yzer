@@ -1,8 +1,6 @@
 #pragma once
 
 #include "pkb.h"
-#include "proc_list.h"
-#include "assign_table.h"
 
 bool PKB::InsertProcName(ProcName proc_name) { return proc_list_.InsertProcName(proc_name); }
 
