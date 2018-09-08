@@ -1,7 +1,8 @@
 #pragma once
 
-#include "proc_list.h"
 #include "assign_table.h"
+#include "proc_list.h"
+#include "var_list.h"
 
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
@@ -10,22 +11,23 @@ class PKB {
  private:
   ProcList proc_list_;
   AssignTable assign_table_;
+  VarList var_list_; //TODO: update var list when doing insertion of stmts
 
  public:
-  /**
-   * inserts the given procedure name into the procedure table
-   * @param proc_name the procedure name to be inserted
-   * @returns true if the procedure name cannot be found in the table and is successfully inserted 
-   *          false if the procedure name is empty 
-   *          false if the procedure name was already inside the table
-   */
+  // inserts the given procedure name into the procedure list
+  // @param proc_name the procedure name to be inserted
+  // @returns true if the procedure name cannot be found in the list and is
+  // successfully inserted false if the procedure name is empty false if the
+  // procedure name was already inside the list
   bool InsertProcName(ProcName proc_name);
 
-  /**
-   * get all procedure names stored inside procedure table
-   * @returns the vector of procedure names (can be empty)
-   */
+  // get all procedure names stored inside procedure list
+  // @returns the list of procedure names (can be empty)
   ProcNameList GetAllProcName();
+
+  // get all variable names stored inside variable list
+  // @returns the list of variable names (can be empty)
+  VarNameList GetAllVarName();
 
   /**
    * inserts the given assign statement into the assignment table
@@ -44,7 +46,6 @@ class PKB {
    * @returns the vector of statement numbers(can be empty)
    */
   StmtList GetAllAssignStmt();
-
 };
 
 #endif  // !SPA_PKB_H

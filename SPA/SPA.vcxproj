@@ -21,7 +21,7 @@
     <ClCompile Include="..\source\proc_list.cpp" />
     <ClCompile Include="..\source\assign_table.cpp" />
     <ClCompile Include="..\source\stmt_table.cpp" />
-    <ClCompile Include="..\source\var_table.cpp" />
+    <ClCompile Include="..\source\var_list.cpp" />
     <ClCompile Include="..\source\pql_query.cpp" />
     <ClCompile Include="..\source\query_evaluator.cpp" />
   </ItemGroup>
@@ -34,7 +34,7 @@
     <ClInclude Include="..\source\assign_table.h" />
     <ClInclude Include="..\source\statement.h" />
     <ClInclude Include="..\source\stmt_table.h" />
-    <ClInclude Include="..\source\var_table.h" />
+    <ClInclude Include="..\source\var_list.h" />
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\query_evaluator.h" />
     <ClInclude Include="..\source\pql_parser.h" />

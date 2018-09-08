@@ -8,6 +8,8 @@ bool PKB::InsertProcName(ProcName proc_name) { return proc_list_.InsertProcName(
 
 ProcNameList PKB::GetAllProcName() { return proc_list_.GetProcNameList(); }
 
+VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+
 int PKB::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
   // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)
   return assign_table_.InsertAssignStmt(statement_number, assign_statement);

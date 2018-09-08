@@ -36,7 +36,7 @@
     <ClCompile Include="..\source\simple_validator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\var_table.cpp">
+    <ClCompile Include="..\source\var_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\stmt_table.cpp">
@@ -74,7 +74,7 @@
     <ClInclude Include="..\source\simple_validator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\var_table.h">
+    <ClInclude Include="..\source\var_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\stmt_table.h">
