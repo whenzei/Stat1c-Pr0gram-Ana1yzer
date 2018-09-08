@@ -10,31 +10,31 @@ using std::string;
 using std::list;
 
 using ProcName = string;
-using ProcList = list<string>;
+using ProcNameList = list<string>;
 
 /**
  * The procedure table class for the PKB component
  * Used to store procedure names that are passed into PKB from the parser
  */
-class ProcTable {
+class ProcList {
   
-  ProcList proc_vector_;
+  ProcNameList proc_name_list_;
 
  public:
   /**
    * inserts the given procedure name into the procedure table
    * @param proc_name the procedure name to be inserted
-   * @returns 0 if the procedure name cannot be found in the table and is successfully inserted 
-   *         -1 if the procedure name is empty 
-   *         -1 if the procedure name was already inside the table
+   * @returns true if the procedure name cannot be found in the table and is successfully inserted 
+   *          false if the procedure name is empty 
+   *          false if the procedure name was already inside the table
    */
-  int InsertProcName(ProcName proc_name);
+  bool InsertProcName(ProcName proc_name);
 
   /**
    * get all procedure names stored inside procedure table
    * @returns the vector of procedure names (can be empty)
    */
-  ProcList GetProcTable();
+  ProcNameList GetProcNameList();
 
  private: 
   /**

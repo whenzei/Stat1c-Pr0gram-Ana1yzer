@@ -1,6 +1,6 @@
 #pragma once
 
-#include "proc_table.h"
+#include "proc_list.h"
 #include "assign_table.h"
 
 #ifndef SPA_PKB_H
@@ -8,24 +8,24 @@
 
 class PKB {
  private:
-  ProcTable proc_table_;
+  ProcList proc_list_;
   AssignTable assign_table_;
 
  public:
   /**
    * inserts the given procedure name into the procedure table
    * @param proc_name the procedure name to be inserted
-   * @returns 0 if the procedure name cannot be found in the table and is successfully inserted 
-   *         -1 if the procedure name is empty 
-   *         -1 if the procedure name was already inside the table
+   * @returns true if the procedure name cannot be found in the table and is successfully inserted 
+   *          false if the procedure name is empty 
+   *          false if the procedure name was already inside the table
    */
-  int InsertProc(ProcName proc_name);
+  bool InsertProcName(ProcName proc_name);
 
   /**
    * get all procedure names stored inside procedure table
    * @returns the vector of procedure names (can be empty)
    */
-  ProcList GetAllProc();
+  ProcNameList GetAllProcName();
 
   /**
    * inserts the given assign statement into the assignment table

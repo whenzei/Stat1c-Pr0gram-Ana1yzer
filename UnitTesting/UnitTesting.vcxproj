@@ -172,7 +172,7 @@
     </ClCompile>
     <ClCompile Include="test_simple_validator.cpp" />
     <ClCompile Include="test_assign_table.cpp" />
-    <ClCompile Include="test_proc_table.cpp" />
+    <ClCompile Include="test_proc_list.cpp" />
     <ClCompile Include="test_stmt_table.cpp" />
     <ClCompile Include="test_var_table.cpp" />
     <ClCompile Include="test_query_evaluator.cpp" />

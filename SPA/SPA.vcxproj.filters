@@ -27,7 +27,7 @@
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\proc_table.cpp">
+    <ClCompile Include="..\source\proc_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\source\assign_table.cpp">
@@ -65,7 +65,7 @@
     <ClInclude Include="..\source\tokenizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\proc_table.h">
+    <ClInclude Include="..\source\proc_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\assign_table.h">

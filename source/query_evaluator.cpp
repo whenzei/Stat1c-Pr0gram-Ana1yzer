@@ -32,7 +32,7 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
       switch (select_type) {
       case PqlDeclarationEntity::kProcedure:
         // Get all procedures name from PKB and store into results list
-        result_list = pkb.GetAllProc();
+        result_list = pkb.GetAllProcName();
         std::copy(result_list.begin(), result_list.end(),
           std::back_inserter(results));
         break;

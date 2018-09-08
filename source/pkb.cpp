@@ -1,12 +1,12 @@
 #pragma once
 
 #include "pkb.h"
-#include "proc_table.h"
+#include "proc_list.h"
 #include "assign_table.h"
 
-int PKB::InsertProc(ProcName proc_name) { return proc_table_.InsertProcName(proc_name); }
+bool PKB::InsertProcName(ProcName proc_name) { return proc_list_.InsertProcName(proc_name); }
 
-ProcList PKB::GetAllProc() { return proc_table_.GetProcTable(); }
+ProcNameList PKB::GetAllProcName() { return proc_list_.GetProcNameList(); }
 
 int PKB::InsertAssignStmt(StmtNum statement_number, Stmt assign_statement) {
   // to-do: insert to statement table (to be added when integrating with Sophie's StmtTable class)

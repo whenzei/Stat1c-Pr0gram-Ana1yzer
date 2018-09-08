@@ -26,7 +26,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_proc_table.cpp">
+    <ClCompile Include="test_proc_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_assign_table.cpp">

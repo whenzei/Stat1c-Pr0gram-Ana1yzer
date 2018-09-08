@@ -79,7 +79,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     std::cout << "Procedure added: " << procedure_name << endl;
   }
 
-  pkb_->InsertProc(procedure_name);
+  pkb_->InsertProcName(procedure_name);
 
   queue<Token> stmtQueue;
 
