@@ -1,23 +1,28 @@
 #pragma once
 
-#include "assign_table.h"
-#include "proc_list.h"
-#include "var_list.h"
-#include "const_list.h"
-#include "stmt_table.h"
-#include "stmtlist_table.h"
-
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
 
+#include "const_list.h"
+#include "proc_list.h"
+#include "stmt_table.h"
+#include "stmt_type_list.h"
+#include "stmtlist_table.h"
+#include "var_list.h"
+
+using StmtNumInt = int;
+
 class PKB {
- private:
   ProcList proc_list_;
-  AssignTable assign_table_;
-  VarList var_list_; //TODO: insert vars to var list in all InsertXxStmt functions
+  VarList
+      var_list_;  // TODO: insert vars to var list in all InsertXxStmt functions
   ConstList const_list_;
-  StmtTable stmt_table_; //TODO: insert stmt to stmt table in all InsertXxStmt functions
-  StmtListTable stmtlist_table_; //TODO: insert stmt to stmtlist table in all InsertXxStmt functions
+  StmtTable stmt_table_;  // TODO: insert stmt to stmt table in all InsertXxStmt
+                          // functions
+  StmtListTable stmtlist_table_;  // TODO: insert stmt to stmtlist table in all
+                                  // InsertXxStmt functions
+  StmtTypeList stmt_type_list_;   // TODO: insert stmt to stmt type list in all
+                                  // InsertXxStmt functions
 
  public:
   // inserts the given procedure name into the procedure list
@@ -45,23 +50,42 @@ class PKB {
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
 
-  /**
-   * inserts the given assign statement into the assignment table
-   * @param statement_number the statement number of the assign statement
-   * @param assign_statement the assign statement to be inserted
-   * @returns 0 if the statement number cannot be found in the table and the
-   * assign statement is successfully inserted
-   * @returns -1 if the assign statement is empty
-   * @returns -1 if the statement number was already in the table
-   */
-  int InsertAssignStmt(StmtNumInt statement_number, Stmt assign_statement);
+  // inserts the given assign statement into the StmtTable, StmtTypeList and StmtListTable
+  // @param stmt_num_int the statement number of the assign statement
+  // @param stmtlist_index the statement list index the assign statement belongs to
+  // @param lfs_var_name the variable name on the left hand side of the assign statement
+  // @param rfs_var_name the list of variable names on the right hand side of the assign
+  // statement
+  // @returns true if the statement number cannot be found in the table and the assign 
+  // statement is successfully inserted, false otherwise
+  bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName lfs_var_name, VarNameList rhs_var_name_list);
 
-  /**
-   * get statement numbers for all assign statements stored inside assignment
-   * table
-   * @returns the vector of statement numbers(can be empty)
-   */
-  StmtList GetAllAssignStmt();
+  // get statement numbers for all statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllStmt();
+
+  // get statement numbers for all assign statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllAssignStmt();
+
+  // get statement numbers for all while statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllWhileStmt();
+
+  // get statement numbers for all if statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllIfStmt();
+
+  // get statement numbers for all read statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllReadStmt();
+
+  // get statement numbers for all print statements stored inside stmt type list
+  // @returns the list of statement numbers(can be empty)
+  StmtNumList GetAllPrintStmt();
+
+ private:
+  StmtNum ToString(int stmt_num_int);
 };
 
 #endif  // !SPA_PKB_H

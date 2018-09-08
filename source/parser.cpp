@@ -89,7 +89,8 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
     // Check if it is type NAME and not a SIMPLE keyword
     if (currToken.type == Tokenizer::TokenType::kName &&
         !SimpleValidator::IsKeyword(currToken.value)) {
-      // TODO: add to PKB's VarTable
+      // TODO: add to PKB's VarTable 
+	  // EDIT: no need to add var to pkb anymore, pkb will add variable when doing insertion for assign, while and if
       if (DEBUG_FLAG) {
         std::cout << "Variable added: " << currToken.value << endl;
       }
@@ -104,7 +105,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
       }
       statement += currToken.value;
 
-      pkb_->InsertAssignStmt(statementNum, statement);
+      //pkb_->InsertAssignStmt(statementNum, statement);
 
       if (DEBUG_FLAG) {
         std::cout << "Statement " << statementNum << " added: " << statement
