@@ -22,14 +22,14 @@ ConstValueList PKB::GetAllConstValue() {
 }
 
 bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
-                           StmtListIndex stmtlist_index, VarName lfs_var_name,
-                           VarNameList rhs_var_name_list) {
+                           StmtListIndex stmtlist_index, VarName modified_var_name,
+                           VarNameList used_var_name_list) {
   StmtNum stmt_num = ToString(stmt_num_int);
   if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertAssignStmt(stmt_num);
-    var_list_.InsertVarName(lfs_var_name);
-    for (VarName& var_name : rhs_var_name_list) {
+    var_list_.InsertVarName(modified_var_name);
+    for (VarName& var_name : used_var_name_list) {
       var_list_.InsertVarName(var_name);
 	}
     // TODO: add follows, modifies and uses relationship

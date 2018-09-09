@@ -9,9 +9,6 @@ StmtTypeList::StmtTypeList() {
 }
 
 void StmtTypeList::InsertAssignStmt(StmtNum stmt_num) {
-  // No need to check for empty string or duplicate because insertion into
-  // StmtTypeList would only happen after the insertion into StmtTable.
-  // StmtTable would have returned false if insertion was unsuccessful
   stmt_type_vector_.at(kAll).push_back(stmt_num);
   stmt_type_vector_.at(kAssign).push_back(stmt_num);
 }

@@ -3,9 +3,7 @@
 #include "proc_list.h"
 
 bool ProcList::InsertProcName(ProcName proc_name) {
-  if (proc_name.compare("") == 0) {
-    return false;
-  } else if (FindProcName(proc_name)) {
+  if (FindProcName(proc_name)) {
     return false;
   } else {
     proc_name_list_.push_back(proc_name);

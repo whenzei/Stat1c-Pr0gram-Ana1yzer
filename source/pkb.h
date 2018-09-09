@@ -53,12 +53,12 @@ class PKB {
   // inserts the given assign statement into the StmtTable, StmtTypeList and StmtListTable
   // @param stmt_num_int the statement number of the assign statement
   // @param stmtlist_index the statement list index the assign statement belongs to
-  // @param lfs_var_name the variable name on the left hand side of the assign statement
-  // @param rfs_var_name_list the list of variable names on the right hand side of the assign
+  // @param modified_var_name the variable name on the left hand side of the assign statement
+  // @param used_var_name_list the list of variable names on the right hand side of the assign
   // statement
   // @returns true if the statement number cannot be found in the table and the assign 
   // statement is successfully inserted, false otherwise
-  bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName lfs_var_name, VarNameList rhs_var_name_list);
+  bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index, VarName modified_var_name, VarNameList used_var_name_list);
 
   // inserts the given while statement into the StmtTable, StmtTypeList and StmtListTable
   // @param stmt_num_int the statement number of the while statement

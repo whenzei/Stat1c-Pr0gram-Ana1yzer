@@ -10,19 +10,12 @@ TEST_CLASS(TestProcList) {
   const ProcName kProcName1 = "simple";
   const ProcName kProcName2 = "SimPle";
   const ProcName kProcName3 = "simple123";
-  const ProcName kProcName4 = "";
 
  public:
   TEST_METHOD(TestInsertSuccess) {
     ProcList proc_list;
     bool status = proc_list.InsertProcName(kProcName1);
     Assert::IsTrue(status);
-  }
-
-  TEST_METHOD(TestInsertEmpty) {
-    ProcList proc_list;
-    bool status = proc_list.InsertProcName(kProcName4);
-    Assert::IsFalse(status);
   }
 
   TEST_METHOD(TestInsertDuplicate) {

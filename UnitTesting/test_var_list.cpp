@@ -9,7 +9,6 @@ namespace UnitTesting {
 TEST_CLASS(TestVarList) {
   const string kSampleVar1 = "a";
   const string kSampleVar2 = "b";
-  const string kSampleVar3 = "";
 
   TEST_METHOD(TestInsertSingleVar) {
     VarList var_list;
@@ -21,12 +20,6 @@ TEST_CLASS(TestVarList) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
     bool result = var_list.InsertVarName(kSampleVar1);
-    Assert::IsFalse(result);
-  }
-
-  TEST_METHOD(TestInsertEmpty) {
-    VarList var_list;
-    bool result = var_list.InsertVarName(kSampleVar3);
     Assert::IsFalse(result);
   }
 

@@ -17,7 +17,7 @@ using VarNameSet = unordered_set<string>;
 
 
 // The variable list class for the PKB component
-// Used to store procedure names that are passed into PKB from the parser
+// Used to store variable names that are passed into PKB from the parser
 class VarList {
 
   VarNameList var_name_list_;

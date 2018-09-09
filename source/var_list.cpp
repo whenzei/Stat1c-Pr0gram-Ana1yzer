@@ -3,9 +3,7 @@
 #include "var_list.h"
 
 bool VarList::InsertVarName(VarName var_name) {
-  if (var_name.compare("") == 0) {
-    return false;
-  } else if (var_name_set_.find(var_name) != var_name_set_.end()) {
+  if (var_name_set_.find(var_name) != var_name_set_.end()) {
     return false;
   } else {
     var_name_list_.push_back(var_name);

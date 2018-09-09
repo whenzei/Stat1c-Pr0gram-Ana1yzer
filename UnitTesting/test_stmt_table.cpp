@@ -10,7 +10,6 @@ TEST_CLASS(TestStmtTable) {
   const StmtNum kStmtNum1 = "1";
   const StmtNum kStmtNum2 = "2";
   const StmtNum kStmtNum3 = "3";
-  const StmtNum kStmtNum4 = "";
   const StmtListIndex kStmtListIndex1 = 0;
   const StmtListIndex kStmtListIndex2 = 1;
   const StmtListIndex kStmtListIndex3 = 2;
@@ -19,12 +18,6 @@ TEST_CLASS(TestStmtTable) {
     StmtTable stmt_table;
     bool result = stmt_table.InsertStmt(kStmtNum1, kStmtListIndex1);
     Assert::IsTrue(result);
-  }
-
-  TEST_METHOD(TestInsertStmtEmpty) {
-    StmtTable stmt_table;
-    bool result = stmt_table.InsertStmt(kStmtNum4, kStmtListIndex1);
-    Assert::IsFalse(result);
   }
 
   TEST_METHOD(TestInsertStmtDuplicate) {
