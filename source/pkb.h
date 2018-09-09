@@ -26,8 +26,7 @@ class PKB {
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
   // @returns true if the procedure name cannot be found in the list and is
-  // successfully inserted, false if the procedure name is empty, false if the
-  // procedure name was already inside the list
+  // successfully inserted, false if the procedure name was already inside the list
   bool InsertProcName(ProcName proc_name);
 
   // get all procedure names stored inside procedure list
@@ -139,23 +138,23 @@ class PKB {
 
   // @returns true if the statement specified by parent_stmt_num is the direct parent
   // of the statement specified by child_stmt_num
-  bool IsDirectParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+  bool IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
   // @returns true if the statement specified by parent_stmt_num is a parent (direct or
   // indirect) of the statement specified by child_stmt_num
-  bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+  bool IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
   // @returns the statement number of the direct parent
-  StmtNum GetDirectParent(StmtNum stmt_num);
+  StmtNum GetDirectParent(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the parents (direct + indirect)
-  StmtNumList GetParents(StmtNum stmt_num);
+  StmtNumList GetParents(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the direct children
-  StmtNumList GetDirectChildren(StmtNum stmt_num);
+  StmtNumList GetDirectChildren(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the children (direct + indirect)
-  StmtNumList GetChildren(StmtNum stmt_num);
+  StmtNumList GetChildren(StmtNumInt stmt_num_int);
 
   // @returns true if there exists any parent-child relationship
   bool HasParentRelationship();
