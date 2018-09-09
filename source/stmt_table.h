@@ -1,35 +1,39 @@
 #pragma once
 
-#ifndef STMT_TABLE_H
-#define STMT_TABLE_H
-
-#include "statement.h"
+#ifndef SPA_STMT_TABLE_H
+#define SPA_STMT_TABLE_H
 
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 using std::string;
+using std::unordered_map;
 
-const int kTempArraySize = 10;
+// StmtNum is defined as a string inside PKB, because query results have to be in the
+// format list<string>. For consistency, all StmtNum inside PKB is string so that it 
+// is easier to search and update the PKB data structures.
+using StmtNum = string;
+using StmtListIndex = int;
+using StmtMap = unordered_map<string, int>;
 
+// The statement table class for the PKB component
+// Used to store statement number and the corresponding statement list index
+// that are passed into PKB from the parser
 class StmtTable {
-  Statement stmt_table_[kTempArraySize];
-  int num_stmt_ = 0;
+  StmtMap stmt_map_;
 
 public:
-  // Constructor
-  StmtTable();
 	
-  // Takes in a statement in string format and its line number.
-  // Prerequisite: The line number and statement are valid and non-null.
-  // Checks if statement with the same line number already exists in the StmtTable and adds the statement if not.
-  // Increments statement count.
-  // Returns 0 if a statement with the same line number already exists.
-  // Returns 1 if statement is successfully added to the StmtTable.
-  int InsertStmt(int line_num, string stmt);
+  // Insert a statement into the StmtTable
+  // Prerequisite: The stmt_num is not an empty string
+  // @param stmt_num the statement number of the statement to be inserted
+  // @param stmtlist_index the statement list index of the statement to be inserted
+  // @return true if the statement is not already in StmtTable and is inserted into
+  // the table, false otherwise
+  bool InsertStmt(StmtNum stmt_num, StmtListIndex stmtlist_index);
 
-  // Returns a vector of all line numbers of all statements in the StmtTable.
-  std::vector<int> GetAllStmtNums();
+  // Get the statement list index of a given statement.
+  StmtListIndex GetStmtListIndex(StmtNum stmt_num);
 };
 
-#endif !STMT_TABLE_H
+#endif !SPA_STMT_TABLE_H
