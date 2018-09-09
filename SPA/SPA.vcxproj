@@ -23,6 +23,7 @@
     <ClCompile Include="..\source\stmt_type_list.cpp" />
     <ClCompile Include="..\source\var_list.cpp" />
     <ClCompile Include="..\source\const_list.cpp" />
+    <ClCompile Include="..\source\parent_table.cpp" />
     <ClCompile Include="..\source\pql_query.cpp" />
     <ClCompile Include="..\source\query_evaluator.cpp" />
   </ItemGroup>
@@ -38,6 +39,7 @@
     <ClInclude Include="..\source\stmt_type_list.h" />
     <ClInclude Include="..\source\var_list.h" />
     <ClInclude Include="..\source\const_list.h" />
+    <ClInclude Include="..\source\parent_table.h" />
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\query_evaluator.h" />
     <ClInclude Include="..\source\pql_parser.h" />
