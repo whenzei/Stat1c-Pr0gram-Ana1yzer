@@ -59,16 +59,16 @@ namespace UnitTesting {
     }
 
     TEST_METHOD(TestGetFollows) {
-      StmtList expectedFollowers;
+      StmtList expected_followers;
       Follows follows;
-      expectedFollowers.push_back(kSampleStmtIdx2);
-      expectedFollowers.push_back(kSampleStmtIdx3);
+      expected_followers.push_back(kSampleStmtIdx2);
+      expected_followers.push_back(kSampleStmtIdx3);
 
       follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
       follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
       StmtList followers = follows.GetFollows(kSampleStmtIdx1);
-      Assert::AreEqual(expectedFollowers.front(), followers.front());
-      Assert::AreEqual(expectedFollowers.back(), followers.back());
+      Assert::AreEqual(expected_followers.front(), followers.front());
+      Assert::AreEqual(expected_followers.back(), followers.back());
     }
 
     TEST_METHOD(TestGetDirectFollows) {
@@ -81,16 +81,16 @@ namespace UnitTesting {
     }
 
     TEST_METHOD(TestGetFollowedBy) {
-      StmtList expectedFollowees;
+      StmtList expected_followees;
       Follows follows;
-      expectedFollowees.push_back(kSampleStmtIdx1);
-      expectedFollowees.push_back(kSampleStmtIdx2);
+      expected_followees.push_back(kSampleStmtIdx1);
+      expected_followees.push_back(kSampleStmtIdx2);
 
       follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
       follows.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
       StmtList followees = follows.GetFollowedBy(kSampleStmtIdx3);
-      Assert::AreEqual(expectedFollowees.front(), followees.front());
-      Assert::AreEqual(expectedFollowees.back(), followees.back());
+      Assert::AreEqual(expected_followees.front(), followees.front());
+      Assert::AreEqual(expected_followees.back(), followees.back());
     }
 
     TEST_METHOD(TestGetDirectFollowedBy) {
