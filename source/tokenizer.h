@@ -39,16 +39,19 @@ class Tokenizer {
     kNothing,
     kDigit,
     kName,
-    kBrace,
+    kOpenBrace,
+    kCloseBrace,
     kSemicolon,
     kAssignment,
     kOperator,
-    kBracket,
+    kOpenParen,
+    kCloseParen,
     kConditional,
-	kRelational,
-	kKeyword,
+    kRelational,
+    kKeyword,
     kUnknown,
   };
+
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
@@ -100,10 +103,10 @@ class Tokenizer {
   static Result TokenizeBraces(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
-  // and closing brackets ("(" and ")"), and returns the result as a Result
+  // and closing parenthesises ("(" and ")"), and returns the result as a Result
   // struct. Note that it will only tokenize a single bracket at a time, e.g.
   // "((" will be returned as two separate results
-  static Result TokenizeBrackets(string input, int current_index = 0);
+  static Result TokenizeParenthesis(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
   // and returns the result as a Result struct

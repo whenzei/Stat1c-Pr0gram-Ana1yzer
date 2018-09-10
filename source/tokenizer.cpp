@@ -9,20 +9,22 @@ enum TokenType {
   kNothing = 0,
   kDigit = 1,
   kName = 2,
-  kBrace = 3,
-  kSemicolon = 4,
-  kAssignment = 5,
-  kOperator = 6,
-  kBracket = 7,
-  kConditional = 8,
-  kRelational = 9,
-  kKeyword = 10,
-  kUnknown = 11,
+  kOpenBrace = 3,
+  kCloseBrace = 4,
+  kSemicolon = 5,
+  kAssignment = 6,
+  kOperator = 7,
+  kOpenParen = 8,
+  kCloseParen = 9,
+  kConditional = 10,
+  kRelational = 11,
+  kKeyword = 12,
+  kUnknown = 13,
 };
 
 static const string kTokenTypeNames[] = {
-    "nothing",     "digit",      "name",     "brace",
-    "semicolon",   "assignment", "operator", "bracket",
+    "nothing",     "digit",      "name",     "openbrace", "closebrace",
+    "semicolon",   "assignment", "operator", "openparen", "closeparen",
     "conditional", "relational", "keyword",  "unknown"};
 
 const int kNumberOfFunctions = 10;
@@ -35,9 +37,9 @@ const std::unordered_set<string> kKeywords({"procedure", "read", "call",
 // to tokenize the supplied input, returning a list of Tokens
 TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
-      &SkipComments,        &SkipWhitespace,    &TokenizeDigits,
-      &TokenizeNames,       &TokenizeBraces,    &TokenizeSemicolon,
-      &TokenizeEquals,      &TokenizeOperators, &TokenizeBrackets,
+      &SkipComments,       &SkipWhitespace,    &TokenizeDigits,
+      &TokenizeNames,      &TokenizeBraces,    &TokenizeSemicolon,
+      &TokenizeEquals,     &TokenizeOperators, &TokenizeParenthesis,
       &TokenizeRelationals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
@@ -132,11 +134,11 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
-                         current_index);
+  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
+                                  input, current_index);
 
   if (kKeywords.count(result.token.value)) {
-	  result.token.type = kKeyword;
+    result.token.type = kKeyword;
   }
 
   return result;
@@ -147,15 +149,29 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 // Note that it will only tokenize a single brace at a time, e.g. "{{" will be
 // returned as two separate results
 Result Tokenizer::TokenizeBraces(string input, int current_index) {
-  return TokenizePattern(kBrace, regex{R"([{}])"}, input, current_index);
+  Result result =
+      TokenizePattern(kOpenBrace, regex{R"([{}])"}, input, current_index);
+
+  if (result.token.value == "}") {
+    result.token.type = kCloseBrace;
+  }
+
+  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
 // and closing brackets ("(" and ")"), and returns the result as a Result
 // struct. Note that it will only tokenize a single bracket at a time, e.g. "(("
 // will be returned as two separate results
-Result Tokenizer::TokenizeBrackets(string input, int current_index) {
-  return TokenizePattern(kBracket, regex{R"([()])"}, input, current_index);
+Result Tokenizer::TokenizeParenthesis(string input, int current_index) {
+  Result result =
+      TokenizePattern(kOpenParen, regex{R"([()])"}, input, current_index);
+
+  if (result.token.value == ")") {
+    result.token.type = kCloseParen;
+  }
+
+  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize operators
