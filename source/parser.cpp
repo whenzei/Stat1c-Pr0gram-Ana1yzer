@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stack>
 
+#include "simple_validator2.h"
 #include "parser.h"
 
 using std::cout;
@@ -55,7 +56,7 @@ void Parser::ProcessKeyword(int curr_stmt_list_index) {
     ReadNextToken();
   } else if (current_token_.value == "while") {
     ProcessWhileBlock(curr_stmt_list_index);
-		}
+  }
 }
 
 void Parser::ProcessAssignment(int curr_stmt_list_index) {
@@ -99,13 +100,19 @@ void Parser::Parse(string filepath) {
   // retrieve vector of tokens
   tokens_ = Tokenizer::Tokenize(contents);
 
+  if (SimpleValidator2::ValidateProcedure(tokens_, 0, tokens_.size() - 2)) {
+    cout << "Invalid SIMPLE syntax!" << endl;
+    return;
+  }
+
   ReadNextToken();
   int curr_stmt_list_index = stmt_list_index_++;
 
   while (current_token_.type != tt::kEOF) {
     if (current_token_.type == tt::kKeyword) {
       ProcessKeyword(curr_stmt_list_index);
-    } else if (current_token_.type == tt::kOpenBrace || current_token_.type == tt::kCloseBrace) {
+    } else if (current_token_.type == tt::kOpenBrace ||
+               current_token_.type == tt::kCloseBrace) {
     } else if (current_token_.type == tt::kName) {
       ProcessAssignment(curr_stmt_list_index);
     }

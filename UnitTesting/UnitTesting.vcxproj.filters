@@ -32,9 +32,6 @@
     <ClCompile Include="test_assign_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_simple_validator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_var_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_query_evaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_simple_validator2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

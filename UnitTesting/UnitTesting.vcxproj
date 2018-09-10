@@ -170,7 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="test_simple_validator.cpp" />
+    <ClCompile Include="test_simple_validator2.cpp" />
     <ClCompile Include="test_assign_table.cpp" />
     <ClCompile Include="test_proc_table.cpp" />
     <ClCompile Include="test_stmt_table.cpp" />
