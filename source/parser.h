@@ -30,14 +30,16 @@ class Parser {
   void ProcessKeyword(int curr_stmt_list_index);
   void ProcessAssignment(int curr_stmt_list_index);
 
-		// Process the if block with its counterpart else block
+  // Process the if block with its counterpart else block
   void ProcessIfBlock(int curr_stmt_list_index);
   void ProcessWhileBlock(int curr_stmt_list_index);
 
-		// Process the contents in a block
-		// Contents in between '{'  and '}'
-		// Used in ProcessIfBlock, ProcessWhileBlock
+  // Process the contents in a block
+  // Contents in between '{'  and '}'
+  // Used in ProcessIfBlock, ProcessWhileBlock
   void ProcessBlockContent(int curr_stmt_list_index);
+
+  void ProcessProcedure();
 
  public:
   Parser(PKB* pkb);
