@@ -162,6 +162,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test_follows.cpp" />
     <ClCompile Include="test_query_parser.cpp" />
     <ClCompile Include="test_tokenizer.cpp" />
     <ClCompile Include="stdafx.cpp">
