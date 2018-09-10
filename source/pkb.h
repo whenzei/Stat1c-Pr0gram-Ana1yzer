@@ -69,12 +69,12 @@ class PKB {
   // to
   // @param control_var_name_list the list of control variables of the while
   // statement
-  // @returns the StmtListIndex of the child stmtlist if the while statement is
-  // inserted successfully, -1 if insertion fails (while statement was already
-  // inside StmtTable)
-  StmtListIndex InsertWhileStmt(StmtNumInt stmt_num_int,
-                                StmtListIndex stmtlist_index,
-                                VarNameList control_var_name_list);
+  // @returns true if the statement number cannot be found in the table and the
+  // while statement is successfully inserted, false otherwise
+  bool InsertWhileStmt(StmtNumInt stmt_num_int,
+                       StmtListIndex parent_stmtlist_index,
+                       StmtListIndex child_stmtlist_index,
+                       VarNameList control_var_name_list);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -82,12 +82,13 @@ class PKB {
   // @param stmtlist_index the statement list index the if statement belongs to
   // @param control_var_name_list the list of control variables of the if
   // statement
-  // @returns <then_stmtlist_index, else_stmtlist_index> of the if statement if
-  // it is inserted successfully, -1 if insertion fails (if statement was
-  // already inside StmtTable)
-  pair<StmtListIndex, StmtListIndex> InsertIfStmt(
-      StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-      VarNameList control_var_name_list);
+  // @returns true if the statement number cannot be found in the table and the
+  // if statement is successfully inserted, false otherwise
+  bool InsertIfStmt(StmtNumInt stmt_num_int,
+                    StmtListIndex parent_stmtlist_index,
+                    StmtListIndex then_stmtlist_index,
+                    StmtListIndex else_stmtlist_index,
+                    VarNameList control_var_name_list);
 
   // inserts the given read statement into the StmtTable, StmtTypeList and
   // StmtListTable

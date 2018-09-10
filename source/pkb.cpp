@@ -42,64 +42,64 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
   }
 }
 
-StmtListIndex PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
-                                   StmtListIndex stmtlist_index,
-                                   VarNameList control_var_name_list) {
+bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
+                          StmtListIndex parent_stmtlist_index,
+                          StmtListIndex child_stmtlist_index,
+                          VarNameList control_var_name_list) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
     // insert statement
-    stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
+    stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertWhileStmt(stmt_num);
     // insert variables
     for (VarName& var_name : control_var_name_list) {
       var_list_.InsertVarName(var_name);
     }
     // insert parent relationships
-    StmtListIndex child_stmtlist_index = stmtlist_table_.GetNextStmtListIndex();
     parent_table_.InsertDirectParentRelationship(stmt_num,
                                                  child_stmtlist_index);
-    StmtNumList indirect_parents = parent_table_.GetParents(stmtlist_index);
+    StmtNumList indirect_parents = parent_table_.GetParents(parent_stmtlist_index);
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
 	}
     // TODO: insert follows and uses relationship
-    return child_stmtlist_index;
+    return true;
   } else {
-    return -1;
+    return false;
   }
 }
 
-pair<StmtListIndex, StmtListIndex> PKB::InsertIfStmt(
-    StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-    VarNameList control_var_name_list) {
+bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
+                       StmtListIndex parent_stmtlist_index,
+                       StmtListIndex then_stmtlist_index,
+                       StmtListIndex else_stmtlist_index,
+                       VarNameList control_var_name_list) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
     // insert statement
-    stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
+    stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertIfStmt(stmt_num);
 	// insert variables
     for (VarName& var_name : control_var_name_list) {
       var_list_.InsertVarName(var_name);
     }
     // insert parent relationships
-    pair<StmtListIndex, StmtListIndex> children_stmtlist_indices =
-        stmtlist_table_.GetNextTwoStmtListIndices();
     parent_table_.InsertDirectParentRelationship(
-        stmt_num, children_stmtlist_indices.first);
+        stmt_num, then_stmtlist_index);
     parent_table_.InsertDirectParentRelationship(
-        stmt_num, children_stmtlist_indices.second);
-    StmtNumList indirect_parents = parent_table_.GetParents(stmtlist_index);
+        stmt_num, else_stmtlist_index);
+    StmtNumList indirect_parents = parent_table_.GetParents(parent_stmtlist_index);
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(
-          indirect_parent, children_stmtlist_indices.first);
+          indirect_parent, then_stmtlist_index);
       parent_table_.InsertIndirectParentRelationship(
-          indirect_parent, children_stmtlist_indices.second);
+          indirect_parent, else_stmtlist_index);
     }
     // TODO: insert follows and uses relationship
-    return children_stmtlist_indices;
+    return true;
   } else {
-    return pair<StmtListIndex, StmtListIndex>(-1, -1);
+    return false;
   }
 }
 
