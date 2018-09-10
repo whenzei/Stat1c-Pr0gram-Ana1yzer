@@ -80,6 +80,8 @@ TEST_CLASS(TestParentTable) {
   TEST_METHOD(TestHasParentRelationship) {
     ParentTable parent_table;
     Assert::IsFalse(parent_table.HasParentRelationship());
+    parent_table.GetParents(kStmtListIndex1);
+    Assert::IsFalse(parent_table.HasParentRelationship());
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtListIndex1);
     Assert::IsTrue(parent_table.HasParentRelationship());
   }

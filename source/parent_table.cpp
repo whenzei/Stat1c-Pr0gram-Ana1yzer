@@ -48,4 +48,11 @@ StmtListIndexList ParentTable::GetChildren(StmtNum stmt_num) {
   return children_map_[stmt_num];
 }
 
-bool ParentTable::HasParentRelationship() { return parents_map_.size() != 0; }
+bool ParentTable::HasParentRelationship() {
+  for (const auto& map_entry : parents_map_) {
+    if (!map_entry.second.empty()) {
+      return true;
+    }
+  }
+  return false;
+}
