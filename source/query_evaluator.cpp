@@ -23,9 +23,14 @@ QueryEvaluator::QueryEvaluator() {}
 list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   string select_var_name = query->GetVarName();
   map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
-
+  vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
   list<string> results;
-  results = GetResultFromSelectAllQuery(select_var_name, declarations, pkb);
+
+  // Check if there is "such that" clause, if not then evaluator will use
+  // GetResultFromSelectAllQuery methods
+  if (such_that_clauses.size() == 0) {
+    results = GetResultFromSelectAllQuery(select_var_name, declarations, pkb);
+  }
 
   cout << "Result size: " << results.size() << endl;
 
