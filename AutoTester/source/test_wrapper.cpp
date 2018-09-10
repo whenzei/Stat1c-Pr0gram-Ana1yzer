@@ -36,9 +36,16 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
   // call your evaluator to evaluate the query here
   // ...code to evaluate query...
   PqlQuery* pql_query = new PqlQuery();
-  PqlParser::Parse(query, pql_query);
-  QueryEvaluator qe;
-  // store the answers to the query in the results list (it is initially empty)
-  // each result must be a string.
-  results = qe.GetResultFromQuery(pql_query, pkb_);
+  PqlParser pql_parser(query, pql_query);
+  if (pql_parser.Parse()) {
+    QueryEvaluator qe;
+    // store the answers to the query in the results list (it is initially empty)
+    // each result must be a string.
+    results = qe.GetResultFromQuery(pql_query, pkb_);
+  }
+  else {
+    std::list<std::string> error;
+    error.push_back(pql_parser.GetErrorMessage());
+    results = error;
+  }
 }
