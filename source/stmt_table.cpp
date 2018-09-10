@@ -12,5 +12,9 @@ bool StmtTable::InsertStmt(StmtNum stmt_num, StmtListIndex stmtlist_index) {
 }
 
 StmtListIndex StmtTable::GetStmtListIndex(StmtNum stmt_num) {
-  return stmt_map_[stmt_num];
+  if (stmt_map_.find(stmt_num) != stmt_map_.end()) {
+    return stmt_map_[stmt_num];
+  } else {
+    return StmtListIndex();
+  }
 }
