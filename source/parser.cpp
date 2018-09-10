@@ -6,6 +6,11 @@
 
 #include "simple_validator2.h"
 #include "parser.h"
+#include "pkb.h"
+#include "simple_validator.h"
+#include "tokenizer.h"
+
+const bool DEBUG_FLAG = true;
 
 using std::cout;
 using std::endl;

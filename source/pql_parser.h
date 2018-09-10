@@ -11,13 +11,20 @@ using std::vector;
 
 class PqlParser {
   public:
-  static void Parse(string, PqlQuery*);
+  PqlParser(string, PqlQuery*);
+
+  bool Parse();
+  string GetErrorMessage();
 
   private:
-  static void ParseStatement(string, PqlQuery*, bool);
-  static void ParseSynonym(string, PqlQuery*);
-  static void ParseSelect(vector<string>, PqlQuery*);
-  static void ParseDeclaration(vector<string>, PqlQuery*);
+  string queryText_;
+  PqlQuery* query_;
+  string errorMessage_;
+
+  bool ParseStatement(string, bool);
+  bool ParseSynonym(string);
+  bool ParseSelect(vector<string>);
+  bool ParseDeclaration(vector<string>);
 };
 
 #endif
