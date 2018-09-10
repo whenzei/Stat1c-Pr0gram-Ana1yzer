@@ -101,5 +101,18 @@ namespace UnitTesting {
       StmtNum followee = follows.GetDirectFollowedBy(kSampleStmtIdx3);
       Assert::AreEqual(kSampleStmtIdx1, followee);
     }
+
+    TEST_METHOD(TestHasFollowsRelationship) {
+      Follows follows;
+      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      bool result = follows.HasFollowsRelationship();
+      Assert::AreEqual(true, result);
+    }
+
+    TEST_METHOD(TestHasFollowsRelationshipEmpty) {
+      Follows follows;
+      bool result = follows.HasFollowsRelationship();
+      Assert::AreEqual(false, result);
+    }
   };
 }

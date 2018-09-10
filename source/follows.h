@@ -21,11 +21,6 @@ class Follows {
   FollowedByMap followed_by_map_;
 
 private:
-  // Utility function to check if follows map contains any follows relationships.
-  // @returns true if there are any follows relationships
-  // @returns false if follows map is empty
-  bool HasFollows();
-
   // Utility function to check if followed by map contains any
   // followed by relationships.
   // @returns true if there are any followed by relationships
@@ -78,6 +73,11 @@ public:
   // @returns a stmt_number if a direct followee exists
   // @returns -1 if otherwise
   StmtNum GetDirectFollowedBy(StmtNum stmt_num);
+
+  // Checks and returns if follows map contains any follows relationships.
+  // @returns true if there are any follows relationships
+  // @returns false if follows map is empty
+  bool HasFollowsRelationship();
 };
 
 #endif !SPA_FOLLOWS_H

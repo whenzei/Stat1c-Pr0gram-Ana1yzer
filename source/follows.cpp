@@ -2,10 +2,6 @@
 
 #include "follows.h"
 
-bool Follows::HasFollows() {
-  return (!follows_map_.empty());
-}
-
 bool Follows::HasFollowedBy() {
   return (!followed_by_map_.empty());
 }
@@ -40,4 +36,8 @@ StmtList Follows::GetFollowedBy(StmtNum stmt_num) {
 
 StmtNum Follows::GetDirectFollowedBy(StmtNum stmt_num) {
   return followed_by_map_[stmt_num].front();
+}
+
+bool Follows::HasFollowsRelationship() {
+  return (!follows_map_.empty());
 }
