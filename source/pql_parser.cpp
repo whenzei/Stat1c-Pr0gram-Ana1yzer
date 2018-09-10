@@ -57,7 +57,7 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
   } else {
     if (tokens[0] == "Select") {
       if (isLast) {
-        if (!ParseSelect(tokens)) return false;
+        if (!ParseSelect(tokens, statement)) return false;
       } else {
         errorMessage_ = "Select clause must be the last statement.";
         return false;
@@ -71,11 +71,49 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
   return true;
 }
 
-bool PqlParser::ParseSelect(vector<string> tokens) {
-  // TODO: check for grammar
-
+bool PqlParser::ParseSelect(vector<string> tokens, string statement) {
   // set variable name
-  query_->SetVarName(tokens[1]);
+  if (PqlValidator::ValidateIdent(tokens[1])) {
+    query_->SetVarName(tokens[1]);
+  }
+  else {
+    errorMessage_ = "Select synonym must be in IDENT format.";
+    return false;
+  }
+
+  // subtract 'Select' and variable name from statement
+  statement = statement.substr(7 + tokens[1].length());
+  
+  // short circuit if there's no other clauses
+  if (statement.length() == 0) return true;
+
+  // search for indexes for the different clauses
+  int suchthat_start = statement.find("such that");
+  int pattern_start = statement.find("pattern");
+  int with_start = statement.find("with");
+
+  // parse such that
+  if (suchthat_start != string::npos) {
+    suchthat_start += 9; // length of "such that"
+
+    // split the 'and's
+
+    // remove whitespace
+
+    // parse type
+
+    // parse parameters
+  }
+
+  // TODO(iter 1.3): parse pattern
+  if (pattern_start != string::npos) {
+    pattern_start += 7; // length of "pattern"
+  }
+
+  // TODO(iter 2): parse with
+  if (with_start != string::npos) {
+    with_start += 4; // length of "with"
+  }
 
   return true;
 }

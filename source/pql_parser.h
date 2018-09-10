@@ -23,7 +23,7 @@ class PqlParser {
 
   bool ParseStatement(string, bool);
   bool ParseSynonym(string);
-  bool ParseSelect(vector<string>);
+  bool ParseSelect(vector<string>, string);
   bool ParseDeclaration(vector<string>);
 };
 
