@@ -24,11 +24,8 @@ using StmtListMap = unordered_map<int, list<string>>;
 // Used to store statement list indices and corresponding statement numbers
 class StmtListTable {
   StmtListMap stmtlist_map_;
-  StmtListIndex max_stmtlist_index_;
 
  public:
-  // constructor
-  StmtListTable();
   // Insert a statement into the StmtListTable
   // @param stmt_num the statement number of the statement to be inserted
   // @param stmtlist_index the statement list index of the statement to be
@@ -38,10 +35,6 @@ class StmtListTable {
   // Get all statement numbers that belong to the statement list specified by
   // stmtlist_index
   StmtNumList GetStmtNumList(StmtListIndex stmtlist_index);
-
-  StmtListIndex GetNextStmtListIndex();
-
-  pair<StmtListIndex, StmtListIndex> GetNextTwoStmtListIndices();
 };
 
 #endif !SPA_STMTLIST_TABLE_H

@@ -1,15 +1,13 @@
 #pragma once
 
-#include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <queue>
-#include <string>
-#include <vector>
+#include <stack>
 
 #include "parser.h"
 #include "pkb.h"
 #include "simple_validator.h"
+#include "simple_validator2.h"
 #include "tokenizer.h"
 
 const bool DEBUG_FLAG = true;
@@ -18,19 +16,21 @@ using std::cout;
 using std::endl;
 using std::ifstream;
 using std::istreambuf_iterator;
-using std::queue;
+using std::stack;
 
-// Constructor
-Parser::Parser() {}
-Parser::Parser(PKB* pkb) { pkb_ = pkb; }
+using tt = Tokenizer::TokenType;
 
-// Setters
-void Parser::SetPkb(PKB* pkb) { pkb_ = pkb; }
+Parser::Parser(PKB* pkb) {
+  pkb_ = pkb;
+  current_index_ = 0;
+  stmt_index_ = 1;
+  stmt_list_index_ = 0;
+}
 
-// Getters
-TokenList Parser::GetTokenList() { return tokens_; }
-
-PKB Parser::GetPkb() { return *pkb_; }
+bool Parser::IsValidFile(string filepath) {
+  ifstream infile(filepath);
+  return infile.good();
+}
 
 string Parser::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
@@ -43,77 +43,180 @@ string Parser::ReadContentFromFile(string filepath) {
                 (istreambuf_iterator<char>()));
 }
 
+Token Parser::ReadNextToken() {
+  current_token_ = tokens_[current_index_++];
+  return current_token_;
+}
+
+void Parser::ProcessKeyword(int curr_stmt_list_index) {
+  if (current_token_.value == "if") {
+    ProcessIfBlock(curr_stmt_list_index);
+  } else if (current_token_.value == "procedure") {
+    ReadNextToken();
+  } else if (current_token_.value == "while") {
+    ProcessWhileBlock(curr_stmt_list_index);
+  }
+}
+
+void Parser::ProcessAssignment(int curr_stmt_list_index) {
+
+  int assign_stmt_index = stmt_index_++;
+  string lhs_var = current_token_.value;
+  VariableSet rhs_vars;
+  VariableSet rhs_consts;
+
+  while (current_token_.type != tt::kSemicolon) {
+    ReadNextToken();
+    if (current_token_.type == tt::kName) {
+      rhs_vars.insert(current_token_.value);
+    }
+    if (current_token_.type == tt::kDigit) {
+      rhs_consts.insert(current_token_.value);
+    }
+  }
+
+  // Update PKB of assignment statement
+   pkb_->InsertAssignStmt(assign_stmt_index, curr_stmt_list_index, lhs_var,
+   rhs_vars);
+
+  //**************** DEBUG********************
+  string rhsvar = string();
+  for (Variable var : rhs_vars) {
+    rhsvar = rhsvar + " " + var;
+  }
+  string rhsconst = string();
+  for (Variable var : rhs_consts) {
+    rhsconst = rhsconst + " " + var;
+  }
+
+  cout << "Assignment statement "
+       << " added, indent_lvl: " << curr_stmt_list_index << ", lhs: " << lhs_var
+       << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
+  //***********************************************
+}
+
 void Parser::Parse(string filepath) {
   // read content from file
   string contents = ReadContentFromFile(filepath);
   // retrieve vector of tokens
   tokens_ = Tokenizer::Tokenize(contents);
 
-  if (DEBUG_FLAG) {
-    for (Token& token : tokens_) {
-      cout << Tokenizer::Debug(token) << endl;
-    }
-  }
+		//TO DO: Implement Validator
 
-  if (SimpleValidator::ValidateProcedure(tokens_, 0, tokens_.size() - 1)) {
-    if (DEBUG_FLAG) {
-      cout << "Procedure " << tokens_[1].value << " is syntactically correct"
-           << endl;
-    }
-    ProcessProcedure(0, tokens_.size() - 1);
+  ReadNextToken();
+  int curr_stmt_list_index = stmt_list_index_++;
+
+  while (current_token_.type != tt::kEOF) {
+    if (current_token_.type == tt::kKeyword) {
+      ProcessKeyword(curr_stmt_list_index);
+    } else if (current_token_.type == tt::kOpenBrace ||
+               current_token_.type == tt::kCloseBrace) {
+    } else if (current_token_.type == tt::kName) {
+      ProcessAssignment(curr_stmt_list_index);
+    } else { //Should not happen
+      exit(1);
+				}
+    ReadNextToken();
   }
 }
 
-bool Parser::IsValidFile(string filepath) {
-  ifstream infile(filepath);
-  return infile.good();
-}
+void Parser::ProcessIfBlock(int curr_stmt_list_index) {
+  // Reads the first open bracket '('
+  ReadNextToken();
+  // Reads the first condition token
+  ReadNextToken();
 
-void Parser::ProcessProcedure(size_t start, size_t end) {
-  int statementNum = 1;
+  int if_stmt_index = stmt_index_++;
+  int inside_if_stmt_list_index = stmt_list_index_++;
+  int inside_else_stmt_list_index = stmt_list_index_++;
 
-  // Second index from start will always be a procedure name
-  string procedure_name = tokens_[start + 1].value;
-  if (DEBUG_FLAG) {
-    std::cout << "Procedure added: " << procedure_name << endl;
+  VariableSet control_vars;
+
+  // Reads the condition of the 'If' block
+  while (current_token_.type != tt::kCloseParen) {
+    if (current_token_.type == tt::kName) {
+      control_vars.insert(current_token_.value);
+    }
+    ReadNextToken();
   }
 
-  pkb_->InsertProcName(procedure_name);
+  // Open brace '{' of if block
+  ReadNextToken();
+  ReadNextToken();
 
-  queue<Token> stmtQueue;
+  // Process everything inside the if block
+  ProcessBlockContent(inside_if_stmt_list_index);
 
-  // Starts at 4th index and ends at 2nd last index
-  for (size_t i = start + 3; i < end; i++) {
-    Token currToken = tokens_[i];
+  ReadNextToken();
 
-    // Check if it is type NAME and not a SIMPLE keyword
-    if (currToken.type == Tokenizer::TokenType::kName &&
-        !SimpleValidator::IsKeyword(currToken.value)) {
-      // TODO: add to PKB's VarTable 
-	  // EDIT: no need to add var to pkb anymore, pkb will add variable when doing insertion for assign, while and if
-      if (DEBUG_FLAG) {
-        std::cout << "Variable added: " << currToken.value << endl;
+  // Process everything inside the counterpart else block
+  ReadNextToken();
+  ProcessBlockContent(inside_else_stmt_list_index);
+
+  //************* DEBUG******************
+  string control_var_str = string();
+  for (Variable var : control_vars) {
+    control_var_str = control_var_str + " " + var;
+  }
+  cout << "If statement "
+       << "added, indent_lvl: " << curr_stmt_list_index
+       << ", control_variable: " << control_var_str << endl;
+  //*************************************
+
+  // Update PKB of the 'if' block
+  pkb_->InsertIfStmt(if_stmt_index, curr_stmt_list_index,
+                     inside_if_stmt_list_index, inside_else_stmt_list_index,
+                     control_vars);
+}
+
+void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
+  ReadNextToken();
+  ReadNextToken();
+
+  int while_stmt_index = stmt_index_++;
+  int inside_while_stmt_list_index = stmt_list_index_++;
+
+  VarNameSet control_vars;
+
+  while (current_token_.type != tt::kCloseParen) {
+    if (current_token_.type == tt::kName) {
+      control_vars.insert(current_token_.value);
+    }
+    ReadNextToken();
+  }
+
+  ReadNextToken();
+
+  ProcessBlockContent(inside_while_stmt_list_index);
+
+		//************* DEBUG******************
+  string control_var_str = string();
+  for (Variable var : control_vars) {
+    control_var_str = control_var_str + " " + var;
+  }
+  cout << "While statement "
+       << "added, indent_lvl: " << curr_stmt_list_index
+       << ", control_variable: " << control_var_str << endl;
+  //*
+
+  // Update PKB of the 'while' block
+  pkb_->InsertWhileStmt(while_stmt_index, curr_stmt_list_index,
+                        inside_while_stmt_list_index, control_vars);
+}
+
+void Parser::ProcessBlockContent(int curr_stmt_list_index) {
+  while (current_token_.value.compare("}") != 0) {
+    if (current_token_.type == tt::kName) {
+      ProcessAssignment(curr_stmt_list_index);
+    } else if (current_token_.type == tt::kKeyword) {
+      if (current_token_.value.compare("if") == 0) {
+        ProcessIfBlock(curr_stmt_list_index);
+      }
+
+      if (current_token_.value.compare("while") == 0) {
+        ProcessWhileBlock(curr_stmt_list_index);
       }
     }
-
-    if (currToken.type == Tokenizer::TokenType::kSemicolon) {
-      string statement = "";
-      while (!stmtQueue.empty()) {
-        Token token = stmtQueue.front();
-        statement += token.value;
-        stmtQueue.pop();
-      }
-      statement += currToken.value;
-
-      //pkb_->InsertAssignStmt(statementNum, statement);
-
-      if (DEBUG_FLAG) {
-        std::cout << "Statement " << statementNum << " added: " << statement
-                  << endl;
-      }
-      statementNum++;
-      continue;
-    }
-    stmtQueue.push(currToken);
+    ReadNextToken();
   }
 }

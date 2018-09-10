@@ -47,6 +47,9 @@
     <ClCompile Include="test_stmt_type_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_parent_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="test_tokenizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,6 +57,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_query_evaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_simple_validator2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_query_validator.cpp">

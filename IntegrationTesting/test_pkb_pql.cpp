@@ -18,8 +18,8 @@ TEST_CLASS(TestPKBPQL){
       TEST_METHOD(TestSelectAssignQuery){
           // TODO: Your test code here
 			PKB pkb;
-			pkb.InsertAssignStmt(1, 0, "x", list<string>());
-			pkb.InsertAssignStmt(8, 0, "i", list<string>());
+			pkb.InsertAssignStmt(1, 0, "x", unordered_set<string>());
+			pkb.InsertAssignStmt(8, 0, "i", unordered_set<string>());
 
 			QueryEvaluator qe;
 			string user_query = "assign a; Select a";

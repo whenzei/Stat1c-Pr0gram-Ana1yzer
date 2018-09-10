@@ -18,9 +18,6 @@
     <ClCompile Include="..\source\design_extractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\pkb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,6 +45,9 @@
     <ClCompile Include="..\source\stmt_type_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\parent_table.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pql_query.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,11 +63,17 @@
     <ClCompile Include="..\source\pql_suchthat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\simple_validator2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\simple_validator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\parser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\pkb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -95,7 +101,7 @@
     <ClInclude Include="..\source\stmt_type_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\statement.h">
+    <ClInclude Include="..\source\parent_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_query.h">
@@ -105,6 +111,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\simple_validator2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\simple_validator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_validator.h">
