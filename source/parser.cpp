@@ -52,10 +52,17 @@ void Parser::ProcessKeyword(int curr_stmt_list_index) {
   if (current_token_.value == "if") {
     ProcessIfBlock(curr_stmt_list_index);
   } else if (current_token_.value == "procedure") {
-    ReadNextToken();
+	  ProcessProcedure();
   } else if (current_token_.value == "while") {
     ProcessWhileBlock(curr_stmt_list_index);
   }
+}
+
+void Parser::ProcessProcedure() {
+	ReadNextToken();
+	pkb_->InsertProcName(current_token_.value);
+	// eat the open brace
+	ReadNextToken();
 }
 
 void Parser::ProcessAssignment(int curr_stmt_list_index) {
