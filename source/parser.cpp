@@ -160,7 +160,7 @@ void Parser::ProcessProcedure(size_t start, size_t end) {
           }
         }
         stmt_num++;
-      } else if (first_token.type == tt::kBrace) {
+      } else if (first_token.type == tt::kOpenBrace || first_token.type == tt::kCloseBrace) {
         // this should not happen, since braces are not pushed into the
         // stmt_list
       }

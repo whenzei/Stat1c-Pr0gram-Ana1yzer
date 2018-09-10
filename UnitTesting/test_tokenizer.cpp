@@ -134,7 +134,7 @@ TEST_METHOD(TestTokenizeNames) {
 
 TEST_METHOD(TestTokenizeBraces) {
   string kTestInput("{}}m}}");
-  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kBrace);
+  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kOpenBrace);
 
   // should only detect the first brace and stop
   Result actual_result = Tokenizer::TokenizeBraces(kTestInput, 0);
@@ -142,6 +142,7 @@ TEST_METHOD(TestTokenizeBraces) {
   Assert::IsTrue(actual_result == expected_result);
 
   // should detect closing brace too
+  kTestType = Tokenizer::TokenType::kCloseBrace;
   actual_result = Tokenizer::TokenizeBraces(kTestInput, 1);
   expected_result = Result({1, {kTestType, "}"}});
   Assert::IsTrue(actual_result == expected_result);
@@ -151,22 +152,23 @@ TEST_METHOD(TestTokenizeBraces) {
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 }
 
-TEST_METHOD(TestTokenizeBrackets) {
+TEST_METHOD(TestTokenizeParenthesis) {
   string kTestInput("())m))");
-  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kBracket);
+  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kOpenParen);
 
   // should only detect the first bracket and stop
-  Result actual_result = Tokenizer::TokenizeBrackets(kTestInput, 0);
+  Result actual_result = Tokenizer::TokenizeParenthesis(kTestInput, 0);
   Result expected_result({1, {kTestType, "("}});
   Assert::IsTrue(actual_result == expected_result);
 
   // should detect closing bracket too
-  actual_result = Tokenizer::TokenizeBrackets(kTestInput, 1);
+  kTestType = Tokenizer::TokenType::kCloseParen;
+  actual_result = Tokenizer::TokenizeParenthesis(kTestInput, 1);
   expected_result = Result({1, {kTestType, ")"}});
   Assert::IsTrue(actual_result == expected_result);
 
   // returns empty result for non brackets (testing only characters)
-  actual_result = Tokenizer::TokenizeBrackets(kTestInput, 3);
+  actual_result = Tokenizer::TokenizeParenthesis(kTestInput, 3);
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 }
 
@@ -275,7 +277,7 @@ TEST_METHOD(TestTokenize) {
   Assert::IsTrue(actual_tokens.size() == 36);
   TokenList expected_tokens({{tt::kKeyword, "procedure"},
                              {tt::kName, "one"},
-                             {tt::kBrace, "{"},
+                             {tt::kOpenBrace, "{"},
                              {tt::kName, "a"},
                              {tt::kAssignment, "="},
                              {tt::kName, "b"},
@@ -284,31 +286,31 @@ TEST_METHOD(TestTokenize) {
                              {tt::kAssignment, "="},
                              {tt::kName, "d"},
                              {tt::kSemicolon, ";"},
-                             {tt::kBrace, "}"},
+                             {tt::kCloseBrace, "}"},
                              {tt::kKeyword, "procedure"},
                              {tt::kName, "two"},
-                             {tt::kBrace, "{"},
+                             {tt::kOpenBrace, "{"},
                              {tt::kKeyword, "if"},
-                             {tt::kBracket, "("},
+                             {tt::kOpenParen, "("},
                              {tt::kName, "a"},
                              {tt::kRelational, "!="},
                              {tt::kName, "b"},
-                             {tt::kBracket, ")"},
+                             {tt::kCloseParen, ")"},
                              {tt::kKeyword, "then"},
-                             {tt::kBrace, "{"},
+                             {tt::kOpenBrace, "{"},
                              {tt::kName, "d"},
                              {tt::kAssignment, "="},
                              {tt::kName, "e"},
                              {tt::kSemicolon, ";"},
-                             {tt::kBrace, "}"},
+                             {tt::kCloseBrace, "}"},
                              {tt::kKeyword, "else"},
-                             {tt::kBrace, "{"},
+                             {tt::kOpenBrace, "{"},
                              {tt::kName, "e"},
                              {tt::kAssignment, "="},
                              {tt::kName, "f"},
                              {tt::kSemicolon, ";"},
-                             {tt::kBrace, "}"},
-                             {tt::kBrace, "}"}});
+                             {tt::kCloseBrace, "}"},
+                             {tt::kCloseBrace, "}"}});
 
   Assert::IsTrue(actual_tokens == expected_tokens);
 }

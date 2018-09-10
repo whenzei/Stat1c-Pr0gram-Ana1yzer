@@ -105,7 +105,7 @@ void Parser2::Parse(string filepath) {
   while (current_token_.type != tt::kEOF) {
     if (current_token_.type == tt::kKeyword) {
       ProcessKeyword(curr_stmt_list_index);
-    } else if (current_token_.type == tt::kBrace) {
+    } else if (current_token_.type == tt::kOpenBrace || current_token_.type == tt::kCloseBrace) {
     } else if (current_token_.type == tt::kName) {
       ProcessAssignment(curr_stmt_list_index);
     }
@@ -126,7 +126,7 @@ void Parser2::ProcessIfBlock(int curr_stmt_list_index) {
   VariableSet control_var;
 
   // Reads the condition of the 'If' block
-  while (current_token_.type != tt::kBracket) {
+  while (current_token_.type != tt::kCloseParen) {
     if (current_token_.type == tt::kName) {
       control_var.insert(current_token_.value);
     }
@@ -169,7 +169,7 @@ void Parser2::ProcessWhileBlock(int curr_stmt_list_index) {
 
   VariableSet control_var;
 
-  while (current_token_.type != tt::kBracket) {
+  while (current_token_.type != tt::kCloseParen) {
     if (current_token_.type == tt::kName) {
       control_var.insert(current_token_.value);
     }
