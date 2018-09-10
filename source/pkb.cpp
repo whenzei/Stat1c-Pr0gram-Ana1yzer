@@ -161,19 +161,22 @@ bool PKB::IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int
   return parent_table_.IsParent(parent_stmt_num, child_stmtlist_index);
 }
 
-StmtNum PKB::GetDirectParent(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetDirectParent(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
-  return parent_table_.GetDirectParent(stmtlist_index);
+  StmtNumList direct_parent_stmtnum_list;
+  direct_parent_stmtnum_list.push_back(
+      parent_table_.GetDirectParent(stmtlist_index));
+  return direct_parent_stmtnum_list;
 }
 
-StmtNumList PKB::GetParents(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetAllParent(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   return parent_table_.GetParents(stmtlist_index);
 }
 
-StmtNumList PKB::GetDirectChildren(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetDirectChild(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndexList children_stmtlist_indices =
       parent_table_.GetDirectChildren(stmt_num);
@@ -185,7 +188,7 @@ StmtNumList PKB::GetDirectChildren(StmtNumInt stmt_num_int) {
   return result;
 }
 
-StmtNumList PKB::GetChildren(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetAllChild(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndexList children_stmtlist_indices =
       parent_table_.GetChildren(stmt_num);

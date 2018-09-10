@@ -145,17 +145,17 @@ class PKB {
   // indirect) of the statement specified by child_stmt_num
   bool IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
-  // @returns the statement number of the direct parent
-  StmtNum GetDirectParent(StmtNumInt stmt_num_int);
+  // @returns a list of the statement number (only one element) of the direct parent
+  StmtNumList GetDirectParent(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the parents (direct + indirect)
-  StmtNumList GetParents(StmtNumInt stmt_num_int);
+  StmtNumList GetAllParent(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the direct children
-  StmtNumList GetDirectChildren(StmtNumInt stmt_num_int);
+  StmtNumList GetDirectChild(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the children (direct + indirect)
-  StmtNumList GetChildren(StmtNumInt stmt_num_int);
+  StmtNumList GetAllChild(StmtNumInt stmt_num_int);
 
   // @returns true if there exists any parent-child relationship
   bool HasParentRelationship();
