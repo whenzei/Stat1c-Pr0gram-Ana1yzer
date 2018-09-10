@@ -165,8 +165,10 @@ StmtNumList PKB::GetDirectParent(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   StmtNumList direct_parent_stmtnum_list;
-  direct_parent_stmtnum_list.push_back(
-      parent_table_.GetDirectParent(stmtlist_index));
+  StmtNum direct_parent_stmtnum = parent_table_.GetDirectParent(stmtlist_index);
+  if (direct_parent_stmtnum.compare("") != 0) {
+    direct_parent_stmtnum_list.push_back(direct_parent_stmtnum);
+  }
   return direct_parent_stmtnum_list;
 }
 
