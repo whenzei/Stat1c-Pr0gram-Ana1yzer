@@ -24,7 +24,7 @@ ConstValueList PKB::GetAllConstValue() {
 bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
                            StmtListIndex stmtlist_index,
                            VarName modified_var_name,
-                           VarNameList used_var_name_list) {
+                           VarNameSet used_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
   if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
     // insert statement
@@ -32,7 +32,7 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     stmt_type_list_.InsertAssignStmt(stmt_num);
     var_list_.InsertVarName(modified_var_name);
     // insert variables
-    for (VarName& var_name : used_var_name_list) {
+    for (auto& var_name : used_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
     // TODO: add follows, modifies and uses relationship
@@ -45,14 +45,14 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
 bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                           StmtListIndex parent_stmtlist_index,
                           StmtListIndex child_stmtlist_index,
-                          VarNameList control_var_name_list) {
+                          VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
   if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertWhileStmt(stmt_num);
     // insert variables
-    for (VarName& var_name : control_var_name_list) {
+    for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
     // insert parent relationships
@@ -74,14 +74,14 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
                        StmtListIndex parent_stmtlist_index,
                        StmtListIndex then_stmtlist_index,
                        StmtListIndex else_stmtlist_index,
-                       VarNameList control_var_name_list) {
+                       VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
   if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertIfStmt(stmt_num);
 	// insert variables
-    for (VarName& var_name : control_var_name_list) {
+    for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
     // insert parent relationships

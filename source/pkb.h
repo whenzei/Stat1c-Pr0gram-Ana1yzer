@@ -60,7 +60,7 @@ class PKB {
   // assign statement is successfully inserted, false otherwise
   bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                         VarName modified_var_name,
-                        VarNameList used_var_name_list);
+                        VarNameSet used_var_name_set);
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -74,7 +74,7 @@ class PKB {
   bool InsertWhileStmt(StmtNumInt stmt_num_int,
                        StmtListIndex parent_stmtlist_index,
                        StmtListIndex child_stmtlist_index,
-                       VarNameList control_var_name_list);
+                       VarNameSet control_var_name_set);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -88,7 +88,7 @@ class PKB {
                     StmtListIndex parent_stmtlist_index,
                     StmtListIndex then_stmtlist_index,
                     StmtListIndex else_stmtlist_index,
-                    VarNameList control_var_name_list);
+                    VarNameSet control_var_name_set);
 
   // inserts the given read statement into the StmtTable, StmtTypeList and
   // StmtListTable
