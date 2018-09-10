@@ -5,13 +5,13 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-TEST_CLASS(TestTokenizer) {
-public:
+TEST_CLASS(TestTokenizer){
+  public :
 
-TEST_METHOD(TestEmptyResult) {
-  Result expected_result({0, {Tokenizer::TokenType::kNothing}});
-  Assert::IsTrue(expected_result == Tokenizer::EmptyResult());
-}
+      TEST_METHOD(TestEmptyResult){
+          Result expected_result({0, {Tokenizer::TokenType::kNothing}});
+Assert::IsTrue(expected_result == Tokenizer::EmptyResult());
+}  // namespace UnitTesting
 TEST_METHOD(TestTokenizeCharacter) {
   string kTestInput("hello world");
   Tokenizer::TokenType kTestType(Tokenizer::TokenType::kName);
@@ -127,9 +127,8 @@ TEST_METHOD(TestTokenizeNames) {
   kTestInput = "procedure";
   kTestType = Tokenizer::TokenType::kKeyword;
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
-  expected_result = Result({ 9, {kTestType, "procedure"} });
+  expected_result = Result({9, {kTestType, "procedure"}});
   Assert::IsTrue(actual_result == expected_result);
-
 }
 
 TEST_METHOD(TestTokenizeBraces) {
@@ -274,7 +273,7 @@ TEST_METHOD(TestTokenize) {
   using tt = Tokenizer::TokenType;
 
   TokenList actual_tokens = Tokenizer::Tokenize(kTestInput);
-  Assert::IsTrue(actual_tokens.size() == 36);
+  Assert::IsTrue(actual_tokens.size() == 37);
   TokenList expected_tokens({{tt::kKeyword, "procedure"},
                              {tt::kName, "one"},
                              {tt::kOpenBrace, "{"},
@@ -310,7 +309,8 @@ TEST_METHOD(TestTokenize) {
                              {tt::kName, "f"},
                              {tt::kSemicolon, ";"},
                              {tt::kCloseBrace, "}"},
-                             {tt::kCloseBrace, "}"}});
+                             {tt::kCloseBrace, "}"},
+                             {tt::kEOF, string()}});
 
   Assert::IsTrue(actual_tokens == expected_tokens);
 }

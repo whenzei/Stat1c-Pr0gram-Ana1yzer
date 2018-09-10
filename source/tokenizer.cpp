@@ -20,12 +20,13 @@ enum TokenType {
   kRelational = 11,
   kKeyword = 12,
   kUnknown = 13,
+  kEOF = 14,
 };
 
 static const string kTokenTypeNames[] = {
     "nothing",     "digit",      "name",     "openbrace", "closebrace",
     "semicolon",   "assignment", "operator", "openparen", "closeparen",
-    "conditional", "relational", "keyword",  "unknown"};
+    "conditional", "relational", "keyword",  "unknown", "EOF"};
 
 const int kNumberOfFunctions = 10;
 
@@ -70,6 +71,9 @@ TokenList Tokenizer::Tokenize(string input) {
       tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
     }
   }
+
+  // ADD END OF FILE TOKEN
+  tokens.push_back(Token({kEOF, string()}));
 
   return tokens;
 }

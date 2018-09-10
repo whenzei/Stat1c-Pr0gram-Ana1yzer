@@ -50,6 +50,7 @@ class Tokenizer {
     kRelational,
     kKeyword,
     kUnknown,
+	kEOF,
   };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits

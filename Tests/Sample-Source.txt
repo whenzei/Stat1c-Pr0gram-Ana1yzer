@@ -1,9 +1,23 @@
 procedure one {
-	a= b;
-	c  = d; \\comments here
-	if(a!=b) then {
-		d		= e;
-		}else {
-			e 		=f;
-	}
-}
+    if (a == b) then {             \\ 0 (1)
+        c = d;                     \\ 1 (2)
+    } else {
+        if (c == d) then {         \\ 2 (3)
+            e = f;                 \\ 3 (4)
+            g = h;                 \\ 3 (5)
+        } else {
+            a = b;                 \\ 4 (6)
+        }
+        b = c;                     \\ 2 (7)
+    }
+    
+    g = f;                         \\ 0 (8)
+    while (a < b) {                \\ 0 (9)
+        a = a + 1;                 \\ 5 (10)
+        if (s == t) then {         \\ 5 (11)
+            s = s + 1;             \\ 6 (12)
+        } else { 
+            t = t + 1;             \\ 7 (13)
+        }
+    }
+} 
