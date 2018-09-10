@@ -1,117 +1,117 @@
 #include "stdafx.h"
 #include "CPPUnitTest.h"
-#include "follows.h"
+#include "follows_table.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-  TEST_CLASS(TestFollows) {
+  TEST_CLASS(TestFollowsTable) {
     const StmtNum kSampleStmtIdx1 = "1";
     const StmtNum kSampleStmtIdx2 = "5";
     const StmtNum kSampleStmtIdx3 = "0";
     const StmtNum kSampleStmtIdx4 = "17";
 
     TEST_METHOD(TestInsertFollowsSingleRel) {
-      Follows follows;
-      bool result = follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::AreEqual(true, result);
+      FollowsTable follows_table;
+      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      Assert::IsTrue(result);
     }
 
     TEST_METHOD(TestInsertFollowsDuplicateRel) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      bool result = follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::AreEqual(false, result);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      Assert::IsFalse(result);
     }
 
     TEST_METHOD(TestInsertFollowsMultipleRel) {
-      Follows follows;
-      bool result = follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::AreEqual(true, result);
-      result = follows.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
-      Assert::AreEqual(true, result);
+      FollowsTable follows_table;
+      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      Assert::IsTrue(result);
+      result = follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
+      Assert::IsTrue(result);
     }
 
     TEST_METHOD(TestIsFollows) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      bool result = follows.IsFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      Assert::AreEqual(true, result);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      bool result = follows_table.IsFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      Assert::IsTrue(result);
     }
 
     TEST_METHOD(TestIsFollowsIncludesDirect) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      bool result = follows.IsFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::AreEqual(true, result);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      bool result = follows_table.IsFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      Assert::IsTrue(result);
     }
 
     TEST_METHOD(TestIsDirectFollows) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      bool result = follows.IsDirectFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::AreEqual(true, result);
-      result = follows.IsDirectFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      Assert::AreEqual(false, result);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      bool result = follows_table.IsDirectFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      Assert::IsTrue(result);
+      result = follows_table.IsDirectFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      Assert::IsTrue(result);
     }
 
     TEST_METHOD(TestGetFollows) {
       StmtList expected_followers;
-      Follows follows;
+      FollowsTable follows_table;
       expected_followers.push_back(kSampleStmtIdx2);
       expected_followers.push_back(kSampleStmtIdx3);
 
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      StmtList followers = follows.GetFollows(kSampleStmtIdx1);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      StmtList followers = follows_table.GetFollows(kSampleStmtIdx1);
       Assert::AreEqual(expected_followers.front(), followers.front());
       Assert::AreEqual(expected_followers.back(), followers.back());
     }
 
     TEST_METHOD(TestGetDirectFollows) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
 
-      StmtNum follower = follows.GetDirectFollows(kSampleStmtIdx1);
+      StmtNum follower = follows_table.GetDirectFollows(kSampleStmtIdx1);
       Assert::AreEqual(kSampleStmtIdx2, follower);
     }
 
     TEST_METHOD(TestGetFollowedBy) {
       StmtList expected_followees;
-      Follows follows;
+      FollowsTable follows_table;
       expected_followees.push_back(kSampleStmtIdx1);
       expected_followees.push_back(kSampleStmtIdx2);
 
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      follows.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
-      StmtList followees = follows.GetFollowedBy(kSampleStmtIdx3);
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
+      StmtList followees = follows_table.GetFollowedBy(kSampleStmtIdx3);
       Assert::AreEqual(expected_followees.front(), followees.front());
       Assert::AreEqual(expected_followees.back(), followees.back());
     }
 
     TEST_METHOD(TestGetDirectFollowedBy) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      follows.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
 
-      StmtNum followee = follows.GetDirectFollowedBy(kSampleStmtIdx3);
+      StmtNum followee = follows_table.GetDirectFollowedBy(kSampleStmtIdx3);
       Assert::AreEqual(kSampleStmtIdx1, followee);
     }
 
     TEST_METHOD(TestHasFollowsRelationship) {
-      Follows follows;
-      follows.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      bool result = follows.HasFollowsRelationship();
+      FollowsTable follows_table;
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
+      bool result = follows_table.HasFollowsRelationship();
       Assert::AreEqual(true, result);
     }
 
     TEST_METHOD(TestHasFollowsRelationshipEmpty) {
-      Follows follows;
-      bool result = follows.HasFollowsRelationship();
+      FollowsTable follows_table;
+      bool result = follows_table.HasFollowsRelationship();
       Assert::AreEqual(false, result);
     }
   };

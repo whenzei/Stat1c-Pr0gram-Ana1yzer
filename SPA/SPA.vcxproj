@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\design_extractor.cpp" />
-    <ClCompile Include="..\source\follows.cpp" />
+    <ClCompile Include="..\source\follows_table.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
@@ -28,7 +28,7 @@
     <ClCompile Include="..\source\query_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\follows.h" />
+    <ClInclude Include="..\source\follows_table.h" />
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\simple_validator.h" />

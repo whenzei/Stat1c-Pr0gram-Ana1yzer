@@ -57,7 +57,7 @@
     <ClCompile Include="..\source\pql_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\follows.cpp">
+    <ClCompile Include="..\source\follows_table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -104,7 +104,7 @@
     <ClInclude Include="..\source\pql_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\follows.h">
+    <ClInclude Include="..\source\follows_table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

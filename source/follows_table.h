@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SPA_FOLLOWS_H
-#define SPA_FOLLOWS_H
+#ifndef SPA_FOLLOWS_TABLE_H
+#define SPA_FOLLOWS_TABLE_H
 
 #include <list>
 #include <unordered_map>
@@ -16,7 +16,7 @@ using StmtList = list<string>;
 using FollowsMap = unordered_map<string, list<string>>;
 using FollowedByMap = unordered_map<string, list<string>>;
 
-class Follows {
+class FollowsTable {
   FollowsMap follows_map_;
   FollowedByMap followed_by_map_;
 
@@ -80,4 +80,4 @@ public:
   bool HasFollowsRelationship();
 };
 
-#endif !SPA_FOLLOWS_H
+#endif !SPA_FOLLOWS_TABLE_H
