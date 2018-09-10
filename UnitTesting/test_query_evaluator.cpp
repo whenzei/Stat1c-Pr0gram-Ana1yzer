@@ -21,7 +21,7 @@ TEST_CLASS(TestQueryEvaluator) {
     QueryEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(1, "x = y");
+    pkb.PKB::InsertAssignStmt(1, 0, "x", list<string>());
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("a");
