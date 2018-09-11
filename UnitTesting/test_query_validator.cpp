@@ -5,7 +5,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::string;
 
-namespace UnitTesting {
+namespace PQLTests {
 TEST_CLASS(TestQueryValidator) {
 public:
   TEST_METHOD(TestValidIdent) {

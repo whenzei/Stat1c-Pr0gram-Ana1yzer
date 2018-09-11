@@ -11,7 +11,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting {
+namespace PQLTests {
 TEST_CLASS(TestQueryEvaluator) {
  public:
   PqlDeclarationEntity keyword_assign = PqlDeclarationEntity::kAssign;

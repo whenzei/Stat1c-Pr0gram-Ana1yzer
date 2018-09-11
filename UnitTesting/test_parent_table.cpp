@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting {
+namespace PKBTests {
 
 TEST_CLASS(TestParentTable) {
   const StmtNum kStmtNum1 = "1";

@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting {
+namespace FrontendTests {
 TEST_CLASS(TestTokenizer){
   public :
 

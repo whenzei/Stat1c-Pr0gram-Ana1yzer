@@ -6,7 +6,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::string;
 
-namespace UnitTesting {
+namespace PQLTests {
 /*
 This test the parsing logic for PQL.
 */

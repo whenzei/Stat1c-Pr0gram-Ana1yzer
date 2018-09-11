@@ -8,7 +8,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::string;
 
-namespace UnitTesting {
+namespace FrontendTests {
 
 TEST_CLASS(TestSimpleValidator) {
  public:
