@@ -123,9 +123,8 @@ TEST_METHOD(TestTokenizeNames) {
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 
-  // keywords are detected
+  // keywords are still detected as names
   kTestInput = "procedure";
-  kTestType = Tokenizer::TokenType::kKeyword;
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   expected_result = Result({9, {kTestType, "procedure"}});
   Assert::IsTrue(actual_result == expected_result);
@@ -274,7 +273,7 @@ TEST_METHOD(TestTokenize) {
 
   TokenList actual_tokens = Tokenizer::Tokenize(kTestInput);
   Assert::IsTrue(actual_tokens.size() == 37);
-  TokenList expected_tokens({{tt::kKeyword, "procedure"},
+  TokenList expected_tokens({{tt::kName, "procedure"},
                              {tt::kName, "one"},
                              {tt::kOpenBrace, "{"},
                              {tt::kName, "a"},
@@ -286,23 +285,23 @@ TEST_METHOD(TestTokenize) {
                              {tt::kName, "d"},
                              {tt::kSemicolon, ";"},
                              {tt::kCloseBrace, "}"},
-                             {tt::kKeyword, "procedure"},
+                             {tt::kName, "procedure"},
                              {tt::kName, "two"},
                              {tt::kOpenBrace, "{"},
-                             {tt::kKeyword, "if"},
+                             {tt::kName, "if"},
                              {tt::kOpenParen, "("},
                              {tt::kName, "a"},
                              {tt::kRelational, "!="},
                              {tt::kName, "b"},
                              {tt::kCloseParen, ")"},
-                             {tt::kKeyword, "then"},
+                             {tt::kName, "then"},
                              {tt::kOpenBrace, "{"},
                              {tt::kName, "d"},
                              {tt::kAssignment, "="},
                              {tt::kName, "e"},
                              {tt::kSemicolon, ";"},
                              {tt::kCloseBrace, "}"},
-                             {tt::kKeyword, "else"},
+                             {tt::kName, "else"},
                              {tt::kOpenBrace, "{"},
                              {tt::kName, "e"},
                              {tt::kAssignment, "="},
