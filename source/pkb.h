@@ -24,9 +24,6 @@ class PKB {
                                   // InsertXxStmt functions
   StmtTypeList stmt_type_list_;   // TODO: insert stmt to stmt type list in all
                                   // InsertXxStmt functions
-  StmtTable stmt_table_;
-  StmtListTable stmtlist_table_;
-  StmtTypeList stmt_type_list_;
   FollowsTable follows_table_;
   ParentTable parent_table_;
 

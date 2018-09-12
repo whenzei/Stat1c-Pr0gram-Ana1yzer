@@ -34,16 +34,11 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     // insert variables
     for (auto& var_name : used_var_name_set) {
       var_list_.InsertVarName(var_name);
-<<<<<<< HEAD
 	  }
     // TODO: add modifies and uses relationship
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
-=======
-    }
-    // TODO: add follows, modifies and uses relationship
->>>>>>> master
     return true;
   } else {
     return false;
@@ -63,13 +58,10 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
     for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
-<<<<<<< HEAD
-    // TODO: insert parent and uses relationship
-    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
+    // insert follow relationships
+    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(parent_stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
-    return stmtlist_table_.GetNextStmtListIndex();
-=======
     // insert parent relationships
     parent_table_.InsertDirectParentRelationship(stmt_num,
                                                  child_stmtlist_index);
@@ -78,9 +70,8 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
 	}
-    // TODO: insert follows and uses relationship
+    // TODO: insert uses relationship
     return true;
->>>>>>> master
   } else {
     return false;
   }
@@ -100,13 +91,10 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
     for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
-<<<<<<< HEAD
-    // TODO: insert parent and uses relationship
-    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
+    // insert follow relationships
+    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(parent_stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
-    return stmtlist_table_.GetNextTwoStmtListIndices();
-=======
     // insert parent relationships
     parent_table_.InsertDirectParentRelationship(
         stmt_num, then_stmtlist_index);
@@ -119,9 +107,8 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
       parent_table_.InsertIndirectParentRelationship(
           indirect_parent, else_stmtlist_index);
     }
-    // TODO: insert follows and uses relationship
+    // TODO: insert uses relationship
     return true;
->>>>>>> master
   } else {
     return false;
   }
@@ -204,7 +191,7 @@ StmtList PKB::GetFollowedBy(StmtNumInt stmt_num_int) {
 
 StmtNum PKB::GetFollowedByT(StmtNumInt stmt_num_int) {
 StmtNum follower_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollowedByT(followee_stmt_num);
+  return follows_table_.GetFollowedByT(follower_stmt_num);
 }
 
 bool PKB::HasFollowsRelationship() { 
