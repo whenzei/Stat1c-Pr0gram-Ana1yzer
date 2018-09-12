@@ -7,24 +7,7 @@
 using std::string;
 using std::pair;
 
-#include "pql_query.h"
-
-enum PqlSuchthatType {
-  kModifiesP = 0,
-  kModifiesS,
-  kUsesP,
-  kUsesS,
-  Calls,
-  CallsT,
-  Parent,
-  ParentT,
-  Follows,
-  FollowsT,
-  Next,
-  NextT,
-  Affects,
-  AffectsT
-};
+#include "pql_enum.h"
 
 class PqlSuchthat {
   private:
