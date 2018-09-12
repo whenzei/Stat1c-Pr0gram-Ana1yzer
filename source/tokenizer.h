@@ -39,12 +39,20 @@ class Tokenizer {
     kNothing,
     kDigit,
     kName,
-    kBrace,
+    kOpenBrace,
+    kCloseBrace,
     kSemicolon,
     kAssignment,
     kOperator,
+    kOpenParen,
+    kCloseParen,
+    kConditional,
+    kRelational,
+    kKeyword,
     kUnknown,
+	kEOF,
   };
+
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
@@ -95,6 +103,12 @@ class Tokenizer {
   // returned as two separate results
   static Result TokenizeBraces(string input, int current_index = 0);
 
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
+  // and closing parenthesises ("(" and ")"), and returns the result as a Result
+  // struct. Note that it will only tokenize a single bracket at a time, e.g.
+  // "((" will be returned as two separate results
+  static Result TokenizeParenthesis(string input, int current_index = 0);
+
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize  operators
   // and returns the result as a Result struct
   static Result TokenizeOperators(string input, int current_index = 0);
@@ -103,9 +117,15 @@ class Tokenizer {
   // tokenize semicolons, and returns the result as a Result struct
   static Result TokenizeSemicolon(string input, int current_index = 0);
 
-  // Uses Tokenizer::TokenizeCharacter(...) with '=' as the supplied value to
-  // tokenize the equals sign, and returns the result as a Result struct
+  // Uses Tokenizer::TokenizePattern(...) with regex to
+  // tokenize the equals symbol, returns a result with kConditional type if "=="
+  // matches, and kAssignment type if a single '=' is matched.
   static Result TokenizeEquals(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+  // expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
+  // struct
+  static Result Tokenizer::TokenizeRelationals(string input, int current_index);
 
   // Helper function to return empty result, meaning tokenization did not find a
   // match

@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef PQL_QUERY_H
 #define PQL_QUERY_H
 
@@ -7,6 +9,8 @@
 using std::string;
 using std::vector;
 using std::map;
+
+#include "pql_suchthat.h"
 
 enum PqlDeclarationEntity {
   kStmt = 0,
@@ -30,18 +34,21 @@ class PqlQuery {
  private:
   map<string, PqlDeclarationEntity> declarations_; // the list of declarations
   string var_name_;  // the variable name of the 'Select' statement
+  vector<PqlSuchthat> suchthats_; // collection of such that clauses
 
  public:
   /* Constructor */
   PqlQuery();
 
   /* Setters */
-  void AddDeclaration(PqlDeclarationEntity, string);
+  bool AddDeclaration(PqlDeclarationEntity, string);
   void SetVarName(string);
+  void AddSuchthat(PqlSuchthat);
 
   /* Getters */
   map<string, PqlDeclarationEntity> GetDeclarations();
   string GetVarName();
+  vector<PqlSuchthat> GetSuchThats();
 };
 
 #endif  // !QUERY_H
