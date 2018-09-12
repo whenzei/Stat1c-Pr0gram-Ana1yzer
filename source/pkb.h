@@ -144,32 +144,32 @@ class PKB {
 
   // Follows table public functions
    
-  // @returns true if Follows(followee, follower) holds
-  bool IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
-
   // @returns true if FollowsT(followee, follower) holds
   bool IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
 
-  // @returns stmt number of statement a's that satisfies Follows(stmt_num_int, a)
-  StmtList GetFollows(StmtNumInt stmt_num_int);
+  // @returns true if Follows(followee, follower) holds
+  bool IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
 
-  // @returns stmt number of statement a that satisfies FollowsT(stmt_num_int, a)
-  StmtNum GetFollowsT(StmtNumInt stmt_num_int);
+  // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
+  StmtList GetFollowsT(StmtNumInt stmt_num_int);
 
-  // @returns list of stmt numbers of a's that satisfies Follows(a, stmt_num_int)
-  StmtList GetFollowedBy(StmtNumInt stmt_num_int);
+  // @returns stmt number of statement a that satisfies Follows(stmt_num_int, a)
+  StmtNum GetFollows(StmtNumInt stmt_num_int);
 
-  // @returns stmt number of statement a that satisfies FollowsT(a, stmt_num_int)
-  StmtNum GetFollowedByT(StmtNumInt stmt_num_int);
+  // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
+  StmtList GetFollowedByT(StmtNumInt stmt_num_int);
+
+  // @returns stmt number of statement a that satisfies Follows(a, stmt_num_int)
+  StmtNum GetFollowedBy(StmtNumInt stmt_num_int);
   
   // @returns true if follows table has any follows relationships
   bool HasFollowsRelationship();
 
-  // @returns list of pairs of Follows relationships
-  StmtNumPairList GetAllFollowsPair();
-
   // @returns list of pairs of FollowsT relationships
   StmtNumPairList GetAllFollowsTPair();
+
+  // @returns list of pairs of Follows relationships
+  StmtNumPairList GetAllFollowsPair();
 
   // @returns true if the statement specified by parent_stmt_num is the direct parent
   // of the statement specified by child_stmt_num

@@ -162,36 +162,36 @@ StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-bool PKB::IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) { 
-  StmtNum followee_stmt_num = ToString(followee_stmt_num_int);
-  StmtNum follower_stmt_num = ToString(follower_stmt_num_int);;
-  return follows_table_.IsFollows(followee_stmt_num, follower_stmt_num);
-}
-
-bool PKB::IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) {
+bool PKB::IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) { 
   StmtNum followee_stmt_num = ToString(followee_stmt_num_int);
   StmtNum follower_stmt_num = ToString(follower_stmt_num_int);;
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
 }
 
-StmtList PKB::GetFollows(StmtNumInt stmt_num_int) {
-  StmtNum followee_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollows(followee_stmt_num);
+bool PKB::IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) {
+  StmtNum followee_stmt_num = ToString(followee_stmt_num_int);
+  StmtNum follower_stmt_num = ToString(follower_stmt_num_int);;
+  return follows_table_.IsFollows(followee_stmt_num, follower_stmt_num);
 }
 
-StmtNum PKB::GetFollowsT(StmtNumInt stmt_num_int) {
+StmtList PKB::GetFollowsT(StmtNumInt stmt_num_int) {
   StmtNum followee_stmt_num = ToString(stmt_num_int);
   return follows_table_.GetFollowsT(followee_stmt_num);
 }
 
-StmtList PKB::GetFollowedBy(StmtNumInt stmt_num_int) {
-  StmtNum follower_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollowedBy(follower_stmt_num);
+StmtNum PKB::GetFollows(StmtNumInt stmt_num_int) {
+  StmtNum followee_stmt_num = ToString(stmt_num_int);
+  return follows_table_.GetFollows(followee_stmt_num);
 }
 
-StmtNum PKB::GetFollowedByT(StmtNumInt stmt_num_int) {
-StmtNum follower_stmt_num = ToString(stmt_num_int);
+StmtList PKB::GetFollowedByT(StmtNumInt stmt_num_int) {
+  StmtNum follower_stmt_num = ToString(stmt_num_int);
   return follows_table_.GetFollowedByT(follower_stmt_num);
+}
+
+StmtNum PKB::GetFollowedBy(StmtNumInt stmt_num_int) {
+StmtNum follower_stmt_num = ToString(stmt_num_int);
+  return follows_table_.GetFollowedBy(follower_stmt_num);
 }
 
 bool PKB::HasFollowsRelationship() { 

@@ -59,28 +59,28 @@ public:
   // @params
   // @returns a list of statement numbers of statements that follow s, if any
   // list can be empty
-  StmtList GetFollows(StmtNum stmt_num);
+  StmtList GetFollowsT(StmtNum stmt_num);
 
   // Finds and returns a stmt number for the stmt that directly follows the
   // given statement. Only the direct follower is returned.
   // @params
   // @returns a stmt_number if a direct follower exists
   // @returns -1 if otherwise
-  StmtNum GetFollowsT(StmtNum stmt_num);
+  StmtNum GetFollows(StmtNum stmt_num);
 
   // Finds list of statements that are followed by the given statement.
   // Transitive relationships are included.
   // @params
   // @returns a list of statement numbers of statements that are followed by s
   // list can be empty
-  StmtList GetFollowedBy(StmtNum stmt_num);
+  StmtList GetFollowedByT(StmtNum stmt_num);
 
   // Finds and returns a stmt number for the stmt that is directly followed
   // by the given statement. Only the direct followee is returned.
   // @params
   // @returns a stmt_number if a direct followee exists
   // @returns -1 if otherwise
-  StmtNum GetFollowedByT(StmtNum stmt_num);
+  StmtNum GetFollowedBy(StmtNum stmt_num);
 
   // Checks and returns if follows map contains any follows relationships.
   // @returns true if there are any follows relationships
@@ -89,11 +89,11 @@ public:
 
   // Returns a list of (followee, follower) pair of statement numbers.
   // @returns list of pairs of stmt_nums (may be empty)
-  StmtNumPairList GetAllFollowsPair();
+  StmtNumPairList GetAllFollowsTPair();
 
   // Returns a list of (followee, direct follower) pair of statement numbers.
   // @returns list of pairs of stmt_nums (may be empty)
-  StmtNumPairList GetAllFollowsTPair();
+  StmtNumPairList GetAllFollowsPair();
 };
 
 #endif !SPA_FOLLOWS_TABLE_H
