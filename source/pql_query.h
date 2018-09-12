@@ -23,7 +23,10 @@ enum PqlDeclarationEntity {
   kVariable,
   kConstant,
   kProgline,
-  kProcedure
+  kProcedure,
+  kInteger, // only used for validation
+  kIdent, // only used for validation
+  kUnderscore // only used for validation
 };
 
 /*
