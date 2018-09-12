@@ -4,6 +4,7 @@
 #define SPA_PKB_H
 
 #include "const_list.h"
+#include "follows_table.h"
 #include "proc_list.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
@@ -23,6 +24,7 @@ class PKB {
                                   // InsertXxStmt functions
   StmtTypeList stmt_type_list_;   // TODO: insert stmt to stmt type list in all
                                   // InsertXxStmt functions
+  FollowsTable follows_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -115,6 +117,21 @@ class PKB {
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
+
+  // Follows table public functions
+  bool IsFollows(StmtNum stmt_num1, StmtNum stmt_num2);
+
+  bool IsDirectFollows(StmtNum stmt_num1, StmtNum stmt_num2);
+
+  StmtList GetFollows(StmtNum stmt_num);
+
+  StmtNum GetDirectFollows(StmtNum stmt_num);
+
+  StmtList GetFollowedBy(StmtNum stmt_num);
+
+  StmtNum GetDirectFollowedBy(StmtNum stmt_num);
+
+  bool HasFollowsRelationship();
 
  private:
   StmtNum ToString(int stmt_num_int);
