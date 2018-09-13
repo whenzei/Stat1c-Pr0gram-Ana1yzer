@@ -176,9 +176,9 @@ bool Validator::IsValidAssignment() {
 }
 
 bool Validator::IsValidConditional() {
-  // currently only check for kName -> kConditional -> kName
+  // currently only check for kName -> kRelational -> kName
   TokenList syntax_block = ReadNextTokens(3);
-  vector<tt> expected_types = {tt::kName, tt::kConditional, tt::kName};
+  vector<tt> expected_types = {tt::kName, tt::kRelational, tt::kName};
 
   if (!MatchTypes(syntax_block, expected_types)) {
     cout << "[CONDITIONAL INVALID]" << endl;

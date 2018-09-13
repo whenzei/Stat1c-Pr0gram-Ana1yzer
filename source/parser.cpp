@@ -35,6 +35,10 @@ void Parser::Parse(string filepath) {
   // retrieve vector of tokens
   tokens_ = Tokenizer::Tokenize(contents);
 
+  for (Token token : tokens_) {
+	  cout << Tokenizer::Debug(token) << endl;
+  }
+
   // validate tokens for syntax errors
   if (!Validator::ValidateProgram(tokens_)) {
 	  return;
