@@ -22,7 +22,7 @@ QueryEvaluator::QueryEvaluator() {}
 
 list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   string select_var_name = query->GetVarName();
-  map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
+  unordered_map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
   vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
   list<string> results;
 
@@ -43,13 +43,13 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 }
 
 list<string> QueryEvaluator::GetResultFromSelectAllQuery(
-    string select_var_name, map<string, PqlDeclarationEntity> declarations,
+    string select_var_name, unordered_map<string, PqlDeclarationEntity> declarations,
     PKB pkb) {
   list<string> results;
 
   // Find out what the user is selecting by going through the list of
   // declarations made by the user
-  for (map<string, PqlDeclarationEntity>::iterator it = declarations.begin();
+  for (unordered_map<string, PqlDeclarationEntity>::iterator it = declarations.begin();
        it != declarations.end(); ++it) {
     // Check for a match between the selection and declaration
     if (select_var_name.compare(it->first) == 0) {
