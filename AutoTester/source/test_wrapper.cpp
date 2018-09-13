@@ -2,7 +2,7 @@
 #include "parser.h"
 #include "pql_parser.h"
 #include "pql_query.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -38,7 +38,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
   PqlQuery* pql_query = new PqlQuery();
   PqlParser pql_parser(query, pql_query);
   if (pql_parser.Parse()) {
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     // store the answers to the query in the results list (it is initially empty)
     // each result must be a string.
     results = qe.GetResultFromQuery(pql_query, pkb_);

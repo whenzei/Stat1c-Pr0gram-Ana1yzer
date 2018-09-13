@@ -9,17 +9,17 @@
 
 #include "pkb.h"
 #include "pql_query.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 
 /*A class to evaluate user query and return result to user*/
-class QueryEvaluator {
+class PqlEvaluator {
  public:
   /* Contructor */
-  QueryEvaluator();
+  PqlEvaluator();
 
   /**
    * Use the @Query provided by user
