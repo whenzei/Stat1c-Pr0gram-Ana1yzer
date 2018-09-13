@@ -10,11 +10,12 @@ public:
 	static void Validate(TokenList tokens);
 
 private:
-	static bool ValidateProcedure();
-	static bool ValidateExpression();
-	static bool ValidateIfBlock();
-	static bool ValidateWhileBlock();
-	static bool ValidateNestedBlock();
+	static bool IsValidProcedure();
+	static bool IsValidStatement();
+	static bool IsValidExpression();
+	static bool IsValidIfBlock();
+	static bool IsValidWhileBlock();
+	static bool IsValidNestedBlock();
 
 	static TokenList ReadNextTokens(int num_tokens);
 };

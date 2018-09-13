@@ -13,11 +13,14 @@ TokenList tokens_;
 void Validator::Validate(TokenList tokens) {
   tokens_ = tokens;
   curr_token_ = tokens_.front();
+  bool error_flag = false;
   while (curr_token_.type == tt::kName && curr_token_.value == "procedure") {
-    ValidateProcedure();
+    if (!IsValidProcedure()) {
+      break;
+    }
   }
 
-  if (curr_token_.type != tt::kEOF) {
+  if (curr_token_.type != tt::kEOF || error_flag) {
     // do something here, means validation failed
     cout << "Validation failed, stream not fully consumed" << endl;
   }
@@ -26,26 +29,48 @@ void Validator::Validate(TokenList tokens) {
 TokenList Validator::ReadNextTokens(int num_tokens) {
   TokenList list;
   for (int i = 0; i < num_tokens; i++) {
-    list.push_back(tokens_[curr_index_++]);
+    curr_token_ = tokens_[curr_index_++];
+    list.push_back(curr_token_);
   }
 
   return list;
 }
 
-bool Validator::ValidateProcedure() {
-  // 'procedure' variable '{'
-  TokenList syntax_block = ReadNextTokens(3);
-  for (Token tok : syntax_block) {
-    cout << Tokenizer::Debug(tok) << endl;
+bool MatchTypes(TokenList syntax_block, vector<tt> expected_types) {
+  for (int i = 0; i < syntax_block.size(); i++) {
+    if (syntax_block[i].type != expected_types[i]) {
+      return false;
+    }
   }
 
-  return false;
+  return true;
 }
 
-bool Validator::ValidateExpression() { return false; }
+bool Validator::IsValidProcedure() {
+  // 'procedure' variable '{'
+  TokenList syntax_block = ReadNextTokens(3);
+  // don't have to check if syntax_block[0] == "procedure", since it must be to
+  // invoke this function
+  vector<tt> expected_types = {tt::kName, tt::kName, tt::kOpenBrace};
+  // matches syntax, now check stmtList
+  if (MatchTypes(syntax_block, expected_types)) {
+    // "}" stmtList "{"
+    while (curr_token_.type != tt::kCloseBrace) {
+      if (!IsValidStatement()) {
+        return false;
+      }
+    }
+  }
 
-bool Validator::ValidateIfBlock() { return false; }
+  return true;
+}
 
-bool Validator::ValidateWhileBlock() { return false; }
+bool Validator::IsValidStatement() { return false; }
 
-bool Validator::ValidateNestedBlock() { return false; }
+bool Validator::IsValidExpression() { return false; }
+
+bool Validator::IsValidIfBlock() { return false; }
+
+bool Validator::IsValidWhileBlock() { return false; }
+
+bool Validator::IsValidNestedBlock() { return false; }
