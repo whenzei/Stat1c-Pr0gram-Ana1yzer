@@ -20,11 +20,41 @@ using std::stack;
 
 using tt = Tokenizer::TokenType;
 
+const std::unordered_set<string> kKeywords({"procedure", "read", "call",
+                                            "print", "if", "then", "else",
+                                            "while"});
+
 Parser::Parser(PKB* pkb) {
   pkb_ = pkb;
   current_index_ = 0;
   stmt_index_ = 1;
   stmt_list_index_ = 0;
+}
+
+void Parser::Parse(string filepath) {
+  // read content from file
+  string contents = ReadContentFromFile(filepath);
+  // retrieve vector of tokens
+  tokens_ = Tokenizer::Tokenize(contents);
+
+  // TO DO: Implement Validator
+
+  ReadNextToken();  // should start with "procedure"
+  int curr_stmt_list_index = stmt_list_index_++;
+
+  while (current_token_.type != tt::kEOF) {
+    if (current_token_.type == tt::kName &&
+        kKeywords.count(current_token_.value)) {
+      ProcessKeyword(curr_stmt_list_index);
+    } else if (current_token_.type == tt::kOpenBrace ||
+               current_token_.type == tt::kCloseBrace) {
+    } else if (current_token_.type == tt::kName) {
+      ProcessAssignment(curr_stmt_list_index);
+    } else {  // Should not happen
+      exit(1);
+    }
+    ReadNextToken();
+  }
 }
 
 bool Parser::IsValidFile(string filepath) {
@@ -47,6 +77,10 @@ Token Parser::ReadNextToken() {
   current_token_ = tokens_[current_index_++];
   return current_token_;
 }
+
+Token Parser::PeekNextToken() { return tokens_[current_index_]; }
+
+void Parser::EatNumTokens(int num) { current_index_ += num; }
 
 void Parser::ProcessKeyword(int curr_stmt_list_index) {
   if (current_token_.value == "if") {
@@ -95,42 +129,17 @@ void Parser::ProcessAssignment(int curr_stmt_list_index) {
     rhsconst = rhsconst + " " + var;
   }
 
-  cout << "Assignment statement "
+  cout << "Assignment statement " << assign_stmt_index
        << " added, indent_lvl: " << curr_stmt_list_index << ", lhs: " << lhs_var
        << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
   //***********************************************
 }
 
-void Parser::Parse(string filepath) {
-  // read content from file
-  string contents = ReadContentFromFile(filepath);
-  // retrieve vector of tokens
-  tokens_ = Tokenizer::Tokenize(contents);
-
-  // TO DO: Implement Validator
-  Validator::Validate(tokens_);
-
-  ReadNextToken();
-  int curr_stmt_list_index = stmt_list_index_++;
-
-  while (current_token_.type != tt::kEOF) {
-    if (current_token_.type == tt::kKeyword) {
-      ProcessKeyword(curr_stmt_list_index);
-    } else if (current_token_.type == tt::kOpenBrace ||
-               current_token_.type == tt::kCloseBrace) {
-    } else if (current_token_.type == tt::kName) {
-      ProcessAssignment(curr_stmt_list_index);
-    } else {  // Should not happen
-      exit(1);
-    }
-    ReadNextToken();
-  }
-}
-
 void Parser::ProcessIfBlock(int curr_stmt_list_index) {
-  // Reads the first open bracket '('
-  ReadNextToken();
-  // Reads the first condition token
+  // current_token_.value == "if" right now
+  // syntax: "(" cond_expr ")" "{"
+  // Eat then open parenthesis
+  EatNumTokens(1);
   ReadNextToken();
 
   int if_stmt_index = stmt_index_++;
@@ -147,17 +156,20 @@ void Parser::ProcessIfBlock(int curr_stmt_list_index) {
     ReadNextToken();
   }
 
-  // Open brace '{' of if block
-  ReadNextToken();
+  // eat 'then {' tokens
+  EatNumTokens(2);
+  // read first item in if block
   ReadNextToken();
 
   // Process everything inside the if block
   ProcessBlockContent(inside_if_stmt_list_index);
 
+  // eat "else {" tokens
+  EatNumTokens(2);
+  // read first item in else block
   ReadNextToken();
 
   // Process everything inside the counterpart else block
-  ReadNextToken();
   ProcessBlockContent(inside_else_stmt_list_index);
 
   //************* DEBUG******************
@@ -165,8 +177,8 @@ void Parser::ProcessIfBlock(int curr_stmt_list_index) {
   for (Variable var : control_vars) {
     control_var_str = control_var_str + " " + var;
   }
-  cout << "If statement "
-       << "added, indent_lvl: " << curr_stmt_list_index
+  cout << "If statement " << if_stmt_index
+       << " added, indent_lvl: " << curr_stmt_list_index
        << ", control_variable: " << control_var_str << endl;
   //*************************************
 
@@ -177,7 +189,7 @@ void Parser::ProcessIfBlock(int curr_stmt_list_index) {
 }
 
 void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
-  ReadNextToken();
+  EatNumTokens(1);
   ReadNextToken();
 
   int while_stmt_index = stmt_index_++;
@@ -201,8 +213,8 @@ void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
   for (Variable var : control_vars) {
     control_var_str = control_var_str + " " + var;
   }
-  cout << "While statement "
-       << "added, indent_lvl: " << curr_stmt_list_index
+  cout << "While statement " << while_stmt_index
+       << " added, indent_lvl: " << curr_stmt_list_index
        << ", control_variable: " << control_var_str << endl;
   //*
 
@@ -212,16 +224,16 @@ void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
 }
 
 void Parser::ProcessBlockContent(int curr_stmt_list_index) {
-  while (current_token_.value.compare("}") != 0) {
+  while (current_token_.value != "}") {
     if (current_token_.type == tt::kName) {
-      ProcessAssignment(curr_stmt_list_index);
-    } else if (current_token_.type == tt::kKeyword) {
-      if (current_token_.value.compare("if") == 0) {
-        ProcessIfBlock(curr_stmt_list_index);
-      }
-
-      if (current_token_.value.compare("while") == 0) {
-        ProcessWhileBlock(curr_stmt_list_index);
+      if (kKeywords.count(current_token_.value)) {
+        if (PeekNextToken().type == tt::kOpenParen) {
+          ProcessKeyword(curr_stmt_list_index);
+        } else {
+          ProcessAssignment(curr_stmt_list_index);
+        }
+      } else {
+        ProcessAssignment(curr_stmt_list_index);
       }
     }
     ReadNextToken();
