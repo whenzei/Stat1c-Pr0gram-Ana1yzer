@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\design_extractor.cpp" />
+    <ClCompile Include="..\source\expression_helper.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="..\source\query_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\expression_helper.h" />
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />

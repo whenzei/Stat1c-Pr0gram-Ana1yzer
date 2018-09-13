@@ -90,6 +90,9 @@
     <ClCompile Include="..\source\pql_validator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\expression_helper.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\simple_validator.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="..\source\query_evaluator.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\expression_helper.h">
+      <Filter>Header Files\Frontend</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
