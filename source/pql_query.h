@@ -22,36 +22,94 @@ For example, Follows(x, y), x can either be a kStmt, kRead, kPrint, ..., kUnders
 */
 
 // Follows
-const unordered_set<PqlDeclarationEntity> follows_first = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
-const unordered_set<PqlDeclarationEntity> follows_second = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
+const unordered_set<PqlDeclarationEntity> follows_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
+const unordered_set<PqlDeclarationEntity> follows_second = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // FollowsT
-const unordered_set<PqlDeclarationEntity> follows_t_first = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
-const unordered_set<PqlDeclarationEntity> follows_t_second = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
+const unordered_set<PqlDeclarationEntity> follows_t_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
+const unordered_set<PqlDeclarationEntity> follows_t_second = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // Parent
-const unordered_set<PqlDeclarationEntity> parent_first = { kStmt, kWhile, kIf, kProgline, kInteger, kUnderscore };
-const unordered_set<PqlDeclarationEntity> parent_second = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
+const unordered_set<PqlDeclarationEntity> parent_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore 
+};
+const unordered_set<PqlDeclarationEntity> parent_second = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // ParentT
-const unordered_set<PqlDeclarationEntity> parent_t_first = { kStmt, kWhile, kIf, kProgline, kInteger, kUnderscore };
-const unordered_set<PqlDeclarationEntity> parent_t_second = { kStmt, kRead, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger, kUnderscore };
+const unordered_set<PqlDeclarationEntity> parent_t_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kProgline, 
+PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore 
+};
+const unordered_set<PqlDeclarationEntity> parent_t_second = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint, 
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // UsesS
-const unordered_set<PqlDeclarationEntity> uses_s_first = { kStmt, kPrint, kCall, kWhile, kIf, kAssign, kProgline, kInteger };
-const unordered_set<PqlDeclarationEntity> uses_s_second = { kVariable, kConstant, kIdent, kUnderscore };
+const unordered_set<PqlDeclarationEntity> uses_s_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kPrint, PqlDeclarationEntity::kCall, 
+PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kAssign, 
+PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger 
+};
+const unordered_set<PqlDeclarationEntity> uses_s_second = { 
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kIdent, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // UsesP
-const unordered_set<PqlDeclarationEntity> uses_p_first = { kProcedure, kIdent };
-const unordered_set<PqlDeclarationEntity> uses_p_second = { kVariable, kConstant, kIdent, kUnderscore };
+const unordered_set<PqlDeclarationEntity> uses_p_first = { 
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent 
+};
+const unordered_set<PqlDeclarationEntity> uses_p_second = { 
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kIdent, 
+PqlDeclarationEntity::kUnderscore 
+};
 
 // ModifiesS
-const unordered_set<PqlDeclarationEntity> modifies_s_first = { kStmt, kRead, kCall, kWhile, kIf, kAssign, kProgline, kInteger };
-const unordered_set<PqlDeclarationEntity> modifies_s_second = { kVariable, kIdent, kUnderscore };
+const unordered_set<PqlDeclarationEntity> modifies_s_first = { 
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kCall, 
+PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kAssign, 
+PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger 
+};
+const unordered_set<PqlDeclarationEntity> modifies_s_second = { 
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore 
+};
 
 // ModifiesP
-const unordered_set<PqlDeclarationEntity> modifies_p_first = { kProcedure, kIdent };
-const unordered_set<PqlDeclarationEntity> modifies_p_second = { kVariable, kIdent, kUnderscore };
+const unordered_set<PqlDeclarationEntity> modifies_p_first = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent 
+};
+const unordered_set<PqlDeclarationEntity> modifies_p_second = { 
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore 
+};
 
 // Group all the sets into a map for easy access
 const unordered_map<PqlSuchthatType, pair<unordered_set<PqlDeclarationEntity>, unordered_set<PqlDeclarationEntity>>> suchthat_table = {

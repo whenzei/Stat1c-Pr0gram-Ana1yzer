@@ -19,14 +19,21 @@ bool PqlParser::Parse() {
 
   size_t last = 0;
   size_t next = 0;
+  string text;
   while ((next = queryText_.find(';', last)) != string::npos) {
-    statements.push_back(queryText_.substr(last, next - last));
+    text = queryText_.substr(last, next - last);
+    text = text.substr(text.find_first_not_of(' '));
+    statements.push_back(text);
     last = next + 1;
   }
-  statements.push_back(queryText_.substr(last));
+  text = queryText_.substr(last);
+  if (text != "") {
+    text = text.substr(text.find_first_not_of(' '));
+    statements.push_back(text);
+  }
+  
 
-  for (vector<string>::const_iterator i = statements.begin();
-    i != statements.end(); ++i) {
+  for (vector<string>::const_iterator i = statements.begin(); i != statements.end(); ++i) {
     if (!ParseStatement(*i, i+1 == statements.end())) return false;
   }
 
@@ -43,134 +50,112 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
     return false;
   }
 
-  vector<string> tokens;
+  if (statement.substr(0, statement.find(' ')) == "Select") {
+    if (isLast) {
+      TokenizerFunc tokenizer_functions[] = {
+        &Tokenizer::SkipWhitespace,
+        &Tokenizer::TokenizeParenthesis, &Tokenizer::TokenizeComma, &Tokenizer::TokenizeQuotation,
+        &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeDigits, &Tokenizer::TokenizeWords };
+      TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
-  std::stringstream stream(statement);
-  string token;
-  while (std::getline(stream, token, ' ')) {
-    if (token != "") tokens.push_back(token);
-  }
-
-  if (tokens.size() == 0) {
-    errorMessage_ = "Statements can not be empty.";
-    return false;
-  } else {
-    if (tokens[0] == "Select") {
-      if (isLast) {
-        if (!ParseSelect(tokens, statement)) return false;
-      } else {
-        errorMessage_ = "Select clause must be the last statement.";
-        return false;
+      for (int i = 0; i < tokens.size(); i++) {
+        std::cout << Tokenizer::Debug(tokens[i]) << std::endl;
       }
+
+      if (!ParseSelect(tokens)) return false;
     }
     else {
-      if (!ParseDeclaration(tokens)) return false;
+      errorMessage_ = "Select clause must be the last statement.";
+      return false;
     }
+  }
+  else {
+    TokenizerFunc tokenizer_functions[] = {
+          &Tokenizer::SkipWhitespace, &Tokenizer::TokenizeWords, &Tokenizer::TokenizeComma };
+    TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
+    
+    for (int i = 0; i < tokens.size(); i++) {
+      std::cout << Tokenizer::Debug(tokens[i]) << std::endl;
+    }
+
+    if (!ParseDeclaration(tokens)) return false;
   }
 
   return true;
 }
 
-bool PqlParser::ParseSelect(vector<string> tokens, string statement) {
+bool PqlParser::ParseSelect(TokenList tokens) {
   // set variable name
-  if (PqlValidator::ValidateIdent(tokens[1])) {
-    query_->SetVarName(tokens[1]);
+  if (PqlValidator::ValidateIdent(tokens[1].value)) {
+    query_->SetVarName(tokens[1].value);
   }
   else {
     errorMessage_ = "Select synonym must be in IDENT format.";
     return false;
   }
-
-  // subtract 'Select' and variable name from statement
-  statement = statement.substr(7 + tokens[1].length());
   
-  // short circuit if there's no other clauses
-  if (statement.length() == 0) return true;
-
-  // search for indexes for the different clauses
-  int suchthat_start = statement.find("such that");
-  int pattern_start = statement.find("pattern");
-  int with_start = statement.find("with");
-
-  // parse such that
-  if (suchthat_start != string::npos) {
-    suchthat_start += 9; // length of "such that"
-
-    // split the 'and's
-
-    // remove whitespace
-
-    // parse type
-
-    // parse parameters
-  }
-
-  // TODO(iter 1.3): parse pattern
-  if (pattern_start != string::npos) {
-    pattern_start += 7; // length of "pattern"
-  }
-
-  // TODO(iter 2): parse with
-  if (with_start != string::npos) {
-    with_start += 4; // length of "with"
+  if (tokens.size() > 2) { // there are other clauses
+    Token current = tokens[2];
+    while (current.type != Tokenizer::TokenType::kEOF) {
+      // check for such that
+    }
   }
 
   return true;
 }
 
-bool PqlParser::ParseDeclaration(vector<string> tokens) {
-  string entity_raw = tokens[0];
+bool PqlParser::ParseDeclaration(TokenList tokens) {
+  string entity_raw = tokens[0].value;
   PqlDeclarationEntity entity;
 
   if (entity_raw == "stmt") {
-    entity = kStmt;
+    entity = PqlDeclarationEntity::kStmt;
   } 
   else if (entity_raw == "read") {
-    entity = kRead;
+    entity = PqlDeclarationEntity::kRead;
   } 
   else if (entity_raw == "print") {
-    entity = kPrint;
+    entity = PqlDeclarationEntity::kPrint;
   } 
   else if (entity_raw == "call") {
-    entity = kCall;
+    entity = PqlDeclarationEntity::kCall;
   } 
   else if (entity_raw == "while") {
-    entity = kWhile;
+    entity = PqlDeclarationEntity::kWhile;
   }
   else if (entity_raw == "if") {
-    entity = kIf;
+    entity = PqlDeclarationEntity::kIf;
   }
   else if (entity_raw == "assign") {
-    entity = kAssign;
+    entity = PqlDeclarationEntity::kAssign;
   }
   else if (entity_raw == "variable") {
-    entity = kVariable;
+    entity = PqlDeclarationEntity::kVariable;
   }
   else if (entity_raw == "constant") {
-    entity = kConstant;
+    entity = PqlDeclarationEntity::kConstant;
   }
   else if (entity_raw == "prog_line") {
-    entity = kProgline;
+    entity = PqlDeclarationEntity::kProgline;
   }
   else if (entity_raw == "procedure") {
-    entity = kProcedure;
+    entity = PqlDeclarationEntity::kProcedure;
   } else {
     errorMessage_ = "Invalid declaration entity.";
     return false;
   }
 
   for (int i = 1; i < tokens.size(); i++) {
-    string synonym = tokens[i];
-    
-    // check for comma
-    if (i != tokens.size() - 1) {
-      if (synonym.back() != ',') {
-        errorMessage_ = "Missing comma in declaration synonyms.";
+    if (tokens[i].type == Tokenizer::TokenType::kEOF) break;
+    if (tokens[i].type == Tokenizer::TokenType::kComma) {
+      if (i+1 >= tokens.size()) {
+        errorMessage_ = "Synonym expected after comma in declaration.";
         return false;
-      } else {
-        synonym = synonym.substr(0, synonym.size() - 1);
       }
+      continue;
     }
+
+    string synonym = tokens[i].value;
 
     // check for grammar
     if (PqlValidator::ValidateIdent(synonym)) {
@@ -184,7 +169,7 @@ bool PqlParser::ParseDeclaration(vector<string> tokens) {
       return false;
     }
   }
-
+  
   return true;
 }
 

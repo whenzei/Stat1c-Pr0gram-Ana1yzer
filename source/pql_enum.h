@@ -3,7 +3,7 @@
 #ifndef PQL_ENUM_H
 #define PQL_ENUM_H
 
-enum PqlDeclarationEntity {
+enum class PqlDeclarationEntity {
   kStmt = 0,
   kRead,
   kPrint,
@@ -20,7 +20,7 @@ enum PqlDeclarationEntity {
   kUnderscore // only used for validation, not an actual entity type
 };
 
-enum PqlSuchthatType {
+enum class PqlSuchthatType {
   kModifiesP = 0,
   kModifiesS,
   kUsesP,

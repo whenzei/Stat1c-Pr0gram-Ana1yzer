@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "pql_query.h"
+#include "tokenizer.h"
 using std::string;
 using std::vector;
 
@@ -23,8 +24,8 @@ class PqlParser {
 
   bool ParseStatement(string, bool);
   bool ParseSynonym(string);
-  bool ParseSelect(vector<string>, string);
-  bool ParseDeclaration(vector<string>);
+  bool ParseSelect(TokenList);
+  bool ParseDeclaration(TokenList);
 };
 
 #endif
