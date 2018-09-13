@@ -59,7 +59,6 @@ class Tokenizer {
     kOpenParen,
     kCloseParen,
     kConditional,
-    kRelational,
     kUnknown,
     kEOF,
   };
@@ -133,10 +132,10 @@ class Tokenizer {
   // matches, and kAssignment type if a single '=' is matched.
   static Result TokenizeEquals(string input, int current_index = 0);
 
-  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditional
   // expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
   // struct
-  static Result Tokenizer::TokenizeRelationals(string input, int current_index);
+  static Result Tokenizer::TokenizeConditionals(string input, int current_index);
 
   // Helper function to return empty result, meaning tokenization did not find a
   // match

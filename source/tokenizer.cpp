@@ -16,8 +16,7 @@ enum TokenType {
   kOperator = 7,
   kOpenParen = 8,
   kCloseParen = 9,
-  kConditional = 10,
-  kRelational = 11,
+  kConditional = 11,
   kUnknown = 12,
   kEOF = 13,
 };
@@ -42,7 +41,7 @@ const std::unordered_map<string, TokenSubtype> kKeywordsToEnum = {
 static const string kTokenTypeNames[] = {
     "nothing",     "digit",      "name",     "openbrace", "closebrace",
     "semicolon",   "assignment", "operator", "openparen", "closeparen",
-    "conditional", "relational", "unknown",  "EOF"};
+    "conditional", "unknown",    "EOF"};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
@@ -56,7 +55,7 @@ TokenList Tokenizer::Tokenize(string input) {
       &SkipComments,       &SkipWhitespace,    &TokenizeDigits,
       &TokenizeNames,      &TokenizeBraces,    &TokenizeSemicolon,
       &TokenizeEquals,     &TokenizeOperators, &TokenizeParenthesis,
-      &TokenizeRelationals};
+      &TokenizeConditionals};
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -218,21 +217,21 @@ Result Tokenizer::TokenizeEquals(string input, int current_index) {
   return result;
 }
 
-// Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditional
 // expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
 // struct
 // Precondition: This function must be after Tokenizer::TokenizeEquals if
 // used in a function pointer array, or "=" will be classified as a kConditional
 // type instead of kAssignment type due to regex.
-Result Tokenizer::TokenizeRelationals(string input, int current_index) {
+Result Tokenizer::TokenizeConditionals(string input, int current_index) {
   // check if it is of the form !=
   Result result(
-      TokenizePattern(kRelational, regex("[!]=?"), input, current_index));
+      TokenizePattern(kConditional, regex("[!]=?"), input, current_index));
   if (result.num_consumed_characters == 2) {
     // must be exactly of the form !=, if not try to tokenize with [><]
     return result;
   }
-  return TokenizePattern(kRelational, regex{R"([><=]=?)"}, input,
+  return TokenizePattern(kConditional, regex{R"([><=]=?)"}, input,
                          current_index);
 }
 
@@ -242,7 +241,7 @@ Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
- /* return "<" + kTokenTypeNames[token.type] + "." +
-         kTokenSubtypeNames[token.subtype] + "> " + token.value;*/
-	return token.value;
+  /* return "<" + kTokenTypeNames[token.type] + "." +
+          kTokenSubtypeNames[token.subtype] + "> " + token.value;*/
+  return token.value;
 }
