@@ -55,7 +55,7 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
       TokenizerFunc tokenizer_functions[] = {
         &Tokenizer::SkipWhitespace,
         &Tokenizer::TokenizeParenthesis, &Tokenizer::TokenizeComma, &Tokenizer::TokenizeQuotation,
-        &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeDigits, &Tokenizer::TokenizeWords };
+        &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeWords };
       TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
       for (int i = 0; i < tokens.size(); i++) {
@@ -96,6 +96,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
   
   if (tokens.size() > 2) { // there are other clauses
     int current_index = 2;
+    string previous_type;
     while (current_index < tokens.size() && tokens[current_index].type != Tokenizer::TokenType::kEOF) {
       if (tokens[current_index].value == "such") {
         if (tokens[current_index+1].value != "that") {
@@ -107,9 +108,38 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         // 1. Handle such that clause
         current_index++;
         if(!ParseSuchthat(tokens, &current_index)) return false;
+        previous_type = "suchthat";
       }
-      else if (tokens[current_index].value == "pattern") {} // TODO: Handle pattern clause
-      else if (tokens[current_index].value == "with") {} // TODO: Handle with clause
+      else if (tokens[current_index].value == "pattern") {
+        // 2. TODO: Handle pattern clause
+        current_index++;
+        //if (!ParsePattern(tokens, &current_index)) return false;
+        previous_type = "pattern";
+      } 
+      else if (tokens[current_index].value == "with") {
+        // 3. TODO: Handle with clause
+        current_index++;
+        //if (!ParseWith(tokens, &current_index)) return false;
+        previous_type = "with";
+      } 
+      else if (tokens[current_index].value == "and" && previous_type != "") {
+        // 4. Handle 'and'
+        if(previous_type == "suchthat") {
+          current_index++;
+          if (!ParseSuchthat(tokens, &current_index)) return false;
+          previous_type = "suchthat";
+        }
+        else if (previous_type == "pattern") {
+          current_index++;
+          //if (!ParsePattern(tokens, &current_index)) return false;
+          previous_type = "pattern";
+        }
+        else if (previous_type == "with") {
+          current_index++;
+          //if (!ParseWith(tokens, &current_index)) return false;
+          previous_type = "with";
+        }
+      }
       else {
         errorMessage_ = "Unknown clause in select statement.";
         return false;
@@ -205,8 +235,58 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
 
   // 6. Check parameter validity
+  unordered_map<string, PqlDeclarationEntity> declarations = query_->GetDeclarations();
+  if (first_type == PqlDeclarationEntity::kSynonym) {
+    if(declarations.find(first) != declarations.end()) {
+      first_type = declarations.at(first);
+    } else {
+      errorMessage_ = "Parameter in such that clause not declared.";
+      return false;
+    }
+  }
+  if (second_type == PqlDeclarationEntity::kSynonym) {
+    if (declarations.find(second) != declarations.end()) {
+      second_type = declarations.at(second);
+    }
+    else {
+      errorMessage_ = "Parameter in such that clause not declared.";
+      return false;
+    }
+  }
 
-  // 7. Create such that object
+  // 7. Check if parameter matches such that type
+  if (suchthat_type == PqlSuchthatType::kModifies) {
+    if (first_type == PqlDeclarationEntity::kProcedure || first_type == PqlDeclarationEntity::kIdent) {
+      suchthat_type = PqlSuchthatType::kModifiesP;
+    }
+    else {
+      suchthat_type = PqlSuchthatType::kModifiesS;
+    }
+  }
+  else if (suchthat_type == PqlSuchthatType::kUses) {
+    if (first_type == PqlDeclarationEntity::kProcedure || first_type == PqlDeclarationEntity::kIdent) {
+      suchthat_type = PqlSuchthatType::kUsesP;
+    }
+    else {
+      suchthat_type = PqlSuchthatType::kUsesS;
+    }
+  }
+
+  pair<unordered_set<PqlDeclarationEntity>, unordered_set<PqlDeclarationEntity>> acceptable_parameters = suchthat_table.at(suchthat_type);
+  // 7.1 Check first parameter
+  if(acceptable_parameters.first.find(first_type) == acceptable_parameters.first.end()) {
+    errorMessage_ = "First parameter in such that clause is invalid for the type.";
+    return false;
+  }
+
+  // 7.2 Check second parameter
+  if (acceptable_parameters.second.find(second_type) == acceptable_parameters.second.end()) {
+    errorMessage_ = "Second parameter in such that clause is invalid for the type.";
+    return false;
+  }
+
+  // 8. Create such that object
+  query_->AddSuchthat(PqlSuchthat(suchthat_type, first, first_type, second, second_type));
 }
 
 bool PqlParser::ParseSuchthatParameter(TokenList tokens, int* current_index, string* value, PqlDeclarationEntity* type) {
