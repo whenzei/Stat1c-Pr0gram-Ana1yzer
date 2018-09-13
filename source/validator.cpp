@@ -1,11 +1,14 @@
-#include <unordered_set>
-
-#include "tokenizer.h"
 #include "validator.h"
+#include "tokenizer.h"
+
+#include <stack>
+#include <unordered_set>
 
 using std::cout;
 using std::endl;
+using std::stack;
 
+using KeywordSet = std::unordered_set<string>;
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
 
@@ -13,9 +16,8 @@ Token curr_token_;
 int curr_index_;
 TokenList tokens_;
 
-const std::unordered_set<string> kKeywords({"procedure", "read", "call",
-                                            "print", "if", "then", "else",
-                                            "while"});
+const KeywordSet kKeywords({"procedure", "read", "call", "print", "if", "then",
+                            "else", "while"});
 
 bool Validator::ValidateProgram(TokenList tokens) {
   tokens_ = tokens;
@@ -61,7 +63,8 @@ bool Validator::IsValidProcedure() {
 bool Validator::IsValidStmtList() {
   while (PeekNextToken().type != tt::kCloseBrace) {
     if (!IsValidStatement()) {
-      cout << "[STMTLIST SYNTAX INVALID]" << endl;
+      cout << "[STMTLIST SYNTAX INVALID], current token: " << curr_token_.value
+           << endl;
       return false;
     }
   }
@@ -110,17 +113,65 @@ bool Validator::IsValidCallReadPrint() {
 }
 
 bool Validator::IsValidAssignment() {
-  // TODO: Add expression checking with Shunting Yard Alg
   if (ReadNextToken().type != tt::kAssignment) {
     cout << "[ASSIGN SYNTAX INVALID]" << endl;
     return false;
   }
-  TokenList syntax_block;
-  while (curr_token_.type != tt::kSemicolon) {
-    syntax_block.push_back(ReadNextToken());
+
+  // expression should always start with kDigit or kName
+  // in the style v o v o v, where v is a variable or digit, and o is operator
+  bool was_operator = false;
+  stack<tt> parenthesis_stack;
+
+  ReadNextToken();
+  if (curr_token_.type != tt::kOpenParen && curr_token_.type != tt::kName &&
+      curr_token_.type != tt::kDigit) {
+    return false;
   }
 
-  // always return true if fit syntax for now
+  if (curr_token_.type == tt::kOpenParen) {
+    parenthesis_stack.push(tt::kOpenParen);
+    // false truth since next variable after this shouldn't be an operator
+    was_operator = true;
+  }
+
+  while (ReadNextToken().type != tt::kSemicolon) {
+    if (was_operator) {
+      if (curr_token_.type != tt::kDigit && curr_token_.type != tt::kName &&
+          curr_token_.type != tt::kOpenParen) {
+        cout << "[EXPR INVALID], current token: " << curr_token_.value << endl;
+        return false;
+      }
+
+      if (curr_token_.type == tt::kOpenParen) {
+        parenthesis_stack.push(tt::kOpenParen);
+      } else {
+        was_operator = false;
+      }
+    } else {
+      if (curr_token_.type != tt::kCloseParen &&
+          curr_token_.type != tt::kOperator) {
+        cout << "[EXPR INVALID], current token: " << curr_token_.value << endl;
+        return false;
+      }
+
+      if (curr_token_.type == tt::kCloseParen) {
+        if (parenthesis_stack.empty()) {
+          cout << "[STACK NOT EMPTY -- INVALID]" << endl;
+          return false;
+        }
+        parenthesis_stack.pop();
+      } else {
+        was_operator = true;
+      }
+    }
+  }
+
+  if (!parenthesis_stack.empty()) {
+    cout << "[STACK NOT EMPTY -- INVALID]" << endl;
+    return false;
+  }
+
   return true;
 }
 
