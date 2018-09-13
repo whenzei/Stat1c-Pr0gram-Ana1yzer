@@ -27,7 +27,6 @@ TokenList ExpressionHelper::ToPostfix(TokenList tokens_to_convert) {
     if (curr_token.type == tt::kOperator) {
       while (!operator_stack.empty() &&
              operator_stack.top().type != tt::kOpenParen &&
-             curr_token.type != tt::kCloseParen &&
              (kPrecedenceMap.at(operator_stack.top().value) >=
               kPrecedenceMap.at(curr_token.value))) {
         Token for_queue = operator_stack.top();
