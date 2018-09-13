@@ -36,9 +36,6 @@
     <ClCompile Include="..\source\parser.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\simple_validator2.cpp">
-      <Filter>Source Files\Frontend</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\tokenizer.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
@@ -87,15 +84,15 @@
     <ClCompile Include="..\source\validator.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\util.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\parser.h">
-      <Filter>Header Files\Frontend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\simple_validator2.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\tokenizer.h">
@@ -141,6 +138,9 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\validator.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\util.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
   </ItemGroup>

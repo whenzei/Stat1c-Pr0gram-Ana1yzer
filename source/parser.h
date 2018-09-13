@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef SPA_PARSER2_H
-#define SPA_PARSER2_H
+#ifndef SPA_PARSER_H
+#define SPA_PARSER_H
 
 #include <iostream>
 #include <unordered_set>
@@ -24,8 +24,6 @@ class Parser {
   int stmt_index_;
   int stmt_list_index_;
 
-  bool IsValidFile(string filepath);
-  string ReadContentFromFile(string filepath);
   Token ReadNextToken();
   Token PeekNextToken();
   void EatNumTokens(int num);
