@@ -26,6 +26,8 @@ class PqlParser {
   bool ParseSynonym(string);
   bool ParseSelect(TokenList);
   bool ParseDeclaration(TokenList);
+  bool ParseSuchthat(TokenList, int*);
+  bool ParseSuchthatParameter(TokenList, int*, string*, PqlDeclarationEntity*);
 };
 
 #endif

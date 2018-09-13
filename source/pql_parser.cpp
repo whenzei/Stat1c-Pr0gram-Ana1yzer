@@ -95,12 +95,165 @@ bool PqlParser::ParseSelect(TokenList tokens) {
   }
   
   if (tokens.size() > 2) { // there are other clauses
-    Token current = tokens[2];
-    while (current.type != Tokenizer::TokenType::kEOF) {
-      // check for such that
+    int current_index = 2;
+    while (current_index < tokens.size() && tokens[current_index].type != Tokenizer::TokenType::kEOF) {
+      if (tokens[current_index].value == "such") {
+        if (tokens[current_index+1].value != "that") {
+          errorMessage_ = "Missing 'that' in such that clause.";
+          return false;
+        }
+      }
+      else if (tokens[current_index].value == "that") {
+        // 1. Handle such that clause
+        current_index++;
+        if(!ParseSuchthat(tokens, &current_index)) return false;
+      }
+      else if (tokens[current_index].value == "pattern") {} // TODO: Handle pattern clause
+      else if (tokens[current_index].value == "with") {} // TODO: Handle with clause
+      else {
+        errorMessage_ = "Unknown clause in select statement.";
+        return false;
+      }
+      current_index++;
     }
   }
 
+  return true;
+}
+
+bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
+  Token current = tokens[*current_index];
+  PqlSuchthatType suchthat_type;
+  string first;
+  PqlDeclarationEntity first_type;
+  string second;
+  PqlDeclarationEntity second_type;
+
+  // identify such that type
+  if (current.value == "Modifies") {
+    suchthat_type = PqlSuchthatType::kModifies;
+  }
+  else if (current.value == "Uses") {
+    suchthat_type = PqlSuchthatType::kUses;
+  }
+  else if (current.value == "Calls") {
+    suchthat_type = PqlSuchthatType::kCalls;
+  }
+  else if (current.value == "Calls*") {
+    suchthat_type = PqlSuchthatType::kCallsT;
+  }
+  else if (current.value == "Parent") {
+    suchthat_type = PqlSuchthatType::kParent;
+  }
+  else if (current.value == "Parent*") {
+    suchthat_type = PqlSuchthatType::kParentT;
+  }
+  else if (current.value == "Follows") {
+    suchthat_type = PqlSuchthatType::kFollows;
+  }
+  else if (current.value == "Follows*") {
+    suchthat_type = PqlSuchthatType::kFollowsT;
+  }
+  else if (current.value == "Next") {
+    suchthat_type = PqlSuchthatType::kNext;
+  }
+  else if (current.value == "Next*") {
+    suchthat_type = PqlSuchthatType::kNextT;
+  }
+  else if (current.value == "Affects") {
+    suchthat_type = PqlSuchthatType::kAffects;
+  }
+  else if (current.value == "Affects*") {
+    suchthat_type = PqlSuchthatType::kAffectsT;
+  }
+  else {
+    errorMessage_ = "Unknown such that type.";
+    return false;
+  }
+
+  current = tokens[++*current_index];
+  // 1. Opening parentheses
+  if (current.type == Tokenizer::TokenType::kOpenParen) {
+    current = tokens[++*current_index];
+  }
+  else {
+    errorMessage_ = "Missing open parentheses in such that clause.";
+    return false;
+  }
+
+  // 2. First parameter
+  if (!ParseSuchthatParameter(tokens, current_index, &first, &first_type)) return false;
+
+  // 3. Comma
+  current = tokens[*current_index];
+  if (current.type == Tokenizer::TokenType::kComma) {
+    current = tokens[++*current_index];
+  }
+  else {
+    errorMessage_ = "Missing comma in such that parameters.";
+    return false;
+  }
+
+  // 4. Second parameter
+  if (!ParseSuchthatParameter(tokens, current_index, &second, &second_type)) return false;
+
+  // 5. Closing parentheses
+  current = tokens[*current_index];
+  if (!current.type == Tokenizer::TokenType::kCloseParen) {
+    errorMessage_ = "Missing closing parentheses in such that clause.";
+    return false;
+  }
+
+  // 6. Check parameter validity
+
+  // 7. Create such that object
+}
+
+bool PqlParser::ParseSuchthatParameter(TokenList tokens, int* current_index, string* value, PqlDeclarationEntity* type) {
+  Token current = tokens[*current_index];
+  if (current.type == Tokenizer::TokenType::kQuotation) {
+    // 2.1 Handle quotations
+    current = tokens[++*current_index];
+
+    if (PqlValidator::ValidateIdent(current.value)) {
+      *value = current.value;
+      *type = PqlDeclarationEntity::kIdent;
+      current = tokens[++*current_index];
+    }
+    else {
+      errorMessage_ = "Such that parameter in quotation is not in ident format.";
+      return false;
+    }
+
+    // consume closing quotation
+    if (current.type == Tokenizer::TokenType::kQuotation) {
+    }
+    else {
+      errorMessage_ = "Missing quotation in such that parameters.";
+      return false;
+    }
+  }
+  else if (current.type == Tokenizer::TokenType::kUnderscore) {
+    // 2.2 Handle underscore
+    *value = "_";
+    *type = PqlDeclarationEntity::kUnderscore;
+  }
+  else if (PqlValidator::ValidateInteger(current.value)) {
+    // 2.3 Handle integer
+    *value = current.value;
+    *type = PqlDeclarationEntity::kInteger;
+  }
+  else if (PqlValidator::ValidateIdent(current.value)) {
+    // 2.4 Handle ident
+    *value = current.value;
+    *type = PqlDeclarationEntity::kSynonym;
+  }
+  else {
+    errorMessage_ = "Invalid parameter in such that clause.";
+    return false;
+  }
+
+  ++*current_index;
   return true;
 }
 
