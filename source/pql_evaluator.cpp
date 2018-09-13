@@ -7,7 +7,7 @@
 
 #include "pkb.h"
 #include "pql_query.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 using std::cout;
 using std::endl;
@@ -18,9 +18,9 @@ using std::vector;
 
 PqlDeclarationEntity select_type;
 
-QueryEvaluator::QueryEvaluator() {}
+PqlEvaluator::PqlEvaluator() {}
 
-list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
+list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   string select_var_name = query->GetVarName();
   unordered_map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
   vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
@@ -42,7 +42,7 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-list<string> QueryEvaluator::GetResultFromSelectAllQuery(
+list<string> PqlEvaluator::GetResultFromSelectAllQuery(
     string select_var_name, unordered_map<string, PqlDeclarationEntity> declarations,
     PKB pkb) {
   list<string> results;
@@ -108,7 +108,7 @@ list<string> QueryEvaluator::GetResultFromSelectAllQuery(
   return results;
 }
 
-string QueryEvaluator::FormatResultString(list<string> results) {
+string PqlEvaluator::FormatResultString(list<string> results) {
   string formatted_string;
   string index_flag = "";
 

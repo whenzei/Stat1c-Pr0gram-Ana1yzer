@@ -28,7 +28,7 @@
     <ClCompile Include="..\source\const_list.cpp" />
     <ClCompile Include="..\source\parent_table.cpp" />
     <ClCompile Include="..\source\pql_query.cpp" />
-    <ClCompile Include="..\source\query_evaluator.cpp" />
+    <ClCompile Include="..\source\pql_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h" />
@@ -48,7 +48,7 @@
     <ClInclude Include="..\source\const_list.h" />
     <ClInclude Include="..\source\parent_table.h" />
     <ClInclude Include="..\source\pql_query.h" />
-    <ClInclude Include="..\source\query_evaluator.h" />
+    <ClInclude Include="..\source\pql_evaluator.h" />
     <ClInclude Include="..\source\pql_parser.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

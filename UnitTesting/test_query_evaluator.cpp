@@ -2,7 +2,7 @@
 #include "CppUnitTest.h"
 #include "pkb.h"
 #include "pql_query.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 #include <list>
 #include <unordered_set>
@@ -27,7 +27,7 @@ TEST_CLASS(TestQueryEvaluator) {
 
   TEST_METHOD(TestGetResultFromQueryAssign) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertAssignStmt(1, 0, "x", unordered_set<string>());
@@ -48,7 +48,7 @@ TEST_CLASS(TestQueryEvaluator) {
   }
   TEST_METHOD(TestGetResultFromQueryProc) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertProcName("testprocedure");
@@ -69,7 +69,7 @@ TEST_CLASS(TestQueryEvaluator) {
   }
   TEST_METHOD(TestGetResultFromQueryConst) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertConstValue(8);
@@ -90,7 +90,7 @@ TEST_CLASS(TestQueryEvaluator) {
   }
   TEST_METHOD(TestGetResultFromQueryStmt) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertAssignStmt(1, 0, "x", unordered_set<string>());
@@ -153,7 +153,7 @@ TEST_CLASS(TestQueryEvaluator) {
   } */
   TEST_METHOD(TestGetResultFromQueryRead) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertReadStmt(5, 0, "x");
@@ -174,7 +174,7 @@ TEST_CLASS(TestQueryEvaluator) {
   }
   TEST_METHOD(TestGetResultFromQueryPrint) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
     pkb.PKB::InsertPrintStmt(6, 0, "x");
