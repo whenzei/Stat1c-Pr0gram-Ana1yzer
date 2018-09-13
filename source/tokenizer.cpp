@@ -242,6 +242,7 @@ Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
-  return "<" + kTokenTypeNames[token.type] + "." +
-         kTokenSubtypeNames[token.subtype] + "> " + token.value;
+ /* return "<" + kTokenTypeNames[token.type] + "." +
+         kTokenSubtypeNames[token.subtype] + "> " + token.value;*/
+	return token.value;
 }

@@ -7,6 +7,7 @@ using std::cout;
 using std::endl;
 
 using tt = Tokenizer::TokenType;
+using ts = Tokenizer::TokenSubtype;
 
 Token curr_token_;
 int curr_index_;
@@ -35,6 +36,7 @@ TokenList Validator::ReadNextTokens(int num_tokens) {
   TokenList list;
   for (int i = 0; i < num_tokens; i++) {
     curr_token_ = tokens_[curr_index_++];
+    cout << Tokenizer::Debug(curr_token_) << " ";
     list.push_back(curr_token_);
   }
 
@@ -45,10 +47,11 @@ TokenList Validator::ReadNextTokens(int num_tokens) {
 
 Token Validator::ReadNextToken() {
   curr_token_ = tokens_[curr_index_++];
+  cout << Tokenizer::Debug(curr_token_) << " ";
   return curr_token_;
 }
 
-Token Validator::PeekNextToken() { return tokens_[curr_index_ + 1]; }
+Token Validator::PeekNextToken() { return tokens_[curr_index_]; }
 
 bool MatchTypes(TokenList syntax_block, vector<tt> expected_types) {
   for (int i = 0; i < syntax_block.size(); i++) {
@@ -67,15 +70,26 @@ bool Validator::IsValidProcedure() {
   // invoke this function
   vector<tt> expected_types = {tt::kName, tt::kName, tt::kOpenBrace};
   // matches syntax, now check stmtList
-  if (MatchTypes(syntax_block, expected_types)) {
-    // "{" stmtList "}"
-    while (curr_token_.type != tt::kCloseBrace) {
-      if (!IsValidStatement()) {
-        return false;
-      }
-    }
+  if (!MatchTypes(syntax_block, expected_types)) {
+    cout << "[INVALID]" << endl;
+    return false;
+  }
+  cout << "[PROC SYNTAX VALID]" << endl;
+  // "{" stmtList "}"
+  if (!IsValidStmtList()) {
+    cout << "[STMTLIST INVALID]" << endl;
+    return false;
   }
 
+  return ReadNextToken().type == tt::kCloseBrace;
+}
+
+bool Validator::IsValidStmtList() {
+  while (PeekNextToken().type != tt::kCloseBrace) {
+    if (!IsValidStatement()) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -94,11 +108,12 @@ bool Validator::IsValidStatement() {
       return IsValidAssignment();
     }
 
-    if (curr_token_.value == "if") {
+    // else must be keywords, can use subtype
+    if (curr_token_.subtype == ts::kIf) {
       return IsValidIfBlock();
     }
 
-    if (curr_token_.value == "while") {
+    if (curr_token_.subtype == ts::kWhile) {
       return IsValidWhileBlock();
     }
 
@@ -109,14 +124,98 @@ bool Validator::IsValidStatement() {
   return IsValidAssignment();
 }
 
-bool Validator::IsValidCallReadPrint() { return false; }
+bool Validator::IsValidCallReadPrint() {
+  // [call] variable ";"
+  TokenList syntax_block = ReadNextTokens(2);
+  vector<tt> expected_types = {tt::kName, tt::kSemicolon};
 
-bool Validator::IsValidAssignment() { return false; }
+  return MatchTypes(syntax_block, expected_types);
+}
 
-bool Validator::IsValidExpression() { return false; }
+bool Validator::IsValidAssignment() {
+  // TODO: Add expression checking with Shunting Yard Alg
+  if (ReadNextToken().type != tt::kAssignment) {
+    return false;
+  }
+  TokenList syntax_block;
+  while (curr_token_.type != tt::kSemicolon) {
+    syntax_block.push_back(ReadNextToken());
+  }
 
-bool Validator::IsValidIfBlock() { return false; }
+  // always return true for now
+  cout << "[ASSIGN VALID]" << endl;
+  return true;
+}
 
-bool Validator::IsValidWhileBlock() { return false; }
+bool Validator::IsValidExpression() {
+  cout << "[EXPR INVALID]" << endl;
+  return false;
+}
 
-bool Validator::IsValidNestedBlock() { return false; }
+bool Validator::IsValidConditional() {
+  // currently only check for kName -> kConditional -> kName
+  TokenList syntax_block = ReadNextTokens(3);
+  vector<tt> expected_types = {tt::kName, tt::kConditional, tt::kName};
+
+  return MatchTypes(syntax_block, expected_types);
+}
+
+bool Validator::IsValidIfBlock() {
+  // if: ‘if’ ‘(’ cond_expr ‘)’ ‘then’ ‘{‘ stmtLst ‘}’ ‘else’ ‘{‘ stmtLst ‘}’
+  // "("
+  if (ReadNextToken().type != tt::kOpenParen) {
+    return false;
+  }
+
+  if (!IsValidConditional()) {
+    return false;
+  }
+  cout << "[CONDITIONAL VALID]" << endl;
+
+  // ") then" "{"
+  TokenList syntax_block = ReadNextTokens(3);
+  if (syntax_block[0].type != tt::kCloseParen ||
+      syntax_block[1].subtype != ts::kThen ||
+      syntax_block[2].type != tt::kOpenBrace) {
+    return false;
+  }
+  cout << "[)_THEN_{ VALID]" << endl;
+
+  if (!IsValidStmtList()) {
+    return false;
+  }
+  cout << "[STMTLIST VALID]" << endl;
+
+  // "} else {"
+  syntax_block = ReadNextTokens(3);
+  if (syntax_block[0].type != tt::kCloseBrace ||
+      syntax_block[1].subtype != ts::kElse ||
+      syntax_block[2].type != tt::kOpenBrace) {
+    return false;
+  }
+  cout << "[}_ELSE_{ VALID]" << endl;
+
+  if (!IsValidStmtList()) {
+    return false;
+  }
+  cout << "[STMTLIST VALID]" << endl;
+
+  if (ReadNextToken().type != tt::kCloseBrace) {
+    cout << "[IF_BLOCK INVALID]" << endl;
+    return false;
+  }
+
+  cout << "[IF_BLOCK VALID]" << endl;
+  return true;
+}
+
+bool Validator::IsValidWhileBlock() {
+  // while: ‘while’ ‘(’ cond_expr ‘)’ ‘ { ‘ stmtLst ‘ }’
+  cout << "[WHILE_BLOCK INVALID]" << endl;
+  return false;
+}
+
+bool Validator::IsValidNestedBlock() {
+  cout << "[NESTED_INVALID]" << endl;
+  return false;
+}

@@ -11,9 +11,11 @@ public:
 
 private:
 	static bool IsValidProcedure();
+	static bool IsValidStmtList();
 	static bool IsValidStatement();
 	static bool IsValidAssignment();
 	static bool IsValidExpression();
+	static bool IsValidConditional();
 	static bool IsValidIfBlock();
 	static bool IsValidWhileBlock();
 	static bool IsValidNestedBlock();
