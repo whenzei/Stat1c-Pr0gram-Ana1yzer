@@ -1,6 +1,6 @@
 #include <cctype>
 #include <regex>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include "tokenizer.h"
@@ -22,10 +22,30 @@ enum TokenType {
   kEOF = 13,
 };
 
+enum TokenSubtype {
+  kNone = 0,
+  kProcedure = 1,
+  kIf = 2,
+  kThen = 3,
+  kElse = 4,
+  kWhile = 5,
+  kPrint = 6,
+  kCall = 7,
+  kRead = 8
+};
+
+const std::unordered_map<string, TokenSubtype> kKeywordsToEnum = {
+    {"procedure", kProcedure}, {"if", kIf},       {"then", kThen},
+    {"else", kElse},           {"while", kWhile}, {"print", kPrint},
+    {"call", kCall},           {"read", kRead}};
+
 static const string kTokenTypeNames[] = {
     "nothing",     "digit",      "name",     "openbrace", "closebrace",
     "semicolon",   "assignment", "operator", "openparen", "closeparen",
     "conditional", "relational", "unknown",  "EOF"};
+
+static const string kTokenSubtypeNames[] = {
+    "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
 
 const int kNumberOfFunctions = 10;
 
@@ -133,8 +153,14 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
-                         current_index);
+  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
+                                  input, current_index);
+  auto search = kKeywordsToEnum.find(result.token.value);
+  if (search != kKeywordsToEnum.end()) {
+    result.token.subtype = search->second;
+  }
+
+  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
@@ -216,5 +242,6 @@ Result Tokenizer::EmptyResult() { return Result({0, {kNothing}}); }
 
 // Debug function, returns the contents of the token as a string
 string Tokenizer::Debug(Token token) {
-  return "<" + kTokenTypeNames[token.type] + "> " + token.value;
+  return "<" + kTokenTypeNames[token.type] + "." +
+         kTokenSubtypeNames[token.subtype] + "> " + token.value;
 }

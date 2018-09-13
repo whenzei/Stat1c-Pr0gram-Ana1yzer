@@ -14,6 +14,7 @@ using std::vector;
 struct Token {
   int type;
   string value;
+  int subtype = 0;
 
   bool operator==(const Token& other) const {
     return std::tie(type, value) == std::tie(other.type, other.value);
@@ -35,6 +36,17 @@ using TokenizerFunc = Result (*)(string, int);
 
 class Tokenizer {
  public:
+  enum TokenSubtype {
+    kNone = 0,
+    kProcedure = 1,
+    kIf = 2,
+    kThen = 3,
+    kElse = 4,
+    kWhile = 5,
+    kPrint = 6,
+    kCall = 7,
+    kRead = 8
+  };
   enum TokenType {
     kNothing,
     kDigit,
@@ -49,7 +61,7 @@ class Tokenizer {
     kConditional,
     kRelational,
     kUnknown,
-	kEOF,
+    kEOF,
   };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
