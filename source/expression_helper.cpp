@@ -21,14 +21,16 @@ TokenList ExpressionHelper::ToPostfix(TokenList tokens_to_convert) {
   stack<Token> operator_stack;
 
   for (Token const& curr_token : tokens_to_convert) {
-    if (curr_token.type == tt::kDigit) {
+    if (curr_token.type == tt::kDigit || curr_token.type == tt::kName) {
       result_tokens.push_back(curr_token);
     }
     if (curr_token.type == tt::kOperator) {
-      while ((kPrecedenceMap.at(operator_stack.top) >=
-              kPrecedenceMap.at(curr_token.value)) &&
-             curr_token.type != tt::kCloseParen) {
-        Token for_queue = operator_stack.top;
+      while (!operator_stack.empty() &&
+             operator_stack.top().type != tt::kOpenParen &&
+             curr_token.type != tt::kCloseParen &&
+             (kPrecedenceMap.at(operator_stack.top().value) >=
+              kPrecedenceMap.at(curr_token.value))) {
+        Token for_queue = operator_stack.top();
         operator_stack.pop();
         result_tokens.push_back(for_queue);
       }
@@ -38,8 +40,8 @@ TokenList ExpressionHelper::ToPostfix(TokenList tokens_to_convert) {
       operator_stack.push(curr_token);
     }
     if (curr_token.type == tt::kCloseParen) {
-      while (operator_stack.top.value != tt::kOpenParen) {
-        Token for_queue = operator_stack.top;
+      while (operator_stack.top().type != tt::kOpenParen) {
+        Token for_queue = operator_stack.top();
         operator_stack.pop();
         result_tokens.push_back(for_queue);
       }
@@ -48,10 +50,10 @@ TokenList ExpressionHelper::ToPostfix(TokenList tokens_to_convert) {
   }
 
   while (!operator_stack.empty()) {
-    Token for_queue = operator_stack.top;
+    Token for_queue = operator_stack.top();
     operator_stack.pop();
     result_tokens.push_back(for_queue);
   }
 
-		return result_tokens;
+  return result_tokens;
 }
