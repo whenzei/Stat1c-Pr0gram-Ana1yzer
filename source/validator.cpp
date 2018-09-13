@@ -112,12 +112,7 @@ bool Validator::IsValidCallReadPrint() {
   return true;
 }
 
-bool Validator::IsValidAssignment() {
-  if (ReadNextToken().type != tt::kAssignment) {
-    cout << "[ASSIGN SYNTAX INVALID]" << endl;
-    return false;
-  }
-
+bool Validator::IsValidExpression() {
   // expression should always start with kDigit or kName
   // in the style v o v o v, where v is a variable or digit, and o is operator
   bool was_operator = false;
@@ -175,7 +170,23 @@ bool Validator::IsValidAssignment() {
   return true;
 }
 
+bool Validator::IsValidAssignment() {
+  // assign: var_name ‘=’ expr ‘;’
+  if (ReadNextToken().type != tt::kAssignment) {
+    cout << "[ASSIGN SYNTAX INVALID]" << endl;
+    return false;
+  }
+  return IsValidExpression();
+}
+
 bool Validator::IsValidConditional() {
+  // cond_expr: rel_expr | ‘!’ ‘(’ cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘&&’ ‘(’
+  // cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘||’ ‘(’ cond_expr ‘)’
+  // rel_expr: rel_factor ‘>’ rel_factor | rel_factor ‘>=’ rel_factor |
+  // rel_factor ‘<’ rel_factor | rel_factor ‘<=’   rel_factor | rel_factor ‘==’
+  // rel_factor | rel_factor ‘!=’ rel_factor
+  // rel_factor: var_name | const_value | expr
+
   // currently only check for kName -> kRelational -> kName
   TokenList syntax_block = ReadNextTokens(3);
   vector<tt> expected_types = {tt::kName, tt::kRelational, tt::kName};
