@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Frontend">
+      <UniqueIdentifier>{f0c63069-5dda-445c-a084-e0dd258c4549}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PKB">
+      <UniqueIdentifier>{9fb7bd7e-0327-47f6-bfe6-1b231ef4dac5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PQL">
+      <UniqueIdentifier>{23f3d920-8dbb-4ccb-b3ed-fa94048654c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -26,38 +35,41 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_proc_list.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_simple_validator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_var_list.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_const_list.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_stmt_table.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_stmtlist_table.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test_stmt_type_list.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="test_simple_validator2.cpp">
+      <Filter>Source Files\Frontend</Filter>
     </ClCompile>
     <ClCompile Include="test_tokenizer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Frontend</Filter>
     </ClCompile>
-    <ClCompile Include="test_query_parser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="test_const_list.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_parent_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_proc_list.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_stmt_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_stmt_type_list.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_stmtlist_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
+    <ClCompile Include="test_var_list.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="test_query_evaluator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="test_query_parser.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="test_query_validator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting {
+namespace PKBTests {
 
 TEST_CLASS(TestStmtListTable) {
   const StmtNum kStmtNum1 = "1";
@@ -19,17 +19,6 @@ TEST_CLASS(TestStmtListTable) {
     stmtlist_table.InsertStmt(kStmtNum1, kStmtListIndex1);
     StmtNumList result1 = stmtlist_table.GetStmtNumList(kStmtListIndex1);
     Assert::AreEqual(kStmtNum1, result1.front());
-  }
-
-  TEST_METHOD(TestGetNextIndex) {
-    StmtListTable stmtlist_table;
-    stmtlist_table.InsertStmt(kStmtNum1, kStmtListIndex1);
-    stmtlist_table.InsertStmt(kStmtNum2, kStmtListIndex2);
-    StmtListIndex result1 = stmtlist_table.GetNextStmtListIndex();
-    pair<StmtListIndex, StmtListIndex> result2 = stmtlist_table.GetNextTwoStmtListIndices();
-    Assert::AreEqual(kStmtListIndex2 + 1, result1);
-    Assert::AreEqual(kStmtListIndex2 + 1, result2.first);
-    Assert::AreEqual(kStmtListIndex2 + 2, result2.second);
   }
   
   TEST_METHOD(TestInsertToSameStmtList) {

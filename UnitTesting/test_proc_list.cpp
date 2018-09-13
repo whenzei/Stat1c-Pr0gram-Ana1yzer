@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace UnitTesting {
+namespace PKBTests {
 
 TEST_CLASS(TestProcList) {
   const ProcName kProcName1 = "simple";

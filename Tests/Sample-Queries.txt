@@ -1,5 +1,30 @@
 1 - comment
 assign a;
 Select a
-1, 2
+2, 4, 5, 6, 7, 8, 10, 12, 13 
+5000
+2 - comment
+procedure a;
+Select a
+One
+5000
+3 - comment
+variable a;
+Select a
+a, b, c, d, e, f, g, h, s, t
+5000
+4 - comment
+if a;
+Select a
+1, 3, 11
+5000
+5 - comment
+while a;
+Select a
+9
+5000
+6 - comment
+stmt a;
+Select a
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 5000

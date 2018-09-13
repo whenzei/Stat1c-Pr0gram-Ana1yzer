@@ -36,7 +36,7 @@ void MainWindow::btnRun_clicked() {
   QString result_str;
 
   for (auto const& result : results) {
-    result_str += QString(result.c_str());
+    result_str += QString(result.c_str()) + " ";
   }
   ui->txtResult->document()->setPlainText(result_str);
 }

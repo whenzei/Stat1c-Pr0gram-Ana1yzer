@@ -18,7 +18,7 @@ void PqlQuery::AddSuchthat(PqlSuchthat suchthat) {
   suchthats_.push_back(suchthat);
 }
 
-map<string, PqlDeclarationEntity> PqlQuery::GetDeclarations() { return declarations_; }
+unordered_map<string, PqlDeclarationEntity> PqlQuery::GetDeclarations() { return declarations_; }
 
 string PqlQuery::GetVarName() { return var_name_; }
 
