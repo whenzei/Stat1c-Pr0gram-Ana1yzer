@@ -33,13 +33,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\simple_validator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\parser.cpp">
-      <Filter>Source Files\Frontend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\simple_validator.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
     <ClCompile Include="..\source\simple_validator2.cpp">
@@ -90,18 +84,15 @@
     <ClCompile Include="..\source\pql_validator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\validator.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\simple_validator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\source\parser.h">
-      <Filter>Header Files\Frontend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\simple_validator.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\simple_validator2.h">
@@ -148,6 +139,9 @@
     </ClInclude>
     <ClInclude Include="..\source\query_evaluator.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\validator.h">
+      <Filter>Header Files\Frontend</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

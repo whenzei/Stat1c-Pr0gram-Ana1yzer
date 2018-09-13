@@ -6,9 +6,9 @@
 
 #include "parser.h"
 #include "pkb.h"
-#include "simple_validator.h"
 #include "simple_validator2.h"
 #include "tokenizer.h"
+#include "validator.h"
 
 const bool DEBUG_FLAG = true;
 
@@ -52,21 +52,20 @@ void Parser::ProcessKeyword(int curr_stmt_list_index) {
   if (current_token_.value == "if") {
     ProcessIfBlock(curr_stmt_list_index);
   } else if (current_token_.value == "procedure") {
-	  ProcessProcedure();
+    ProcessProcedure();
   } else if (current_token_.value == "while") {
     ProcessWhileBlock(curr_stmt_list_index);
   }
 }
 
 void Parser::ProcessProcedure() {
-	ReadNextToken();
-	pkb_->InsertProcName(current_token_.value);
-	// eat the open brace
-	ReadNextToken();
+  ReadNextToken();
+  pkb_->InsertProcName(current_token_.value);
+  // eat the open brace
+  ReadNextToken();
 }
 
 void Parser::ProcessAssignment(int curr_stmt_list_index) {
-
   int assign_stmt_index = stmt_index_++;
   string lhs_var = current_token_.value;
   VariableSet rhs_vars;
@@ -83,8 +82,8 @@ void Parser::ProcessAssignment(int curr_stmt_list_index) {
   }
 
   // Update PKB of assignment statement
-   pkb_->InsertAssignStmt(assign_stmt_index, curr_stmt_list_index, lhs_var,
-   rhs_vars);
+  pkb_->InsertAssignStmt(assign_stmt_index, curr_stmt_list_index, lhs_var,
+                         rhs_vars);
 
   //**************** DEBUG********************
   string rhsvar = string();
@@ -108,7 +107,8 @@ void Parser::Parse(string filepath) {
   // retrieve vector of tokens
   tokens_ = Tokenizer::Tokenize(contents);
 
-		//TO DO: Implement Validator
+  // TO DO: Implement Validator
+  Validator::Validate(tokens_);
 
   ReadNextToken();
   int curr_stmt_list_index = stmt_list_index_++;
@@ -120,9 +120,9 @@ void Parser::Parse(string filepath) {
                current_token_.type == tt::kCloseBrace) {
     } else if (current_token_.type == tt::kName) {
       ProcessAssignment(curr_stmt_list_index);
-    } else { //Should not happen
+    } else {  // Should not happen
       exit(1);
-				}
+    }
     ReadNextToken();
   }
 }
@@ -196,7 +196,7 @@ void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
 
   ProcessBlockContent(inside_while_stmt_list_index);
 
-		//************* DEBUG******************
+  //************* DEBUG******************
   string control_var_str = string();
   for (Variable var : control_vars) {
     control_var_str = control_var_str + " " + var;
