@@ -71,5 +71,8 @@
     <ClCompile Include="test_query_validator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="test_uses_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

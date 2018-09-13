@@ -176,6 +176,7 @@
     <ClCompile Include="test_stmt_table.cpp" />
     <ClCompile Include="test_stmtlist_table.cpp" />
     <ClCompile Include="test_stmt_type_list.cpp" />
+    <ClCompile Include="test_uses_table.cpp" />
     <ClCompile Include="test_var_list.cpp" />
     <ClCompile Include="test_const_list.cpp" />
     <ClCompile Include="test_parent_table.cpp" />
