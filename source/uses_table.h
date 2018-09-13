@@ -1,0 +1,74 @@
+#pragma once
+
+#ifndef SPA_USES_TABLE_H
+#define SPA_USES_TABLE_H
+
+#include <list>
+#include <unordered_map>
+#include <string>
+
+using std::list;
+using std::make_pair;
+using std::unordered_map;
+using std::string;
+using std::pair;
+
+using StmtNum = string;
+using StmtList = list<string>;
+using VarName = string;
+using VarList = list<string>;
+using UsesMap = unordered_map<string, list<string>>;
+using UsedByMap = unordered_map<string, list<string>>;
+using StmtVarPairList = list<pair<string, string>>;
+
+class UsesTable {
+  UsesMap uses_map_;
+  UsedByMap used_by_map_;
+
+public:
+  // Inserts a uses relationship in the Uses Map and Used By Map.
+  // @params variable being used, identified by var_name
+  // @params statement using the var, identified by stmt_num
+  // @returns true if insertion is successful
+  // @returns false if no same relationship already exists in the map or otherwise
+  bool InsertUses(VarName var_name, StmtNum stmt_num);
+
+  // Checks and returns all variables used in the program, if any.
+  // @returns a list of variables used in the program (can be empty)
+  VarList GetAllUsedVar();
+
+  // Checks and returns all variables used in the given statement, if any.
+  // @params statement number stmt_num
+  // @returns a list of variables used in statement identified by stmt_num
+  // (can be empty)
+  VarList GetAllUsedVar(StmtNum stmt_num);
+
+  // Checks and returns all statements that are using any variables in the program, if any.
+  // @returns a list of statement numbers of statements using a variable
+  // in the program (can be empty)
+  StmtList GetAllUsingStmt();
+
+  // Checks and returns all statements that are using the given variable in the program, if any.
+  // @params variable name var_name
+  // @returns a list of statement numbers of statements using the variable var_name
+  // in the program (can be empty)
+  StmtList GetAllUsingStmt(VarName var_name);
+
+  // Checks and returns whether the given variable is used in the statement identified by
+  // the given statement number.
+  // @params variable name var_name, statement number stmt_num
+  // @returns true if var_name is used in statement with stmt_num
+  // @returns false otherwise
+  bool IsUsedBy(VarName var_name, StmtNum stmt_num);
+
+  // Checks and returns whether the UsesTable has any Uses relationships.
+  // @returns true if UsesTable is not empty
+  // @returns false otherwise
+  bool HasUsesRelationship();
+
+  // Returns a list of <statement number, variable name> pairs in the Uses table.
+  // @returns a list of <stmt_num, var_name> uses_pairs (can be empty)
+  StmtVarPairList GetAllUsesPair();
+};
+
+#endif !SPA_USES_TABLE_H
