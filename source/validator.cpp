@@ -17,20 +17,24 @@ const std::unordered_set<string> kKeywords({"procedure", "read", "call",
                                             "print", "if", "then", "else",
                                             "while"});
 
-void Validator::Validate(TokenList tokens) {
+bool Validator::ValidateProgram(TokenList tokens) {
   tokens_ = tokens;
   curr_token_ = tokens_.front();
   while (curr_token_.type == tt::kName && curr_token_.value == "procedure") {
     if (!IsValidProcedure()) {
-      break;
+      cout << "Validation failed, invalid procedure detected" << endl;
+      return false;
     }
   }
 
+  // last token should be kEOF if everything is processed
   if (ReadNextToken().type != tt::kEOF) {
     // do something here, means validation failed
+    return false;
     cout << "Validation failed, stream not fully consumed" << endl;
   }
 
+  return true;
   cout << "Validation passed" << endl;
 }
 

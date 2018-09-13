@@ -36,7 +36,9 @@ void Parser::Parse(string filepath) {
   tokens_ = Tokenizer::Tokenize(contents);
 
   // validate tokens for syntax errors
-  Validator::Validate(tokens_);
+  if (!Validator::ValidateProgram(tokens_)) {
+	  return;
+  }
 
   ReadNextToken();  // should start with "procedure"
   int curr_stmt_list_index = stmt_list_index_++;

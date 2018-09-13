@@ -9,7 +9,7 @@ using tt = Tokenizer::TokenType;
 
 class Validator {
 public:
-	static void Validate(TokenList tokens);
+	static bool ValidateProgram(TokenList tokens);
 
 private:
 	static bool IsValidProcedure();
