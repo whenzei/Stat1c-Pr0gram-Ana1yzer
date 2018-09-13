@@ -12,12 +12,16 @@ public:
 private:
 	static bool IsValidProcedure();
 	static bool IsValidStatement();
+	static bool IsValidAssignment();
 	static bool IsValidExpression();
 	static bool IsValidIfBlock();
 	static bool IsValidWhileBlock();
 	static bool IsValidNestedBlock();
+	static bool IsValidCallReadPrint();
 
 	static TokenList ReadNextTokens(int num_tokens);
+	static Token ReadNextToken();
+	static Token PeekNextToken();
 };
 
 #endif // !SPA_SIMPLE_VALIDATOR_H
