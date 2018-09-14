@@ -16,20 +16,20 @@ using std::vector;
 // so that it is easier to search and update the PKB data structures.
 using StmtNum = string;
 using StmtNumList = list<string>;
-using StmtType = int;
+using StmtTypeInt = int;
 using StmtTypeVector = vector<list<string>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g. assign, if)
 class StmtTypeList {
   StmtTypeVector stmt_type_vector_;
-  static const StmtType kAll = 0;
-  static const StmtType kAssign = 1;
-  static const StmtType kWhile = 2;
-  static const StmtType kIf = 3;
-  static const StmtType kRead = 4;
-  static const StmtType kPrint = 5;
-  static const StmtType kSizeOfVector = 6;
+  static const StmtTypeInt kAll = 0;
+  static const StmtTypeInt kAssign = 1;
+  static const StmtTypeInt kWhile = 2;
+  static const StmtTypeInt kIf = 3;
+  static const StmtTypeInt kRead = 4;
+  static const StmtTypeInt kPrint = 5;
+  static const StmtTypeInt kSizeOfVector = 6;
   
  public:
   // constructor

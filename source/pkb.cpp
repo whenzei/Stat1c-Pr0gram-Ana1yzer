@@ -3,6 +3,7 @@
 #include "pkb.h"
 #include <sstream>
 
+using std::make_pair;
 using std::stringstream;
 
 bool PKB::InsertProcName(ProcName proc_name) {
@@ -21,12 +22,16 @@ ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
 }
 
+StmtType PKB::GetStmtType(StmtNumInt stmt_num_int) {
+  return stmt_table_.GetStmtType(ToString(stmt_num_int));
+}
+
 bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
                            StmtListIndex stmtlist_index,
                            VarName modified_var_name,
                            VarNameSet used_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, kAssign, stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertAssignStmt(stmt_num);
@@ -47,7 +52,8 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                           StmtListIndex child_stmtlist_index,
                           VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, kWhile,
+                             parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertWhileStmt(stmt_num);
@@ -58,7 +64,7 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
     // insert parent relationships
     parent_table_.InsertDirectParentRelationship(stmt_num,
                                                  child_stmtlist_index);
-    StmtNumList indirect_parents = parent_table_.GetParents(parent_stmtlist_index);
+    StmtNumList indirect_parents = parent_table_.GetParentT(parent_stmtlist_index);
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
@@ -76,7 +82,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
                        StmtListIndex else_stmtlist_index,
                        VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, parent_stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, kIf, parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertIfStmt(stmt_num);
@@ -89,7 +95,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
         stmt_num, then_stmtlist_index);
     parent_table_.InsertDirectParentRelationship(
         stmt_num, else_stmtlist_index);
-    StmtNumList indirect_parents = parent_table_.GetParents(parent_stmtlist_index);
+    StmtNumList indirect_parents = parent_table_.GetParentT(parent_stmtlist_index);
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(
           indirect_parent, then_stmtlist_index);
@@ -106,7 +112,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
 bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                          VarName var_name) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, kRead, stmtlist_index)) {
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertReadStmt(stmt_num);
     var_list_.InsertVarName(var_name);
@@ -120,7 +126,7 @@ bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
 bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                           VarName var_name) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, kPrint, stmtlist_index)) {
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertPrintStmt(stmt_num);
     var_list_.InsertVarName(var_name);
@@ -145,14 +151,6 @@ StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-bool PKB::IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int) {
-  StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
-  StmtNum child_stmt_num = ToString(child_stmt_num_int);
-  StmtListIndex child_stmtlist_index =
-      stmt_table_.GetStmtListIndex(child_stmt_num);
-  return parent_table_.IsDirectParent(parent_stmt_num, child_stmtlist_index);
-}
-
 bool PKB::IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int) {
   StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
   StmtNum child_stmt_num = ToString(child_stmt_num_int);
@@ -161,27 +159,44 @@ bool PKB::IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int
   return parent_table_.IsParent(parent_stmt_num, child_stmtlist_index);
 }
 
-StmtNumList PKB::GetDirectParent(StmtNumInt stmt_num_int) {
+bool PKB::IsParentT(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int) {
+  StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
+  StmtNum child_stmt_num = ToString(child_stmt_num_int);
+  StmtListIndex child_stmtlist_index =
+      stmt_table_.GetStmtListIndex(child_stmt_num);
+  return parent_table_.IsParentT(parent_stmt_num, child_stmtlist_index);
+}
+
+StmtNumList PKB::GetParent(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   StmtNumList direct_parent_stmtnum_list;
-  StmtNum direct_parent_stmtnum = parent_table_.GetDirectParent(stmtlist_index);
+  StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmtlist_index);
   if (direct_parent_stmtnum.compare("") != 0) {
     direct_parent_stmtnum_list.push_back(direct_parent_stmtnum);
   }
   return direct_parent_stmtnum_list;
 }
 
-StmtNumList PKB::GetAllParent(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetParentT(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
-  return parent_table_.GetParents(stmtlist_index);
+  return parent_table_.GetParentT(stmtlist_index);
 }
 
-StmtNumList PKB::GetDirectChild(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetAllParent() {
+  ParentsSet parent_stmt_num_set = parent_table_.GetAllParent();
+  StmtNumList parent_stmt_num_list;
+  for (auto parent_stmt_num : parent_stmt_num_set){
+    parent_stmt_num_list.push_back(parent_stmt_num);
+  }
+  return parent_stmt_num_list;
+}
+
+StmtNumList PKB::GetChild(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndexList children_stmtlist_indices =
-      parent_table_.GetDirectChildren(stmt_num);
+      parent_table_.GetChild(stmt_num);
   StmtNumList result;
   for (StmtListIndex& stmtlist_index : children_stmtlist_indices) {
     StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(stmtlist_index);
@@ -190,19 +205,60 @@ StmtNumList PKB::GetDirectChild(StmtNumInt stmt_num_int) {
   return result;
 }
 
-StmtNumList PKB::GetAllChild(StmtNumInt stmt_num_int) {
+StmtNumList PKB::GetChildT(StmtNumInt stmt_num_int) {
   StmtNum stmt_num = ToString(stmt_num_int);
   StmtListIndexList children_stmtlist_indices =
-      parent_table_.GetChildren(stmt_num);
-  StmtNumList result;
+      parent_table_.GetChildT(stmt_num);
+  StmtNumList child_stmt_num_list;
   for (StmtListIndex& stmtlist_index : children_stmtlist_indices) {
     StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(stmtlist_index);
-    result.insert(result.end(), stmt_num_list.begin(), stmt_num_list.end());
+    child_stmt_num_list.insert(child_stmt_num_list.end(), stmt_num_list.begin(),
+                  stmt_num_list.end());
   }
-  return result;
+  return child_stmt_num_list;
 }
 
-bool PKB::HasParentRelationship() { return parent_table_.HasParentRelationship(); }
+StmtNumList PKB::GetAllChild() {
+  ChildrenSet child_stmtlist_index_set = parent_table_.GetAllChild();
+  StmtNumList child_stmt_num_list;
+  for (auto child_stmtlist_index : child_stmtlist_index_set) {
+    StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(child_stmtlist_index);
+    child_stmt_num_list.insert(child_stmt_num_list.end(), stmt_num_list.begin(),
+                               stmt_num_list.end());
+  }
+  return child_stmt_num_list;
+}
+
+bool PKB::HasParentRelationship() {
+  return parent_table_.HasParentRelationship();
+}
+
+StmtNumPairList PKB::GetAllParentPair() {
+  StmtNumPairList parent_pair_list;
+  DirectParentMap parents_map = parent_table_.GetAllParentPair();
+  for (auto entry : parents_map) {
+    StmtNumList child_stmt_num_list = stmtlist_table_.GetStmtNumList(entry.first);
+    for (StmtNum& child_stmt_num : child_stmt_num_list) {
+      parent_pair_list.push_back(make_pair(entry.second, child_stmt_num));
+	}
+  }
+  return parent_pair_list;
+}
+
+StmtNumPairList PKB::GetAllParentTPair() {
+  StmtNumPairList parent_t_pair_list;
+  ParentsMap parents_map = parent_table_.GetAllParentTPair();
+  for (auto entry : parents_map) {
+    StmtNumList child_stmt_num_list =
+        stmtlist_table_.GetStmtNumList(entry.first);
+    for (StmtNum& child_stmt_num : child_stmt_num_list) {
+      for (StmtNum& parent_stmt_num : entry.second) {
+        parent_t_pair_list.push_back(make_pair(parent_stmt_num, child_stmt_num));
+	  }
+    }
+  }
+  return parent_t_pair_list;
+}
 
 StmtNum PKB::ToString(int stmt_num_int) {
   stringstream stmt_num_ss;

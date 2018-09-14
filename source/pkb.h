@@ -4,14 +4,16 @@
 #define SPA_PKB_H
 
 #include "const_list.h"
+#include "parent_table.h"
 #include "proc_list.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
 #include "stmtlist_table.h"
 #include "var_list.h"
-#include "parent_table.h"
+#include "pql_enum.h"
 
 using StmtNumInt = int;
+using StmtNumPairList = list<pair<string, string>>;
 
 class PKB {
   ProcList proc_list_;
@@ -26,7 +28,8 @@ class PKB {
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
   // @returns true if the procedure name cannot be found in the list and is
-  // successfully inserted, false if the procedure name was already inside the list
+  // successfully inserted, false if the procedure name was already inside the
+  // list
   bool InsertProcName(ProcName proc_name);
 
   // get all procedure names stored inside procedure list
@@ -46,6 +49,9 @@ class PKB {
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
+
+  // return a PqlDeclarationEntity enum to represent the statement type (assign/while/if/read/print)
+  StmtType GetStmtType(StmtNumInt stmt_num_int);
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -137,28 +143,44 @@ class PKB {
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
 
-  // @returns true if the statement specified by parent_stmt_num is the direct parent
-  // of the statement specified by child_stmt_num
-  bool IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
+  // @returns true if the statement specified by parent_stmt_num is the direct
+  // parent of the statement specified by child_stmt_num
+  bool IsParent(StmtNumInt parent_stmt_num_int,
+                      StmtNumInt child_stmt_num_int);
 
-  // @returns true if the statement specified by parent_stmt_num is a parent (direct or
-  // indirect) of the statement specified by child_stmt_num
-  bool IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
+  // @returns true if the statement specified by parent_stmt_num is a parent
+  // (direct or indirect) of the statement specified by child_stmt_num
+  bool IsParentT(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
-  // @returns a list of the statement number (only one element) of the direct parent
-  StmtNumList GetDirectParent(StmtNumInt stmt_num_int);
+  // @returns a list of the statement number (only one element) of the direct
+  // parent
+  StmtNumList GetParent(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the parents (direct + indirect)
-  StmtNumList GetAllParent(StmtNumInt stmt_num_int);
+  StmtNumList GetParentT(StmtNumInt stmt_num_int);
+
+  // @returns a list of statement numbers of statements that are parents to some
+  // statement
+  StmtNumList GetAllParent();
 
   // @returns a list of statement numbers of the direct children
-  StmtNumList GetDirectChild(StmtNumInt stmt_num_int);
+  StmtNumList GetChild(StmtNumInt stmt_num_int);
 
   // @returns a list of statement numbers of the children (direct + indirect)
-  StmtNumList GetAllChild(StmtNumInt stmt_num_int);
+  StmtNumList GetChildT(StmtNumInt stmt_num_int);
+
+  // @returns a list of statement numbers of statements that are children to
+  // some statement
+  StmtNumList GetAllChild();
 
   // @returns true if there exists any parent-child relationship
   bool HasParentRelationship();
+
+  // returns a list of parent-child pairs (direct)
+  StmtNumPairList GetAllParentPair();
+
+  // returns a list of parent-child pairs (direct + indirect)
+  StmtNumPairList GetAllParentTPair();
 
  private:
   StmtNum ToString(int stmt_num_int);
