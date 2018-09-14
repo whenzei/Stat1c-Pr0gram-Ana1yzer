@@ -20,14 +20,10 @@ using std::vector;
 PqlEvaluator::PqlEvaluator() {}
 
 list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
-  // Get select variable name
   string select_var_name = query->GetVarName();
-  // Get list of user declarations
   unordered_map<string, PqlDeclarationEntity> declarations =
       query->GetDeclarations();
-  // Get list of such that clauses
   vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
-  // The list of result of the user query
   list<string> results;
   // The select declaration type
   PqlDeclarationEntity select_type;
@@ -40,7 +36,7 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   if (such_that_clauses.size() == 0) {
     results = GetResultFromSelectAllQuery(select_type, pkb);
   }
-  // Else use method that uses such that clauses
+  // Else use GetResultFromQueryWithSuchThat method
   else {
     // for (auto& iter : such_that_clauses) { //for next iteration
     results = GetResultFromQueryWithSuchThat(select_type,
@@ -132,8 +128,19 @@ list<string> PqlEvaluator::GetResultFromSelectAllQuery(
       return pkb.GetAllStmt();
   }
 
-  // Returns empty result if nothing is found
+  // Return empty result if nothing is found
   return results;
+}
+
+PqlArrangementOfSynonymInSuchthatParam
+PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
+    pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+        such_that_param) {
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+
+  return PqlArrangementOfSynonymInSuchthatParam::kNoSynonym;
+
 }
 
 PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
