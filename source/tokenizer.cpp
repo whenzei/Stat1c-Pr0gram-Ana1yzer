@@ -14,10 +14,6 @@ static const string kTokenTypeNames[] = {
 
 const int kNumberOfFunctions = 10;
 
-const std::unordered_set<string> kKeywords({"procedure", "read", "call",
-                                            "print", "if", "then", "else",
-                                            "while"});
-
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
 TokenList Tokenizer::Tokenize(string input) {

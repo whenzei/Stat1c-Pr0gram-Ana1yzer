@@ -27,6 +27,8 @@ class Parser {
   bool IsValidFile(string filepath);
   string ReadContentFromFile(string filepath);
   Token ReadNextToken();
+  Token PeekNextToken();
+  void EatNumTokens(int num);
   void ProcessKeyword(int curr_stmt_list_index);
   void ProcessAssignment(int curr_stmt_list_index);
 
