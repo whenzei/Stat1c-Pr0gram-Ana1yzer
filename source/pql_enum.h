@@ -37,7 +37,8 @@ enum class PqlSuchthatType {
   kNext,
   kNextT,
   kAffects,
-  kAffectsT
+  kAffectsT,
+  kNone
 };
 
 #endif

@@ -160,43 +160,8 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   PqlDeclarationEntity second_type;
 
   // identify such that type
-  if (current.value == "Modifies") {
-    suchthat_type = PqlSuchthatType::kModifies;
-  }
-  else if (current.value == "Uses") {
-    suchthat_type = PqlSuchthatType::kUses;
-  }
-  else if (current.value == "Calls") {
-    suchthat_type = PqlSuchthatType::kCalls;
-  }
-  else if (current.value == "Calls*") {
-    suchthat_type = PqlSuchthatType::kCallsT;
-  }
-  else if (current.value == "Parent") {
-    suchthat_type = PqlSuchthatType::kParent;
-  }
-  else if (current.value == "Parent*") {
-    suchthat_type = PqlSuchthatType::kParentT;
-  }
-  else if (current.value == "Follows") {
-    suchthat_type = PqlSuchthatType::kFollows;
-  }
-  else if (current.value == "Follows*") {
-    suchthat_type = PqlSuchthatType::kFollowsT;
-  }
-  else if (current.value == "Next") {
-    suchthat_type = PqlSuchthatType::kNext;
-  }
-  else if (current.value == "Next*") {
-    suchthat_type = PqlSuchthatType::kNextT;
-  }
-  else if (current.value == "Affects") {
-    suchthat_type = PqlSuchthatType::kAffects;
-  }
-  else if (current.value == "Affects*") {
-    suchthat_type = PqlSuchthatType::kAffectsT;
-  }
-  else {
+  suchthat_type = PqlSuchthat::StringToType(current.value);
+  if (suchthat_type == PqlSuchthatType::kNone) {
     errorMessage_ = "Unknown such that type.";
     return false;
   }
