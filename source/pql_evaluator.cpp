@@ -20,28 +20,23 @@ using std::vector;
 PqlEvaluator::PqlEvaluator() {}
 
 list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
-  string select_var_name = query->GetVarName();
-  unordered_map<string, PqlDeclarationEntity> declarations =
-      query->GetDeclarations();
-  vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
+  setSelectVar(query->GetVarName());
+  setDeclarations(query->GetDeclarations());
+  setSuchthat(query->GetSuchThats());
+  setPKB(pkb);
   list<string> results;
-  // The select declaration type
-  PqlDeclarationEntity select_type;
 
   // Determine the declaration type of the select variable
-  select_type = CheckSelectDeclarationType(select_var_name, declarations);
+  setSelectType(CheckSelectDeclarationType(getSelectVar()));
 
   // If there is no such that clause, then evaluator will use
   // GetResultFromSelectAllQuery method
-  if (such_that_clauses.size() == 0) {
-    results = GetResultFromSelectAllQuery(select_type, pkb);
+  if (getSuchthat().size() == 0) {
+    results = GetResultFromSelectAllQuery();
   }
   // Else use GetResultFromQueryWithSuchThat method
   else {
-    // for (auto& iter : such_that_clauses) { //for next iteration
-    results = GetResultFromQueryWithSuchThat(select_type,
-                                             such_that_clauses.front(), pkb);
-    //}
+    results = GetResultFromQueryWithSuchThat();
   }
 
   cout << "Result size: " << results.size() << endl;
@@ -53,9 +48,16 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat, PKB pkb) {
+list<string> PqlEvaluator::GetResultFromQueryWithSuchThat() {
+  PKB pkb = getPKB();
+  PqlDeclarationEntity select_type = getSelectType();
+  string select_var_name = getSelectVar();
+  PqlSuchthat suchthat = getSuchthat().front();
   list<string> results;
+
+  PqlArrangementOfSynonymInSuchthatParam arrangement =
+      CheckArrangementOfSynonymInSuchthatParam(select_var_name,
+                                               suchthat.GetParameters());
 
   // Check for the such that types (modifies, uses, follows, parent)
   switch (suchthat.GetType()) {
@@ -66,8 +68,9 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromSelectAllQuery(
-    PqlDeclarationEntity select_type, PKB pkb) {
+list<string> PqlEvaluator::GetResultFromSelectAllQuery() {
+  PKB pkb = getPKB();
+  PqlDeclarationEntity select_type = getSelectType();
   list<string> results;
 
   switch (select_type) {
@@ -226,15 +229,15 @@ PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
     }
     //(int/ident,int/ident)
     else {
-	return kNoSynonym;
-	}
+      return kNoSynonym;
+    }
   }  // end (int/ident, ?)
-
 }
 
 PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
-    string select_var_name,
-    unordered_map<string, PqlDeclarationEntity> declarations) {
+    string select_var_name) {
+  unordered_map<string, PqlDeclarationEntity> declarations = getDeclarations();
+
   // Find out what the user is selecting by going through the list of
   // declarations made by the user
   for (unordered_map<string, PqlDeclarationEntity>::iterator it =
@@ -245,6 +248,41 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
       return it->second;
     }
   }
-  //Shouldn't happen since there is validation
+  // Shouldn't happen since there is validation
   return kUnderscore;
 }
+
+/*
+ * Getters and Setters
+ */
+
+void PqlEvaluator::setDeclarations(
+    unordered_map<string, PqlDeclarationEntity> declarations) {
+  this->declarations_ = declarations;
+}
+
+unordered_map<string, PqlDeclarationEntity> PqlEvaluator::getDeclarations() {
+  return declarations_;
+}
+
+void PqlEvaluator::setSuchthat(vector<PqlSuchthat> suchthats) {
+  this->suchthats_ = suchthats;
+}
+
+vector<PqlSuchthat> PqlEvaluator::getSuchthat() { return suchthats_; }
+
+void PqlEvaluator::setSelectVar(string select_var_name) {
+  this->select_var_name_ = select_var_name;
+}
+
+string PqlEvaluator::getSelectVar() { return select_var_name_; }
+
+void PqlEvaluator::setSelectType(PqlDeclarationEntity select_type) {
+  this->select_type_ = select_type;
+}
+
+PqlDeclarationEntity PqlEvaluator::getSelectType() { return select_type_; }
+
+void PqlEvaluator::setPKB(PKB pkb) { this->pkb_ = pkb; }
+
+PKB PqlEvaluator::getPKB() { return pkb_; }
