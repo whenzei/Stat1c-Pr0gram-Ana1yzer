@@ -185,7 +185,7 @@ StmtNumList PKB::GetParentT(StmtNumInt stmt_num_int) {
 }
 
 StmtNumList PKB::GetAllParent() {
-  ParentsSet parent_stmt_num_set = parent_table_.GetAllParent();
+  ParentsSet parent_stmt_num_set = parent_table_.GetParentsSet();
   StmtNumList parent_stmt_num_list;
   for (auto parent_stmt_num : parent_stmt_num_set){
     parent_stmt_num_list.push_back(parent_stmt_num);
@@ -219,7 +219,7 @@ StmtNumList PKB::GetChildT(StmtNumInt stmt_num_int) {
 }
 
 StmtNumList PKB::GetAllChild() {
-  ChildrenSet child_stmtlist_index_set = parent_table_.GetAllChild();
+  ChildrenSet child_stmtlist_index_set = parent_table_.GetChildrenSet();
   StmtNumList child_stmt_num_list;
   for (auto child_stmtlist_index : child_stmtlist_index_set) {
     StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(child_stmtlist_index);
@@ -235,7 +235,7 @@ bool PKB::HasParentRelationship() {
 
 StmtNumPairList PKB::GetAllParentPair() {
   StmtNumPairList parent_pair_list;
-  DirectParentMap parents_map = parent_table_.GetAllParentPair();
+  DirectParentMap parents_map = parent_table_.GetDirectParentMap();
   for (auto entry : parents_map) {
     StmtNumList child_stmt_num_list = stmtlist_table_.GetStmtNumList(entry.first);
     for (StmtNum& child_stmt_num : child_stmt_num_list) {
@@ -247,7 +247,7 @@ StmtNumPairList PKB::GetAllParentPair() {
 
 StmtNumPairList PKB::GetAllParentTPair() {
   StmtNumPairList parent_t_pair_list;
-  ParentsMap parents_map = parent_table_.GetAllParentTPair();
+  ParentsMap parents_map = parent_table_.GetParentsMap();
   for (auto entry : parents_map) {
     StmtNumList child_stmt_num_list =
         stmtlist_table_.GetStmtNumList(entry.first);

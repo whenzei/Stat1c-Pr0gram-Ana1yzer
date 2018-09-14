@@ -64,14 +64,14 @@ class ParentTable {
   StmtNumList GetParentT(StmtListIndex stmtlist_index);
 
   // @returns a list of statement numbers of the statements that are parents to some statement
-  ParentsSet GetAllParent();
+  ParentsSet GetParentsSet();
 
   // @returns a list of statement list indices of the direct children of the given statement
   StmtListIndexList GetChild(StmtNum stmt_num);
 
   // @returns a list of statement list indices of the children (direct +
   // indirect) of the given statement
-  ChildrenSet GetAllChild();
+  ChildrenSet GetChildrenSet();
 
   // @returns a list of statement list indices of the statements that are the children (direct +
   // indirect) of some statement
@@ -81,10 +81,10 @@ class ParentTable {
   bool HasParentRelationship();
 
   // @returns the direct_parent_map_
-  DirectParentMap GetAllParentPair();
+  DirectParentMap GetDirectParentMap();
 
   // @returns the parents_map_ 
-  ParentsMap GetAllParentTPair();
+  ParentsMap GetParentsMap();
 };
 
 #endif !SPA_PARENT_TABLE_H
