@@ -245,4 +245,6 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
       return it->second;
     }
   }
+  //Shouldn't happen since there is validation
+  return kUnderscore;
 }

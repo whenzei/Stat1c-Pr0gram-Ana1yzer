@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "pkb.h"
-#include "pql_query.h"
+#include "pql_enum.h"
 #include "pql_evaluator.h"
+#include "pql_query.h"
 
 #include <list>
-#include <unordered_set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -25,6 +26,120 @@ TEST_CLASS(TestQueryEvaluator) {
   PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
   PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
 
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamNoSynonymUnderscoreBoth) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "_", kUnderscore, "_", kUnderscore);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kNoSynonymUnderscoreBoth;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamNoSynonymUnderscoreLeft) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "_", kUnderscore, "2", kInteger);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kNoSynonymUnderscoreLeft;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamNoSynonymUnderscoreRight) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kModifiesP, "One", kIdent, "_", kUnderscore);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kNoSynonymUnderscoreRight;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+  TEST_METHOD(TestCheckArrangementOfSynonymInSuchthatParamNoSynonym) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "1", kInteger, "2", kInteger);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result = kNoSynonym;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(TestCheckArrangementOfSynonymInSuchthatParamOneSynonymLeft) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "w", kWhile, "3", kInteger);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result = kOneSynonymLeft;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamOneSynonymSelectLeftUnderscoreRight) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "a", kAssign, "_", kUnderscore);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kOneSynonymSelectLeftUnderscoreRight;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamOneSynonymSelectLeft) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "a", kAssign, "2", kInteger);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kOneSynonymSelectLeft;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(
+      TestCheckArrangementOfSynonymInSuchthatParamTwoSynonymSelectRight) {
+    PqlEvaluator qe;
+    PqlSuchthat such_that_clause =
+        PqlSuchthat(kFollows, "if", kIf, "a", kAssign);
+    PqlArrangementOfSynonymInSuchthatParam result;
+    PqlArrangementOfSynonymInSuchthatParam expected_result =
+        kTwoSynonymSelectRight;
+
+    result = qe.CheckArrangementOfSynonymInSuchthatParam(
+        "a", such_that_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
   TEST_METHOD(TestGetResultFromQueryAssign) {
     // TODO: Your test code here
     PqlEvaluator qe;
@@ -194,4 +309,4 @@ TEST_CLASS(TestQueryEvaluator) {
     Assert::AreEqual(expected_result, first_result);
   }
 };
-}  // namespace UnitTesting
+}  // namespace PQLTests
