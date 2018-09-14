@@ -22,11 +22,15 @@ private:
 	static bool IsValidWhileBlock();
 	static bool IsValidCallReadPrint();
 
-	static TokenList ReadNextTokens(int num_tokens);
+	//static TokenList ReadNextTokens(int num_tokens);
 	static Token ReadNextToken();
 	static Token PeekNextToken();
+	static Token GetPreviousToken();
 
-	bool static MatchTypes(TokenList syntax_block, vector<tt> expected_types);
+	static bool MatchNext(int num, vector<tt> expected_types);
+	static bool Match(Tokenizer::TokenType type);
+	static bool Check(Tokenizer::TokenType type);
+	static bool IsAtEnd();
 };
 
 #endif // !SPA_SIMPLE_VALIDATOR_H

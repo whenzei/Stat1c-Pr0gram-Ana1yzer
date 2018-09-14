@@ -12,17 +12,18 @@ using KeywordSet = std::unordered_set<string>;
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
 
-Token curr_token_;
+// Token curr_token_;
 int curr_index_;
 TokenList tokens_;
+Token curr_token_;
 
 const KeywordSet kKeywords({"procedure", "read", "call", "print", "if", "then",
                             "else", "while"});
 
 bool Validator::ValidateProgram(TokenList tokens) {
   tokens_ = tokens;
-  curr_token_ = tokens_.front();
-  while (curr_token_.subtype == ts::kProcedure) {
+  curr_index_ = 0;
+  while (ReadNextToken().subtype == ts::kProcedure) {
     if (!IsValidProcedure()) {
       cout << "Validation failed, invalid procedure detected" << endl;
       return false;
@@ -30,7 +31,7 @@ bool Validator::ValidateProgram(TokenList tokens) {
   }
 
   // last token should be kEOF if everything is processed
-  if (ReadNextToken().type != tt::kEOF) {
+  if (!IsAtEnd()) {
     // do something here, means validation failed
     cout << "Validation failed, stream not fully consumed" << endl;
     return false;
@@ -41,30 +42,24 @@ bool Validator::ValidateProgram(TokenList tokens) {
 }
 
 bool Validator::IsValidProcedure() {
-  // 'procedure' variable '{'
-  TokenList syntax_block = ReadNextTokens(3);
-  // don't have to check if syntax_block[0] == "procedure", since it must be to
-  // invoke this function
-  vector<tt> expected_types = {tt::kName, tt::kName, tt::kOpenBrace};
-  // matches syntax, now check stmtList
-  if (!MatchTypes(syntax_block, expected_types)) {
+  // ['procedure'] variable '{'
+  if (!MatchNext(2, {tt::kName, tt::kOpenBrace})) {
     cout << "[PROC SYNTAX INVALID]" << endl;
     return false;
   }
-  // "{" stmtList "}"
+  // stmtList
   if (!IsValidStmtList()) {
     return false;
   }
 
-  // last closing brace "}"
-  return ReadNextToken().type == tt::kCloseBrace;
+  // "}"
+  return Match(tt::kCloseBrace);
 }
 
 bool Validator::IsValidStmtList() {
   while (PeekNextToken().type != tt::kCloseBrace) {
     if (!IsValidStatement()) {
-      cout << "[STMTLIST SYNTAX INVALID], current token: " << curr_token_.value
-           << endl;
+      cout << "[STMTLIST SYNTAX INVALID]" << endl;
       return false;
     }
   }
@@ -74,13 +69,13 @@ bool Validator::IsValidStmtList() {
 bool Validator::IsValidStatement() {
   // stmt: read | print | call | while | if | assign
   // check if first token is keyword?
-  ReadNextToken();
   // must be kName
-  if (curr_token_.type != tt::kName) {
+  if (!Match(tt::kName)) {
     return false;
   }
 
-  if (kKeywords.count(curr_token_.value)) {
+  // is keyword
+  if (curr_token_.subtype != ts::kNone) {
     // check next token, if it is "=" means assignment
     if (PeekNextToken().type == tt::kAssignment) {
       return IsValidAssignment();
@@ -102,10 +97,7 @@ bool Validator::IsValidStatement() {
 
 bool Validator::IsValidCallReadPrint() {
   // [call] variable ";"
-  TokenList syntax_block = ReadNextTokens(2);
-  vector<tt> expected_types = {tt::kName, tt::kSemicolon};
-
-  if (!MatchTypes(syntax_block, expected_types)) {
+  if (!MatchNext(2, {tt::kName, tt::kSemicolon})) {
     cout << "[CALL/READ/PRINT INVALID]" << endl;
     return false;
   }
@@ -113,11 +105,13 @@ bool Validator::IsValidCallReadPrint() {
 }
 
 bool Validator::IsValidExpression() {
+  // expr: expr ‘+’ term | expr ‘-’ term | term
+  // term: term ‘*’ factor | term ‘ / ’ factor | term ‘%’ factor | factor
+  // factor : var_name | const_value | ‘(’ expr ‘)’
   // expression should always start with kDigit or kName
   // in the style v o v o v, where v is a variable or digit, and o is operator
   bool was_operator = false;
   stack<tt> parenthesis_stack;
-
   ReadNextToken();
   if (curr_token_.type != tt::kOpenParen && curr_token_.type != tt::kName &&
       curr_token_.type != tt::kDigit) {
@@ -172,7 +166,7 @@ bool Validator::IsValidExpression() {
 
 bool Validator::IsValidAssignment() {
   // assign: var_name ‘=’ expr ‘;’
-  if (ReadNextToken().type != tt::kAssignment) {
+  if (!Match(tt::kAssignment)) {
     cout << "[ASSIGN SYNTAX INVALID]" << endl;
     return false;
   }
@@ -188,13 +182,13 @@ bool Validator::IsValidConditional() {
   // rel_factor: var_name | const_value | expr
 
   // currently only check for kName -> kRelational -> kName
-  TokenList syntax_block = ReadNextTokens(3);
-  vector<tt> expected_types = {tt::kName, tt::kRelational, tt::kName};
-
-  if (!MatchTypes(syntax_block, expected_types)) {
+  if (!(MatchNext(3, {tt::kName, tt::kRelational, tt::kName}))) {
     cout << "[CONDITIONAL INVALID]" << endl;
     return false;
   }
+  /*if (ReadNextToken().value == "!") {
+    return IsValidConditional();
+  }*/
 
   return true;
 }
@@ -211,10 +205,8 @@ bool Validator::IsValidIfBlock() {
   }
 
   // ") then" "{"
-  TokenList syntax_block = ReadNextTokens(3);
-  if (syntax_block[0].type != tt::kCloseParen ||
-      syntax_block[1].subtype != ts::kThen ||
-      syntax_block[2].type != tt::kOpenBrace) {
+  if (!Match(tt::kCloseParen) || ReadNextToken().subtype != ts::kThen ||
+      !Match(tt::kOpenBrace)) {
     return false;
   }
 
@@ -223,10 +215,8 @@ bool Validator::IsValidIfBlock() {
   }
 
   // "} else {"
-  syntax_block = ReadNextTokens(3);
-  if (syntax_block[0].type != tt::kCloseBrace ||
-      syntax_block[1].subtype != ts::kElse ||
-      syntax_block[2].type != tt::kOpenBrace) {
+  if (!Match(tt::kCloseBrace) || ReadNextToken().subtype != ts::kElse ||
+      !Match(tt::kOpenBrace)) {
     return false;
   }
 
@@ -253,9 +243,7 @@ bool Validator::IsValidWhileBlock() {
   }
 
   // ") {"
-  TokenList syntax_block = ReadNextTokens(2);
-  if (syntax_block[0].type != tt::kCloseParen ||
-      syntax_block[1].type != tt::kOpenBrace) {
+  if (!MatchNext(2, {tt::kCloseParen, tt::kOpenBrace})) {
     return false;
   }
 
@@ -272,29 +260,37 @@ bool Validator::IsValidWhileBlock() {
 }
 
 // Helper functions
-
-TokenList Validator::ReadNextTokens(int num_tokens) {
-  TokenList list;
-  for (int i = 0; i < num_tokens; i++) {
-    curr_token_ = tokens_[curr_index_++];
-    list.push_back(curr_token_);
+bool Validator::Match(Tokenizer::TokenType type) {
+  if (Check(type)) {
+    ReadNextToken();
+    return true;
   }
-  return list;
+  return false;
 }
 
+bool Validator::Check(Tokenizer::TokenType type) {
+  return IsAtEnd() ? false : PeekNextToken().type == type;
+}
+
+bool Validator::IsAtEnd() { return PeekNextToken().type == tt::kEOF; }
+
 Token Validator::ReadNextToken() {
-  curr_token_ = tokens_[curr_index_++];
+  if (!IsAtEnd()) {
+    curr_index_++;
+  }
+  curr_token_ = tokens_[curr_index_ - 1];
   return curr_token_;
 }
 
 Token Validator::PeekNextToken() { return tokens_[curr_index_]; }
 
-bool Validator::MatchTypes(TokenList syntax_block, vector<tt> expected_types) {
-  for (int i = 0; i < syntax_block.size(); i++) {
-    if (syntax_block[i].type != expected_types[i]) {
+Token Validator::GetPreviousToken() { return tokens_[curr_index_ - 1]; }
+
+bool Validator::MatchNext(int num, vector<tt> expected_types) {
+  for (int i = 0; i < num; i++) {
+    if (!Match(expected_types[i])) {
       return false;
     }
   }
-
   return true;
 }
