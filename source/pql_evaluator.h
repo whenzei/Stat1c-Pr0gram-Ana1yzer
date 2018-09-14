@@ -25,6 +25,7 @@ class PqlEvaluator {
   PqlDeclarationEntity
       select_type_;  // the type of the variable in 'Select' statement
   PKB pkb_;          // pkb database
+  bool clauseFlag_;
 
  public:
   /* Contructor */
@@ -36,6 +37,7 @@ class PqlEvaluator {
   void setSelectVar(string);
   void setSelectType(PqlDeclarationEntity);
   void setPKB(PKB);
+  void setClauseFlag(bool);
 
   /* Getter */
   unordered_map<string, PqlDeclarationEntity> getDeclarations();
@@ -43,6 +45,7 @@ class PqlEvaluator {
   string getSelectVar();
   PqlDeclarationEntity getSelectType();
   PKB getPKB();
+  bool getClauseFlag();
 
   /**
    * Use the @Query provided by user
@@ -71,6 +74,60 @@ class PqlEvaluator {
    * or an empty list otherwise
    */
   list<string> GetResultFromQueryWithSuchThat();
+
+  /**
+   * Evaluate such that follows
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateFollows(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+  /**
+   * Evaluate such that follows*
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateFollowsT(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+  /**
+   * Evaluate such that parent
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateParent(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+   /**
+   * Evaluate such that parent*
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateParentT(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+  /**
+   * Evaluate such that uses stmt
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateUsesS(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+  /**
+   * Evaluate such that modify stmt
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateModifiesS(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
 
   /**
    * Determine the declaration type of the select variable

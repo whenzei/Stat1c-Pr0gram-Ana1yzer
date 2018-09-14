@@ -24,6 +24,8 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   setDeclarations(query->GetDeclarations());
   setSuchthat(query->GetSuchThats());
   setPKB(pkb);
+  // Default value should be true, unless the clause returns a false
+  setClauseFlag(true);
   list<string> results;
 
   // Determine the declaration type of the select variable
@@ -49,7 +51,6 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 }
 
 list<string> PqlEvaluator::GetResultFromQueryWithSuchThat() {
-  PKB pkb = getPKB();
   PqlDeclarationEntity select_type = getSelectType();
   string select_var_name = getSelectVar();
   PqlSuchthat suchthat = getSuchthat().front();
@@ -59,10 +60,19 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat() {
       CheckArrangementOfSynonymInSuchthatParam(select_var_name,
                                                suchthat.GetParameters());
 
-  // Check for the such that types (modifies, uses, follows, parent)
   switch (suchthat.GetType()) {
-    case PqlSuchthatType::kFollows:
-      break;
+    case kFollows:
+      return EvaluateFollows(select_type, suchthat, arrangement);
+    case kFollowsT:
+      return EvaluateFollowsT(select_type, suchthat, arrangement);
+    case kParent:
+      return EvaluateParent(select_type, suchthat, arrangement);
+    case kParentT:
+      return EvaluateParentT(select_type, suchthat, arrangement);
+    case kUsesS:
+      return EvaluateUsesS(select_type, suchthat, arrangement);
+    case kModifiesS:
+      return EvaluateModifiesS(select_type, suchthat, arrangement);
   }
 
   return results;
@@ -132,6 +142,246 @@ list<string> PqlEvaluator::GetResultFromSelectAllQuery() {
   }
 
   // Return empty result if nothing is found
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateFollows(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreLeft:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymRightUnderscoreLeft:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kOneSynonymSelectRightUnderscoreLeft:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateFollowsT(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreLeft:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymRightUnderscoreLeft:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kOneSynonymSelectRightUnderscoreLeft:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateParent(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreLeft:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymRightUnderscoreLeft:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kOneSynonymSelectRightUnderscoreLeft:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateParentT(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreLeft:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymRightUnderscoreLeft:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kOneSynonymSelectRightUnderscoreLeft:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateUsesS(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateModifiesS(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
   return results;
 }
 
@@ -255,6 +505,12 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
 /*
  * Getters and Setters
  */
+
+void PqlEvaluator::setClauseFlag(bool clauseFlag) {
+  this->clauseFlag_ = clauseFlag;
+}
+
+bool PqlEvaluator::getClauseFlag() { return clauseFlag_; }
 
 void PqlEvaluator::setDeclarations(
     unordered_map<string, PqlDeclarationEntity> declarations) {
