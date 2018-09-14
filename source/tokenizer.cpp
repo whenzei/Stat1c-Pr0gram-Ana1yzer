@@ -124,14 +124,8 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
+  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
                                   input, current_index);
-
-  if (kKeywords.count(result.token.value)) {
-    result.token.type = kKeyword;
-  }
-
-  return result;
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
