@@ -57,12 +57,13 @@ bool Validator::IsValidProcedure() {
 }
 
 bool Validator::IsValidStmtList() {
-  while (PeekNextToken().type != tt::kCloseBrace) {
+  // must have at least 1 stmt
+  do {
     if (!IsValidStatement()) {
       cout << "[STMTLIST SYNTAX INVALID]" << endl;
       return false;
     }
-  }
+  } while (PeekNextToken().type != tt::kCloseBrace);
   return true;
 }
 
@@ -200,6 +201,7 @@ bool Validator::IsValidIfBlock() {
     return false;
   }
 
+  // TODO: validate whole block, with parenthesis included
   if (!IsValidConditional()) {
     return false;
   }
