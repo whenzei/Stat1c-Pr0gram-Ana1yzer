@@ -3,7 +3,7 @@
 #include "pql_parser.h"
 #include "pql_query.h"
 #include "pkb.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 #include <list>
 #include <string>
@@ -21,7 +21,7 @@ TEST_CLASS(TestPKBPQL){
 			pkb.InsertAssignStmt(1, 0, "x", unordered_set<string>());
 			pkb.InsertAssignStmt(8, 0, "i", unordered_set<string>());
 
-			QueryEvaluator qe;
+			PqlEvaluator qe;
 			string user_query = "assign a; Select a";
       PqlQuery* query = new PqlQuery();
       PqlParser parser(user_query, query);
