@@ -18,21 +18,16 @@ enum TokenType {
   kCloseParen = 9,
   kConditional = 10,
   kRelational = 11,
-  kKeyword = 12,
-  kUnknown = 13,
-  kEOF = 14,
+  kUnknown = 12,
+  kEOF = 13,
 };
 
 static const string kTokenTypeNames[] = {
     "nothing",     "digit",      "name",     "openbrace", "closebrace",
     "semicolon",   "assignment", "operator", "openparen", "closeparen",
-    "conditional", "relational", "keyword",  "unknown", "EOF"};
+    "conditional", "relational", "unknown",  "EOF"};
 
 const int kNumberOfFunctions = 10;
-
-const std::unordered_set<string> kKeywords({"procedure", "read", "call",
-                                            "print", "if", "then", "else",
-                                            "while"});
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
@@ -138,14 +133,8 @@ Result Tokenizer::TokenizeDigits(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize names,
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeNames(string input, int current_index) {
-  Result result = TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"},
-                                  input, current_index);
-
-  if (kKeywords.count(result.token.value)) {
-    result.token.type = kKeyword;
-  }
-
-  return result;
+  return TokenizePattern(kName, regex{R"([a-zA-Z][a-zA-Z0-9]*)"}, input,
+                         current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and

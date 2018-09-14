@@ -48,7 +48,6 @@ class Tokenizer {
     kCloseParen,
     kConditional,
     kRelational,
-    kKeyword,
     kUnknown,
 	kEOF,
   };
