@@ -179,6 +179,7 @@
     <ClCompile Include="test_var_list.cpp" />
     <ClCompile Include="test_const_list.cpp" />
     <ClCompile Include="test_parent_table.cpp" />
+    <ClCompile Include="test_modifies_table.cpp" />
     <ClCompile Include="test_query_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
