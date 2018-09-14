@@ -43,7 +43,12 @@ StmtNum FollowsTable::GetFollowedBy(StmtNum stmt_num) {
 }
 
 bool FollowsTable::HasFollowsRelationship() {
-  return (!follows_map_.empty());
+  for (auto& entry : follows_map_) {
+    if (!entry.second.empty()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 StmtNumPairList FollowsTable::GetAllFollowsTPair() {
