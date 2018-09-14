@@ -19,6 +19,7 @@ using VarNameList = list<string>;
 using ModifiesMap = unordered_map<string, list<string>>;
 using ModifiedByMap = unordered_map<string, list<string>>;
 using StmtVarPairList = list<pair<string, string>>;
+using ProcVarPairList = list<pair<string, string>>;
 
 class ModifiesTable {
   StmtNumList modifying_stmt_num_list_;
@@ -30,6 +31,8 @@ class ModifiesTable {
   void InsertModifies(StmtNum stmt_num, VarName var_name);
 
   bool IsModifiedBy(StmtNum stmt_num, VarName var_name);
+
+  bool IsModified(VarName var_name);
 
   VarNameList GetModifiedVar(StmtNum stmt_num);
 

@@ -8,8 +8,12 @@ using std::make_pair;
 
 void ModifiesTable::InsertModifies(StmtNum stmt_num, VarName var_name) {
   if (!IsModifiedBy(stmt_num, var_name)) {
-    modifying_stmt_num_list_.push_back(stmt_num);
-    modified_var_name_list_.push_back(var_name);
+    if (modifies_map_.count(stmt_num) == 0) {
+      modifying_stmt_num_list_.push_back(stmt_num);
+    }
+    if (!IsModified(var_name)) {
+      modified_var_name_list_.push_back(var_name);
+    }
     modifies_map_[stmt_num].push_back(var_name);
     modified_by_map_[var_name].push_back(stmt_num);
   }
@@ -25,6 +29,11 @@ bool ModifiesTable::IsModifiedBy(StmtNum stmt_num, VarName var_name) {
     return false;
   }
   
+}
+
+bool ModifiesTable::IsModified(VarName var_name) {
+  return find(modified_var_name_list_.begin(), modified_var_name_list_.end(),
+              var_name) != modified_var_name_list_.end();
 }
 
 VarNameList ModifiesTable::GetModifiedVar(StmtNum stmt_num) {
