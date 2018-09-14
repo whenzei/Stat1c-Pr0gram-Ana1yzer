@@ -134,12 +134,101 @@ list<string> PqlEvaluator::GetResultFromSelectAllQuery(
 
 PqlArrangementOfSynonymInSuchthatParam
 PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
+    string select_var_name,
     pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
         such_that_param) {
   pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
   pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
 
-  return PqlArrangementOfSynonymInSuchthatParam::kNoSynonym;
+  // (_,?)
+  if (left_type == kUnderscore) {
+    //(_,_)
+    if (right_type == kUnderscore) {
+      return kNoSynonymUnderscoreBoth;
+    }
+    //(_,?syn)
+    else if (right_type != kInteger && right_type != kIdent) {
+      //(_, selectsyn)
+      if (select_var_name.compare(right_param.first) == 0) {
+        return kOneSynonymSelectRightUnderscoreLeft;
+      }
+      //(_,syn)
+      else {
+        return kOneSynonymRightUnderscoreLeft;
+      }
+    }
+    //(_,int/ident)
+    else {
+      return kNoSynonymUnderscoreLeft;
+    }
+  }  // end (_,?)
+
+  //(?syn,?)
+  else if (left_type != kInteger && left_type != kIdent) {
+    //(selectsyn, ?)
+    if (select_var_name.compare(left_param.first) == 0) {
+      //(selectsyn,_)
+      if (right_type == kUnderscore) {
+        return kOneSynonymSelectLeftUnderscoreRight;
+      }
+      //(selectsyn,syn)
+      else if (right_type != kInteger && right_type != kIdent) {
+        return kTwoSynonymSelectLeft;
+      }
+      //(selectsyn,int/ident)
+      else {
+        return kOneSynonymSelectLeft;
+      }
+    }
+    //(syn,?)
+    else {
+      //(syn,_)
+      if (right_type == kUnderscore) {
+        return kOneSynonymLeftUnderscoreRight;
+      }
+      //(syn,?syn)
+      else if (right_type != kInteger && right_type != kIdent) {
+        //(syn, selectsyn)
+        if (select_var_name.compare(right_param.first) == 0) {
+          return kTwoSynonymSelectRight;
+        }
+        //(syn,syn)
+        else {
+          return kTwoSynonym;
+        }
+      }
+      //(syn,int/ident)
+      else {
+        return kOneSynonymLeft;
+      }
+    }
+
+  }  // end (?syn,?)
+
+  //(int/ident, ?)
+  else {
+    //(int/ident,_)
+    if (right_type == kUnderscore) {
+      return kNoSynonymUnderscoreRight;
+    }
+    //(int/ident,?syn)
+    else if (right_type != kInteger && right_type != kIdent) {
+      //(int/ident, selectsyn)
+      if (select_var_name.compare(right_param.first) == 0) {
+        return kOneSynonymSelectRight;
+      }
+      //(int/ident,syn)
+      else {
+        return kOneSynonymRight;
+      }
+    }
+    //(int/ident,int/ident)
+    else {
+	return kNoSynonym;
+	}
+  }  // end (int/ident, ?)
 
 }
 

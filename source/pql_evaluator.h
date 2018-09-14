@@ -61,14 +61,18 @@ class PqlEvaluator {
       unordered_map<string, PqlDeclarationEntity> declarations);
 
   /**
-   * Determine the number of synonym in the such that param (e.g such that Follows(a,b) => 2 entity)
-   * also determines whether the synonym in the param is a select variable (e.g Select a)
+   * Determine the number of synonym in the such that param (e.g such that
+   * Follows(a,b) => 2 entity) also determines whether the synonym in the param
+   * is a select variable (e.g Select a)
    * @param left and right param of the such that clause
-   * @returns properties of synonym in the form of PqlPropertyOfEntityInSuchthatParam
+   * @returns properties of synonym in the form of
+   * PqlPropertyOfEntityInSuchthatParam
    */
-  PqlArrangementOfSynonymInSuchthatParam CheckArrangementOfSynonymInSuchthatParam(
-      pair<pair<string, PqlDeclarationEntity>,
-           pair<string, PqlDeclarationEntity>> such_that_param);
+  PqlArrangementOfSynonymInSuchthatParam
+  CheckArrangementOfSynonymInSuchthatParam(
+      string select_var_name, pair<pair<string, PqlDeclarationEntity>,
+                                   pair<string, PqlDeclarationEntity>>
+                                  such_that_param);
 };
 
 #endif  // !QUERY_EVALUATOR_H
