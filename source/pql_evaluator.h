@@ -8,8 +8,8 @@
 #include <unordered_map>
 
 #include "pkb.h"
-#include "pql_query.h"
 #include "pql_evaluator.h"
+#include "pql_query.h"
 
 using std::list;
 using std::string;
@@ -31,24 +31,35 @@ class PqlEvaluator {
   list<string> GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
-   * Use the @Query provided by user
-   * and return a list of results based on the query. This method will only be
+   * Return a list of results based on the query. This method will only be
    * used when there are no "such that" or "pattern" clause.
-   * @param select clause and declaration entities provided by user
+   * @param declaration entities of select variable and pkb
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromSelectAllQuery(
-      string select_var_name, unordered_map<string, PqlDeclarationEntity> declarations,
-      PKB pkb);
+  list<string> GetResultFromSelectAllQuery(PqlDeclarationEntity select_type,
+                                           PKB pkb);
 
   /**
-   * Use the results from @GetResultFromQuery
-   * and format it into a single string to display to the user
-   * @param results the list of string containing result of the query
-   * @returns a string to be displayed to the user
+   * Return a list of results based on the query. This method will only be
+   * used when there are "such that" clause.
+   * @param declaration entities of select variable, such that clause provided
+   * by user and pkb
+   * @returns a list of string if there is result,
+   * or an empty list otherwise
    */
-  string FormatResultString(list<string> results);
+  list<string> GetResultFromQueryWithSuchThat(PqlDeclarationEntity select_type,
+                                              PqlSuchthat suchthat, PKB pkb);
+
+  /**
+   * Determine the declaration type of the select variable
+   * @param select clause and declaration entities provided by user
+   * @returns PqlDeclarationEntity of the select variable
+   */
+  PqlDeclarationEntity CheckSelectDeclarationType(
+      string select_var_name,
+      unordered_map<string, PqlDeclarationEntity> declarations);
+
 };
 
 #endif  // !QUERY_EVALUATOR_H
