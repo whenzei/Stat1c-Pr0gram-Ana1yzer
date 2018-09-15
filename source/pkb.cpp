@@ -31,7 +31,7 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
                            VarName modified_var_name,
                            VarNameSet used_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, kAssign, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kAssign, stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertAssignStmt(stmt_num);
@@ -57,7 +57,8 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                           StmtListIndex child_stmtlist_index,
                           VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, kWhile, parent_stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kWhile,
+                             parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertWhileStmt(stmt_num);
@@ -87,7 +88,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
                        StmtListIndex else_stmtlist_index,
                        VarNameSet control_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, kIf, parent_stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kIf, parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
     stmt_type_list_.InsertIfStmt(stmt_num);
@@ -116,7 +117,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
 bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                          VarName var_name) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, kRead, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kRead, stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertReadStmt(stmt_num);
@@ -138,7 +139,7 @@ bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
 bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                           VarName var_name) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, kPrint, stmtlist_index)) {
+  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kPrint, stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
     stmt_type_list_.InsertPrintStmt(stmt_num);
