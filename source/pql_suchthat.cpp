@@ -8,4 +8,46 @@ PqlSuchthat::PqlSuchthat(PqlSuchthatType type, string first, PqlDeclarationEntit
 
 PqlSuchthatType PqlSuchthat::GetType() { return type_; }
 
-pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>> PqlSuchthat::GetParameters() { return parameters_; }
+Parameters PqlSuchthat::GetParameters() { return parameters_; }
+
+PqlSuchthatType PqlSuchthat::StringToType(string input) {
+  if (input == "Modifies") {
+    return PqlSuchthatType::kModifies;
+  }
+  else if (input == "Uses") {
+    return PqlSuchthatType::kUses;
+  }
+  else if (input == "Calls") {
+    return PqlSuchthatType::kCalls;
+  }
+  else if (input == "Calls*") {
+    return PqlSuchthatType::kCallsT;
+  }
+  else if (input == "Parent") {
+    return PqlSuchthatType::kParent;
+  }
+  else if (input == "Parent*") {
+    return PqlSuchthatType::kParentT;
+  }
+  else if (input == "Follows") {
+    return PqlSuchthatType::kFollows;
+  }
+  else if (input == "Follows*") {
+    return PqlSuchthatType::kFollowsT;
+  }
+  else if (input == "Next") {
+    return PqlSuchthatType::kNext;
+  }
+  else if (input == "Next*") {
+    return PqlSuchthatType::kNextT;
+  }
+  else if (input == "Affects") {
+    return PqlSuchthatType::kAffects;
+  }
+  else if (input == "Affects*") {
+    return PqlSuchthatType::kAffectsT;
+  }
+  else {
+    return PqlSuchthatType::kNone;
+  }
+}
