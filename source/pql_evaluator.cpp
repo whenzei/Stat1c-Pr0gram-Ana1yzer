@@ -398,13 +398,14 @@ PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
   PqlDeclarationEntity right_type = right_param.second;
 
   // (_,?)
-  if (left_type == kUnderscore) {
+  if (left_type == PqlDeclarationEntity::kUnderscore) {
     //(_,_)
-    if (right_type == kUnderscore) {
+    if (right_type == PqlDeclarationEntity::kUnderscore) {
       return kNoSynonymUnderscoreBoth;
     }
     //(_,?syn)
-    else if (right_type != kInteger && right_type != kIdent) {
+    else if (right_type != PqlDeclarationEntity::kInteger &&
+             right_type != PqlDeclarationEntity::kIdent) {
       //(_, selectsyn)
       if (select_var_name.compare(right_param.first) == 0) {
         return kOneSynonymSelectRightUnderscoreLeft;
@@ -421,15 +422,17 @@ PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
   }  // end (_,?)
 
   //(?syn,?)
-  else if (left_type != kInteger && left_type != kIdent) {
+  else if (left_type != PqlDeclarationEntity::kInteger &&
+           left_type != PqlDeclarationEntity::kIdent) {
     //(selectsyn, ?)
     if (select_var_name.compare(left_param.first) == 0) {
       //(selectsyn,_)
-      if (right_type == kUnderscore) {
+      if (right_type == PqlDeclarationEntity::kUnderscore) {
         return kOneSynonymSelectLeftUnderscoreRight;
       }
       //(selectsyn,syn)
-      else if (right_type != kInteger && right_type != kIdent) {
+      else if (right_type != PqlDeclarationEntity::kInteger &&
+               right_type != PqlDeclarationEntity::kIdent) {
         return kTwoSynonymSelectLeft;
       }
       //(selectsyn,int/ident)
@@ -440,11 +443,12 @@ PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
     //(syn,?)
     else {
       //(syn,_)
-      if (right_type == kUnderscore) {
+      if (right_type == PqlDeclarationEntity::kUnderscore) {
         return kOneSynonymLeftUnderscoreRight;
       }
       //(syn,?syn)
-      else if (right_type != kInteger && right_type != kIdent) {
+      else if (right_type != PqlDeclarationEntity::kInteger &&
+               right_type != PqlDeclarationEntity::kIdent) {
         //(syn, selectsyn)
         if (select_var_name.compare(right_param.first) == 0) {
           return kTwoSynonymSelectRight;
@@ -465,11 +469,12 @@ PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
   //(int/ident, ?)
   else {
     //(int/ident,_)
-    if (right_type == kUnderscore) {
+    if (right_type == PqlDeclarationEntity::kUnderscore) {
       return kNoSynonymUnderscoreRight;
     }
     //(int/ident,?syn)
-    else if (right_type != kInteger && right_type != kIdent) {
+    else if (right_type != PqlDeclarationEntity::kInteger &&
+             right_type != PqlDeclarationEntity::kIdent) {
       //(int/ident, selectsyn)
       if (select_var_name.compare(right_param.first) == 0) {
         return kOneSynonymSelectRight;
@@ -501,7 +506,7 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
     }
   }
   // Shouldn't happen since there is validation
-  return kUnderscore;
+  return PqlDeclarationEntity::kUnderscore;
 }
 
 /*
