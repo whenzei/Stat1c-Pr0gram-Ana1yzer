@@ -1,23 +1,25 @@
 procedure One {
     if (a == b) then {             \\ 0 (1)
-        c = d;                     \\ 1 (2)
+        if = while;       	   \\ 1 (2)
     } else {
-        if (c == d) then {         \\ 2 (3)
-            e = f;                 \\ 3 (4)
+        if (while == if) then {    \\ 2 (3)
+            e = if;                \\ 3 (4)
             g = h;                 \\ 3 (5)
         } else {
-            a = b;                 \\ 4 (6)
+            while = b;             \\ 4 (6)
         }
         b = c;                     \\ 2 (7)
     }
     
     g = f;                         \\ 0 (8)
     while (a < b) {                \\ 0 (9)
-        a = a + 1;                 \\ 5 (10)
+        then = a + 1;              \\ 5 (10)
         if (s == t) then {         \\ 5 (11)
             s = s + 1;             \\ 6 (12)
         } else { 
-            t = t + 1;             \\ 7 (13)
+            call = t + 1;          \\ 7 (13)
         }
+        b = b + 2;		   \\ 5 (14)
     }
+    c = c + 5;                     \\ 0 (15)
 } 
