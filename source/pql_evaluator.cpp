@@ -63,17 +63,17 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
                                                suchthat.GetParameters());
 
   switch (suchthat.GetType()) {
-    case kFollows:
+    case PqlSuchthatType::kFollows:
       return EvaluateFollows(select_type, suchthat, arrangement);
-    case kFollowsT:
+    case PqlSuchthatType::kFollowsT:
       return EvaluateFollowsT(select_type, suchthat, arrangement);
-    case kParent:
+    case PqlSuchthatType::kParent:
       return EvaluateParent(select_type, suchthat, arrangement);
-    case kParentT:
+    case PqlSuchthatType::kParentT:
       return EvaluateParentT(select_type, suchthat, arrangement);
-    case kUsesS:
+    case PqlSuchthatType::kUsesS:
       return EvaluateUsesS(select_type, suchthat, arrangement);
-    case kModifiesS:
+    case PqlSuchthatType::kModifiesS:
       return EvaluateModifiesS(select_type, suchthat, arrangement);
   }
 
