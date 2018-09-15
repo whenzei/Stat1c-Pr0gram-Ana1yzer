@@ -17,7 +17,9 @@ enum PqlDeclarationEntity {
   kProcedure,
   kInteger,    // only used for validation, not an actual entity type
   kIdent,      // only used for validation, not an actual entity type
-  kUnderscore  // only used for validation, not an actual entity type
+  kUnderscore,  // only used for validation, not an actual entity type
+  kSynonym,     // only used for validation, not an actual entity type
+  kNone
 };
 
 enum PqlSuchthatType {
