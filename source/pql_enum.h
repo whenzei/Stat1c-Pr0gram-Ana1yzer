@@ -44,4 +44,23 @@ enum class PqlSuchthatType {
   kNone // only used for parsing
 };
 
+/* The arrangement types for a such that clause */
+enum PqlArrangementOfSynonymInSuchthatParam {
+  kNoSynonym = 0,                        // e.g (1, 2)
+  kNoSynonymUnderscoreLeft,              // e.g (_, 2)
+  kNoSynonymUnderscoreRight,             // e.g (1, _)
+  kNoSynonymUnderscoreBoth,              // e.g (_, _)
+  kOneSynonymLeft,                       // e.g (a, 2)
+  kOneSynonymLeftUnderscoreRight,        // e.g (a, _)
+  kOneSynonymRight,                      // e.g (1, a)
+  kOneSynonymRightUnderscoreLeft,        // e.g (_, a)
+  kOneSynonymSelectLeft,                 // e.g (s, 2)
+  kOneSynonymSelectLeftUnderscoreRight,  // e.g (s, _)
+  kOneSynonymSelectRight,                // e.g (1, s)
+  kOneSynonymSelectRightUnderscoreLeft,  // e.g (_, s)
+  kTwoSynonym,                           // e.g (a, b)
+  kTwoSynonymSelectLeft,                 // e.g (s, a)
+  kTwoSynonymSelectRight                 // e.g (a, s)
+};
+
 #endif
