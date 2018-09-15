@@ -8,7 +8,7 @@ PqlSuchthat::PqlSuchthat(PqlSuchthatType type, string first, PqlDeclarationEntit
 
 PqlSuchthatType PqlSuchthat::GetType() { return type_; }
 
-pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>> PqlSuchthat::GetParameters() { return parameters_; }
+Parameters PqlSuchthat::GetParameters() { return parameters_; }
 
 PqlSuchthatType PqlSuchthat::StringToType(string input) {
   if (input == "Modifies") {

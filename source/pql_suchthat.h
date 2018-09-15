@@ -7,21 +7,24 @@
 using std::string;
 using std::pair;
 
-using Parameters = pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>;
-
 #include "pql_enum.h"
 
+using Parameters = pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>;
+
+/* Stores information of a such that clause in a PQL select statement */
 class PqlSuchthat {
-  private:
-    PqlSuchthatType type_;
-    Parameters parameters_; // ((synonym, type), (synonym, type))
+private:
+  /* The relationship type of the such that clause */
+  PqlSuchthatType type_;
+  /* The parameters, stored in the form of ((synonym, type), (synonym, type)) */
+  Parameters parameters_;
 
-  public:
-    PqlSuchthat(PqlSuchthatType, string, PqlDeclarationEntity, string, PqlDeclarationEntity);
+public:
+  PqlSuchthat(PqlSuchthatType, string, PqlDeclarationEntity, string, PqlDeclarationEntity);
 
-    PqlSuchthatType GetType();
-    Parameters GetParameters();
-    static PqlSuchthatType StringToType(string);
+  PqlSuchthatType GetType();
+  Parameters GetParameters();
+  static PqlSuchthatType StringToType(string);
 };
 
 #endif

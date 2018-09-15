@@ -3,6 +3,7 @@
 #ifndef PQL_ENUM_H
 #define PQL_ENUM_H
 
+/* The entity types for a PQL declaration */
 enum class PqlDeclarationEntity {
   kStmt = 0,
   kRead,
@@ -18,9 +19,11 @@ enum class PqlDeclarationEntity {
   kInteger, // only used for validation, not an actual entity type
   kIdent, // only used for validation, not an actual entity type
   kUnderscore, // only used for validation, not an actual entity type
-  kSynonym // only used for validation, not an actual entity type
+  kSynonym, // only used for validation, not an actual entity type
+  kNone
 };
 
+/* The relationship types for a such that clause */
 enum class PqlSuchthatType {
   kModifiesP = 0,
   kModifiesS,
@@ -38,7 +41,7 @@ enum class PqlSuchthatType {
   kNextT,
   kAffects,
   kAffectsT,
-  kNone
+  kNone // only used for parsing
 };
 
 #endif
