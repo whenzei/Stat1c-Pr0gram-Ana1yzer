@@ -34,11 +34,13 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // If there is no such that clause, then evaluator will use
   // GetResultFromSelectAllQuery method
   if (getSuchthat().size() == 0) {
-    results = GetResultFromSelectAllQuery();
+    PqlDeclarationEntity select_type = getSelectType();
+    results = GetResultFromSelectAllQuery(select_type);
   }
   // Else use GetResultFromQueryWithSuchThat method
   else {
-    results = GetResultFromQueryWithSuchThat();
+    PqlSuchthat suchthat = getSuchthat().front();
+    results = GetResultFromQueryWithSuchThat(suchthat);
   }
 
   cout << "Result size: " << results.size() << endl;
@@ -50,10 +52,10 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromQueryWithSuchThat() {
+list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
+    PqlSuchthat suchthat) {
   PqlDeclarationEntity select_type = getSelectType();
   string select_var_name = getSelectVar();
-  PqlSuchthat suchthat = getSuchthat().front();
   list<string> results;
 
   PqlArrangementOfSynonymInSuchthatParam arrangement =
@@ -78,9 +80,9 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat() {
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromSelectAllQuery() {
+list<string> PqlEvaluator::GetResultFromSelectAllQuery(
+    PqlDeclarationEntity select_type) {
   PKB pkb = getPKB();
-  PqlDeclarationEntity select_type = getSelectType();
   list<string> results;
 
   switch (select_type) {

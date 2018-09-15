@@ -63,17 +63,16 @@ class PqlEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromSelectAllQuery();
+  list<string> GetResultFromSelectAllQuery(PqlDeclarationEntity select_type);
 
   /**
    * Return a list of results based on the query. This method will only be
    * used when there are "such that" clause.
-   * @input declaration entities of select variable, such that clause provided
-   * by user and pkb
+   * @input such that clause provided by user
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromQueryWithSuchThat();
+  list<string> GetResultFromQueryWithSuchThat(PqlSuchthat suchthat);
 
   /**
    * Evaluate such that follows
@@ -102,7 +101,7 @@ class PqlEvaluator {
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       PqlArrangementOfSynonymInSuchthatParam arrangement);
 
-   /**
+  /**
    * Evaluate such that parent*
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
