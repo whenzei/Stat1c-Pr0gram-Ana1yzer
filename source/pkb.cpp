@@ -78,6 +78,21 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                                                  child_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
+    StmtNumList children_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(child_stmtlist_index);
+    for (StmtNum& child_stmtnum : children_stmtnum_list) {
+      StmtListIndexList indirect_children_stmtlist_indices =
+          parent_table_.GetChildT(child_stmtnum);
+      for (StmtListIndex& indirect_child_stmtlist_index :
+           indirect_children_stmtlist_indices) {
+        parent_table_.InsertIndirectParentRelationship(
+            stmt_num, indirect_child_stmtlist_index);
+        for (StmtNum& indirect_parent : indirect_parents) {
+          parent_table_.InsertIndirectParentRelationship(
+              indirect_parent, indirect_child_stmtlist_index);
+        }
+      }
+    }
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
@@ -112,6 +127,26 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
     parent_table_.InsertDirectParentRelationship(stmt_num, else_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
+    StmtNumList children_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(then_stmtlist_index);
+    StmtNumList else_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(else_stmtlist_index);
+    children_stmtnum_list.insert(children_stmtnum_list.end(),
+                                 else_stmtnum_list.begin(),
+                                 else_stmtnum_list.end());
+    for (StmtNum& child_stmtnum : children_stmtnum_list) {
+      StmtListIndexList indirect_children_stmtlist_indices =
+          parent_table_.GetChildT(child_stmtnum);
+      for (StmtListIndex& indirect_child_stmtlist_index :
+           indirect_children_stmtlist_indices) {
+        parent_table_.InsertIndirectParentRelationship(
+            stmt_num, indirect_child_stmtlist_index);
+        for (StmtNum& indirect_parent : indirect_parents) {
+          parent_table_.InsertIndirectParentRelationship(
+              indirect_parent, indirect_child_stmtlist_index);
+        }
+      }
+    }
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      then_stmtlist_index);
