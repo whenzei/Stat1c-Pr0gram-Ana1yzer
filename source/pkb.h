@@ -53,7 +53,7 @@ class PKB {
   ConstValueList GetAllConstValue();
 
   // return a PqlDeclarationEntity enum to represent the statement type (assign/while/if/read/print)
-  StmtType GetStmtType(StmtNumInt stmt_num_int);
+  StmtType GetStmtType(StmtNum stmt_num);
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -147,28 +147,28 @@ class PKB {
 
   // @returns true if the statement specified by parent_stmt_num is the direct
   // parent of the statement specified by child_stmt_num
-  bool IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
+  bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns true if the statement specified by parent_stmt_num is a parent
   // (direct or indirect) of the statement specified by child_stmt_num
-  bool IsParentT(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
+  bool IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns a list of the statement number (only one element) of the direct
   // parent
-  StmtNumList GetParent(StmtNumInt stmt_num_int);
+  StmtNumList GetParent(StmtNum stmt_num);
 
   // @returns a list of statement numbers of the parents (direct + indirect)
-  StmtNumList GetParentT(StmtNumInt stmt_num_int);
+  StmtNumList GetParentT(StmtNum stmt_num);
 
   // @returns a list of statement numbers of statements that are parents to some
   // statement
   StmtNumList GetAllParent();
 
   // @returns a list of statement numbers of the direct children
-  StmtNumList GetChild(StmtNumInt stmt_num_int);
+  StmtNumList GetChild(StmtNum stmt_num);
 
   // @returns a list of statement numbers of the children (direct + indirect)
-  StmtNumList GetChildT(StmtNumInt stmt_num_int);
+  StmtNumList GetChildT(StmtNum stmt_num);
 
   // @returns a list of statement numbers of statements that are children to
   // some statement
@@ -184,13 +184,13 @@ class PKB {
   StmtNumPairList GetAllParentTPair();
 
   // @returns true modifies(stmt_num_int, var_name) holds
-  bool IsModifiedByS(StmtNumInt stmt_num_int, VarName var_name);
+  bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
   // @returns true modifies(proc_name, var_name) holds
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
   // @returns a list of variables that are modified at the given statement
-  VarNameList GetModifiedVarS(StmtNumInt stmt_num_int);
+  VarNameList GetModifiedVarS(StmtNum stmt_num);
 
   // @returns a list of variables that are modified in the given procedure
   VarNameList GetModifiedVarP(ProcName proc_name);
