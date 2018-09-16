@@ -9,6 +9,7 @@ using std::string;
 class PqlValidator {
 public:
   static bool ValidateIdent(string);
+  static bool ValidateInteger(string);
 };
 
 #endif

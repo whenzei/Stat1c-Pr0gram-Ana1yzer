@@ -57,6 +57,9 @@
     <ClCompile Include="..\source\parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\modifies_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pkb.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -75,7 +78,7 @@
     <ClCompile Include="..\source\stmt_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\query_evaluator.cpp">
+    <ClCompile Include="..\source\pql_evaluator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\pql_parser.cpp">
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="..\source\expression_helper.cpp">
       <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\follows_table.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +120,9 @@
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\const_list.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\modifies_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\parent_table.h">
@@ -149,11 +158,17 @@
     <ClInclude Include="..\source\pql_validator.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\query_evaluator.h">
+    <ClInclude Include="..\source\pql_evaluator.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_enum.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\expression_helper.h">
       <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\follows_table.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

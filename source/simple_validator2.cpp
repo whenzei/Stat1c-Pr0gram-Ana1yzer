@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_set>
 
 #include "simple_validator2.h"
 
@@ -21,11 +22,11 @@ const string kCloseBraceSymbol = "}";
 
 const size_t kMinimalTokenSizeForPocedure = 4;
 
-const static string kKeywords[7] = {"procedure", "if",   "else", "while",
-                                    "call",      "read", "print"};
+const static std::unordered_set<string> kKeywords = {
+    "procedure", "if", "else", "while", "call", "read", "print"};
 
 bool SimpleValidator2::ValidateProcedure(TokenList tokens, size_t start,
-                                        size_t end) {
+                                         size_t end) {
   size_t numTokens = end - start + 1;
 
   if (numTokens < kMinimalTokenSizeForPocedure) {
@@ -44,11 +45,8 @@ bool SimpleValidator2::ValidateProcedure(TokenList tokens, size_t start,
   for (size_t i = start + 3; i < end; i++) {
     if (tokens[i].type == tt::kAssignment && !IsValidAssignmentPos(tokens, i)) {
       return false;
-    } else if (tokens[i].type == tt::kName && !IsValidNamePos(tokens, i)) {
-      return false;
-    } else if (tokens[i].type == tt::kDigit && !IsValidDigitPos(tokens, i)) {
-      return false;
-    } else if (tokens[i].type == tt::kKeyword) {
+    } else if (tokens[i].type == tt::kName &&
+               kKeywords.count(tokens[i].value)) {
       if (tokens[i].value.compare("if") == 0 && !IsValidIfPos(tokens, i)) {
         return false;
       }
@@ -56,14 +54,20 @@ bool SimpleValidator2::ValidateProcedure(TokenList tokens, size_t start,
           !IsValidWhilePos(tokens, i)) {
         return false;
       }
-    } else if (tokens[i].type == tt::kSemicolon && !IsValidSemicolonPos(tokens, i)) {
+    } else if (tokens[i].type == tt::kName && !IsValidNamePos(tokens, i)) {
+      return false;
+    } else if (tokens[i].type == tt::kDigit && !IsValidDigitPos(tokens, i)) {
+      return false;
+    } else if (tokens[i].type == tt::kSemicolon &&
+               !IsValidSemicolonPos(tokens, i)) {
       return false;
     }
   }
   return true;
 }
 
-bool SimpleValidator2::IsValidAssignmentPos(TokenList tokens, size_t currIndex) {
+bool SimpleValidator2::IsValidAssignmentPos(TokenList tokens,
+                                            size_t currIndex) {
   int tokenLeftType = tokens[currIndex - 1].type;
   int tokenRightType = tokens[currIndex + 1].type;
 
@@ -92,11 +96,10 @@ bool SimpleValidator2::IsValidNamePos(TokenList tokens, size_t currIndex) {
     return false;
   }
 
-		//Checks if NAME does not belong to procedure, and is before '{'
-  if (tokenLeftValue != "procedure" &&
-      tokenRightType == tt::kOpenBrace) {
+  // Checks if NAME does not belong to procedure, and is before '{'
+  if (tokenLeftValue != "procedure" && tokenRightType == tt::kOpenBrace) {
     return false;
-		}
+  }
 
   // Checks if NAME is right before '}'
   if (tokenRightType == tt::kCloseBrace) {
@@ -141,7 +144,7 @@ bool SimpleValidator2::IsValidIfPos(TokenList tokens, size_t currIndex) {
 }
 
 bool SimpleValidator2::IsValidWhilePos(TokenList tokens, size_t currIndex) {
-		int tokenLeftType = tokens[currIndex - 1].type;
+  int tokenLeftType = tokens[currIndex - 1].type;
   int tokenRightType = tokens[currIndex + 1].type;
 
   // Check that the 'while' keyword appears in between '}' and '(', or ';' and
@@ -165,6 +168,6 @@ bool SimpleValidator2::IsValidSemicolonPos(TokenList tokens, size_t currIndex) {
   if (tokenRightType == tt::kSemicolon || tokenRightType == tt::kOpenParen ||
       tokenRightType == tt::kDigit || tokenRightType == tt::kOpenBrace) {
     return false;
-		}
+  }
   return true;
 }

@@ -7,37 +7,24 @@
 using std::string;
 using std::pair;
 
-enum PqlSuchthatType {
-  kModifiesP = 0,
-  kModifiesS,
-  kUsesP,
-  kUsesS,
-  Calls,
-  CallsT,
-  Parent,
-  ParentT,
-  Follows,
-  FollowsT,
-  Next,
-  NextT,
-  Affects,
-  AffectsT
-};
+#include "pql_enum.h"
 
+using Parameters = pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>;
+
+/* Stores information of a such that clause in a PQL select statement */
 class PqlSuchthat {
-  private:
-    PqlSuchthatType type_;
-    // parameters
-    string first_;
-    string second_;
+private:
+  /* The relationship type of the such that clause */
+  PqlSuchthatType type_;
+  /* The parameters, stored in the form of ((synonym, type), (synonym, type)) */
+  Parameters parameters_;
 
-  public:
-    PqlSuchthat(PqlSuchthatType, string, string);
+public:
+  PqlSuchthat(PqlSuchthatType, string, PqlDeclarationEntity, string, PqlDeclarationEntity);
 
-    PqlSuchthatType GetType();
-    string GetFirst();
-    string GetSecond();
-    pair<string, string> GetParams(); // returns first_ and second_ as a pair object
+  PqlSuchthatType GetType();
+  Parameters GetParameters();
+  static PqlSuchthatType StringToType(string);
 };
 
 #endif
