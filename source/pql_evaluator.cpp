@@ -73,7 +73,6 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
       return EvaluateModifiesS(select_type, suchthat, arrangement);
     case PqlSuchthatType::kModifiesP:
       return EvaluateModifiesP(select_type, suchthat, arrangement);
-
   }
 
   return results;
@@ -235,37 +234,121 @@ list<string> PqlEvaluator::EvaluateParent(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating Parent." << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      // If left is parent of right
+      if (pkb.IsParent(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << left_name << " not parent of " << right_name << endl;
+      }
       break;
     case kNoSynonymUnderscoreLeft:
+      // If no parent
+      if (pkb.GetParent(right_name).empty()) {
+        setClauseFlag(false);
+        cout << right_name << " has no parent " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreRight:
+      // If no child
+      if (pkb.GetChild(left_name).empty()) {
+        setClauseFlag(false);
+        cout << left_name << " has no child " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreBoth:
+      if (pkb.HasParentRelationship()) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " no parent/child found " << endl;
+      }
       break;
     case kOneSynonymLeft:
+      if (FilterResult(pkb.GetParent(right_name), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have stmt " << right_name << " as child"
+             << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+
+      if (FilterResult(pkb.GetAllParent(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have any child" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (FilterResult(pkb.GetChild(left_name), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt does not have stmt " << left_name << " as parent"
+             << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRightUnderscoreLeft:
+      if (FilterResult(pkb.GetAllChild(), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt does not have any parent" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
-      break;
+      // Return the parent of certain entity type
+      return FilterResult(pkb.GetParent(right_name), left_type);
     case kOneSynonymSelectLeftUnderscoreRight:
-      break;
+      // Return all the parent of any child
+      return FilterResult(pkb.GetAllParent(), left_type);
     case kOneSynonymSelectRight:
-      break;
+      // Return the children of certain entity type
+      return FilterResult(pkb.GetChild(left_name), right_type);
     case kOneSynonymSelectRightUnderscoreLeft:
-      break;
+      // Return all the children of any parent
+      return FilterResult(pkb.GetAllChild(), right_type);
     case kTwoSynonym:
+      // Filter left and right
+      if (FilterPairResult(kFilterBoth, pkb.GetAllParentPair(), left_type,
+                           right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << " no pair of (lefttype,righttype)" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
+      // Filter left and right and then get all the left
+      return GetAllLeftOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllParentPair(), left_type, right_type));
       break;
     case kTwoSynonymSelectRight:
+      // Filter left and right and then get all the right
+      return GetAllRightOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllParentPair(), left_type, right_type));
       break;
   }
 
@@ -277,37 +360,121 @@ list<string> PqlEvaluator::EvaluateParentT(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating Parent*" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      // If left is parent of right
+      if (pkb.IsParentT(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << left_name << " not indirect parent of " << right_name << endl;
+      }
       break;
     case kNoSynonymUnderscoreLeft:
+      // If no parent
+      if (pkb.GetParentT(right_name).empty()) {
+        setClauseFlag(false);
+        cout << right_name << " has no indirect parent " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreRight:
+      // If no child
+      if (pkb.GetChildT(left_name).empty()) {
+        setClauseFlag(false);
+        cout << left_name << " has no indirect child " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreBoth:
+      if (pkb.HasParentRelationship()) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " no parent/child found " << endl;
+      }
       break;
     case kOneSynonymLeft:
+      if (FilterResult(pkb.GetParentT(right_name), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have stmt " << right_name
+             << " as indirect child" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+
+      if (FilterResult(pkb.GetAllParent(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have any child" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (FilterResult(pkb.GetChildT(left_name), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt does not have stmt " << left_name
+             << " as indirect parent" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRightUnderscoreLeft:
+      if (FilterResult(pkb.GetAllChild(), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt does not have any parent" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
-      break;
+      // Return the parent of certain entity type
+      return FilterResult(pkb.GetParentT(right_name), left_type);
     case kOneSynonymSelectLeftUnderscoreRight:
-      break;
+      // Return all the parent of any child
+      return FilterResult(pkb.GetAllParent(), left_type);
     case kOneSynonymSelectRight:
-      break;
+      // Return the children of certain entity type
+      return FilterResult(pkb.GetChildT(left_name), right_type);
     case kOneSynonymSelectRightUnderscoreLeft:
-      break;
+      // Return all the children of any parent
+      return FilterResult(pkb.GetAllChild(), right_type);
     case kTwoSynonym:
+      // Filter left and right
+      if (FilterPairResult(kFilterBoth, pkb.GetAllParentTPair(), left_type,
+                           right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << " no pair of (lefttype,righttype)" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
+      // Filter left and right and then get all the left
+      return GetAllLeftOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllParentTPair(), left_type, right_type));
       break;
     case kTwoSynonymSelectRight:
+      // Filter left and right and then get all the right
+      return GetAllRightOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllParentTPair(), left_type, right_type));
       break;
   }
 
@@ -528,10 +695,10 @@ list<string> PqlEvaluator::EvaluateModifiesP(
       }
       break;
     case kOneSynonymSelectLeft:
-        return pkb.GetModifyingP(right_name);
+      return pkb.GetModifyingP(right_name);
       break;
     case kOneSynonymSelectLeftUnderscoreRight:
-        return pkb.GetAllModifyingP();
+      return pkb.GetAllModifyingP();
       break;
     case kOneSynonymSelectRight:
       return pkb.GetModifiedVarP(left_name);
@@ -560,6 +727,13 @@ list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
   list<string> filtered_result;
   PKB pkb = getPKB();
 
+  // If its of type stmt (not assign, if, while etc) just return the list,
+  // nothing to filter
+  if (select_type == PqlDeclarationEntity::kStmt ||
+      select_type == PqlDeclarationEntity::kProgline) {
+    return unfiltered_result;
+  }
+
   for (auto& iter : unfiltered_result) {
     string result = iter;
 
@@ -578,6 +752,33 @@ list<pair<string, string>> PqlEvaluator::FilterPairResult(
   list<pair<string, string>> filtered_result;
   PKB pkb = getPKB();
 
+  // Nothing to filter if the type is stmt
+  if (filter_type == kFilterLeft) {
+    if (left_type == PqlDeclarationEntity::kStmt ||
+        left_type == PqlDeclarationEntity::kProgline) {
+      return unfiltered_pair_result;
+    }
+  } else if (filter_type == kFilterRight) {
+    if (right_type == PqlDeclarationEntity::kStmt ||
+        right_type == PqlDeclarationEntity::kProgline) {
+      return unfiltered_pair_result;
+    }
+  } else {
+    // If both left and right are stmt/program line
+    if ((left_type == PqlDeclarationEntity::kStmt ||
+         left_type == PqlDeclarationEntity::kProgline) &&
+        (right_type == PqlDeclarationEntity::kStmt ||
+         right_type == PqlDeclarationEntity::kProgline)) {
+      return unfiltered_pair_result;
+    } else if (left_type == PqlDeclarationEntity::kStmt ||
+               left_type == PqlDeclarationEntity::kProgline) {
+      filter_type = kFilterRight;
+    } else if (right_type == PqlDeclarationEntity::kStmt ||
+               right_type == PqlDeclarationEntity::kProgline) {
+      filter_type = kFilterLeft;
+    }
+  }
+
   for (auto& iter : unfiltered_pair_result) {
     string left_result = iter.first;
     string right_result = iter.second;
@@ -588,8 +789,15 @@ list<pair<string, string>> PqlEvaluator::FilterPairResult(
         }
         break;
       case kFilterRight:
+        if (pkb.GetStmtType(right_result) == right_type) {
+          filtered_result.push_back(iter);
+        }
         break;
       case kFilterBoth:
+        if (pkb.GetStmtType(left_result) == left_type &&
+            pkb.GetStmtType(right_result) == right_type) {
+          filtered_result.push_back(iter);
+        }
         break;
     }
   }
