@@ -48,7 +48,10 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     for (StmtNum& parent : parents) {
       modifies_table_.InsertModifies(parent, modified_var_name);
     }
-    // TODO: add uses relationship
+    // add uses relationship
+    for (auto& var_name : used_var_name_set) {
+      uses_table_.InsertUses(var_name, stmt_num);
+    }
     return true;
   } else {
     return false;
@@ -82,7 +85,10 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
     }
-    // TODO: insert uses relationship
+    // insert uses relationship
+    for (auto& var_name : control_var_name_set) {
+      uses_table_.InsertUses(var_name, stmt_num);
+    }
     return true;
   } else {
     return false;
@@ -118,7 +124,10 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      else_stmtlist_index);
     }
-    // TODO: insert uses relationship
+    // insert uses relationship
+    for (auto& var_name : control_var_name_set) {
+      uses_table_.InsertUses(var_name, stmt_num);
+    }
     return true;
   } else {
     return false;
@@ -158,7 +167,9 @@ bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
     stmt_type_list_.InsertPrintStmt(stmt_num);
     // insert variable
     var_list_.InsertVarName(var_name);
-    // TODO: insert uses relationship
+    // insert uses relationship
+    uses_table_.InsertUses(var_name, stmt_num);
+    // insert follows relationship
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
