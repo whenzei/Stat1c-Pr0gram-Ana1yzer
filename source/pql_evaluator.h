@@ -128,6 +128,15 @@ class PqlEvaluator {
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       PqlArrangementOfSynonymInSuchthatParam arrangement);
 
+    /**
+   * Evaluate such that modify procedure
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateModifiesP(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
   /**
    * Determine the declaration type of the select variable
    * @input select clause and declaration entities provided by user

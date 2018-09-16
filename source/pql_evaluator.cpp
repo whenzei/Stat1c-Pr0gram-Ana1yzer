@@ -71,6 +71,9 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
       return EvaluateUsesS(select_type, suchthat, arrangement);
     case PqlSuchthatType::kModifiesS:
       return EvaluateModifiesS(select_type, suchthat, arrangement);
+    case PqlSuchthatType::kModifiesP:
+      return EvaluateModifiesP(select_type, suchthat, arrangement);
+
   }
 
   return results;
@@ -362,7 +365,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
 
-  cout << "Evaluating Modifies." << endl;
+  cout << "Evaluating ModifiesS." << endl;
 
   switch (arrangement) {
     case kNoSynonym:
@@ -457,6 +460,95 @@ list<string> PqlEvaluator::EvaluateModifiesS(
             kFilterLeft, pkb.GetAllModifiesPairS(), left_type, right_type));
       }
 
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateModifiesP(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+
+  cout << "Evaluating ModifiesP." << endl;
+
+  switch (arrangement) {
+    case kNoSynonym:
+      // If proc (left) modify variable (right)
+      if (pkb.IsModifiedByP(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesn't modify " << right_name
+             << endl;
+      }
+      break;
+    case kNoSynonymUnderscoreRight:
+      // If no variables were modified by this proc
+      if (pkb.GetModifiedVarP(left_name).empty()) {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesn't modify any variable " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
+      break;
+    case kOneSynonymLeft:
+      // If no proc modifies the right variable
+      if (pkb.GetModifyingP(right_name).empty()) {
+        setClauseFlag(false);
+        cout << "Left proc doesnt modify right variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      // If no proc modifies any variable
+      if (pkb.GetAllModifyingP().empty()) {
+        setClauseFlag(false);
+        cout << "None of the proc modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
+      break;
+    case kOneSynonymRight:
+      if (pkb.GetModifiedVarP(left_name).empty()) {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesnt modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
+      break;
+    case kOneSynonymSelectLeft:
+        return pkb.GetModifyingP(right_name);
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+        return pkb.GetAllModifyingP();
+      break;
+    case kOneSynonymSelectRight:
+      return pkb.GetModifiedVarP(left_name);
+      break;
+    case kTwoSynonym:
+      if ((pkb.GetAllModifyingP().empty())) {
+        setClauseFlag(false);
+        cout << "None of the proc modify any variable " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
+      break;
+    case kTwoSynonymSelectLeft:
+      return pkb.GetAllModifyingP();
+      break;
+    case kTwoSynonymSelectRight:
+      return pkb.GetAllModifiedVar();
       break;
   }
 
