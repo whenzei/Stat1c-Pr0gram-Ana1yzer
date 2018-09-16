@@ -19,7 +19,7 @@ public:
 	bool IsValidStmtList();
 	bool IsValidStatement();
 	bool IsValidAssignment();
-	bool IsValidExpression();
+	bool IsValidExpression(TokenList expr);
 	bool IsValidConditional();
 	bool IsValidIfBlock();
 	bool IsValidWhileBlock();
