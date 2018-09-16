@@ -8,16 +8,15 @@
 using ts = Tokenizer::TokenSubtype;
 
 const std::unordered_map<string, Tokenizer::TokenSubtype> kKeywordsToEnum = {
-	{"procedure", ts::kProcedure}, {"if", ts::kIf},       {"then", ts::kThen},
+    {"procedure", ts::kProcedure}, {"if", ts::kIf},       {"then", ts::kThen},
     {"else", ts::kElse},           {"while", ts::kWhile}, {"print", ts::kPrint},
     {"call", ts::kCall},           {"read", ts::kRead}};
 
 static const string kTokenTypeNames[] = {
-    "nothing", "digit", "name", "word", "openbrace",
-    "closebrace", "semicolon", "comma", "underscore", "quotation",
-    "assignment", "operator", "openparen", "closeparen", "conditional",
-    "relational", "keyword", "unknown", "EOF"
-};
+    "nothing",    "digit",     "name",      "word",       "openbrace",
+    "closebrace", "semicolon", "comma",     "underscore", "quotation",
+    "assignment", "operator",  "openparen", "closeparen", "conditional",
+    "relational", "keyword",   "unknown",   "EOF"};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
@@ -35,9 +34,10 @@ TokenList Tokenizer::Tokenize(string input) {
   return Tokenize(input, tokenizer_functions);
 }
 
-// Take in an array of tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-// to tokenize the supplied input, returning a list of tokens
-TokenList Tokenizer::Tokenize(string input, TokenizerFunc tokenizer_functions[]) {
+// Take in an array of tokenizer functions such as SkipWhiteSpace or
+// TokenizeDigits to tokenize the supplied input, returning a list of tokens
+TokenList Tokenizer::Tokenize(string input,
+                              TokenizerFunc tokenizer_functions[]) {
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -64,12 +64,12 @@ TokenList Tokenizer::Tokenize(string input, TokenizerFunc tokenizer_functions[])
     // unknown token, since none of the tokenizers can recognize it
     // TODO: decide if we throw an exception here
     if (!is_done) {
-      tokens.push_back(Token({ kUnknown, string(1, input[current_index++]) }));
+      tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
     }
   }
 
   // ADD END OF FILE TOKEN
-  tokens.push_back(Token({ kEOF, string() }));
+  tokens.push_back(Token({kEOF, string()}));
 
   return tokens;
 }
@@ -143,11 +143,11 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
   return result;
 }
 
-// Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
-// and returns the result as a Result struct
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be
+// alphanumeric or symbols), and returns the result as a Result struct
 Result Tokenizer::TokenizeWords(string input, int current_index) {
-  Result result = TokenizePattern(kWord, regex{ R"(\w+(\**))" },
-    input, current_index);
+  Result result =
+      TokenizePattern(kWord, regex{R"(\w+(\**))"}, input, current_index);
 
   return result;
 }
@@ -259,7 +259,10 @@ Result Tokenizer::TokenizeConditionals(string input, int current_index) {
   result = TokenizePattern(kConditional, regex{R"([&|][&|]?)"}, input,
                            current_index);
   // must be of the form "||" or "&&"
-  return result.num_consumed_characters == 2 ? result : EmptyResult();
+  return (result.num_consumed_characters == 2 &&
+          (result.token.value == "&&" || result.token.value == "||"))
+             ? result
+             : EmptyResult();
 }
 
 // Helper function to return empty result, meaning
