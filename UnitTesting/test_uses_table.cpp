@@ -40,7 +40,7 @@ TEST_CLASS(TestUsesTable) {
     UsesTable uses;
     uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
     uses.InsertUses(kSampleVarName2, kSampleStmtIdx3);
-    VarList used_vars = uses.GetAllUsedVar();
+    VarNameList used_vars = uses.GetAllUsedVar();
     Assert::IsTrue(used_vars.size() == 2);
   }
 
@@ -48,19 +48,19 @@ TEST_CLASS(TestUsesTable) {
     UsesTable uses;
     uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
     uses.InsertUses(kSampleVarName1, kSampleStmtIdx3);
-    VarList used_vars = uses.GetAllUsedVar();
+    VarNameList used_vars = uses.GetAllUsedVar();
     Assert::IsTrue(used_vars.size() == 1);
   }
 
   TEST_METHOD(TestGetAllUsedVarSpecified) {
-    VarList expected_used_vars;
+    VarNameList expected_used_vars;
     UsesTable uses;
     expected_used_vars.push_back(kSampleVarName1);
     expected_used_vars.push_back(kSampleVarName2);
 
     uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
     uses.InsertUses(kSampleVarName2, kSampleStmtIdx2);
-    VarList used_vars = uses.GetAllUsedVar(kSampleStmtIdx2);
+    VarNameList used_vars = uses.GetAllUsedVar(kSampleStmtIdx2);
     Assert::AreEqual(expected_used_vars.front(), used_vars.front());
     Assert::AreEqual(expected_used_vars.back(), used_vars.back());
   }
