@@ -69,6 +69,8 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
       return EvaluateParentT(select_type, suchthat, arrangement);
     case PqlSuchthatType::kUsesS:
       return EvaluateUsesS(select_type, suchthat, arrangement);
+    case PqlSuchthatType::kUsesP:
+      return EvaluateUsesP(select_type, suchthat, arrangement);
     case PqlSuchthatType::kModifiesS:
       return EvaluateModifiesS(select_type, suchthat, arrangement);
     case PqlSuchthatType::kModifiesP:
@@ -150,21 +152,71 @@ list<string> PqlEvaluator::EvaluateFollows(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating Follows." << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      // If left is followed by right
+      if (pkb.IsFollows(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << left_name << " not followed by " << right_name << endl;
+      }
       break;
     case kNoSynonymUnderscoreLeft:
+      // If right is not follower
+      if (pkb.GetFollowedBy(right_name).empty()) {
+        setClauseFlag(false);
+        cout << right_name << " is not a follower " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreRight:
+      // If left is not followee
+      if (pkb.GetFollows(left_name).empty()) {
+        setClauseFlag(false);
+        cout << left_name << " is not a followee " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreBoth:
+      if (pkb.HasFollowsRelationship()) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " no follow relationship found " << endl;
+      }
       break;
     case kOneSynonymLeft:
+      if (pkb.GetStmtType(pkb.GetFollowedBy(right_name)) == left_type) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " No follower for this type " << endl;
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
       break;
     case kOneSynonymRight:
+      if (pkb.GetStmtType(pkb.GetFollows(left_name)) == right_type) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " No followee for this type " << endl;
+      }
       break;
     case kOneSynonymRightUnderscoreLeft:
       break;
@@ -192,38 +244,118 @@ list<string> PqlEvaluator::EvaluateFollowsT(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating Follows*" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      // If left is followed by right
+      if (pkb.IsFollowsT(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << left_name << " not indirectly followed by " << right_name
+             << endl;
+      }
       break;
     case kNoSynonymUnderscoreLeft:
+      // If right is not follower
+      if (pkb.GetFollowedByT(right_name).empty()) {
+        setClauseFlag(false);
+        cout << right_name << " is not a indirect follower " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreRight:
+      // If left is not followee
+      if (pkb.GetFollowsT(left_name).empty()) {
+        setClauseFlag(false);
+        cout << left_name << " is not a indirect followee " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kNoSynonymUnderscoreBoth:
+      if (pkb.HasFollowsRelationship()) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << " no follow relationship found " << endl;
+      }
       break;
     case kOneSynonymLeft:
+      if (FilterResult(pkb.GetFollowedByT(right_name), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " No indirect followee for this type " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+      //////////////////////////////TODO///////////////////////////////////////////////
+      if (FilterResult(pkb.GetAllParent(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have any follower" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (FilterResult(pkb.GetFollowsT(left_name), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " No indirect follower for this type " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRightUnderscoreLeft:
+      //////////////////////////////TODO///////////////////////////////////////////////
+      if (FilterResult(pkb.GetAllParent(), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt is not followed" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
-      break;
+      return FilterResult(pkb.GetFollowedByT(right_name), left_type);
     case kOneSynonymSelectLeftUnderscoreRight:
+      //////////////////////////////TODO///////////////////////////////////////////////
+
       break;
     case kOneSynonymSelectRight:
-      break;
+      return FilterResult(pkb.GetFollowsT(left_name), right_type);
     case kOneSynonymSelectRightUnderscoreLeft:
+      //////////////////////////////TODO///////////////////////////////////////////////
+
       break;
     case kTwoSynonym:
+      // Filter left and right
+      if (FilterPairResult(kFilterBoth, pkb.GetAllFollowsTPair(), left_type,
+                           right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << " no pair of (lefttype,righttype)" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
-      break;
+      return GetAllLeftOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllFollowsTPair(), left_type, right_type));
     case kTwoSynonymSelectRight:
-      break;
+      return GetAllRightOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllFollowsTPair(), left_type, right_type));
   }
 
   return results;
@@ -285,17 +417,16 @@ list<string> PqlEvaluator::EvaluateParent(
     case kOneSynonymLeft:
       if (FilterResult(pkb.GetParent(right_name), left_type).empty()) {
         setClauseFlag(false);
-        cout << " left stmt does not have stmt " << right_name << " as child"
+        cout << " left stmt does not have " << right_name << " as child"
              << endl;
       } else {
         return GetResultFromSelectAllQuery(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
-
       if (FilterResult(pkb.GetAllParent(), left_type).empty()) {
         setClauseFlag(false);
-        cout << " left stmt does not have any child" << endl;
+        cout << " left stmt is not a parent" << endl;
       } else {
         return GetResultFromSelectAllQuery(select_type);
       }
@@ -482,6 +613,42 @@ list<string> PqlEvaluator::EvaluateParentT(
 }
 
 list<string> PqlEvaluator::EvaluateUsesS(
+    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+  list<string> results;
+  PKB pkb = getPKB();
+
+  switch (arrangement) {
+    case kNoSynonym:
+      break;
+    case kNoSynonymUnderscoreRight:
+      break;
+    case kNoSynonymUnderscoreBoth:
+      break;
+    case kOneSynonymLeft:
+      break;
+    case kOneSynonymLeftUnderscoreRight:
+      break;
+    case kOneSynonymRight:
+      break;
+    case kOneSynonymSelectLeft:
+      break;
+    case kOneSynonymSelectLeftUnderscoreRight:
+      break;
+    case kOneSynonymSelectRight:
+      break;
+    case kTwoSynonym:
+      break;
+    case kTwoSynonymSelectLeft:
+      break;
+    case kTwoSynonymSelectRight:
+      break;
+  }
+
+  return results;
+}
+
+list<string> PqlEvaluator::EvaluateUsesP(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;

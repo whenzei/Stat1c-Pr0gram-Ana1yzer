@@ -120,6 +120,15 @@ class PqlEvaluator {
       PqlArrangementOfSynonymInSuchthatParam arrangement);
 
   /**
+   * Evaluate such that uses procedure
+   * @input select type and such that clause provided by user
+   * @returns results based on evaluation
+   */
+  list<string> EvaluateUsesP(
+      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
+      PqlArrangementOfSynonymInSuchthatParam arrangement);
+
+  /**
    * Evaluate such that modify stmt
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
