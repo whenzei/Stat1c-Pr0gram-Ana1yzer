@@ -182,36 +182,28 @@ StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-bool PKB::IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) { 
-  StmtNum followee_stmt_num = ToString(followee_stmt_num_int);
-  StmtNum follower_stmt_num = ToString(follower_stmt_num_int);;
+bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) { 
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
 }
 
-bool PKB::IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int) {
-  StmtNum followee_stmt_num = ToString(followee_stmt_num_int);
-  StmtNum follower_stmt_num = ToString(follower_stmt_num_int);;
+bool PKB::IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollows(followee_stmt_num, follower_stmt_num);
 }
 
-StmtList PKB::GetFollowsT(StmtNumInt stmt_num_int) {
-  StmtNum followee_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollowsT(followee_stmt_num);
+StmtList PKB::GetFollowsT(StmtNum stmt_num) {
+  return follows_table_.GetFollowsT(stmt_num);
 }
 
-StmtNum PKB::GetFollows(StmtNumInt stmt_num_int) {
-  StmtNum followee_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollows(followee_stmt_num);
+StmtNum PKB::GetFollows(StmtNum stmt_num) {
+  return follows_table_.GetFollows(stmt_num);
 }
 
-StmtList PKB::GetFollowedByT(StmtNumInt stmt_num_int) {
-  StmtNum follower_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollowedByT(follower_stmt_num);
+StmtList PKB::GetFollowedByT(StmtNum stmt_num) {
+  return follows_table_.GetFollowedByT(stmt_num);
 }
 
-StmtNum PKB::GetFollowedBy(StmtNumInt stmt_num_int) {
-StmtNum follower_stmt_num = ToString(stmt_num_int);
-  return follows_table_.GetFollowedBy(follower_stmt_num);
+StmtNum PKB::GetFollowedBy(StmtNum stmt_num) {
+  return follows_table_.GetFollowedBy(stmt_num);
 }
 
 bool PKB::HasFollowsRelationship() { 
