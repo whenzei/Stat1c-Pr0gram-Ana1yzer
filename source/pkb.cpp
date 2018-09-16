@@ -22,8 +22,8 @@ ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
 }
 
-StmtType PKB::GetStmtType(StmtNumInt stmt_num_int) {
-  return stmt_table_.GetStmtType(ToString(stmt_num_int));
+StmtType PKB::GetStmtType(StmtNum stmt_num) {
+  return stmt_table_.GetStmtType(stmt_num);
 }
 
 bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
@@ -166,26 +166,19 @@ StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-bool PKB::IsParent(StmtNumInt parent_stmt_num_int,
-                   StmtNumInt child_stmt_num_int) {
-  StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
-  StmtNum child_stmt_num = ToString(child_stmt_num_int);
+bool PKB::IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
   StmtListIndex child_stmtlist_index =
       stmt_table_.GetStmtListIndex(child_stmt_num);
   return parent_table_.IsParent(parent_stmt_num, child_stmtlist_index);
 }
 
-bool PKB::IsParentT(StmtNumInt parent_stmt_num_int,
-                    StmtNumInt child_stmt_num_int) {
-  StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
-  StmtNum child_stmt_num = ToString(child_stmt_num_int);
+bool PKB::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
   StmtListIndex child_stmtlist_index =
       stmt_table_.GetStmtListIndex(child_stmt_num);
   return parent_table_.IsParentT(parent_stmt_num, child_stmtlist_index);
 }
 
-StmtNumList PKB::GetParent(StmtNumInt stmt_num_int) {
-  StmtNum stmt_num = ToString(stmt_num_int);
+StmtNumList PKB::GetParent(StmtNum stmt_num) {
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   StmtNumList direct_parent_stmtnum_list;
   StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmtlist_index);
@@ -195,8 +188,7 @@ StmtNumList PKB::GetParent(StmtNumInt stmt_num_int) {
   return direct_parent_stmtnum_list;
 }
 
-StmtNumList PKB::GetParentT(StmtNumInt stmt_num_int) {
-  StmtNum stmt_num = ToString(stmt_num_int);
+StmtNumList PKB::GetParentT(StmtNum stmt_num) {
   StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   return parent_table_.GetParentT(stmtlist_index);
 }
@@ -210,8 +202,7 @@ StmtNumList PKB::GetAllParent() {
   return parent_stmt_num_list;
 }
 
-StmtNumList PKB::GetChild(StmtNumInt stmt_num_int) {
-  StmtNum stmt_num = ToString(stmt_num_int);
+StmtNumList PKB::GetChild(StmtNum stmt_num) {
   StmtListIndexList children_stmtlist_indices =
       parent_table_.GetChild(stmt_num);
   StmtNumList result;
@@ -222,8 +213,7 @@ StmtNumList PKB::GetChild(StmtNumInt stmt_num_int) {
   return result;
 }
 
-StmtNumList PKB::GetChildT(StmtNumInt stmt_num_int) {
-  StmtNum stmt_num = ToString(stmt_num_int);
+StmtNumList PKB::GetChildT(StmtNum stmt_num) {
   StmtListIndexList children_stmtlist_indices =
       parent_table_.GetChildT(stmt_num);
   StmtNumList child_stmt_num_list;
@@ -280,8 +270,8 @@ StmtNumPairList PKB::GetAllParentTPair() {
   return parent_t_pair_list;
 }
 
-bool PKB::IsModifiedByS(StmtNumInt stmt_num_int, VarName var_name) {
-  return modifies_table_.IsModifiedBy(ToString(stmt_num_int), var_name);
+bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
+  return modifies_table_.IsModifiedBy(stmt_num, var_name);
 }
 
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
@@ -292,8 +282,8 @@ bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
   }
 }
 
-VarNameList PKB::GetModifiedVarS(StmtNumInt stmt_num_int) {
-  return modifies_table_.GetModifiedVar(ToString(stmt_num_int));
+VarNameList PKB::GetModifiedVarS(StmtNum stmt_num) {
+  return modifies_table_.GetModifiedVar(stmt_num);
 }
 
 VarNameList PKB::GetModifiedVarP(ProcName proc_name) {
