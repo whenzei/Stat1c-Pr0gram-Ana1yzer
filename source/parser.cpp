@@ -36,7 +36,8 @@ void Parser::Parse(string filepath) {
   tokens_ = Tokenizer::Tokenize(contents);
 
   // validate tokens for syntax errors
-  if (!Validator::ValidateProgram(tokens_)) {
+  Validator validator = Validator(tokens_);
+  if (!validator.ValidateProgram()) {
 	  return;
   }
 

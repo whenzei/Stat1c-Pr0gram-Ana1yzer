@@ -6,12 +6,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace FrontendTests {
 TEST_CLASS(TestTokenizer){
-  public :
+public :
 
-      TEST_METHOD(TestEmptyResult){
-          Result expected_result({0, {Tokenizer::TokenType::kNothing}});
-Assert::IsTrue(expected_result == Tokenizer::EmptyResult());
-}  // namespace UnitTesting
+TEST_METHOD(TestEmptyResult) {
+  Result expected_result({0, {Tokenizer::TokenType::kNothing}});
+  Assert::IsTrue(expected_result == Tokenizer::EmptyResult());
+}
+
 TEST_METHOD(TestTokenizeCharacter) {
   string kTestInput("hello world");
   Tokenizer::TokenType kTestType(Tokenizer::TokenType::kName);
@@ -315,4 +316,4 @@ TEST_METHOD(TestTokenize) {
 }
 }
 ;
-}  // namespace UnitTesting
+}  // namespace FrontendTests

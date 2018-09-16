@@ -20,10 +20,20 @@ Token curr_token_;
 const KeywordSet kKeywords({"procedure", "read", "call", "print", "if", "then",
                             "else", "while"});
 
-bool Validator::ValidateProgram(TokenList tokens) {
+Validator::Validator(TokenList tokens) {
   tokens_ = tokens;
   curr_index_ = 0;
-  while (ReadNextToken().subtype == ts::kProcedure) {
+}
+
+// this function is mainly for testing
+void Validator::ResetTokenList(TokenList tokens) {
+  tokens_ = tokens;
+  curr_index_ = 0;
+}
+
+// must be called after the constructor
+bool Validator::ValidateProgram() {
+  while (PeekNextToken().subtype == ts::kProcedure) {
     if (!IsValidProcedure()) {
       cout << "Validation failed, invalid procedure detected" << endl;
       return false;
@@ -43,7 +53,7 @@ bool Validator::ValidateProgram(TokenList tokens) {
 
 bool Validator::IsValidProcedure() {
   // ['procedure'] variable '{'
-  if (!MatchNext(2, {tt::kName, tt::kOpenBrace})) {
+  if (!MatchNext(3, {tt::kName, tt::kName, tt::kOpenBrace})) {
     cout << "[PROC SYNTAX INVALID]" << endl;
     return false;
   }
@@ -63,7 +73,7 @@ bool Validator::IsValidStmtList() {
       cout << "[STMTLIST SYNTAX INVALID]" << endl;
       return false;
     }
-  } while (PeekNextToken().type != tt::kCloseBrace);
+  } while (PeekNextToken().type != tt::kCloseBrace && !IsAtEnd());
   return true;
 }
 
@@ -165,6 +175,9 @@ bool Validator::IsValidExpression() {
   return true;
 }
 
+// Checks whether the tokens starting at curr_index_ makes up a valid assignment
+// Precondition: Should be called by IsValidStatement, and expects the
+// curr_token_ to be of type kName, and starts checking from kAssign token
 bool Validator::IsValidAssignment() {
   // assign: var_name ‘=’ expr ‘;’
   if (!Match(tt::kAssignment)) {

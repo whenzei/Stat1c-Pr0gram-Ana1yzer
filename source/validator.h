@@ -8,29 +8,33 @@
 using tt = Tokenizer::TokenType;
 
 class Validator {
+
 public:
-	static bool ValidateProgram(TokenList tokens);
+	Validator(TokenList tokens);
+	bool ValidateProgram();
+
+	// setters
+	void ResetTokenList(TokenList tokens);
+	bool IsValidProcedure();
+	bool IsValidStmtList();
+	bool IsValidStatement();
+	bool IsValidAssignment();
+	bool IsValidExpression();
+	bool IsValidConditional();
+	bool IsValidIfBlock();
+	bool IsValidWhileBlock();
+	bool IsValidCallReadPrint();
 
 private:
-	static bool IsValidProcedure();
-	static bool IsValidStmtList();
-	static bool IsValidStatement();
-	static bool IsValidAssignment();
-	static bool IsValidExpression();
-	static bool IsValidConditional();
-	static bool IsValidIfBlock();
-	static bool IsValidWhileBlock();
-	static bool IsValidCallReadPrint();
-
 	//static TokenList ReadNextTokens(int num_tokens);
-	static Token ReadNextToken();
-	static Token PeekNextToken();
-	static Token GetPreviousToken();
-
-	static bool MatchNext(int num, vector<tt> expected_types);
-	static bool Match(Tokenizer::TokenType type);
-	static bool Check(Tokenizer::TokenType type);
-	static bool IsAtEnd();
+	Token ReadNextToken();
+	Token PeekNextToken();
+	Token GetPreviousToken();
+	
+	bool MatchNext(int num, vector<tt> expected_types);
+	bool Match(Tokenizer::TokenType type);
+	bool Check(Tokenizer::TokenType type);
+	bool IsAtEnd();
 };
 
 #endif // !SPA_SIMPLE_VALIDATOR_H
