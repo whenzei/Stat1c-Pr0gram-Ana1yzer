@@ -28,7 +28,6 @@ public:
 	bool IsValidCallReadPrint();
 
 private:
-	//static TokenList ReadNextTokens(int num_tokens);
 	Token ReadNextToken();
 	Token PeekNextToken();
 	Token GetPreviousToken();
