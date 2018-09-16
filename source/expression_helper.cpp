@@ -76,7 +76,7 @@ bool ExpressionHelper::IsPatternEndWith(TokenList tokens_primary,
 
   if (tokens_primary.size() == tokens_secondary.size()) {
     return Matches(tokens_primary, tokens_secondary, 0);
-  } 
+  }
 
   size_t pri_offset = tokens_primary.size() - tokens_secondary.size();
 
@@ -100,22 +100,23 @@ bool ExpressionHelper::IsPatternSubset(TokenList tokens_primary,
 
   size_t num_frames = tokens_primary.size() - tokens_secondary.size() + 1;
   for (size_t i = 0; i < num_frames; i++) {
-    bool match_status =
-        Matches(tokens_primary, tokens_secondary, i);
+    bool match_status = Matches(tokens_primary, tokens_secondary, i);
     // Check if there is a matching frame
-				if (match_status) {
+    if (match_status) {
       return true;
-				}
+    }
   }
 
-		return false;
+  return false;
 }
 
 bool ExpressionHelper::Matches(TokenList tokens_first, TokenList tokens_second,
                                size_t first_offset) {
   size_t first_index;
   size_t second_index;
-  for (first_index = first_offset, second_index = 0; second_index <= tokens_second.size() - 1; first_index++, second_index++) {
+  for (first_index = first_offset, second_index = 0;
+       second_index <= tokens_second.size() - 1;
+       first_index++, second_index++) {
     if (tokens_first[first_index].value != tokens_second[second_index].value ||
         tokens_first[first_index].type != tokens_second[second_index].type) {
       return false;
