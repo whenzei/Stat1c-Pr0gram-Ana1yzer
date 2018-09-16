@@ -48,34 +48,34 @@ class Tokenizer {
     kRead,
   };
 
-   enum TokenType {
-     kNothing = 0,
-     kDigit,
-     kName,
-     kWord,
-     kOpenBrace,
-     kCloseBrace,
-     kSemicolon,
-     kComma,
-     kUnderscore,
-     kQuotation,
-     kAssignment,
-     kOperator,
-     kOpenParen,
-     kCloseParen,
-     kConditional,
-     kRelational,
-     kKeyword,
-     kUnknown,
-     kEOF,
-   };
+  enum TokenType {
+    kNothing = 0,
+    kDigit,
+    kName,
+    kWord,
+    kOpenBrace,
+    kCloseBrace,
+    kSemicolon,
+    kComma,
+    kUnderscore,
+    kQuotation,
+    kAssignment,
+    kOperator,
+    kOpenParen,
+    kCloseParen,
+    kConditional,
+    kRelational,
+    kKeyword,
+    kUnknown,
+    kEOF,
+  };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
 
-  // Take in an array of tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-  // to tokenize the supplied input, returning a list of tokens
+  // Take in an array of tokenizer functions such as SkipWhiteSpace or
+  // TokenizeDigits to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string, TokenizerFunc[]);
 
   // Debug function, returns the contents of the token as a string
@@ -118,8 +118,8 @@ class Tokenizer {
   // and returns the result as a Result struct
   static Result TokenizeNames(string input, int current_index = 0);
 
-  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
-  // and returns the result as a Result struct
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be
+  // alphanumeric or symbols), and returns the result as a Result struct
   static Result TokenizeWords(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening

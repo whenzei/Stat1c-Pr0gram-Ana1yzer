@@ -5,22 +5,12 @@
 
 #include "tokenizer.h"
 
-enum TokenSubtype {
-  kNone = 0,
-  kProcedure = 1,
-  kIf = 2,
-  kThen = 3,
-  kElse = 4,
-  kWhile = 5,
-  kPrint = 6,
-  kCall = 7,
-  kRead = 8
-};
+using ts = Tokenizer::TokenSubtype;
 
-const std::unordered_map<string, TokenSubtype> kKeywordsToEnum = {
-    {"procedure", kProcedure}, {"if", kIf},       {"then", kThen},
-    {"else", kElse},           {"while", kWhile}, {"print", kPrint},
-    {"call", kCall},           {"read", kRead}};
+const std::unordered_map<string, Tokenizer::TokenSubtype> kKeywordsToEnum = {
+	{"procedure", ts::kProcedure}, {"if", ts::kIf},       {"then", ts::kThen},
+    {"else", ts::kElse},           {"while", ts::kWhile}, {"print", ts::kPrint},
+    {"call", ts::kCall},           {"read", ts::kRead}};
 
 static const string kTokenTypeNames[] = {
     "nothing", "digit", "name", "word", "openbrace",
