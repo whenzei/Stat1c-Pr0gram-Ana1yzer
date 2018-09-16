@@ -16,7 +16,7 @@ using std::pair;
 using StmtNum = string;
 using StmtList = list<string>;
 using VarName = string;
-using VarList = list<string>;
+using VarNameList = list<string>;
 using UsesMap = unordered_map<string, list<string>>;
 using UsedByMap = unordered_map<string, list<string>>;
 using StmtVarPairList = list<pair<string, string>>;
@@ -35,13 +35,13 @@ public:
 
   // Checks and returns all variables used in the program, if any.
   // @returns a list of variables used in the program (can be empty)
-  VarList GetAllUsedVar();
+  VarNameList GetAllUsedVar();
 
   // Checks and returns all variables used in the given statement, if any.
   // @params statement number stmt_num
   // @returns a list of variables used in statement identified by stmt_num
   // (can be empty)
-  VarList GetAllUsedVar(StmtNum stmt_num);
+  VarNameList GetAllUsedVar(StmtNum stmt_num);
 
   // Checks and returns all statements that are using any variables in the program, if any.
   // @returns a list of statement numbers of statements using a variable

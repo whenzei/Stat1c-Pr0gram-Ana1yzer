@@ -399,9 +399,78 @@ ProcVarPairList PKB::GetAllModifiesPairP() {
   return proc_var_pair_list;
 }
 
+VarNameList PKB::GetAllUsedVar() {
+  return uses_table_.GetAllUsedVar();
+}
+
+VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
+  return uses_table_.GetAllUsedVar(stmt_num);
+}
+
+VarNameList PKB::GetUsedVarP(ProcName proc_name) {
+  VarNameList used_var;
+  if (find(proc_list_.GetAllProcName().begin(), proc_list_.GetAllProcName().end(), proc_name) != proc_list_.GetAllProcName().end()) {
+    used_var = uses_table_.GetAllUsedVar();
+  }
+  return used_var;
+}
+
+StmtNumList PKB::GetAllUsingStmt() {
+  return uses_table_.GetAllUsingStmt();
+}
+
+ProcNameList PKB::GetAllUsingProc() {
+  ProcNameList using_proc;
+  if (uses_table_.HasUsesRelationship()) {
+    using_proc = proc_list_.GetAllProcName();
+  }
+  return using_proc; 
+}
+
+StmtNumList PKB::GetUsingStmt(VarName var_name) {
+  return uses_table_.GetAllUsingStmt(var_name);
+}
+
+ProcNameList PKB::GetUsingProc(VarName var_name) {
+  ProcNameList using_proc;
+  if (find(uses_table_.GetAllUsedVar().begin(), uses_table_.GetAllUsedVar().end(), var_name) != uses_table_.GetAllUsedVar().end()) {
+    using_proc = proc_list_.GetAllProcName();
+  }
+  return using_proc;
+}
+
+bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
+  return uses_table_.IsUsedBy(var_name, stmt_num);
+}
+
+bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
+  // For iteration 1, return true if given procedure exists and given variable is used anywhere in the program
+  if (find(proc_list_.GetAllProcName().begin(), proc_list_.GetAllProcName().end(), proc_name) != proc_list_.GetAllProcName().end() 
+    && find(uses_table_.GetAllUsedVar().begin(), uses_table_.GetAllUsedVar().end(), var_name) != uses_table_.GetAllUsedVar().end()) {
+    return true;
+  }
+  return false;
+}
+
+bool PKB::HasUsesRelationship() {
+  return uses_table_.HasUsesRelationship();
+}
+
+StmtVarPairList PKB::GetAllUsesPairS() {
+  return uses_table_.GetAllUsesPair();
+}
+
+ProcVarPairList PKB::GetAllUsesPairP() {
+  VarNameList used_vars = uses_table_.GetAllUsedVar();
+  ProcVarPairList proc_var_list;
+  for (auto& var : used_vars) {
+    proc_var_list.push_back(make_pair(proc_list_.GetAllProcName().front(), var));
+  }
+  return proc_var_list;
+}
+
 StmtNum PKB::ToString(int stmt_num_int) {
   stringstream stmt_num_ss;
   stmt_num_ss << stmt_num_int;
   return stmt_num_ss.str();
 }
-

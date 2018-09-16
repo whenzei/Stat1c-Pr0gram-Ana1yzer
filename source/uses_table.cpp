@@ -10,16 +10,16 @@ bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num) {
   return true;
 }
 
-VarList UsesTable::GetAllUsedVar() {
-  VarList used_vars;
+VarNameList UsesTable::GetAllUsedVar() {
+  VarNameList used_vars;
   for (auto entry : used_by_map_) {
     used_vars.push_back(entry.first);
   }
   return used_vars;
 }
 
-VarList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
-  VarList used_vars;
+VarNameList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
+  VarNameList used_vars;
   if (uses_map_.find(stmt_num) != uses_map_.end()) {
     used_vars = uses_map_[stmt_num];
   }
