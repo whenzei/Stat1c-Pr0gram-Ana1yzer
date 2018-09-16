@@ -4,6 +4,7 @@
 #define SPA_PKB_H
 
 #include "const_list.h"
+#include "follows_table.h"
 #include "parent_table.h"
 #include "proc_list.h"
 #include "stmt_table.h"
@@ -20,9 +21,13 @@ class PKB {
   ProcList proc_list_;
   VarList var_list_;
   ConstList const_list_;
-  StmtTable stmt_table_;
-  StmtListTable stmtlist_table_;
-  StmtTypeList stmt_type_list_;
+  StmtTable stmt_table_;  // TODO: insert stmt to stmt table in all InsertXxStmt
+                          // functions
+  StmtListTable stmtlist_table_;  // TODO: insert stmt to stmtlist table in all
+                                  // InsertXxStmt functions
+  StmtTypeList stmt_type_list_;   // TODO: insert stmt to stmt type list in all
+                                  // InsertXxStmt functions
+  FollowsTable follows_table_;
   ParentTable parent_table_;
   ModifiesTable modifies_table_;
 
@@ -144,6 +149,39 @@ class PKB {
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
+
+  // Follows table public functions
+   
+  // @returns true if FollowsT(followee, follower) holds
+  bool IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
+
+  // @returns true if Follows(followee, follower) holds
+  bool IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
+
+  // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
+  StmtList GetFollowsT(StmtNumInt stmt_num_int);
+
+  // @returns stmt number of statement a that satisfies Follows(stmt_num_int, a)
+  StmtNum GetFollows(StmtNumInt stmt_num_int);
+
+  // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
+  StmtList GetFollowedByT(StmtNumInt stmt_num_int);
+
+  // @returns stmt number of statement a that satisfies Follows(a, stmt_num_int)
+  StmtNum GetFollowedBy(StmtNumInt stmt_num_int);
+  
+  // @returns true if follows table has any follows relationships
+  bool HasFollowsRelationship();
+
+  // @returns list of pairs of FollowsT relationships
+  StmtNumPairList GetAllFollowsTPair();
+
+  // @returns list of pairs of Follows relationships
+  StmtNumPairList GetAllFollowsPair();
+
+  // @returns true if the statement specified by parent_stmt_num is the direct parent
+  // of the statement specified by child_stmt_num
+  bool IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
   // @returns true if the statement specified by parent_stmt_num is the direct
   // parent of the statement specified by child_stmt_num
