@@ -45,11 +45,12 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     }
     modifies_table_.InsertModifies(stmt_num, modified_var_name);
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, modified_var_name);
-    }
-    // add uses relationship
+    // add uses and parent relationship
     for (auto& var_name : used_var_name_set) {
+      for (StmtNum& parent : parents) {
+        modifies_table_.InsertModifies(parent, modified_var_name);
+        uses_table_.InsertUses(var_name, parent);
+      } 
       uses_table_.InsertUses(var_name, stmt_num);
     }
     return true;
@@ -81,12 +82,13 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                                                  child_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
-    for (StmtNum& indirect_parent : indirect_parents) {
-      parent_table_.InsertIndirectParentRelationship(indirect_parent,
-                                                     child_stmtlist_index);
-    }
-    // insert uses relationship
+    // insert uses and parent relationship
     for (auto& var_name : control_var_name_set) {
+      for (StmtNum& indirect_parent : indirect_parents) {
+        parent_table_.InsertIndirectParentRelationship(indirect_parent,
+          child_stmtlist_index);
+        uses_table_.InsertUses(var_name, indirect_parent);
+      }
       uses_table_.InsertUses(var_name, stmt_num);
     }
     return true;
@@ -118,14 +120,15 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
     parent_table_.InsertDirectParentRelationship(stmt_num, else_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
-    for (StmtNum& indirect_parent : indirect_parents) {
-      parent_table_.InsertIndirectParentRelationship(indirect_parent,
-                                                     then_stmtlist_index);
-      parent_table_.InsertIndirectParentRelationship(indirect_parent,
-                                                     else_stmtlist_index);
-    }
     // insert uses relationship
     for (auto& var_name : control_var_name_set) {
+      for (StmtNum& indirect_parent : indirect_parents) {
+        parent_table_.InsertIndirectParentRelationship(indirect_parent,
+          then_stmtlist_index);
+        parent_table_.InsertIndirectParentRelationship(indirect_parent,
+          else_stmtlist_index);
+        uses_table_.InsertUses(var_name, indirect_parent);
+      }
       uses_table_.InsertUses(var_name, stmt_num);
     }
     return true;
@@ -168,6 +171,10 @@ bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
     // insert variable
     var_list_.InsertVarName(var_name);
     // insert uses relationship
+    StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
+    for (StmtNum& parent : parents) {
+      uses_table_.InsertUses(var_name, parent);
+    }
     uses_table_.InsertUses(var_name, stmt_num);
     // insert follows relationship
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
@@ -412,7 +419,8 @@ VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
 
 VarNameList PKB::GetUsedVarP(ProcName proc_name) {
   VarNameList used_var;
-  if (find(proc_list_.GetAllProcName().begin(), proc_list_.GetAllProcName().end(), proc_name) != proc_list_.GetAllProcName().end()) {
+  ProcNameList proc_names = proc_list_.GetAllProcName();
+  if (find(proc_names.begin(), proc_names.end(), proc_name) != proc_names.end()) {
     used_var = uses_table_.GetAllUsedVar();
   }
   return used_var;
@@ -436,7 +444,8 @@ StmtNumList PKB::GetUsingStmt(VarName var_name) {
 
 ProcNameList PKB::GetUsingProc(VarName var_name) {
   ProcNameList using_proc;
-  if (find(uses_table_.GetAllUsedVar().begin(), uses_table_.GetAllUsedVar().end(), var_name) != uses_table_.GetAllUsedVar().end()) {
+  VarNameList used_vars = uses_table_.GetAllUsedVar();
+  if (find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
     using_proc = proc_list_.GetAllProcName();
   }
   return using_proc;
@@ -447,9 +456,11 @@ bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
+  ProcNameList proc_names = proc_list_.GetAllProcName();
+  VarNameList used_vars = uses_table_.GetAllUsedVar();
   // For iteration 1, return true if given procedure exists and given variable is used anywhere in the program
-  if (find(proc_list_.GetAllProcName().begin(), proc_list_.GetAllProcName().end(), proc_name) != proc_list_.GetAllProcName().end() 
-    && find(uses_table_.GetAllUsedVar().begin(), uses_table_.GetAllUsedVar().end(), var_name) != uses_table_.GetAllUsedVar().end()) {
+  if (find(proc_names.begin(), proc_names.end(), proc_name) != proc_names.end() 
+    && find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
     return true;
   }
   return false;
