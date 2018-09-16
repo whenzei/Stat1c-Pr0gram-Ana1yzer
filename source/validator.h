@@ -15,6 +15,8 @@ public:
 
 	// setters
 	void ResetTokenList(TokenList tokens);
+
+	// main functions
 	bool IsValidProcedure();
 	bool IsValidStmtList();
 	bool IsValidStatement();
