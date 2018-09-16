@@ -187,5 +187,506 @@ TEST_CLASS(TestExpressionHelper){
    Assert::IsTrue(result_10 == expected_result_10);		
 	}
 
-};
+	TEST_METHOD(TestIsPatternExactSuccess) {
+			TokenList pattern_1 = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				TokenList pattern_2 = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsTrue(ExpressionHelper::IsPatternExact(pattern_1, pattern_2));
+	}
+		TEST_METHOD(TestIsPatternExactFail) {
+			// Test pattern_1_pri length < pattern_1_sec length
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"}};
+
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternExact(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri length > pattern_2_sec length
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternExact(pattern_2_pri, pattern_2_sec));
+				
+				// Test pattern_3_pri != pattern_3_sec
+			TokenList pattern_3_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_3_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternExact(pattern_3_pri, pattern_3_sec));
+	}
+	TEST_METHOD(TestIsPatternStartWithSuccess) {
+
+			// Test pattern_1_pri matches pattern_1_sec exactly
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsTrue(ExpressionHelper::IsPatternStartWith(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri begins with the sequence of tokens in pattern_2_sec
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				TokenList pattern_2_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"}};
+
+				Assert::IsTrue(ExpressionHelper::IsPatternStartWith(pattern_2_pri, pattern_2_sec));
+	}
+	TEST_METHOD(TestIsPatternStartWithFail) {
+
+			// Test pattern_1_pri length < pattern_1_sec length
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsFalse(ExpressionHelper::IsPatternStartWith(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri does not match last token in pattern_2_sec
+			// pattern_2_pri length == pattern_2_sec length
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternStartWith(pattern_2_pri, pattern_2_sec));
+				
+				// Test pattern_3_pri does not begin with tokens in pattern_3_sec
+			TokenList pattern_3_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_3_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "d"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternStartWith(pattern_3_pri, pattern_3_sec));
+	}
+
+		TEST_METHOD(TestIsPatternEndWithSuccess) {
+
+			// Test pattern_1_pri matches pattern_1_sec exactly
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsTrue(ExpressionHelper::IsPatternEndWith(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri ends with the sequence of tokens in pattern_2_sec
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsTrue(ExpressionHelper::IsPatternEndWith(pattern_2_pri, pattern_2_sec));
+	}
+	TEST_METHOD(TestIsPatternEndWithFail) {
+
+			// Test pattern_1_pri length < pattern_1_sec length
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsFalse(ExpressionHelper::IsPatternEndWith(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri does not match last token in pattern_2_sec
+			// pattern_2_pri length == pattern_2_sec length
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternEndWith(pattern_2_pri, pattern_2_sec));
+				
+				// Test pattern_3_pri does not end with tokens in pattern_3_sec
+			TokenList pattern_3_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_3_sec = {{tt::kName, "*"},
+																														{tt::kName, "12"},
+																														{tt::kName, "/"},
+																														{tt::kName, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternEndWith(pattern_3_pri, pattern_3_sec));
+	}
+
+	TEST_METHOD(TestIsPatternSubsetSuccess) {
+
+			// Test pattern_1_pri matches pattern_1_sec exactly
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsTrue(ExpressionHelper::IsPatternSubset(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri ends with the sequence of tokens in pattern_2_sec
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsTrue(ExpressionHelper::IsPatternSubset(pattern_2_pri, pattern_2_sec));
+
+			// Test pattern_3_pri begins with the sequence of tokens in pattern_3_sec
+			TokenList pattern_3_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_3_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"}};
+				Assert::IsTrue(ExpressionHelper::IsPatternSubset(pattern_3_pri, pattern_3_sec));
+				
+			// Test pattern_3_sec has token sequence matching somewhere in between the token sequence in pattern_3_pri
+			TokenList pattern_4_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_4_sec =	{{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"}};
+				Assert::IsTrue(ExpressionHelper::IsPatternSubset(pattern_4_pri, pattern_4_sec));
+
+	}
+
+	TEST_METHOD(TestIsPatternSubsetFail) {
+
+			// Test pattern_1_pri length < pattern_1_sec length
+			TokenList pattern_1_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				TokenList pattern_1_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+				
+				Assert::IsFalse(ExpressionHelper::IsPatternSubset(pattern_1_pri, pattern_1_sec));
+
+			// Test pattern_2_pri does not match last token in pattern_2_sec
+			// pattern_2_pri length == pattern_2_sec length
+			TokenList pattern_2_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_2_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternSubset(pattern_2_pri, pattern_2_sec));
+				
+				// Test pattern_3_pri does not end with tokens in pattern_3_sec
+			TokenList pattern_3_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_3_sec = {{tt::kName, "*"},
+																														{tt::kName, "12"},
+																														{tt::kName, "/"},
+																														{tt::kName, "+"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternSubset(pattern_3_pri, pattern_3_sec));
+
+			// Test pattern_4_pri does not begin with tokens in pattern_4_sec
+			TokenList pattern_4_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_4_sec = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "d"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternSubset(pattern_4_pri, pattern_4_sec));
+
+			// Test pattern_5_sec does not have token sequence matching somewhere in between token sequence in pattern_5_pri
+			TokenList pattern_5_pri = {{tt::kName, "x"},
+																														{tt::kName, "z"},
+																														{tt::kName, "a"},
+																														{tt::kName, "b"},
+																														{tt::kOperator, "*"},
+																														{tt::kOperator, "*"},
+																														{tt::kName, "12"},
+																														{tt::kOperator, "/"},
+																														{tt::kOperator, "-"}};
+
+				TokenList pattern_5_sec = {{tt::kName, "b"},
+																														{tt::kName, "*"},
+																														{tt::kName, "*"},
+																														{tt::kName, "11"}};
+
+				Assert::IsFalse(ExpressionHelper::IsPatternSubset(pattern_5_pri, pattern_5_sec));
+	}
+ };
 }
