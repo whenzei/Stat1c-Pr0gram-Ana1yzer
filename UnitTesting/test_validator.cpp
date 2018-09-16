@@ -268,9 +268,98 @@ public:
 	Assert::IsFalse(validator.IsValidIfBlock());
   }
 
-  // TODO
+  // Since this is a method that takes in a TokenList, if TokenList is created
+  // directly it will generate a kEOF token at the end which will cause it to fail,
+  // thus remove the final token before passing it into the function
   TEST_METHOD(TestIsValidConditional) {
+	// cond_expr: rel_expr | ‘!’ ‘(’ cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘&&’ ‘(’
+    // cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘||’ ‘(’ cond_expr ‘)’
 
+	// passes standard cond_expr that is just a rel_expr
+	TokenList tokens = Tokenizer::Tokenize("a > b");
+	tokens.pop_back();
+	Validator validator = Validator(tokens);
+	Assert::IsTrue(validator.IsValidConditional(tokens));
+
+	// passes complex cond_expr
+	tokens = Tokenizer::Tokenize("((a != b) && (b > c)) || (d == e)");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidConditional(tokens));
+
+	// fails cond_expr with more than 1 conditional on the same level
+	tokens = Tokenizer::Tokenize("(a>b) && (b > c) || (d > e)");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidConditional(tokens));
+
+	// fails cond_expr if conditional is not surrounded by parenthesis
+	tokens = Tokenizer::Tokenize("a>b && b > c");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidConditional(tokens));
+
+	// fails cond_expr if parenthesis are in wrong locations
+	tokens = Tokenizer::Tokenize("(a>b && )(b > c)");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidConditional(tokens));
+
+	// fails cond_expr if lhs and rhs of a statement with a conditional is invalid
+	tokens = Tokenizer::Tokenize("(a) || (b)");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidConditional(tokens));
+  }
+
+  // Since this is a method that takes in a TokenList, if TokenList is created
+  // directly it will generate a kEOF token at the end which will cause it to fail,
+  // thus remove the final token before passing it into the function
+  TEST_METHOD(TestIsValidExpression) {
+    // expr: expr ‘ + ’ term | expr ‘ - ’ term | term
+	// term : term ‘*’ factor | term ‘ / ’ factor | term ‘%’ factor | factor
+	// factor : var_name | const_value | ‘(’ expr ‘)’
+
+	// passes standard expr
+	TokenList tokens = Tokenizer::Tokenize("a + b - 1");
+	tokens.pop_back();
+	Validator validator = Validator(tokens);
+	Assert::IsTrue(validator.IsValidExpression(tokens));
+
+	// passes single variable
+	tokens = Tokenizer::Tokenize("a");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidExpression(tokens));
+
+	// passes single digit
+	tokens = Tokenizer::Tokenize("123");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidExpression(tokens));
+
+	// passes complex expression with parenthesis
+	tokens = Tokenizer::Tokenize("(a + b / (c - d) * (e * f))");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidExpression(tokens));
+
+	// fails imbalanced parenthesis
+	tokens = Tokenizer::Tokenize("a + (b - (c * d)");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidExpression(tokens));
+
+	// fails invalid parenthesis placement
+	tokens = Tokenizer::Tokenize("a ( + b - (c * d)");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidExpression(tokens));
+	
+	// fails invalid var_name
+	tokens = Tokenizer::Tokenize("355d + c");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidExpression(tokens));
+
+	// fails invalid operator placement
+	tokens = Tokenizer::Tokenize("a b +");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidExpression(tokens));
+
+	// fails invalid expression
+	tokens = Tokenizer::Tokenize("a > b");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidExpression(tokens));
   }
 };
 }  // namespace FrontendTests

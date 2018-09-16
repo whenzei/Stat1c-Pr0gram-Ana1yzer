@@ -204,10 +204,6 @@ bool Validator::IsValidAssignment() {
 bool Validator::IsValidConditional(TokenList cond_expr) {
   // cond_expr: rel_expr | ‘!’ ‘(’ cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘&&’ ‘(’
   // cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘||’ ‘(’ cond_expr ‘)’
-  // rel_expr: rel_factor ‘>’ rel_factor | rel_factor ‘>=’ rel_factor |
-  // rel_factor ‘<’ rel_factor | rel_factor ‘<=’   rel_factor | rel_factor ‘==’
-  // rel_factor | rel_factor ‘!=’ rel_factor
-  // rel_factor: var_name | const_value | expr
 
   // minimum size should be 3: "a<b"
   if (cond_expr.size() < 3) {
@@ -271,8 +267,6 @@ bool Validator::IsValidConditional(TokenList cond_expr) {
 
     return IsValidExpression(lhs) && IsValidExpression(rhs);
   }
-
-  return true;
 }
 
 bool Validator::IsValidIfBlock() {
