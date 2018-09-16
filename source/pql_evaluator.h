@@ -158,13 +158,31 @@ class PqlEvaluator {
                             PqlDeclarationEntity select_type);
 
   /**
-   * Filter the result list based on the selection entity type and filter type
-   * @input the filter type, unfiltered result list and selection entity type (e.g assign)
-   * @returns result list that only contains result of a certain entity type
+   * Filter the result pair list based on the selection entity type and filter
+   * type
+   * @input the filter type, unfiltered result list and selection entity type
+   * (e.g assign) for left and right of the pair
+   * @returns result pair list that only contains result of a certain entity
+   * type
    */
-  list<string> FilterPairResult(PqlResultFilterType filter_type,
-                                list<pair<string,string>> unfiltered_pair_result,
-                                PqlDeclarationEntity select_type);
+  list<pair<string, string>> FilterPairResult(
+      PqlResultFilterType filter_type,
+      list<pair<string, string>> unfiltered_pair_result,
+      PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+
+  /**
+   * Get all the result from left of the pair and return it in a list
+   * @input the list of pairs
+   * @returns list of result in the left of the pair
+   */
+  list<string> GetAllLeftOfPair(list<pair<string, string>> filtered_list);
+
+  /**
+   * Get all the result from right of the pair and return it in a list
+   * @input the list of pairs
+   * @returns list of result in the right of the pair
+   */
+  list<string> GetAllRightOfPair(list<pair<string, string>> filtered_list);
 };
 
 #endif  // !QUERY_EVALUATOR_H

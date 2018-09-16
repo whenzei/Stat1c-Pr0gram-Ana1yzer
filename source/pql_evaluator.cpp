@@ -44,10 +44,6 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   }
 
   cout << "Result size: " << results.size() << endl;
-  // Set result to none if no results were found.
-  if (results.size() == 0) {
-    results.push_back("none");
-  }
 
   return results;
 }
@@ -371,17 +367,17 @@ list<string> PqlEvaluator::EvaluateModifiesS(
   switch (arrangement) {
     case kNoSynonym:
       // If stmt (left) modify variable (right)
-      if (pkb.IsModifiedByS(stoi(left_name), right_name)) {
+      if (pkb.IsModifiedByS(left_name, right_name)) {
         return GetResultFromSelectAllQuery(select_type);
       } else {
         setClauseFlag(false);
-        // cout << "Stmt " << left_name << " doesn't modify " << right_name <<
-        // endl;
+        cout << "Stmt " << left_name << " doesn't modify " << right_name
+             << endl;
       }
       break;
     case kNoSynonymUnderscoreRight:
       // If no variables were modified by this stmt
-      if (pkb.GetModifiedVarS(stoi(left_name)).empty()) {
+      if (pkb.GetModifiedVarS(left_name).empty()) {
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
       } else {
@@ -389,34 +385,78 @@ list<string> PqlEvaluator::EvaluateModifiesS(
       }
       break;
     case kOneSynonymLeft:
-      // If no stmt of left syn entity type modifies the variable
+      // If no stmt of left syn entity type modifies the right variable
       if (FilterResult(pkb.GetModifyingS(right_name), left_type).empty()) {
         setClauseFlag(false);
         cout << "Stmt of left type doesnt modify right variable" << endl;
       } else {
         return GetResultFromSelectAllQuery(select_type);
-	  }
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+      // If no stmt of left syn entity type modifies any variable
+      if (FilterResult(pkb.GetAllModifyingS(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt of left type doesnt modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (pkb.GetModifiedVarS(left_name).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt " << left_name << " doesnt modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
+      if (left_type == PqlDeclarationEntity::kStmt) {
+        return pkb.GetModifyingS(right_name);
+      } else {
+        return FilterResult(pkb.GetModifyingS(right_name), select_type);
+      }
       break;
     case kOneSynonymSelectLeftUnderscoreRight:
-      if (select_type == PqlDeclarationEntity::kStmt) {
+      if (left_type == PqlDeclarationEntity::kStmt) {
         return pkb.GetAllModifyingS();
       } else {
         return FilterResult(pkb.GetAllModifyingS(), select_type);
       }
       break;
     case kOneSynonymSelectRight:
+      return pkb.GetModifiedVarS(left_name);
       break;
     case kTwoSynonym:
+      // Because right param only takes in variable synonym, it is exactly the
+      // same as kOneSynonymLeftUnderscoreRight
+      if (FilterResult(pkb.GetAllModifyingS(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt of left type doesnt modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
+      // Because right param only takes in variable synonym, it is exactly the
+      // same as kOneSynonymSelectLeftUnderscoreRight
+      if (left_type == PqlDeclarationEntity::kStmt) {
+        return pkb.GetAllModifyingS();
+      } else {
+        return FilterResult(pkb.GetAllModifyingS(), select_type);
+      }
       break;
     case kTwoSynonymSelectRight:
+      // Because right param only takes in variable synonym, just need to filter
+      // left of the pair. Get all right of pair as it is select right
+      cout << "Two syn select right var" << endl;
+      if (left_type == PqlDeclarationEntity::kStmt) {
+        return pkb.GetAllModifiedVar();
+      } else {
+        return GetAllRightOfPair(FilterPairResult(
+            kFilterLeft, pkb.GetAllModifiesPairS(), left_type, right_type));
+      }
+
       break;
   }
 
@@ -431,7 +471,7 @@ list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
   for (auto& iter : unfiltered_result) {
     string result = iter;
 
-    if (pkb.GetStmtType(stoi(iter)) == select_type) {
+    if (pkb.GetStmtType(iter) == select_type) {
       filtered_result.push_back(result);
     }
   }
@@ -439,15 +479,21 @@ list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
   return filtered_result;
 }
 
-list<string> PqlEvaluator::FilterPairResult(
+list<pair<string, string>> PqlEvaluator::FilterPairResult(
     PqlResultFilterType filter_type,
     list<pair<string, string>> unfiltered_pair_result,
-    PqlDeclarationEntity select_type) {
-  list<string> filtered_result;
+    PqlDeclarationEntity left_type, PqlDeclarationEntity right_type) {
+  list<pair<string, string>> filtered_result;
+  PKB pkb = getPKB();
 
   for (auto& iter : unfiltered_pair_result) {
+    string left_result = iter.first;
+    string right_result = iter.second;
     switch (filter_type) {
       case kFilterLeft:
+        if (pkb.GetStmtType(left_result) == left_type) {
+          filtered_result.push_back(iter);
+        }
         break;
       case kFilterRight:
         break;
@@ -457,6 +503,24 @@ list<string> PqlEvaluator::FilterPairResult(
   }
 
   return filtered_result;
+}
+
+list<string> PqlEvaluator::GetAllLeftOfPair(
+    list<pair<string, string>> filtered_list) {
+  list<string> results;
+  for (auto& iter : filtered_list) {
+    results.push_back(iter.first);
+  }
+  return results;
+}
+
+list<string> PqlEvaluator::GetAllRightOfPair(
+    list<pair<string, string>> filtered_list) {
+  list<string> results;
+  for (auto& iter : filtered_list) {
+    results.push_back(iter.second);
+  }
+  return results;
 }
 
 PqlArrangementOfSynonymInSuchthatParam
