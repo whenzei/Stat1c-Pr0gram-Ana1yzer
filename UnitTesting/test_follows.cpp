@@ -42,6 +42,7 @@ namespace UnitTesting {
       result = follows_table.IsFollows(kSampleStmtIdx1, kSampleStmtIdx2);
       Assert::IsTrue(result);
     }
+
     TEST_METHOD(TestIsFollows) {
       FollowsTable follows_table;
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);

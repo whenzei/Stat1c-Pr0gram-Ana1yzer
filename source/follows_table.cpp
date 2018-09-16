@@ -19,36 +19,55 @@ bool FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
 }
 
 bool FollowsTable::IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2) {
-  return (find(follows_map_[stmt_num1].begin(), follows_map_[stmt_num1].end(), stmt_num2) != follows_map_[stmt_num1].end());
+  if (follows_map_.find(stmt_num1) != follows_map_.end()) {
+    return (find(follows_map_[stmt_num1].begin(), follows_map_[stmt_num1].end(), stmt_num2) != follows_map_[stmt_num1].end());
+  } else {
+    return false;
+  }
 }
 
 bool FollowsTable::IsFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
-  return (follows_map_[stmt_num1].front() == stmt_num2);
+  if (follows_map_.find(stmt_num1) != follows_map_.end()) {
+    return (follows_map_[stmt_num1].front() == stmt_num2);
+  } else {
+    return false;
+  }
 }
 
 StmtList FollowsTable::GetFollowsT(StmtNum stmt_num) {
-  return follows_map_[stmt_num];
+  StmtList follows_list;
+  if (follows_map_.find(stmt_num) != follows_map_.end()) {
+    follows_list = follows_map_[stmt_num];
+  }
+  return follows_list;
 }
 
 StmtNum FollowsTable::GetFollows(StmtNum stmt_num) {
-  return follows_map_[stmt_num].front();
+  StmtNum follows;
+  if (follows_map_.find(stmt_num) != follows_map_.end()) {
+    follows = follows_map_[stmt_num].front();
+  }
+  return follows;
 }
 
 StmtList FollowsTable::GetFollowedByT(StmtNum stmt_num) {
-  return followed_by_map_[stmt_num];
+  StmtList followed_by_list;
+  if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
+    followed_by_list = followed_by_map_[stmt_num];
+  }
+  return followed_by_list;
 }
 
 StmtNum FollowsTable::GetFollowedBy(StmtNum stmt_num) {
-  return followed_by_map_[stmt_num].front();
+  StmtNum followed_by;
+  if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
+    followed_by = followed_by_map_[stmt_num].front();
+  }
+  return followed_by;
 }
 
 bool FollowsTable::HasFollowsRelationship() {
-  for (auto& entry : follows_map_) {
-    if (!entry.second.empty()) {
-      return true;
-    }
-  }
-  return false;
+  return (!follows_map_.empty());
 }
 
 StmtNumPairList FollowsTable::GetAllFollowsTPair() {
