@@ -71,8 +71,8 @@ namespace UnitTesting {
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
 
-      StmtNum follower = follows_table.GetFollows(kSampleStmtIdx1);
-      Assert::AreEqual(kSampleStmtIdx2, follower);
+      StmtList follower = follows_table.GetFollows(kSampleStmtIdx1);
+      Assert::AreEqual(kSampleStmtIdx2, follower.front());
     }
 
     TEST_METHOD(TestGetFollowedByT) {
@@ -93,8 +93,8 @@ namespace UnitTesting {
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
       follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
 
-      StmtNum followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
-      Assert::AreEqual(kSampleStmtIdx1, followee);
+      StmtList followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
+      Assert::AreEqual(kSampleStmtIdx1, followee.front());
     }
 
     TEST_METHOD(TestHasFollowsRelationship) {

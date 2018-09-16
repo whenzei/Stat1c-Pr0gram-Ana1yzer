@@ -212,7 +212,7 @@ StmtList PKB::GetFollowsT(StmtNum stmt_num) {
   return follows_table_.GetFollowsT(stmt_num);
 }
 
-StmtNum PKB::GetFollows(StmtNum stmt_num) {
+StmtList PKB::GetFollows(StmtNum stmt_num) {
   return follows_table_.GetFollows(stmt_num);
 }
 
@@ -220,7 +220,7 @@ StmtList PKB::GetFollowedByT(StmtNum stmt_num) {
   return follows_table_.GetFollowedByT(stmt_num);
 }
 
-StmtNum PKB::GetFollowedBy(StmtNum stmt_num) {
+StmtList PKB::GetFollowedBy(StmtNum stmt_num) {
   return follows_table_.GetFollowedBy(stmt_num);
 }
 

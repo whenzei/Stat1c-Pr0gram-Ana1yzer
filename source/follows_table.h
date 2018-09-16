@@ -61,12 +61,12 @@ public:
   // list can be empty
   StmtList GetFollowsT(StmtNum stmt_num);
 
-  // Finds and returns a stmt number for the stmt that directly follows the
+  // Finds and returns list of stmt num containing the stmt that directly follows the
   // given statement. Only the direct follower is returned.
   // @params
   // @returns a stmt_number if a direct follower exists
   // @returns -1 if otherwise
-  StmtNum GetFollows(StmtNum stmt_num);
+  StmtList GetFollows(StmtNum stmt_num);
 
   // Finds list of statements that are followed by the given statement.
   // Transitive relationships are included.
@@ -75,12 +75,12 @@ public:
   // list can be empty
   StmtList GetFollowedByT(StmtNum stmt_num);
 
-  // Finds and returns a stmt number for the stmt that is directly followed
+  // Finds and returns a stmt list containing the stmt that is directly followed
   // by the given statement. Only the direct followee is returned.
   // @params
   // @returns a stmt_number if a direct followee exists
   // @returns -1 if otherwise
-  StmtNum GetFollowedBy(StmtNum stmt_num);
+  StmtList GetFollowedBy(StmtNum stmt_num);
 
   // Checks and returns if follows map contains any follows relationships.
   // @returns true if there are any follows relationships

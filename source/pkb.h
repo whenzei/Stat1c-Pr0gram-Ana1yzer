@@ -163,14 +163,14 @@ class PKB {
   // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
   StmtList GetFollowsT(StmtNum stmt_num);
 
-  // @returns stmt number of statement a that satisfies Follows(stmt_num_int, a)
-  StmtNum GetFollows(StmtNum stmt_num);
+  // @returns stmt number containing statement a that satisfies Follows(stmt_num_int, a)
+  StmtList GetFollows(StmtNum stmt_num);
 
   // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
   StmtList GetFollowedByT(StmtNum stmt_num);
 
-  // @returns stmt number of statement a that satisfies Follows(a, stmt_num_int)
-  StmtNum GetFollowedBy(StmtNum stmt_num);
+  // @returns list containing statement a that satisfies Follows(a, stmt_num_int)
+  StmtList GetFollowedBy(StmtNum stmt_num);
   
   // @returns true if follows table has any follows relationships
   bool HasFollowsRelationship();
