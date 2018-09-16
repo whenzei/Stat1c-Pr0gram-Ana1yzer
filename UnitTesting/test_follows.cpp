@@ -75,6 +75,23 @@ namespace UnitTesting {
       Assert::AreEqual(kSampleStmtIdx2, follower.front());
     }
 
+    TEST_METHOD(TestGetAllFollows) {
+      StmtList expected_followers;
+      FollowsTable follows_table;
+      expected_followers.push_back(kSampleStmtIdx1);
+      expected_followers.push_back(kSampleStmtIdx2);
+      expected_followers.push_back(kSampleStmtIdx3);
+
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
+      follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
+
+      StmtList followers = follows_table.GetAllFollows();
+      Assert::IsTrue(followers.size()==3);
+      Assert::AreEqual(expected_followers.front(), followers.front());
+      Assert::AreEqual(expected_followers.back(), followers.back());
+    }
+
     TEST_METHOD(TestGetFollowedByT) {
       StmtList expected_followees;
       FollowsTable follows_table;
@@ -95,6 +112,25 @@ namespace UnitTesting {
 
       StmtList followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
       Assert::AreEqual(kSampleStmtIdx1, followee.front());
+    }
+
+    TEST_METHOD(TestGetAllFollowedBy) {
+      StmtList expected_followees;
+      FollowsTable follows_table;
+      expected_followees.push_back(kSampleStmtIdx1);
+      expected_followees.push_back(kSampleStmtIdx2);
+      expected_followees.push_back(kSampleStmtIdx3);
+      expected_followees.push_back(kSampleStmtIdx5);
+
+      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
+      follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
+      follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
+      follows_table.InsertFollows(kSampleStmtIdx5, kSampleStmtIdx4);
+
+      StmtList followees = follows_table.GetAllFollows();
+      Assert::IsTrue(followees.size() == 4);
+      Assert::AreEqual(expected_followees.front(), followees.front());
+      Assert::AreEqual(expected_followees.back(), followees.back());
     }
 
     TEST_METHOD(TestHasFollowsRelationship) {

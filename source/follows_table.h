@@ -68,6 +68,11 @@ public:
   // @returns -1 if otherwise
   StmtList GetFollows(StmtNum stmt_num);
 
+  // Returns a list of all statements that follow some statement.
+  // @returns a list of stmt_nums
+  // can be empty
+  StmtList GetAllFollows();
+
   // Finds list of statements that are followed by the given statement.
   // Transitive relationships are included.
   // @params
@@ -81,6 +86,11 @@ public:
   // @returns a stmt_number if a direct followee exists
   // @returns -1 if otherwise
   StmtList GetFollowedBy(StmtNum stmt_num);
+
+  // Returns a list of statement numbers of statements that are followed by some statement.
+  // @returns a list of stmt_nums
+  // can be empty
+  StmtList GetAllFollowedBy();
 
   // Checks and returns if follows map contains any follows relationships.
   // @returns true if there are any follows relationships

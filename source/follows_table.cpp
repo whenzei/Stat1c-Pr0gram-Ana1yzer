@@ -50,6 +50,14 @@ StmtList FollowsTable::GetFollows(StmtNum stmt_num) {
   return follows;
 }
 
+StmtList FollowsTable::GetAllFollows() {
+  StmtList follows;
+  for (auto& entry : follows_map_) {
+    follows.push_back(entry.first);
+  }
+  return follows;
+}
+
 StmtList FollowsTable::GetFollowedByT(StmtNum stmt_num) {
   StmtList followed_by_list;
   if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
@@ -62,6 +70,14 @@ StmtList FollowsTable::GetFollowedBy(StmtNum stmt_num) {
   StmtList followed_by;
   if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
     followed_by.push_back(followed_by_map_[stmt_num].front());
+  }
+  return followed_by;
+}
+
+StmtList FollowsTable::GetAllFollowedBy() {
+  StmtList followed_by;
+  for (auto& entry : followed_by_map_) {
+    followed_by.push_back(entry.first);
   }
   return followed_by;
 }

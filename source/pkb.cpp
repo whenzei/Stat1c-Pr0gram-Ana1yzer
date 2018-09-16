@@ -216,12 +216,20 @@ StmtList PKB::GetFollows(StmtNum stmt_num) {
   return follows_table_.GetFollows(stmt_num);
 }
 
+StmtList PKB::GetAllFollows() {
+  return follows_table_.GetAllFollows();
+}
+
 StmtList PKB::GetFollowedByT(StmtNum stmt_num) {
   return follows_table_.GetFollowedByT(stmt_num);
 }
 
 StmtList PKB::GetFollowedBy(StmtNum stmt_num) {
   return follows_table_.GetFollowedBy(stmt_num);
+}
+
+StmtList PKB::GetAllFollowedBy() {
+  return follows_table_.GetAllFollowedBy();
 }
 
 bool PKB::HasFollowsRelationship() { 

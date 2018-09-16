@@ -165,6 +165,9 @@ class PKB {
 
   // @returns stmt number containing statement a that satisfies Follows(stmt_num_int, a)
   StmtList GetFollows(StmtNum stmt_num);
+  
+  // @returns a list of all statements that follow some other statement
+  StmtList GetAllFollows();
 
   // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
   StmtList GetFollowedByT(StmtNum stmt_num);
@@ -172,6 +175,9 @@ class PKB {
   // @returns list containing statement a that satisfies Follows(a, stmt_num_int)
   StmtList GetFollowedBy(StmtNum stmt_num);
   
+  // @returns a list of all statements that are followed by some other statment
+  StmtList GetAllFollowedBy();
+
   // @returns true if follows table has any follows relationships
   bool HasFollowsRelationship();
 
