@@ -5,23 +5,6 @@
 
 #include "tokenizer.h"
 
-enum TokenType {
-  kNothing = 0,
-  kDigit = 1,
-  kName = 2,
-  kOpenBrace = 3,
-  kCloseBrace = 4,
-  kSemicolon = 5,
-  kAssignment = 6,
-  kOperator = 7,
-  kOpenParen = 8,
-  kCloseParen = 9,
-  kConditional = 11,
-  kRelational = 12,
-  kUnknown = 13,
-  kEOF = 14,
-};
-
 enum TokenSubtype {
   kNone = 0,
   kProcedure = 1,
@@ -40,9 +23,11 @@ const std::unordered_map<string, TokenSubtype> kKeywordsToEnum = {
     {"call", kCall},           {"read", kRead}};
 
 static const string kTokenTypeNames[] = {
-    "nothing",     "digit",      "name",     "openbrace", "closebrace",
-    "semicolon",   "assignment", "operator", "openparen", "closeparen",
-    "conditional", "relational", "unknown",  "EOF"};
+    "nothing", "digit", "name", "word", "openbrace",
+    "closebrace", "semicolon", "comma", "underscore", "quotation",
+    "assignment", "operator", "openparen", "closeparen", "conditional",
+    "relational", "keyword", "unknown", "EOF"
+};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
@@ -57,6 +42,12 @@ TokenList Tokenizer::Tokenize(string input) {
       &TokenizeNames,       &TokenizeBraces,      &TokenizeSemicolon,
       &TokenizeEquals,      &TokenizeOperators,   &TokenizeParenthesis,
       &TokenizeRelationals, &TokenizeConditionals};
+  return Tokenize(input, tokenizer_functions);
+}
+
+// Take in an array of tokenizer functions such as SkipWhiteSpace or TokenizeDigits
+// to tokenize the supplied input, returning a list of tokens
+TokenList Tokenizer::Tokenize(string input, TokenizerFunc tokenizer_functions[]) {
   size_t current_index = 0, vector_len = input.size();
   TokenList tokens;
 
@@ -83,12 +74,12 @@ TokenList Tokenizer::Tokenize(string input) {
     // unknown token, since none of the tokenizers can recognize it
     // TODO: decide if we throw an exception here
     if (!is_done) {
-      tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
+      tokens.push_back(Token({ kUnknown, string(1, input[current_index++]) }));
     }
   }
 
   // ADD END OF FILE TOKEN
-  tokens.push_back(Token({kEOF, string()}));
+  tokens.push_back(Token({ kEOF, string() }));
 
   return tokens;
 }
@@ -159,6 +150,14 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
   if (search != kKeywordsToEnum.end()) {
     result.token.subtype = search->second;
   }
+  return result;
+}
+
+// Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
+// and returns the result as a Result struct
+Result Tokenizer::TokenizeWords(string input, int current_index) {
+  Result result = TokenizePattern(kWord, regex{ R"(\w+(\**))" },
+    input, current_index);
 
   return result;
 }
@@ -203,6 +202,24 @@ Result Tokenizer::TokenizeOperators(string input, int current_index) {
 // tokenize semicolons, and returns the result as a Result struct
 Result Tokenizer::TokenizeSemicolon(string input, int current_index) {
   return TokenizeCharacter(kSemicolon, ';', input, current_index);
+}
+
+// Uses Tokenizer::TokenizeCharacter(...) with ',' as the supplied value to
+// tokenize commas, and returns the result as a Result struct
+Result Tokenizer::TokenizeComma(string input, int current_index) {
+  return TokenizeCharacter(kComma, ',', input, current_index);
+}
+
+// Uses Tokenizer::TokenizeCharacter(...) with '_' as the supplied value to
+// tokenize underscores, and returns the result as a Result struct
+Result Tokenizer::TokenizeUnderscore(string input, int current_index) {
+  return TokenizeCharacter(kUnderscore, '_', input, current_index);
+}
+
+// Uses Tokenizer::TokenizeCharacter(...) with '"' as the supplied value to
+// tokenize double quotation marks, and returns the result as a Result struct
+Result Tokenizer::TokenizeQuotation(string input, int current_index) {
+  return TokenizeCharacter(kQuotation, '"', input, current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to

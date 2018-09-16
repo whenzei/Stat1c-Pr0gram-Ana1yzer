@@ -38,35 +38,45 @@ class Tokenizer {
  public:
   enum TokenSubtype {
     kNone = 0,
-    kProcedure = 1,
-    kIf = 2,
-    kThen = 3,
-    kElse = 4,
-    kWhile = 5,
-    kPrint = 6,
-    kCall = 7,
-    kRead = 8
+    kProcedure,
+    kIf,
+    kThen,
+    kElse,
+    kWhile,
+    kPrint,
+    kCall,
+    kRead,
   };
-  enum TokenType {
-    kNothing,
-    kDigit,
-    kName,
-    kOpenBrace,
-    kCloseBrace,
-    kSemicolon,
-    kAssignment,
-    kOperator,
-    kOpenParen,
-    kCloseParen,
-    kConditional,
-    kRelational,
-    kUnknown,
-    kEOF,
-  };
+
+   enum TokenType {
+     kNothing = 0,
+     kDigit,
+     kName,
+     kWord,
+     kOpenBrace,
+     kCloseBrace,
+     kSemicolon,
+     kComma,
+     kUnderscore,
+     kQuotation,
+     kAssignment,
+     kOperator,
+     kOpenParen,
+     kCloseParen,
+     kConditional,
+     kRelational,
+     kKeyword,
+     kUnknown,
+     kEOF,
+   };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
+
+  // Take in an array of tokenizer functions such as SkipWhiteSpace or TokenizeDigits
+  // to tokenize the supplied input, returning a list of tokens
+  static TokenList Tokenize(string, TokenizerFunc[]);
 
   // Debug function, returns the contents of the token as a string
   static string Debug(Token);
@@ -108,6 +118,10 @@ class Tokenizer {
   // and returns the result as a Result struct
   static Result TokenizeNames(string input, int current_index = 0);
 
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
+  // and returns the result as a Result struct
+  static Result TokenizeWords(string input, int current_index = 0);
+
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
   // and closing brace, and returns the result as a Result struct.
   // Note that it will only tokenize a single brace at a time, e.g. "{{" will be
@@ -127,6 +141,18 @@ class Tokenizer {
   // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to
   // tokenize semicolons, and returns the result as a Result struct
   static Result TokenizeSemicolon(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizeCharacter(...) with ',' as the supplied value to
+  // tokenize commas, and returns the result as a Result struct
+  static Result TokenizeComma(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizeCharacter(...) with '_' as the supplied value to
+  // tokenize underscores, and returns the result as a Result struct
+  static Result TokenizeUnderscore(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizeCharacter(...) with '"' as the supplied value to
+  // tokenize double quotation marks, and returns the result as a Result struct
+  static Result TokenizeQuotation(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to
   // tokenize the equals symbol, returns a result with kConditional type if "=="

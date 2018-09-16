@@ -7,7 +7,7 @@
 
 #include "pkb.h"
 #include "pql_query.h"
-#include "query_evaluator.h"
+#include "pql_evaluator.h"
 
 using std::cout;
 using std::endl;
@@ -18,11 +18,11 @@ using std::vector;
 
 PqlDeclarationEntity select_type;
 
-QueryEvaluator::QueryEvaluator() {}
+PqlEvaluator::PqlEvaluator() {}
 
-list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
+list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   string select_var_name = query->GetVarName();
-  map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
+  unordered_map<string, PqlDeclarationEntity> declarations = query->GetDeclarations();
   vector<PqlSuchthat> such_that_clauses = query->GetSuchThats();
   list<string> results;
 
@@ -42,14 +42,14 @@ list<string> QueryEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-list<string> QueryEvaluator::GetResultFromSelectAllQuery(
-    string select_var_name, map<string, PqlDeclarationEntity> declarations,
+list<string> PqlEvaluator::GetResultFromSelectAllQuery(
+    string select_var_name, unordered_map<string, PqlDeclarationEntity> declarations,
     PKB pkb) {
   list<string> results;
 
   // Find out what the user is selecting by going through the list of
   // declarations made by the user
-  for (map<string, PqlDeclarationEntity>::iterator it = declarations.begin();
+  for (unordered_map<string, PqlDeclarationEntity>::iterator it = declarations.begin();
        it != declarations.end(); ++it) {
     // Check for a match between the selection and declaration
     if (select_var_name.compare(it->first) == 0) {
@@ -108,7 +108,7 @@ list<string> QueryEvaluator::GetResultFromSelectAllQuery(
   return results;
 }
 
-string QueryEvaluator::FormatResultString(list<string> results) {
+string PqlEvaluator::FormatResultString(list<string> results) {
   string formatted_string;
   string index_flag = "";
 

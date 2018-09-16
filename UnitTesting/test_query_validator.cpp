@@ -35,5 +35,29 @@ public:
     result = PqlValidator::ValidateIdent(content);
     Assert::IsTrue(!result);
   }
+
+  TEST_METHOD(TestValidInteger) {
+    string content = "1";
+    bool result = PqlValidator::ValidateInteger(content);
+    Assert::IsTrue(result);
+
+    content = "12";
+    result = PqlValidator::ValidateInteger(content);
+    Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestInvalidInteger) {
+    string content = "a";
+    bool result = PqlValidator::ValidateInteger(content);
+    Assert::IsTrue(!result);
+
+    content = "a1";
+    result = PqlValidator::ValidateInteger(content);
+    Assert::IsTrue(!result);
+
+    content = "1a";
+    result = PqlValidator::ValidateInteger(content);
+    Assert::IsTrue(!result);
+  }
   };
 }

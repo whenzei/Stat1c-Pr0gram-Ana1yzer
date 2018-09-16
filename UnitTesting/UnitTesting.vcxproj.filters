@@ -44,6 +44,9 @@
     <ClCompile Include="test_parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_modifies_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="test_proc_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="test_validator.cpp">
       <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="test_follows.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
