@@ -10,6 +10,7 @@
 #include "stmt_type_list.h"
 #include "stmtlist_table.h"
 #include "var_list.h"
+#include "modifies_table.h"
 #include "pql_enum.h"
 
 using StmtNumInt = int;
@@ -23,6 +24,7 @@ class PKB {
   StmtListTable stmtlist_table_;
   StmtTypeList stmt_type_list_;
   ParentTable parent_table_;
+  ModifiesTable modifies_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -145,8 +147,7 @@ class PKB {
 
   // @returns true if the statement specified by parent_stmt_num is the direct
   // parent of the statement specified by child_stmt_num
-  bool IsParent(StmtNumInt parent_stmt_num_int,
-                      StmtNumInt child_stmt_num_int);
+  bool IsParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
   // @returns true if the statement specified by parent_stmt_num is a parent
   // (direct or indirect) of the statement specified by child_stmt_num
@@ -181,6 +182,42 @@ class PKB {
 
   // returns a list of parent-child pairs (direct + indirect)
   StmtNumPairList GetAllParentTPair();
+
+  // @returns true modifies(stmt_num_int, var_name) holds
+  bool IsModifiedByS(StmtNumInt stmt_num_int, VarName var_name);
+
+  // @returns true modifies(proc_name, var_name) holds
+  bool IsModifiedByP(ProcName proc_name, VarName var_name);
+
+  // @returns a list of variables that are modified at the given statement
+  VarNameList GetModifiedVarS(StmtNumInt stmt_num_int);
+
+  // @returns a list of variables that are modified in the given procedure
+  VarNameList GetModifiedVarP(ProcName proc_name);
+
+  // @returns a list of variables that are modified in any statement/procedure
+  VarNameList GetAllModifiedVar();
+
+  // @returns a list of statements that the given variable is modified in
+  StmtNumList GetModifyingS(VarName var_name);
+
+  // @returns a list of procedures that the given variable is modified in
+  ProcNameList GetModifyingP(VarName var_name);
+
+  // @returns a list of all statements that modify some variable
+  StmtNumList GetAllModifyingS();
+
+  // @returns a list of all procedures that modify some variable
+  ProcNameList GetAllModifyingP();
+
+  // @returns true if there exists any modifies relationship
+  bool HasModifiesRelationship();
+
+  // @returns a list of all pairs of <modifying_stmt_num, modified_var_name>
+  StmtVarPairList GetAllModifiesPairS();
+
+  // @returns a list of all pairs of <modifying_proc_name, modified_var_name>
+  ProcVarPairList GetAllModifiesPairP();
 
  private:
   StmtNum ToString(int stmt_num_int);
