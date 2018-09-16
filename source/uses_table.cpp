@@ -19,7 +19,11 @@ VarList UsesTable::GetAllUsedVar() {
 }
 
 VarList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
-  return uses_map_[stmt_num];
+  VarList used_vars;
+  if (uses_map_.find(stmt_num) != uses_map_.end()) {
+    used_vars = uses_map_[stmt_num];
+  }
+  return used_vars;
 }
 
 StmtList UsesTable::GetAllUsingStmt() {
@@ -31,7 +35,11 @@ StmtList UsesTable::GetAllUsingStmt() {
 }
 
 StmtList UsesTable::GetAllUsingStmt(VarName var_name) {
-  return used_by_map_[var_name];
+  StmtList using_stmts;
+  if (used_by_map_.find(var_name) != used_by_map_.end()) {
+    using_stmts = used_by_map_[var_name];
+  }
+  return using_stmts;
 }
 
 bool UsesTable::IsUsedBy(VarName var_name, StmtNum stmt_num) {
