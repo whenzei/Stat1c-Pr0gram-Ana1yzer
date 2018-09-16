@@ -54,10 +54,19 @@ class ExpressionHelper {
   static bool IsPatternExact(TokenList tokens_primary,
                              TokenList tokens_secondary);
 		
-		static bool IsPatternSubSet(TokenList tokens_primary,
+		 /* Checks if the secondary list of tokens is a subset sequence of the primary list of tokens
+  * 
+  * Used by PQL for pattern a(_, _"expr"_)
+  *
+  * @return: returns true if secondary list of tokens is a subset sequence of the primary list of tokens. 
+  *
+  * Example: "ab*c+cdas" (tokens_primary), "b*c+c" (tokens_secondary) returns
+  * true.
+  */
+		static bool IsPatternSubset(TokenList tokens_primary,
                               TokenList tokens_secondary);
  private:
   static bool Matches(TokenList tokens_first, TokenList tokens_second,
-                      size_t start, size_t end);
+                      size_t first_offset);
 };
 #endif
