@@ -581,22 +581,11 @@ list<string> PqlEvaluator::EvaluateModifiesS(
       }
       break;
     case kOneSynonymSelectLeft:
-      if (left_type == PqlDeclarationEntity::kStmt) {
-        return pkb.GetModifyingS(right_name);
-      } else {
-        return FilterResult(pkb.GetModifyingS(right_name), select_type);
-      }
-      break;
+      return FilterResult(pkb.GetModifyingS(right_name), select_type);
     case kOneSynonymSelectLeftUnderscoreRight:
-      if (left_type == PqlDeclarationEntity::kStmt) {
-        return pkb.GetAllModifyingS();
-      } else {
-        return FilterResult(pkb.GetAllModifyingS(), select_type);
-      }
-      break;
+      return FilterResult(pkb.GetAllModifyingS(), select_type);
     case kOneSynonymSelectRight:
       return pkb.GetModifiedVarS(left_name);
-      break;
     case kTwoSynonym:
       // Because right param only takes in variable synonym, it is exactly the
       // same as kOneSynonymLeftUnderscoreRight
@@ -610,12 +599,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
     case kTwoSynonymSelectLeft:
       // Because right param only takes in variable synonym, it is exactly the
       // same as kOneSynonymSelectLeftUnderscoreRight
-      if (left_type == PqlDeclarationEntity::kStmt) {
-        return pkb.GetAllModifyingS();
-      } else {
-        return FilterResult(pkb.GetAllModifyingS(), select_type);
-      }
-      break;
+      return FilterResult(pkb.GetAllModifyingS(), select_type);
     case kTwoSynonymSelectRight:
       // Because right param only takes in variable synonym, just need to filter
       // left of the pair. Get all right of pair as it is select right
