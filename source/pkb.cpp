@@ -43,10 +43,10 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
-    modifies_table_.InsertModifies(stmt_num, modified_var_name);
+    modifies_table_.InsertModifies(stmt_num, stmtlist_index, modified_var_name);
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
     for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, modified_var_name);
+      modifies_table_.InsertModifies(parent, stmtlist_index, modified_var_name);
     }
     // TODO: add uses relationship
     return true;
@@ -96,6 +96,12 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
     for (StmtNum& indirect_parent : indirect_parents) {
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      child_stmtlist_index);
+    }
+    // insert modifies relationship (if any)
+    VarNameSet var_modified_by_children =
+        modifies_table_.GetModifiedVar(child_stmtlist_index);
+    for (auto var_name : var_modified_by_children) {
+      modifies_table_.InsertModifies(stmt_num, parent_stmtlist_index, var_name);
     }
     // TODO: insert uses relationship
     return true;
@@ -153,6 +159,16 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
       parent_table_.InsertIndirectParentRelationship(indirect_parent,
                                                      else_stmtlist_index);
     }
+	// insert modifies relationship (if any)
+    VarNameSet var_modified_by_children =
+        modifies_table_.GetModifiedVar(then_stmtlist_index);
+    VarNameSet var_modified_by_else_stmtlist =
+        modifies_table_.GetModifiedVar(else_stmtlist_index);
+    var_modified_by_children.insert(var_modified_by_else_stmtlist.begin(),
+                                    var_modified_by_else_stmtlist.end());
+    for (auto var_name : var_modified_by_children) {
+      modifies_table_.InsertModifies(stmt_num, parent_stmtlist_index, var_name);
+	}
     // TODO: insert uses relationship
     return true;
   } else {
@@ -174,9 +190,9 @@ bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
     }
     // insert modifies relationship
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    modifies_table_.InsertModifies(stmt_num, var_name);
+    modifies_table_.InsertModifies(stmt_num, stmtlist_index, var_name);
     for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, var_name);
+      modifies_table_.InsertModifies(parent, stmtlist_index, var_name);
     }
     return true;
   } else {
