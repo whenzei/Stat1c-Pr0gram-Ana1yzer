@@ -20,7 +20,7 @@ public:
 	bool IsValidStatement();
 	bool IsValidAssignment();
 	bool IsValidExpression(TokenList expr);
-	bool IsValidConditional();
+	bool IsValidConditional(TokenList cond_expr);
 	bool IsValidIfBlock();
 	bool IsValidWhileBlock();
 	bool IsValidCallReadPrint();
@@ -35,6 +35,9 @@ private:
 	bool Match(Tokenizer::TokenType type);
 	bool Check(Tokenizer::TokenType type);
 	bool IsAtEnd();
+
+	int GetIndexOfRelational(TokenList tokens);
+	bool ContainsConditionalType(TokenList tokens);
 };
 
 #endif // !SPA_SIMPLE_VALIDATOR_H

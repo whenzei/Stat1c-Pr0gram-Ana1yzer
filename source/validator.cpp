@@ -138,7 +138,7 @@ bool Validator::IsValidExpression(TokenList tokens) {
     was_operator = true;
   }
 
-  for (int i = 1; i < tokens.size(); i++) {
+  for (size_t i = 1; i < tokens.size(); i++) {
     current = tokens[i];
     if (was_operator) {
       if (current.type != tt::kDigit && current.type != tt::kName &&
@@ -190,17 +190,18 @@ bool Validator::IsValidAssignment() {
 
   TokenList expr;
   while (PeekNextToken().type != tt::kSemicolon && !IsAtEnd()) {
-	  expr.push_back(ReadNextToken());
+    expr.push_back(ReadNextToken());
   }
-  
+
   if (!IsValidExpression(expr)) {
-	  return false;
+    return false;
   }
 
   return Match(tt::kSemicolon);
 }
 
-bool Validator::IsValidConditional() {
+// Validates the given cond_expr
+bool Validator::IsValidConditional(TokenList cond_expr) {
   // cond_expr: rel_expr | ‘!’ ‘(’ cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘&&’ ‘(’
   // cond_expr ‘)’ | ‘(’ cond_expr ‘)’ ‘||’ ‘(’ cond_expr ‘)’
   // rel_expr: rel_factor ‘>’ rel_factor | rel_factor ‘>=’ rel_factor |
@@ -208,14 +209,68 @@ bool Validator::IsValidConditional() {
   // rel_factor | rel_factor ‘!=’ rel_factor
   // rel_factor: var_name | const_value | expr
 
-  // currently only check for kName -> kRelational -> kName
-  if (!(MatchNext(3, {tt::kName, tt::kRelational, tt::kName}))) {
-    cout << "[CONDITIONAL INVALID]" << endl;
+  // minimum size should be 3: "a<b"
+  if (cond_expr.size() < 3) {
     return false;
   }
-  /*if (ReadNextToken().value == "!") {
-    return IsValidConditional();
-  }*/
+
+  if (cond_expr[0].value == "!") {
+    // should be of the form ‘!’ ‘(’ cond_expr ‘)’
+    if (cond_expr[1].type != tt::kOpenParen ||
+        cond_expr.back().type != tt::kCloseParen) {
+      return false;
+    }
+    TokenList spliced_expr(cond_expr.begin() + 2, cond_expr.end() - 1);
+    return IsValidConditional(spliced_expr);
+  }
+
+  // check if contains conditionals ("||" or "&&")
+  if (ContainsConditionalType(cond_expr)) {
+    // format should be ‘(’ cond_expr ‘)’ ‘||’ ‘(’ cond_expr ‘)’
+    if (cond_expr[0].type != tt::kOpenParen) {
+      return false;
+    }
+    stack<tt> paren_stack;
+    paren_stack.push(tt::kOpenParen);
+    TokenList lhs;
+
+    size_t index = 1;
+    for (index; index < cond_expr.size(); index++) {
+      if (cond_expr[index].type == tt::kCloseParen) {
+        paren_stack.pop();
+        if (paren_stack.empty()) break;
+      } else if (cond_expr[index].type == tt::kOpenParen) {
+        paren_stack.push(tt::kOpenParen);
+      }
+      lhs.push_back(cond_expr[index]);
+    }
+
+    // next token should be at a conditional symbol
+    if (cond_expr[++index].type != tt::kConditional) {
+      return false;
+    }
+
+    // check rhs conditional syntax
+    if (cond_expr[index + 1].type != tt::kOpenParen ||
+        cond_expr.back().type != tt::kCloseParen) {
+      return false;
+    }
+
+    TokenList rhs(cond_expr.begin() + index + 2, cond_expr.end() - 1);
+
+    return IsValidConditional(lhs) && IsValidConditional(rhs);
+
+  } else {
+    // is relational expression
+    int delimit = GetIndexOfRelational(cond_expr);
+    if (delimit == -1) {
+      return IsValidExpression(cond_expr);
+    }
+    TokenList lhs(cond_expr.begin(), cond_expr.begin() + delimit);
+    TokenList rhs(cond_expr.begin() + delimit + 1, cond_expr.end());
+
+    return IsValidExpression(lhs) && IsValidExpression(rhs);
+  }
 
   return true;
 }
@@ -223,18 +278,34 @@ bool Validator::IsValidConditional() {
 bool Validator::IsValidIfBlock() {
   // if: ‘if’ ‘(’ cond_expr ‘)’ ‘then’ ‘{‘ stmtLst ‘}’ ‘else’ ‘{‘ stmtLst ‘}’
   // "("
-  if (ReadNextToken().type != tt::kOpenParen) {
+  /*if (ReadNextToken().type != tt::kOpenParen) {
+    return false;
+  }*/
+
+  TokenList cond_expr;
+  while (PeekNextToken().subtype != ts::kThen && !IsAtEnd()) {
+    cond_expr.push_back(ReadNextToken());
+  }
+
+  // must be minimum of size 5: "(a<b)"
+  if (cond_expr.size() < 5) {
     return false;
   }
 
-  // TODO: validate whole block, with parenthesis included
-  if (!IsValidConditional()) {
+  // cond_expr must start and end with parenthesis
+  if (cond_expr.front().type != tt::kOpenParen ||
+      cond_expr.back().type != tt::kCloseParen) {
     return false;
   }
 
-  // ") then" "{"
-  if (!Match(tt::kCloseParen) || ReadNextToken().subtype != ts::kThen ||
-      !Match(tt::kOpenBrace)) {
+  TokenList spliced_expr(cond_expr.begin() + 1, cond_expr.end() - 1);
+
+  if (!IsValidConditional(spliced_expr)) {
+    return false;
+  }
+
+  // "then" "{"
+  if (ReadNextToken().subtype != ts::kThen || !Match(tt::kOpenBrace)) {
     return false;
   }
 
@@ -262,16 +333,34 @@ bool Validator::IsValidIfBlock() {
 
 bool Validator::IsValidWhileBlock() {
   // while: ‘while’ ‘(’ cond_expr ‘)’ ‘ { ‘ stmtLst ‘ }’
-  if (ReadNextToken().type != tt::kOpenParen) {
+  // if (ReadNextToken().type != tt::kOpenParen) {
+  //  return false;
+  //}
+
+  TokenList cond_expr;
+  while (PeekNextToken().type != tt::kOpenBrace && !IsAtEnd()) {
+    cond_expr.push_back(ReadNextToken());
+  }
+
+  // must be minimum of size 5: "(a<b)"
+  if (cond_expr.size() < 5) {
     return false;
   }
 
-  if (!IsValidConditional()) {
+  // cond_expr must start and end with parenthesis
+  if (cond_expr.front().type != tt::kOpenParen ||
+      cond_expr.back().type != tt::kCloseParen) {
     return false;
   }
 
-  // ") {"
-  if (!MatchNext(2, {tt::kCloseParen, tt::kOpenBrace})) {
+  TokenList spliced_expr(cond_expr.begin() + 1, cond_expr.end() - 1);
+
+  if (!IsValidConditional(spliced_expr)) {
+    return false;
+  }
+
+  // "{"
+  if (!Match(tt::kOpenBrace)) {
     return false;
   }
 
@@ -321,4 +410,26 @@ bool Validator::MatchNext(int num, vector<tt> expected_types) {
     }
   }
   return true;
+}
+
+// Returns index of relational symbols in given TokenList if exists.
+// Else returns -1;
+int Validator::GetIndexOfRelational(TokenList tokens) {
+  for (size_t i = 0; i < tokens.size(); i++) {
+    if (tokens[i].type == tt::kRelational) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+bool Validator::ContainsConditionalType(TokenList tokens) {
+  for (auto token : tokens) {
+    if (token.type == tt::kConditional) {
+      return true;
+    }
+  }
+
+  return false;
 }
