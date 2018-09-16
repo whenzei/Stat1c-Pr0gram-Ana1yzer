@@ -153,22 +153,22 @@ class PKB {
   // Follows table public functions
    
   // @returns true if FollowsT(followee, follower) holds
-  bool IsFollowsT(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
+  bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns true if Follows(followee, follower) holds
-  bool IsFollows(StmtNumInt followee_stmt_num_int, StmtNumInt follower_stmt_num_int);
+  bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
-  StmtList GetFollowsT(StmtNumInt stmt_num_int);
+  StmtList GetFollowsT(StmtNum stmt_num);
 
   // @returns stmt number of statement a that satisfies Follows(stmt_num_int, a)
-  StmtNum GetFollows(StmtNumInt stmt_num_int);
+  StmtNum GetFollows(StmtNum stmt_num);
 
   // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
-  StmtList GetFollowedByT(StmtNumInt stmt_num_int);
+  StmtList GetFollowedByT(StmtNum stmt_num);
 
   // @returns stmt number of statement a that satisfies Follows(a, stmt_num_int)
-  StmtNum GetFollowedBy(StmtNumInt stmt_num_int);
+  StmtNum GetFollowedBy(StmtNum stmt_num);
   
   // @returns true if follows table has any follows relationships
   bool HasFollowsRelationship();
@@ -178,10 +178,6 @@ class PKB {
 
   // @returns list of pairs of Follows relationships
   StmtNumPairList GetAllFollowsPair();
-
-  // @returns true if the statement specified by parent_stmt_num is the direct parent
-  // of the statement specified by child_stmt_num
-  bool IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int);
 
   // @returns true if the statement specified by parent_stmt_num is the direct
   // parent of the statement specified by child_stmt_num
