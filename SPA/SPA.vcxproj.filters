@@ -57,6 +57,9 @@
     <ClCompile Include="..\source\parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\modifies_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pkb.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -111,6 +114,9 @@
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\const_list.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\modifies_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\parent_table.h">
