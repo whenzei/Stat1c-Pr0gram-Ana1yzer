@@ -226,10 +226,6 @@ StmtNumPairList PKB::GetAllFollowsTPair() {
   return follows_table_.GetAllFollowsTPair();
 }
 
-bool PKB::IsDirectParent(StmtNumInt parent_stmt_num_int, StmtNumInt child_stmt_num_int) {
-  StmtNum parent_stmt_num = ToString(parent_stmt_num_int);
-  StmtNum child_stmt_num = ToString(child_stmt_num_int);
-
 bool PKB::IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
   StmtListIndex child_stmtlist_index =
       stmt_table_.GetStmtListIndex(child_stmt_num);
