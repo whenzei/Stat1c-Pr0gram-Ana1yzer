@@ -148,6 +148,23 @@ class PqlEvaluator {
       string select_var_name, pair<pair<string, PqlDeclarationEntity>,
                                    pair<string, PqlDeclarationEntity>>
                                   such_that_param);
+
+  /**
+   * Filter the result list based on the selection entity type
+   * @input unfiltered result list and selection entity type (e.g assign)
+   * @returns result list that only contains result of a certain entity type
+   */
+  list<string> FilterResult(list<string> unfiltered_result,
+                            PqlDeclarationEntity select_type);
+
+  /**
+   * Filter the result list based on the selection entity type and filter type
+   * @input the filter type, unfiltered result list and selection entity type (e.g assign)
+   * @returns result list that only contains result of a certain entity type
+   */
+  list<string> FilterPairResult(PqlResultFilterType filter_type,
+                                list<pair<string,string>> unfiltered_pair_result,
+                                PqlDeclarationEntity select_type);
 };
 
 #endif  // !QUERY_EVALUATOR_H

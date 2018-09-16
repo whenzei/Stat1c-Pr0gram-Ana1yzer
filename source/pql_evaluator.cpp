@@ -387,6 +387,36 @@ list<string> PqlEvaluator::EvaluateModifiesS(
   return results;
 }
 
+list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
+                                        PqlDeclarationEntity select_type) {
+  list<string> filtered_result;
+
+  for (auto& iter : unfiltered_result) {
+  }
+
+  return filtered_result;
+}
+
+list<string> PqlEvaluator::FilterPairResult(
+    PqlResultFilterType filter_type,
+    list<pair<string, string>> unfiltered_pair_result,
+    PqlDeclarationEntity select_type) {
+  list<string> filtered_result;
+
+  for (auto& iter : unfiltered_pair_result) {
+    switch (filter_type) {
+      case kFilterLeft:
+        break;
+      case kFilterRight:
+        break;
+      case kFilterBoth:
+        break;
+    }
+  }
+
+  return filtered_result;
+}
+
 PqlArrangementOfSynonymInSuchthatParam
 PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
     string select_var_name,

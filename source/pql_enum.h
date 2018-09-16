@@ -63,4 +63,11 @@ enum PqlArrangementOfSynonymInSuchthatParam {
   kTwoSynonymSelectRight                 // e.g (a, s)
 };
 
+/* The filter type for the result */
+enum PqlResultFilterType {
+	kFilterLeft = 0,
+	kFilterRight,
+	kFilterBoth
+};
+
 #endif
