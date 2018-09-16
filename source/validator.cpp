@@ -12,7 +12,6 @@ using KeywordSet = std::unordered_set<string>;
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
 
-// Token curr_token_;
 int curr_index_;
 TokenList tokens_;
 Token curr_token_;
@@ -31,7 +30,8 @@ void Validator::ResetTokenList(TokenList tokens) {
   curr_index_ = 0;
 }
 
-// must be called after the constructor
+// Validates the tokenized source code
+// Precondition: must be called after the constructor
 bool Validator::ValidateProgram() {
   while (PeekNextToken().subtype == ts::kProcedure) {
     if (!IsValidProcedure()) {
@@ -42,7 +42,6 @@ bool Validator::ValidateProgram() {
 
   // last token should be kEOF if everything is processed
   if (!IsAtEnd()) {
-    // do something here, means validation failed
     cout << "Validation failed, stream not fully consumed" << endl;
     return false;
   }
@@ -52,7 +51,7 @@ bool Validator::ValidateProgram() {
 }
 
 bool Validator::IsValidProcedure() {
-  // ['procedure'] variable '{'
+  // 'procedure' var_name '{'
   if (!MatchNext(3, {tt::kName, tt::kName, tt::kOpenBrace})) {
     cout << "[PROC SYNTAX INVALID]" << endl;
     return false;
@@ -160,7 +159,7 @@ bool Validator::IsValidExpression(TokenList tokens) {
 
       if (current.type == tt::kCloseParen) {
         if (parenthesis_stack.empty()) {
-          cout << "[STACK NOT EMPTY -- INVALID]" << endl;
+          cout << "[IMBALANCED PARENTHESIS -- INVALID]" << endl;
           return false;
         }
         parenthesis_stack.pop();
@@ -271,10 +270,6 @@ bool Validator::IsValidConditional(TokenList cond_expr) {
 
 bool Validator::IsValidIfBlock() {
   // if: ‘if’ ‘(’ cond_expr ‘)’ ‘then’ ‘{‘ stmtLst ‘}’ ‘else’ ‘{‘ stmtLst ‘}’
-  // "("
-  /*if (ReadNextToken().type != tt::kOpenParen) {
-    return false;
-  }*/
 
   TokenList cond_expr;
   while (PeekNextToken().subtype != ts::kThen && !IsAtEnd()) {
@@ -317,20 +312,12 @@ bool Validator::IsValidIfBlock() {
     return false;
   }
 
-  if (ReadNextToken().type != tt::kCloseBrace) {
-    return false;
-  }
-
-  // passed all hurdles
-  return true;
+  // final closing brace
+  return Match(tt::kCloseBrace);
 }
 
 bool Validator::IsValidWhileBlock() {
   // while: ‘while’ ‘(’ cond_expr ‘)’ ‘ { ‘ stmtLst ‘ }’
-  // if (ReadNextToken().type != tt::kOpenParen) {
-  //  return false;
-  //}
-
   TokenList cond_expr;
   while (PeekNextToken().type != tt::kOpenBrace && !IsAtEnd()) {
     cond_expr.push_back(ReadNextToken());
@@ -362,15 +349,13 @@ bool Validator::IsValidWhileBlock() {
     return false;
   }
 
-  if (ReadNextToken().type != tt::kCloseBrace) {
-    return false;
-  }
-
-  // passed all hurdles
-  return true;
+  // final closing brace
+  return Match(tt::kCloseBrace);
 }
 
-// Helper functions
+/**********************
+BEGIN HELPER FUNCTIONS
+**********************/
 bool Validator::Match(Tokenizer::TokenType type) {
   if (Check(type)) {
     ReadNextToken();
@@ -414,7 +399,6 @@ int Validator::GetIndexOfRelational(TokenList tokens) {
       return i;
     }
   }
-
   return -1;
 }
 
@@ -424,6 +408,5 @@ bool Validator::ContainsConditionalType(TokenList tokens) {
       return true;
     }
   }
-
   return false;
 }
