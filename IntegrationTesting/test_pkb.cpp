@@ -441,23 +441,15 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetModifiedVarS) {
     PKB pkb;
-    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1);
-    VarNameList result1 = pkb.GetModifiedVarS(kStmtNum1);
-    Assert::IsTrue(result1.size() == 0);
     pkb.InsertAssignStmt(kStmtNumInt2, kStmtListIndex2, kVarName1,
                          kVarNameSet2);
-    VarNameList result2 = pkb.GetModifiedVarS(kStmtNum2);
-    Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kVarName1, result2.front());
-    VarNameList result3 = pkb.GetModifiedVarS(kStmtNum1);
-    Assert::IsTrue(result3.size() == 1);
-    Assert::AreEqual(kVarName1, result3.front());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
+    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
+                        kVarNameSet1);
     VarNameList result4 = pkb.GetModifiedVarS(kStmtNum4);
     Assert::IsTrue(result4.size() == 1);
     Assert::AreEqual(kVarName2, result4.front());
@@ -525,31 +517,25 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetModifyingS) {
     PKB pkb;
-    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1);
-    StmtNumList result1 = pkb.GetModifyingS(kVarName1);
-    Assert::IsTrue(result1.size() == 0);
     pkb.InsertAssignStmt(kStmtNumInt2, kStmtListIndex2, kVarName1,
                          kVarNameSet2);
-    StmtNumList result2 = pkb.GetModifyingS(kVarName1);
-    Assert::IsTrue(result2.size() == 2);
-    Assert::AreEqual(kStmtNum2, result2.front());
-    Assert::AreEqual(kStmtNum1, result2.back());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
+    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
+                        kVarNameSet1);
     StmtNumList result3 = pkb.GetModifyingS(kVarName1);
     Assert::IsTrue(result3.size() == 4);
     StmtNumList::iterator iter1 = result3.begin();
     Assert::AreEqual(kStmtNum2, *iter1);
     iter1++;
-    Assert::AreEqual(kStmtNum1, *iter1);
-    iter1++;
     Assert::AreEqual(kStmtNum5, *iter1);
     iter1++;
     Assert::AreEqual(kStmtNum3, *iter1);
+    iter1++;
+    Assert::AreEqual(kStmtNum1, *iter1);
     StmtNumList result4 = pkb.GetModifyingS(kVarName2);
     Assert::IsTrue(result4.size() == 3);
     StmtNumList::iterator iter2 = result4.begin();
@@ -572,11 +558,11 @@ TEST_CLASS(TestPKB) {
     ProcNameList result2 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
     ProcNameList result3 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kProcName, result3.front());
@@ -654,11 +640,11 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front().first);
     Assert::AreEqual(kVarName1, result2.front().second);
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
     ProcVarPairList result3 = pkb.GetAllModifiesPairP();
     Assert::IsTrue(result3.size() == 2);
     Assert::AreEqual(kProcName, result3.front().first);
