@@ -28,9 +28,10 @@ TEST_CLASS(TestPKBPQL){
       parser.Parse();
 
 			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
-			string output = qe.FormatResultString(resultlist);
 
-			string expected_output = "statement #1, #8";
+			string output = resultlist.front();
+
+			string expected_output = "1";
 
 			Assert::AreEqual(expected_output, output);
       }
