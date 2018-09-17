@@ -139,6 +139,16 @@ public:
 	tokens = Tokenizer::Tokenize("= a - b");
 	validator.ResetTokenList(tokens);
 	Assert::IsFalse(validator.IsValidAssignment());
+
+	// fails if missing equals sign
+	tokens = Tokenizer::Tokenize("a - b;");
+	validator.ResetTokenList(tokens);
+	Assert::IsFalse(validator.IsValidAssignment());
+
+	// fails if missing operator
+	tokens = Tokenizer::Tokenize("= a b;");
+	validator.ResetTokenList(tokens);
+	Assert::IsFalse(validator.IsValidAssignment());
   }
 
   TEST_METHOD(TestIsValidIfBlock) {
@@ -285,6 +295,21 @@ public:
 	tokens = Tokenizer::Tokenize("((a != b) && (b > c)) || (d == e)");
 	tokens.pop_back();
 	Assert::IsTrue(validator.IsValidConditional(tokens));
+
+	// passes negation of conditional
+	tokens = Tokenizer::Tokenize("!(a > b)");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidConditional(tokens));
+
+	// passes nested negation of conditional
+	tokens = Tokenizer::Tokenize("!(!(a > b))");
+	tokens.pop_back();
+	Assert::IsTrue(validator.IsValidConditional(tokens));
+
+	// fails nested negation of conditional if inner cond_expr is invalid
+	tokens = Tokenizer::Tokenize("!(!(a = b))");
+	tokens.pop_back();
+	Assert::IsFalse(validator.IsValidConditional(tokens));
 
 	// fails cond_expr with more than 1 conditional on the same level
 	tokens = Tokenizer::Tokenize("(a>b) && (b > c) || (d > e)");
