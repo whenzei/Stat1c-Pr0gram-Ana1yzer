@@ -12,11 +12,15 @@ TEST_CLASS(TestPKB) {
   const StmtNumInt kStmtNumInt3 = 3;
   const StmtNumInt kStmtNumInt4 = 4;
   const StmtNumInt kStmtNumInt5 = 5;
+  const StmtNumInt kStmtNumInt6 = 6;
+  const StmtNumInt kStmtNumInt7 = 7;
   const StmtNum kStmtNum1 = "1";
   const StmtNum kStmtNum2 = "2";
   const StmtNum kStmtNum3 = "3";
   const StmtNum kStmtNum4 = "4";
   const StmtNum kStmtNum5 = "5";
+  const StmtNum kStmtNum6 = "6";
+  const StmtNum kStmtNum7 = "7";
   const StmtListIndex kStmtListIndex1 = 0;
   const StmtListIndex kStmtListIndex2 = 1;
   const StmtListIndex kStmtListIndex3 = 2;
@@ -29,6 +33,7 @@ TEST_CLASS(TestPKB) {
   const ConstValue kConstValue2 = 345;
   const VarNameSet kVarNameSet1 = {"b", "c"};
   const VarNameSet kVarNameSet2 = {"d", "e"};
+  const VarNameSet kVarNameSet3 = { "f", "g" };
 
  public:
   TEST_METHOD(TestInsertProcName) {
@@ -441,23 +446,15 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetModifiedVarS) {
     PKB pkb;
-    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1);
-    VarNameList result1 = pkb.GetModifiedVarS(kStmtNum1);
-    Assert::IsTrue(result1.size() == 0);
     pkb.InsertAssignStmt(kStmtNumInt2, kStmtListIndex2, kVarName1,
                          kVarNameSet2);
-    VarNameList result2 = pkb.GetModifiedVarS(kStmtNum2);
-    Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kVarName1, result2.front());
-    VarNameList result3 = pkb.GetModifiedVarS(kStmtNum1);
-    Assert::IsTrue(result3.size() == 1);
-    Assert::AreEqual(kVarName1, result3.front());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
+    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
+                        kVarNameSet1);
     VarNameList result4 = pkb.GetModifiedVarS(kStmtNum4);
     Assert::IsTrue(result4.size() == 1);
     Assert::AreEqual(kVarName2, result4.front());
@@ -525,31 +522,25 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetModifyingS) {
     PKB pkb;
-    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1);
-    StmtNumList result1 = pkb.GetModifyingS(kVarName1);
-    Assert::IsTrue(result1.size() == 0);
     pkb.InsertAssignStmt(kStmtNumInt2, kStmtListIndex2, kVarName1,
                          kVarNameSet2);
-    StmtNumList result2 = pkb.GetModifyingS(kVarName1);
-    Assert::IsTrue(result2.size() == 2);
-    Assert::AreEqual(kStmtNum2, result2.front());
-    Assert::AreEqual(kStmtNum1, result2.back());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
+    pkb.InsertWhileStmt(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
+                        kVarNameSet1);
     StmtNumList result3 = pkb.GetModifyingS(kVarName1);
     Assert::IsTrue(result3.size() == 4);
     StmtNumList::iterator iter1 = result3.begin();
     Assert::AreEqual(kStmtNum2, *iter1);
     iter1++;
-    Assert::AreEqual(kStmtNum1, *iter1);
-    iter1++;
     Assert::AreEqual(kStmtNum5, *iter1);
     iter1++;
     Assert::AreEqual(kStmtNum3, *iter1);
+    iter1++;
+    Assert::AreEqual(kStmtNum1, *iter1);
     StmtNumList result4 = pkb.GetModifyingS(kVarName2);
     Assert::IsTrue(result4.size() == 3);
     StmtNumList::iterator iter2 = result4.begin();
@@ -572,11 +563,11 @@ TEST_CLASS(TestPKB) {
     ProcNameList result2 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front());
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
     ProcNameList result3 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kProcName, result3.front());
@@ -654,17 +645,352 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front().first);
     Assert::AreEqual(kVarName1, result2.front().second);
-    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1);
     pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex3, kVarName2,
                          kVarNameSet1);
     pkb.InsertReadStmt(kStmtNumInt5, kStmtListIndex4, kVarName1);
+    pkb.InsertIfStmt(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
+                     kStmtListIndex4, kVarNameSet1);
     ProcVarPairList result3 = pkb.GetAllModifiesPairP();
     Assert::IsTrue(result3.size() == 2);
     Assert::AreEqual(kProcName, result3.front().first);
     Assert::AreEqual(kVarName1, result3.front().second);
     Assert::AreEqual(kProcName, result3.back().first);
     Assert::AreEqual(kVarName2, result3.back().second);
+  }
+
+  TEST_METHOD(TestIsFollowsT) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt2, kStmtListIndex1, kVarName1, kVarNameSet1);
+    Assert::IsTrue(pkb.IsFollowsT(kStmtNum1, kStmtNum2));
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex1, kVarName1, kVarNameSet1);
+    Assert::IsTrue(pkb.IsFollowsT(kStmtNum1, kStmtNum3));
+  }
+
+  TEST_METHOD(TestIsFollows) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    Assert::IsTrue(pkb.IsFollows(kStmtNum1, kStmtNum2));
+    Assert::IsFalse(pkb.IsFollows(kStmtNum1, kStmtNum3));
+    Assert::IsFalse(pkb.IsFollows(kStmtNum3, kStmtNum4));
+  }
+
+  TEST_METHOD(TestGetFollowsT) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtList followers = pkb.GetFollowsT(kStmtNum1);
+    Assert::IsTrue(followers.size() == 2);
+    StmtList expected_followers;
+    expected_followers.push_back(kStmtNum2);
+    expected_followers.push_back(kStmtNum3);
+    Assert::AreEqual(expected_followers.front(), followers.front());
+    Assert::AreEqual(expected_followers.back(), followers.back());
+  }
+
+  TEST_METHOD(TestGetFollows) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtList followers = pkb.GetFollows(kStmtNum1);
+    Assert::IsTrue(followers.size() == 1);
+    StmtList expected_followers;
+    expected_followers.push_back(kStmtNum2);
+    Assert::AreEqual(expected_followers.front(), followers.front());
+  }
+
+  TEST_METHOD(TestGetAllFollows) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtList all_followers = pkb.GetAllFollows();
+    StmtList expected_followers;
+    expected_followers.push_back(kStmtNum2);
+    expected_followers.push_back(kStmtNum3);
+    Assert::AreEqual(expected_followers.front(), all_followers.front());
+    Assert::AreEqual(expected_followers.back(), all_followers.back());
+  }
+
+  TEST_METHOD(TestGetFollowedByT) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtList followees = pkb.GetFollowedByT(kStmtNum3);
+    Assert::IsTrue(followees.size() == 2);
+    StmtList expected_followees;
+    expected_followees.push_back(kStmtNum2);
+    expected_followees.push_back(kStmtNum1);
+    Assert::AreEqual(expected_followees.front(), followees.front());
+    Assert::AreEqual(expected_followees.back(), followees.back());
+  }
+
+  TEST_METHOD(TestGetFollowedBy) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtList followees = pkb.GetFollowedBy(kStmtNum3);
+    Assert::IsTrue(followees.size() == 1);
+    StmtList expected_followee;
+    expected_followee.push_back(kStmtNum2);
+    Assert::AreEqual(expected_followee.front(), followees.front());
+  }
+
+  TEST_METHOD(TestGetAllFollowedBy) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    pkb.InsertPrintStmt(kStmtNumInt5, kStmtListIndex2, kVarName1);
+    StmtList all_followees = pkb.GetAllFollowedBy();
+    StmtList expected_followees;
+    expected_followees.push_back(kStmtNum1);
+    expected_followees.push_back(kStmtNum2);
+    expected_followees.push_back(kStmtNum4);
+    StmtList::iterator iter_1 = all_followees.begin();
+    StmtList::iterator iter_2 = expected_followees.begin();
+    Assert::AreEqual(*iter_2, *iter_1);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual(*iter_2, *iter_1);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual(*iter_2, *iter_1);
+  }
+
+  TEST_METHOD(TestHasFollowsRelationship) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    bool result = pkb.HasFollowsRelationship();
+    Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestGetAllFollowsTPair) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtNumPairList all_pairs = pkb.GetAllFollowsTPair();
+    Assert::IsTrue(all_pairs.size() == 3);
+    StmtNumPairList expected_list;
+    expected_list.push_back(make_pair(kStmtNum1, kStmtNum2));
+    expected_list.push_back(make_pair(kStmtNum1, kStmtNum3));
+    expected_list.push_back(make_pair(kStmtNum2, kStmtNum3));
+    StmtNumPairList::iterator iter_1 = all_pairs.begin();
+    StmtNumPairList::iterator iter_2 = expected_list.begin();
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+  }
+
+  TEST_METHOD(TestGetAllFollowsPair) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    pkb.InsertReadStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt3, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt4, kStmtListIndex2, kVarName1, kVarNameSet1);
+    StmtNumPairList all_pairs = pkb.GetAllFollowsPair();
+    Assert::IsTrue(all_pairs.size() == 2);
+    StmtNumPairList expected_list;
+    expected_list.push_back(make_pair(kStmtNum1, kStmtNum2));
+    expected_list.push_back(make_pair(kStmtNum2, kStmtNum3));
+    StmtNumPairList::iterator iter_1 = all_pairs.begin();
+    StmtNumPairList::iterator iter_2 = expected_list.begin();
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+  }
+
+  TEST_METHOD(TestGetAllUsedVar) {
+    PKB pkb;
+    pkb.InsertAssignStmt(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1);
+    VarNameList used_vars = pkb.GetAllUsedVar();
+    Assert::IsTrue(used_vars.size()==2);
+    Assert::AreEqual(kVarName2, used_vars.front());
+    Assert::AreEqual(kVarName3, used_vars.back());
+    pkb.InsertPrintStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    used_vars = pkb.GetAllUsedVar();
+    Assert::IsTrue(used_vars.size() == 3);
+    Assert::AreEqual(kVarName1, used_vars.back());
+  }
+
+  TEST_METHOD(TestGetUsedVarS) {
+    PKB pkb;
+    // Double nested uses
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName1, kVarNameSet1);
+    pkb.InsertIfStmt(kStmtNumInt4, kStmtListIndex2, kStmtListIndex2, kStmtListIndex3, kVarNameSet3);
+    VarNameList used_vars = pkb.GetUsedVarS(kStmtNum2);
+    Assert::IsTrue(used_vars.size() == 6);
+  }
+
+  TEST_METHOD(TestGetUsedVarP) {
+    PKB pkb;
+    pkb.InsertProcName(kProcName);
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName1, kVarNameSet1);
+    VarNameList used_vars = pkb.GetUsedVarP(kProcName);
+    Assert::IsTrue(used_vars.size() == 4);
+  }
+
+  TEST_METHOD(TestGetAllUsingStmt) {
+    PKB pkb;
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName1, kVarNameSet1);
+    pkb.InsertIfStmt(kStmtNumInt4, kStmtListIndex2, kStmtListIndex2, kStmtListIndex3, kVarNameSet2);
+    StmtList using_stmts = pkb.GetAllUsingStmt();
+    StmtList expected_list;
+    expected_list.push_back(kStmtNum2);
+    expected_list.push_back(kStmtNum3);
+    expected_list.push_back(kStmtNum4);
+    StmtList::iterator iter_1 = using_stmts.begin();
+    StmtList::iterator iter_2 = expected_list.begin();
+    Assert::AreEqual(*iter_2, *iter_1);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual(*iter_2, *iter_1);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual(*iter_2, *iter_1);
+  }
+
+  TEST_METHOD(TestGetAllUsingProc) {
+    PKB pkb;
+    pkb.InsertProcName(kProcName);
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName1, kVarNameSet1);
+    ProcNameList using_proc = pkb.GetAllUsingProc();
+    Assert::IsTrue(using_proc.size() == 1);
+    Assert::AreEqual(kProcName, using_proc.front());
+  }
+
+  TEST_METHOD(TestGetUsingStmt) {
+    PKB pkb;
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName2);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet1);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName2, kVarNameSet2);
+    StmtList using_stmt = pkb.GetUsingStmt(kVarName2);
+    Assert::AreEqual(kStmtNum2, using_stmt.front());
+  }
+
+  TEST_METHOD(TestGetUsingProc) {
+    PKB pkb;
+    pkb.InsertProcName(kProcName);
+    pkb.InsertPrintStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    ProcNameList using_proc = pkb.GetUsingProc(kVarName1);
+    Assert::IsTrue(using_proc.size() == 1);
+    Assert::AreEqual(kProcName, using_proc.front());
+  }
+
+  TEST_METHOD(TestIsUsedByS) {
+    PKB pkb;
+    pkb.InsertPrintStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    bool result_1 = pkb.IsUsedByS(kStmtNum1, kVarName1);
+    Assert::IsTrue(result_1);
+    bool result_2 = pkb.IsUsedByS(kStmtNum2, kVarName1);
+    Assert::IsFalse(result_2);
+  }
+
+  TEST_METHOD(TestIsUsedByP) {
+    PKB pkb;
+    pkb.InsertProcName(kProcName);
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    pkb.InsertAssignStmt(kStmtNumInt3, kStmtListIndex2, kVarName1, kVarNameSet1);
+    bool result = pkb.IsUsedByP(kProcName, kVarName2);
+    Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestHasUsesRelationship) {
+    PKB pkb;
+    pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    bool result = pkb.HasUsesRelationship();
+    Assert::IsFalse(result);
+    pkb.InsertPrintStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    result = pkb.HasUsesRelationship();
+    Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestGetAllUsesPairS) {
+    PKB pkb;
+    pkb.InsertPrintStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    StmtVarPairList expected_list;
+    StmtVarPairList uses_pair_list = pkb.GetAllUsesPairS();
+    expected_list.push_back(make_pair(kStmtNum1, kVarName1));
+    for (auto& var : kVarNameSet2) {
+      expected_list.push_back(make_pair(kStmtNum2, var));
+    }
+    Assert::IsTrue(uses_pair_list.size() == 3);
+    StmtNumPairList::iterator iter_1 = uses_pair_list.begin();
+    StmtNumPairList::iterator iter_2 = expected_list.begin();
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+  }
+
+  TEST_METHOD(TestGetAllUsesPairP) {
+    PKB pkb;
+    pkb.InsertProcName(kProcName);
+    pkb.InsertPrintStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
+    pkb.InsertWhileStmt(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2, kVarNameSet2);
+    StmtVarPairList expected_list;
+    StmtVarPairList uses_pair_list = pkb.GetAllUsesPairP();
+    expected_list.push_back(make_pair(kProcName, kVarName1));
+    for (auto& var : kVarNameSet2) {
+      expected_list.push_back(make_pair(kProcName, var));
+    }
+    Assert::IsTrue(uses_pair_list.size() == 3);
+    StmtNumPairList::iterator iter_1 = uses_pair_list.begin();
+    StmtNumPairList::iterator iter_2 = expected_list.begin();
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
+    iter_1++;
+    iter_2++;
+    Assert::AreEqual((*iter_2).first, (*iter_1).first);
+    Assert::AreEqual((*iter_2).second, (*iter_1).second);
   }
 };
 }  // namespace IntegrationTesting
