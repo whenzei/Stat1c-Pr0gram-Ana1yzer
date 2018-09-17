@@ -90,8 +90,11 @@
     <ClCompile Include="..\source\util.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\uses_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\follows_table.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +158,11 @@
     <ClInclude Include="..\source\util.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\uses_table.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\follows_table.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
