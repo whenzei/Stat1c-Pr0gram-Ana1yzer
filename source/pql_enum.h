@@ -44,4 +44,11 @@ enum class PqlSuchthatType {
   kNone // only used for parsing
 };
 
+/* The type for pattern clause */
+enum class PqlPatternType {
+  kAssign,
+  kWhile,
+  kIf
+};
+
 #endif
