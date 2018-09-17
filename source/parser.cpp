@@ -138,8 +138,6 @@ void Parser::ProcessAssignment(int curr_stmt_list_index) {
 void Parser::ProcessIfBlock(int curr_stmt_list_index) {
   // current_token_.value == "if" right now
   // syntax: "(" cond_expr ")" "{"
-  // Eat then open parenthesis
-  EatNumTokens(1);
   ReadNextToken();
 
   int if_stmt_index = stmt_index_++;
@@ -148,13 +146,7 @@ void Parser::ProcessIfBlock(int curr_stmt_list_index) {
 
   VariableSet control_vars;
 
-  // Reads the condition of the 'If' block
-  while (current_token_.type != tt::kCloseParen) {
-    if (current_token_.type == tt::kName) {
-      control_vars.insert(current_token_.value);
-    }
-    ReadNextToken();
-  }
+  control_vars = ProcessConditional();
 
   // eat 'then {' tokens
   EatNumTokens(2);
@@ -197,12 +189,7 @@ void Parser::ProcessWhileBlock(int curr_stmt_list_index) {
 
   VarNameSet control_vars;
 
-  while (current_token_.type != tt::kCloseParen) {
-    if (current_token_.type == tt::kName) {
-      control_vars.insert(current_token_.value);
-    }
-    ReadNextToken();
-  }
+  control_vars = ProcessConditional();
 
   ReadNextToken();
 
@@ -238,4 +225,33 @@ void Parser::ProcessBlockContent(int curr_stmt_list_index) {
     }
     ReadNextToken();
   }
+}
+
+VariableSet Parser::ProcessConditional() {
+  stack<Token> paren_stack;
+
+  // Push "(" onto stack
+  paren_stack.push(current_token_);
+  ReadNextToken();
+
+  VariableSet control_vars;
+
+  while (!paren_stack.empty()) {
+    if (current_token_.type == tt::kOpenParen) {
+      paren_stack.push(current_token_);
+    }
+    if (current_token_.type == tt::kName) {
+      control_vars.insert(current_token_.value);
+    }
+    if (current_token_.type == tt::kCloseParen) {
+      paren_stack.pop();
+    }
+
+    // Stops reading the next token when at the end of conditional ')'
+    if (!paren_stack.empty()) {
+      ReadNextToken();
+    }
+  }
+
+  return control_vars;
 }
