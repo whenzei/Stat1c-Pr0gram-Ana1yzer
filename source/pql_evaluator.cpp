@@ -26,7 +26,7 @@ QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   setPKB(pkb);
   // Default value should be true, unless the clause returns a false
   setClauseFlag(true);
-  list<string> results;
+  QueryResultList results;
 
   // Determine the declaration type of the select variable
   setSelectType(CheckSelectDeclarationType(getSelectVar()));
@@ -48,15 +48,13 @@ QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-QueryResultList PqlEvaluator::GetSuchThatResult(
-    PqlSuchthat suchthat) {
+QueryResultList PqlEvaluator::GetSuchThatResult(PqlSuchthat suchthat) {
   PqlDeclarationEntity select_type = getSelectType();
   string select_var_name = getSelectVar();
-  list<string> results;
+  QueryResultList results;
 
   SuchthatParamType arrangement =
-      CheckSuchthatParamType(select_var_name,
-                                               suchthat.GetParameters());
+      CheckSuchthatParamType(select_var_name, suchthat.GetParameters());
 
   switch (suchthat.GetType()) {
     case PqlSuchthatType::kFollows:
@@ -83,7 +81,7 @@ QueryResultList PqlEvaluator::GetSuchThatResult(
 QueryResultList PqlEvaluator::GetSelectAllResult(
     PqlDeclarationEntity select_type) {
   PKB pkb = getPKB();
-  list<string> results;
+  QueryResultList results;
 
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
@@ -147,10 +145,10 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateFollows(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateFollows(PqlDeclarationEntity select_type,
+                                              PqlSuchthat suchthat,
+                                              SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -262,10 +260,10 @@ SuchthatResultList PqlEvaluator::EvaluateFollows(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateFollowsT(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateFollowsT(PqlDeclarationEntity select_type,
+                                               PqlSuchthat suchthat,
+                                               SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -378,10 +376,10 @@ SuchthatResultList PqlEvaluator::EvaluateFollowsT(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateParent(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateParent(PqlDeclarationEntity select_type,
+                                             PqlSuchthat suchthat,
+                                             SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -503,10 +501,10 @@ SuchthatResultList PqlEvaluator::EvaluateParent(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateParentT(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateParentT(PqlDeclarationEntity select_type,
+                                              PqlSuchthat suchthat,
+                                              SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -629,10 +627,10 @@ SuchthatResultList PqlEvaluator::EvaluateParentT(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateUsesS(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateUsesS(PqlDeclarationEntity select_type,
+                                            PqlSuchthat suchthat,
+                                            SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -731,10 +729,10 @@ SuchthatResultList PqlEvaluator::EvaluateUsesS(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateUsesP(
-    PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
-  list<string> results;
+QueryResultList PqlEvaluator::EvaluateUsesP(PqlDeclarationEntity select_type,
+                                            PqlSuchthat suchthat,
+                                            SuchthatParamType arrangement) {
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -813,10 +811,10 @@ SuchthatResultList PqlEvaluator::EvaluateUsesP(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateModifiesS(
+QueryResultList PqlEvaluator::EvaluateModifiesS(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
     SuchthatParamType arrangement) {
-  list<string> results;
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -912,10 +910,10 @@ SuchthatResultList PqlEvaluator::EvaluateModifiesS(
   return results;
 }
 
-SuchthatResultList PqlEvaluator::EvaluateModifiesP(
+QueryResultList PqlEvaluator::EvaluateModifiesP(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
     SuchthatParamType arrangement) {
-  list<string> results;
+  QueryResultList results;
   PKB pkb = getPKB();
   // Getting parameter of such that
   pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
@@ -1002,8 +1000,8 @@ SuchthatResultList PqlEvaluator::EvaluateModifiesP(
 }
 
 QueryResultList PqlEvaluator::FilterResult(list<string> unfiltered_result,
-                                        PqlDeclarationEntity select_type) {
-  list<string> filtered_result;
+                                           PqlDeclarationEntity select_type) {
+  QueryResultList filtered_result;
   PKB pkb = getPKB();
 
   // If its of type stmt (not assign, if, while etc) just return the list,
@@ -1026,7 +1024,7 @@ QueryResultList PqlEvaluator::FilterResult(list<string> unfiltered_result,
 
 QueryResultList PqlEvaluator::FilterVariableResult(
     list<string> unfiltered_result, PqlDeclarationEntity variable_type) {
-  list<string> filtered_result;
+  QueryResultList filtered_result;
 
   for (auto& iter : unfiltered_result) {
     if (variable_type == PqlDeclarationEntity::kConstant && isdigit(iter[0])) {
@@ -1102,7 +1100,7 @@ list<pair<string, string>> PqlEvaluator::FilterPairResult(
 
 QueryResultList PqlEvaluator::GetAllLeftOfPair(
     list<pair<string, string>> filtered_list) {
-  list<string> results;
+  QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.first);
   }
@@ -1111,15 +1109,14 @@ QueryResultList PqlEvaluator::GetAllLeftOfPair(
 
 QueryResultList PqlEvaluator::GetAllRightOfPair(
     list<pair<string, string>> filtered_list) {
-  list<string> results;
+  QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.second);
   }
   return results;
 }
 
-SuchthatParamType
-PqlEvaluator::CheckSuchthatParamType(
+SuchthatParamType PqlEvaluator::CheckSuchthatParamType(
     string select_var_name,
     pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
         such_that_param) {
@@ -1245,10 +1242,10 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
  */
 
 void PqlEvaluator::setClauseFlag(bool clauseFlag) {
-  this->clauseFlag_ = clauseFlag;
+  this->clause_flag_ = clauseFlag;
 }
 
-bool PqlEvaluator::getClauseFlag() { return clauseFlag_; }
+bool PqlEvaluator::getClauseFlag() { return clause_flag_; }
 
 void PqlEvaluator::setDeclarations(
     unordered_map<string, PqlDeclarationEntity> declarations) {

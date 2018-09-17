@@ -15,7 +15,6 @@ using std::list;
 using std::string;
 using std::unordered_map;
 using QueryResultList = list<string>;
-using SuchthatResultList = list<string>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -27,7 +26,7 @@ class PqlEvaluator {
   PqlDeclarationEntity
       select_type_;  // the type of the variable in 'Select' statement
   PKB pkb_;          // pkb database
-  bool clauseFlag_;
+  bool clause_flag_;
 
  public:
   /* Contructor */
@@ -81,7 +80,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateFollows(
+  QueryResultList EvaluateFollows(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -90,7 +89,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateFollowsT(
+  QueryResultList EvaluateFollowsT(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -99,7 +98,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateParent(
+  QueryResultList EvaluateParent(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -108,7 +107,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateParentT(
+  QueryResultList EvaluateParentT(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -117,7 +116,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateUsesS(
+  QueryResultList EvaluateUsesS(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -126,7 +125,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateUsesP(
+  QueryResultList EvaluateUsesP(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -135,7 +134,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateModifiesS(
+  QueryResultList EvaluateModifiesS(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
@@ -144,7 +143,7 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  SuchthatResultList EvaluateModifiesP(
+  QueryResultList EvaluateModifiesP(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
       SuchthatParamType arrangement);
 
