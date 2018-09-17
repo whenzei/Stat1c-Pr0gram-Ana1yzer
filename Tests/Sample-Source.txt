@@ -1,8 +1,8 @@
 procedure One {
-    if (a == b) then {             \\ 0 (1)
+    if (((a>b) && (b > c)) || (d > e)) then {             \\ 0 (1)
         if = while;       	   \\ 1 (2)
     } else {
-        if (while == if) then {    \\ 2 (3)
+        if (while + if > (b + c - (d * e))) then {    \\ 2 (3)
             e = if;                \\ 3 (4)
             g = h;                 \\ 3 (5)
         } else {
@@ -21,5 +21,5 @@ procedure One {
         }
         b = b + 2;		   \\ 5 (14)
     }
-    c = c + 5;                     \\ 0 (15)
+    s = (f/ e) * e / (d - e) + 1;  \\ 0 (15)
 } 
