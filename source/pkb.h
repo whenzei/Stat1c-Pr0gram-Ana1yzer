@@ -10,6 +10,7 @@
 #include "stmt_table.h"
 #include "stmt_type_list.h"
 #include "stmtlist_table.h"
+#include "uses_table.h"
 #include "var_list.h"
 #include "modifies_table.h"
 #include "pql_enum.h"
@@ -30,6 +31,7 @@ class PKB {
   FollowsTable follows_table_;
   ParentTable parent_table_;
   ModifiesTable modifies_table_;
+  UsesTable uses_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -161,15 +163,21 @@ class PKB {
   // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
   StmtList GetFollowsT(StmtNum stmt_num);
 
-  // @returns stmt number of statement a that satisfies Follows(stmt_num_int, a)
-  StmtNum GetFollows(StmtNum stmt_num);
+  // @returns stmt number containing statement a that satisfies Follows(stmt_num_int, a)
+  StmtList GetFollows(StmtNum stmt_num);
+  
+  // @returns a list of all statements that follow some other statement
+  StmtList GetAllFollows();
 
   // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
   StmtList GetFollowedByT(StmtNum stmt_num);
 
-  // @returns stmt number of statement a that satisfies Follows(a, stmt_num_int)
-  StmtNum GetFollowedBy(StmtNum stmt_num);
+  // @returns list containing statement a that satisfies Follows(a, stmt_num_int)
+  StmtList GetFollowedBy(StmtNum stmt_num);
   
+  // @returns a list of all statements that are followed by some other statment
+  StmtList GetAllFollowedBy();
+
   // @returns true if follows table has any follows relationships
   bool HasFollowsRelationship();
 
@@ -252,6 +260,42 @@ class PKB {
 
   // @returns a list of all pairs of <modifying_proc_name, modified_var_name>
   ProcVarPairList GetAllModifiesPairP();
+
+  // @returns a list of all variables that are used by any proc and/or stmt
+  VarNameList GetAllUsedVar();
+
+  // @returns a list of variables used in the statement identified by stmt_num
+  VarNameList GetUsedVarS(StmtNum stmt_num);
+
+  // @returns a list of variables used in the procedure identified by proc_name
+  VarNameList GetUsedVarP(ProcName proc_name);
+
+  // @returns a list of all statements that use any variable
+  StmtNumList GetAllUsingStmt();
+
+  // @returns a list of all procedures that use any variable
+  ProcNameList GetAllUsingProc();
+
+  // @returns a list of all statements that use the variable identified by var_name
+  StmtNumList GetUsingStmt(VarName var_name);
+
+  // @returns s a list of all procedures that use the variable identified by var_name
+  ProcNameList GetUsingProc(VarName var_name);
+
+  // @returns true if var_name is used in stmt_num, false if otherwise
+  bool IsUsedByS(StmtNum stmt_num, VarName var_name);
+
+  // @returns true if var_name is used in proc_name, false if otherwise
+  bool IsUsedByP(ProcName proc_name, VarName var_name);
+
+  // @returns true if Uses Table contains any uses relationships, false if otherwise
+  bool HasUsesRelationship();
+
+  // @returns a list of all <stmt_num, var_name> pairs of statements using a variable and the variable name
+  StmtVarPairList GetAllUsesPairS();
+
+  // @returns a list of all <proc_name, var_name> pairs of procedures using a variable and the variable name
+  ProcVarPairList GetAllUsesPairP();
 
  private:
   StmtNum ToString(int stmt_num_int);
