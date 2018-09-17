@@ -43,6 +43,8 @@ class Parser {
 
   void ProcessProcedure();
 
+		VariableSet ProcessConditional();
+
  public:
   Parser(PKB* pkb);
   void Parse(string filepath);
