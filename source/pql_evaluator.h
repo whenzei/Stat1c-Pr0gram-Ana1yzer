@@ -19,34 +19,27 @@ using QueryResultList = list<string>;
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
  private:
-  unordered_map<string, PqlDeclarationEntity>
-      declarations_;        // the list of declarations
-  string select_var_name_;  // the variable name of the 'Select' statement
-  vector<PqlSuchthat> suchthats_;  // collection of such that clauses
   PqlDeclarationEntity
       select_type_;  // the type of the variable in 'Select' statement
   PKB pkb_;          // pkb database
   bool clause_flag_;
+  PqlQuery pql_query_;
 
  public:
   /* Contructor */
   PqlEvaluator();
 
   /* Setter */
-  void setDeclarations(unordered_map<string, PqlDeclarationEntity>);
-  void setSuchthat(vector<PqlSuchthat>);
-  void setSelectVar(string);
-  void setSelectType(PqlDeclarationEntity);
-  void setPKB(PKB);
-  void setClauseFlag(bool);
+  void SetQuery(PqlQuery);
+  void SetSelectType(PqlDeclarationEntity);
+  void SetPKB(PKB);
+  void SetClauseFlag(bool);
 
   /* Getter */
-  unordered_map<string, PqlDeclarationEntity> getDeclarations();
-  vector<PqlSuchthat> getSuchthat();
-  string getSelectVar();
-  PqlDeclarationEntity getSelectType();
-  PKB getPKB();
-  bool getClauseFlag();
+  PqlQuery GetQuery();
+  PqlDeclarationEntity GetSelectType();
+  PKB GetPKB();
+  bool GetClauseFlag();
 
   /**
    * Use the @Query provided by user
@@ -80,72 +73,72 @@ class PqlEvaluator {
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateFollows(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateFollows(PqlDeclarationEntity select_type,
+                                  PqlSuchthat suchthat,
+                                  SuchthatParamType arrangement);
 
   /**
    * Evaluate such that follows*
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateFollowsT(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateFollowsT(PqlDeclarationEntity select_type,
+                                   PqlSuchthat suchthat,
+                                   SuchthatParamType arrangement);
 
   /**
    * Evaluate such that parent
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateParent(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateParent(PqlDeclarationEntity select_type,
+                                 PqlSuchthat suchthat,
+                                 SuchthatParamType arrangement);
 
   /**
    * Evaluate such that parent*
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateParentT(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateParentT(PqlDeclarationEntity select_type,
+                                  PqlSuchthat suchthat,
+                                  SuchthatParamType arrangement);
 
   /**
    * Evaluate such that uses stmt
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateUsesS(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateUsesS(PqlDeclarationEntity select_type,
+                                PqlSuchthat suchthat,
+                                SuchthatParamType arrangement);
 
   /**
    * Evaluate such that uses procedure
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateUsesP(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateUsesP(PqlDeclarationEntity select_type,
+                                PqlSuchthat suchthat,
+                                SuchthatParamType arrangement);
 
   /**
    * Evaluate such that modify stmt
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateModifiesS(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateModifiesS(PqlDeclarationEntity select_type,
+                                    PqlSuchthat suchthat,
+                                    SuchthatParamType arrangement);
 
-    /**
+  /**
    * Evaluate such that modify procedure
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  QueryResultList EvaluateModifiesP(
-      PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      SuchthatParamType arrangement);
+  QueryResultList EvaluateModifiesP(PqlDeclarationEntity select_type,
+                                    PqlSuchthat suchthat,
+                                    SuchthatParamType arrangement);
 
   /**
    * Determine the declaration type of the select variable
@@ -162,11 +155,8 @@ class PqlEvaluator {
    * @returns properties of synonym in the form of
    * PqlPropertyOfEntityInSuchthatParam
    */
-  SuchthatParamType
-  CheckSuchthatParamType(
-      string select_var_name, pair<pair<string, PqlDeclarationEntity>,
-                                   pair<string, PqlDeclarationEntity>>
-                                  such_that_param);
+  SuchthatParamType CheckSuchthatParamType(string select_var_name,
+                                           Parameters such_that_param);
 
   /**
    * Filter the result list based on the selection entity type
@@ -174,15 +164,15 @@ class PqlEvaluator {
    * @returns result list that only contains result of a certain entity type
    */
   QueryResultList FilterResult(list<string> unfiltered_result,
-                            PqlDeclarationEntity select_type);
+                               PqlDeclarationEntity select_type);
 
-   /**
+  /**
    * Filter the result list based on the variable entity type
    * @input unfiltered result list and variable entity type (e.g constant)
    * @returns result list that only contains result of a certain entity type
    */
   QueryResultList FilterVariableResult(list<string> unfiltered_result,
-                            PqlDeclarationEntity variable_type);
+                                       PqlDeclarationEntity variable_type);
 
   /**
    * Filter the result pair list based on the selection entity type and filter
