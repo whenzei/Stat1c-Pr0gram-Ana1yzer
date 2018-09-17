@@ -936,6 +936,9 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     pkb.InsertReadStmt(kStmtNumInt1, kStmtListIndex1, kVarName1);
     bool result = pkb.HasUsesRelationship();
+    Assert::IsFalse(result);
+    pkb.InsertPrintStmt(kStmtNumInt2, kStmtListIndex1, kVarName1);
+    result = pkb.HasUsesRelationship();
     Assert::IsTrue(result);
   }
 
