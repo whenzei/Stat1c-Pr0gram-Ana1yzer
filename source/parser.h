@@ -43,11 +43,11 @@ class Parser {
 
   void ProcessProcedure();
 
-		VariableSet ProcessConditional();
+  VariableSet ProcessConditional();
 
  public:
   Parser(PKB* pkb);
   void Parse(string filepath);
 };
 
-#endif  //! SPA_PARSER2_H
+#endif  //! SPA_PARSER_H

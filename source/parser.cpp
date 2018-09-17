@@ -247,10 +247,10 @@ VariableSet Parser::ProcessConditional() {
       paren_stack.pop();
     }
 
-				// Stops reading the next token when at the end of conditional ')'
+    // Stops reading the next token when at the end of conditional ')'
     if (!paren_stack.empty()) {
-      ReadNextToken(); 
-				}
+      ReadNextToken();
+    }
   }
 
   return control_vars;
