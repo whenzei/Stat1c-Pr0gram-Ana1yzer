@@ -114,21 +114,24 @@ TEST_METHOD(TestTokenizeNames) {
 
   // should tokenize mixture of characters and numbers,
   // provided it begins with a character
+  // subtype should also be none
   kTestInput = "mix3dl3tt3rs";
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   expected_result = Result({12, {kTestType, "mix3dl3tt3rs"}});
   Assert::IsTrue(actual_result == expected_result);
+  Assert::IsTrue(actual_result.token.subtype == Tokenizer::TokenSubtype::kNone);
 
   // should return empty result if given something that starts with a digit
   kTestInput = "3startswithdigit";
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 
-  // keywords are still detected as names
+  // keywords are still detected as names, but subtypes are included
   kTestInput = "procedure";
   actual_result = Tokenizer::TokenizeNames(kTestInput, 0);
   expected_result = Result({9, {kTestType, "procedure"}});
   Assert::IsTrue(actual_result == expected_result);
+  Assert::IsTrue(actual_result.token.subtype == Tokenizer::TokenSubtype::kProcedure);
 }
 
 TEST_METHOD(TestTokenizeBraces) {
@@ -261,6 +264,33 @@ TEST_METHOD(TestTokenizeEquals) {
   actual_result = Tokenizer::TokenizeEquals(kTestInput, 5);
   expected_result = Result({1, {kTestType, "="}});
   Assert::IsTrue(actual_result == expected_result);
+}
+
+TEST_METHOD(TestTokenizeConditionals) {
+  string kTestInput("!((a > b) || (b < c))");
+  Tokenizer::TokenType kTestType(Tokenizer::TokenType::kConditional);
+
+  // should tokenize "!" symbol
+  Result actual_result = Tokenizer::TokenizeConditionals(kTestInput, 0);
+  Result expected_result({ 1, {kTestType, "!"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  // should tokenize "||" symbol
+  kTestInput = "a||b";
+  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 1);
+  expected_result = Result({ 2, {kTestType, "||"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  // should tokenize "&&" symbol
+  kTestInput = "a&&b";
+  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 1);
+  expected_result = Result({ 2, {kTestType, "&&"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  // should not tokenize "|&" symbol
+  kTestInput = "a|&b";
+  actual_result = Tokenizer::TokenizeConditionals(kTestInput, 1);
+  Assert::IsTrue(actual_result == Tokenizer::EmptyResult());
 }
 
 TEST_METHOD(TestTokenize) {
