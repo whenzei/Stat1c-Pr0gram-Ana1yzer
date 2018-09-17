@@ -219,7 +219,7 @@ TEST_METHOD(TestTokenizeRelationals) {
 }
 
 TEST_METHOD(TestTokenizeOperators) {
-  string kTestInput("a +- b");
+  string kTestInput("a +-*/% b");
   Tokenizer::TokenType kTestType(Tokenizer::TokenType::kOperator);
 
   // should return empty result if given a name
@@ -229,6 +229,23 @@ TEST_METHOD(TestTokenizeOperators) {
   // tokenizes a single operator at a time
   actual_result = Tokenizer::TokenizeOperators(kTestInput, 2);
   Result expected_result({1, {kTestType, "+"}});
+  Assert::IsTrue(actual_result == expected_result);
+  
+  // tokenizes operators
+  actual_result = Tokenizer::TokenizeOperators(kTestInput, 3);
+  expected_result = Result({ 1, {kTestType, "-"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  actual_result = Tokenizer::TokenizeOperators(kTestInput, 4);
+  expected_result = Result({ 1, {kTestType, "*"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  actual_result = Tokenizer::TokenizeOperators(kTestInput, 5);
+  expected_result = Result({ 1, {kTestType, "/"} });
+  Assert::IsTrue(actual_result == expected_result);
+
+  actual_result = Tokenizer::TokenizeOperators(kTestInput, 6);
+  expected_result = Result({ 1, {kTestType, "%"} });
   Assert::IsTrue(actual_result == expected_result);
 }
 
