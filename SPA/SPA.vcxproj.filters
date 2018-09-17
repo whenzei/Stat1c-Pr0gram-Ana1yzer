@@ -164,11 +164,10 @@
     <ClInclude Include="..\source\pql_enum.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="..\source\uses_table.h">
-=======
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\follows_table.h">
->>>>>>> master
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
