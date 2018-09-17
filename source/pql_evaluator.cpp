@@ -19,7 +19,7 @@ using std::vector;
 
 PqlEvaluator::PqlEvaluator() {}
 
-list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
+QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   setSelectVar(query->GetVarName());
   setDeclarations(query->GetDeclarations());
   setSuchthat(query->GetSuchThats());
@@ -32,15 +32,15 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   setSelectType(CheckSelectDeclarationType(getSelectVar()));
 
   // If there is no such that clause, then evaluator will use
-  // GetResultFromSelectAllQuery method
-  if (getSuchthat().size() == 0) {
+  // GetSelectAllResult method
+  if (getSuchthat().empty()) {
     PqlDeclarationEntity select_type = getSelectType();
-    results = GetResultFromSelectAllQuery(select_type);
+    results = GetSelectAllResult(select_type);
   }
-  // Else use GetResultFromQueryWithSuchThat method
+  // Else use GetSuchThatResult method
   else {
     PqlSuchthat suchthat = getSuchthat().front();
-    results = GetResultFromQueryWithSuchThat(suchthat);
+    results = GetSuchThatResult(suchthat);
   }
 
   cout << "Result size: " << results.size() << endl;
@@ -48,14 +48,14 @@ list<string> PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
+QueryResultList PqlEvaluator::GetSuchThatResult(
     PqlSuchthat suchthat) {
   PqlDeclarationEntity select_type = getSelectType();
   string select_var_name = getSelectVar();
   list<string> results;
 
-  PqlArrangementOfSynonymInSuchthatParam arrangement =
-      CheckArrangementOfSynonymInSuchthatParam(select_var_name,
+  SuchthatParamType arrangement =
+      CheckSuchthatParamType(select_var_name,
                                                suchthat.GetParameters());
 
   switch (suchthat.GetType()) {
@@ -80,7 +80,7 @@ list<string> PqlEvaluator::GetResultFromQueryWithSuchThat(
   return results;
 }
 
-list<string> PqlEvaluator::GetResultFromSelectAllQuery(
+QueryResultList PqlEvaluator::GetSelectAllResult(
     PqlDeclarationEntity select_type) {
   PKB pkb = getPKB();
   list<string> results;
@@ -147,9 +147,9 @@ list<string> PqlEvaluator::GetResultFromSelectAllQuery(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateFollows(
+SuchthatResultList PqlEvaluator::EvaluateFollows(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -168,7 +168,7 @@ list<string> PqlEvaluator::EvaluateFollows(
     case kNoSynonym:
       // If left is followed by right
       if (pkb.IsFollows(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << left_name << " not followed by " << right_name << endl;
@@ -180,7 +180,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << right_name << " is not a follower " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreRight:
@@ -189,12 +189,12 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << left_name << " is not a followee " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreBoth:
       if (pkb.HasFollowsRelationship()) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << " no follow relationship found " << endl;
@@ -205,7 +205,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << " No followee for this type " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -213,7 +213,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << " left stmt does not have any follower" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -221,7 +221,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << " No follower for this type " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
@@ -229,7 +229,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << " right stmt is not following anyone" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -248,7 +248,7 @@ list<string> PqlEvaluator::EvaluateFollows(
         setClauseFlag(false);
         cout << " no pair of (lefttype,righttype)" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -262,9 +262,9 @@ list<string> PqlEvaluator::EvaluateFollows(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateFollowsT(
+SuchthatResultList PqlEvaluator::EvaluateFollowsT(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -283,7 +283,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
     case kNoSynonym:
       // If left is followed by right
       if (pkb.IsFollowsT(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << left_name << " not indirectly followed by " << right_name
@@ -296,7 +296,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << right_name << " is not a indirect follower " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreRight:
@@ -305,12 +305,12 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << left_name << " is not a indirect followee " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreBoth:
       if (pkb.HasFollowsRelationship()) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << " no follow relationship found " << endl;
@@ -321,7 +321,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << " No indirect followee for this type " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -329,7 +329,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << " left stmt does not have any follower" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -337,7 +337,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << " No indirect follower for this type " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
@@ -345,7 +345,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << " right stmt is not following anyone" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -364,7 +364,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
         setClauseFlag(false);
         cout << " no pair of (lefttype,righttype)" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -378,9 +378,9 @@ list<string> PqlEvaluator::EvaluateFollowsT(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateParent(
+SuchthatResultList PqlEvaluator::EvaluateParent(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -399,7 +399,7 @@ list<string> PqlEvaluator::EvaluateParent(
     case kNoSynonym:
       // If left is parent of right
       if (pkb.IsParent(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << left_name << " not parent of " << right_name << endl;
@@ -411,7 +411,7 @@ list<string> PqlEvaluator::EvaluateParent(
         setClauseFlag(false);
         cout << right_name << " has no parent " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreRight:
@@ -420,12 +420,12 @@ list<string> PqlEvaluator::EvaluateParent(
         setClauseFlag(false);
         cout << left_name << " has no child " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreBoth:
       if (pkb.HasParentRelationship()) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << " no parent/child found " << endl;
@@ -437,7 +437,7 @@ list<string> PqlEvaluator::EvaluateParent(
         cout << " left stmt does not have " << right_name << " as child"
              << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -445,7 +445,7 @@ list<string> PqlEvaluator::EvaluateParent(
         setClauseFlag(false);
         cout << " left stmt is not a parent" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -454,7 +454,7 @@ list<string> PqlEvaluator::EvaluateParent(
         cout << " right stmt does not have stmt " << left_name << " as parent"
              << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
@@ -462,7 +462,7 @@ list<string> PqlEvaluator::EvaluateParent(
         setClauseFlag(false);
         cout << " right stmt does not have any parent" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -485,7 +485,7 @@ list<string> PqlEvaluator::EvaluateParent(
         setClauseFlag(false);
         cout << " no pair of (lefttype,righttype)" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -503,9 +503,9 @@ list<string> PqlEvaluator::EvaluateParent(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateParentT(
+SuchthatResultList PqlEvaluator::EvaluateParentT(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -524,7 +524,7 @@ list<string> PqlEvaluator::EvaluateParentT(
     case kNoSynonym:
       // If left is parent of right
       if (pkb.IsParentT(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << left_name << " not indirect parent of " << right_name << endl;
@@ -536,7 +536,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         setClauseFlag(false);
         cout << right_name << " has no indirect parent " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreRight:
@@ -545,12 +545,12 @@ list<string> PqlEvaluator::EvaluateParentT(
         setClauseFlag(false);
         cout << left_name << " has no indirect child " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kNoSynonymUnderscoreBoth:
       if (pkb.HasParentRelationship()) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << " no parent/child found " << endl;
@@ -562,7 +562,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         cout << " left stmt does not have stmt " << right_name
              << " as indirect child" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -571,7 +571,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         setClauseFlag(false);
         cout << " left stmt does not have any child" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -580,7 +580,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         cout << " right stmt does not have stmt " << left_name
              << " as indirect parent" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
@@ -588,7 +588,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         setClauseFlag(false);
         cout << " right stmt does not have any parent" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -611,7 +611,7 @@ list<string> PqlEvaluator::EvaluateParentT(
         setClauseFlag(false);
         cout << " no pair of (lefttype,righttype)" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -629,9 +629,9 @@ list<string> PqlEvaluator::EvaluateParentT(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateUsesS(
+SuchthatResultList PqlEvaluator::EvaluateUsesS(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -650,7 +650,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
     case kNoSynonym:
       // If stmt (left) uses variable (right)
       if (pkb.IsUsedByS(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't use " << right_name << endl;
@@ -662,7 +662,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't use any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeft:
@@ -671,7 +671,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt use right variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -680,7 +680,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt use any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -690,7 +690,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
         cout << "Stmt " << left_name << " doesnt use any variable of this type"
              << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -708,7 +708,7 @@ list<string> PqlEvaluator::EvaluateUsesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -731,9 +731,9 @@ list<string> PqlEvaluator::EvaluateUsesS(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateUsesP(
+SuchthatResultList PqlEvaluator::EvaluateUsesP(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -751,7 +751,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
   switch (arrangement) {
     case kNoSynonym:
       if (pkb.IsUsedByP(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesn't use " << right_name << endl;
@@ -762,7 +762,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesn't use any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeft:
@@ -770,7 +770,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
         setClauseFlag(false);
         cout << "Proc doesnt use right variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -778,7 +778,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
         setClauseFlag(false);
         cout << "Proc doesnt use any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -787,7 +787,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesnt use any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -801,7 +801,7 @@ list<string> PqlEvaluator::EvaluateUsesP(
         setClauseFlag(false);
         cout << "None of the proc modify any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -813,9 +813,9 @@ list<string> PqlEvaluator::EvaluateUsesP(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateModifiesS(
+SuchthatResultList PqlEvaluator::EvaluateModifiesS(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -834,7 +834,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
     case kNoSynonym:
       // If stmt (left) modify variable (right)
       if (pkb.IsModifiedByS(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify " << right_name
@@ -847,7 +847,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeft:
@@ -856,7 +856,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt modify right variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -865,7 +865,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -873,7 +873,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         setClauseFlag(false);
         cout << "Stmt " << left_name << " doesnt modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -889,7 +889,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         setClauseFlag(false);
         cout << "Stmt of left type doesnt modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -912,9 +912,9 @@ list<string> PqlEvaluator::EvaluateModifiesS(
   return results;
 }
 
-list<string> PqlEvaluator::EvaluateModifiesP(
+SuchthatResultList PqlEvaluator::EvaluateModifiesP(
     PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-    PqlArrangementOfSynonymInSuchthatParam arrangement) {
+    SuchthatParamType arrangement) {
   list<string> results;
   PKB pkb = getPKB();
   // Getting parameter of such that
@@ -931,7 +931,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
     case kNoSynonym:
       // If proc (left) modify variable (right)
       if (pkb.IsModifiedByP(left_name, right_name)) {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       } else {
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesn't modify " << right_name
@@ -944,7 +944,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesn't modify any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeft:
@@ -953,7 +953,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
         setClauseFlag(false);
         cout << "Left proc doesnt modify right variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
@@ -962,7 +962,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
         setClauseFlag(false);
         cout << "None of the proc modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymRight:
@@ -970,7 +970,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
         setClauseFlag(false);
         cout << "Proc " << left_name << " doesnt modify any variable" << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kOneSynonymSelectLeft:
@@ -987,7 +987,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
         setClauseFlag(false);
         cout << "None of the proc modify any variable " << endl;
       } else {
-        return GetResultFromSelectAllQuery(select_type);
+        return GetSelectAllResult(select_type);
       }
       break;
     case kTwoSynonymSelectLeft:
@@ -1001,7 +1001,7 @@ list<string> PqlEvaluator::EvaluateModifiesP(
   return results;
 }
 
-list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
+QueryResultList PqlEvaluator::FilterResult(list<string> unfiltered_result,
                                         PqlDeclarationEntity select_type) {
   list<string> filtered_result;
   PKB pkb = getPKB();
@@ -1024,7 +1024,7 @@ list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
   return filtered_result;
 }
 
-list<string> PqlEvaluator::FilterVariableResult(
+QueryResultList PqlEvaluator::FilterVariableResult(
     list<string> unfiltered_result, PqlDeclarationEntity variable_type) {
   list<string> filtered_result;
 
@@ -1100,7 +1100,7 @@ list<pair<string, string>> PqlEvaluator::FilterPairResult(
   return filtered_result;
 }
 
-list<string> PqlEvaluator::GetAllLeftOfPair(
+QueryResultList PqlEvaluator::GetAllLeftOfPair(
     list<pair<string, string>> filtered_list) {
   list<string> results;
   for (auto& iter : filtered_list) {
@@ -1109,7 +1109,7 @@ list<string> PqlEvaluator::GetAllLeftOfPair(
   return results;
 }
 
-list<string> PqlEvaluator::GetAllRightOfPair(
+QueryResultList PqlEvaluator::GetAllRightOfPair(
     list<pair<string, string>> filtered_list) {
   list<string> results;
   for (auto& iter : filtered_list) {
@@ -1118,8 +1118,8 @@ list<string> PqlEvaluator::GetAllRightOfPair(
   return results;
 }
 
-PqlArrangementOfSynonymInSuchthatParam
-PqlEvaluator::CheckArrangementOfSynonymInSuchthatParam(
+SuchthatParamType
+PqlEvaluator::CheckSuchthatParamType(
     string select_var_name,
     pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
         such_that_param) {

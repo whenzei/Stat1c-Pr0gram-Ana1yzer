@@ -35,7 +35,7 @@ void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
     results = qe.GetResultFromQuery(pql_query, pkb_);
 
 	// Set result to none if no results were found.
-    if (results.size() == 0) {
+    if (results.empty()) {
       results.push_back("none");
     }
   }

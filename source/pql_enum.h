@@ -45,7 +45,7 @@ enum class PqlSuchthatType {
 };
 
 /* The arrangement types for a such that clause */
-enum PqlArrangementOfSynonymInSuchthatParam {
+enum SuchthatParamType {
   kNoSynonym = 0,                        // e.g (1, 2)
   kNoSynonymUnderscoreLeft,              // e.g (_, 2)
   kNoSynonymUnderscoreRight,             // e.g (1, _)

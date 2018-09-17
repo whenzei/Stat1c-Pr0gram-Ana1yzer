@@ -14,6 +14,8 @@
 using std::list;
 using std::string;
 using std::unordered_map;
+using QueryResultList = list<string>;
+using SuchthatResultList = list<string>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -54,7 +56,7 @@ class PqlEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromQuery(PqlQuery* query, PKB pkb);
+  QueryResultList GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
    * Return a list of results based on the query. This method will only be
@@ -63,7 +65,7 @@ class PqlEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromSelectAllQuery(PqlDeclarationEntity select_type);
+  QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
 
   /**
    * Return a list of results based on the query. This method will only be
@@ -72,79 +74,79 @@ class PqlEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  list<string> GetResultFromQueryWithSuchThat(PqlSuchthat suchthat);
+  QueryResultList GetSuchThatResult(PqlSuchthat suchthat);
 
   /**
    * Evaluate such that follows
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateFollows(
+  SuchthatResultList EvaluateFollows(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that follows*
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateFollowsT(
+  SuchthatResultList EvaluateFollowsT(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that parent
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateParent(
+  SuchthatResultList EvaluateParent(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that parent*
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateParentT(
+  SuchthatResultList EvaluateParentT(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that uses stmt
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateUsesS(
+  SuchthatResultList EvaluateUsesS(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that uses procedure
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateUsesP(
+  SuchthatResultList EvaluateUsesP(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Evaluate such that modify stmt
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateModifiesS(
+  SuchthatResultList EvaluateModifiesS(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
     /**
    * Evaluate such that modify procedure
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
    */
-  list<string> EvaluateModifiesP(
+  SuchthatResultList EvaluateModifiesP(
       PqlDeclarationEntity select_type, PqlSuchthat suchthat,
-      PqlArrangementOfSynonymInSuchthatParam arrangement);
+      SuchthatParamType arrangement);
 
   /**
    * Determine the declaration type of the select variable
@@ -161,8 +163,8 @@ class PqlEvaluator {
    * @returns properties of synonym in the form of
    * PqlPropertyOfEntityInSuchthatParam
    */
-  PqlArrangementOfSynonymInSuchthatParam
-  CheckArrangementOfSynonymInSuchthatParam(
+  SuchthatParamType
+  CheckSuchthatParamType(
       string select_var_name, pair<pair<string, PqlDeclarationEntity>,
                                    pair<string, PqlDeclarationEntity>>
                                   such_that_param);
@@ -172,7 +174,7 @@ class PqlEvaluator {
    * @input unfiltered result list and selection entity type (e.g assign)
    * @returns result list that only contains result of a certain entity type
    */
-  list<string> FilterResult(list<string> unfiltered_result,
+  QueryResultList FilterResult(list<string> unfiltered_result,
                             PqlDeclarationEntity select_type);
 
    /**
@@ -180,7 +182,7 @@ class PqlEvaluator {
    * @input unfiltered result list and variable entity type (e.g constant)
    * @returns result list that only contains result of a certain entity type
    */
-  list<string> FilterVariableResult(list<string> unfiltered_result,
+  QueryResultList FilterVariableResult(list<string> unfiltered_result,
                             PqlDeclarationEntity variable_type);
 
   /**
@@ -201,14 +203,14 @@ class PqlEvaluator {
    * @input the list of pairs
    * @returns list of result in the left of the pair
    */
-  list<string> GetAllLeftOfPair(list<pair<string, string>> filtered_list);
+  QueryResultList GetAllLeftOfPair(list<pair<string, string>> filtered_list);
 
   /**
    * Get all the result from right of the pair and return it in a list
    * @input the list of pairs
    * @returns list of result in the right of the pair
    */
-  list<string> GetAllRightOfPair(list<pair<string, string>> filtered_list);
+  QueryResultList GetAllRightOfPair(list<pair<string, string>> filtered_list);
 };
 
 #endif  // !QUERY_EVALUATOR_H
