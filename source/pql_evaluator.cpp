@@ -201,39 +201,62 @@ list<string> PqlEvaluator::EvaluateFollows(
       }
       break;
     case kOneSynonymLeft:
-      if (pkb.GetStmtType(pkb.GetFollowedBy(right_name)) == left_type) {
-        return GetResultFromSelectAllQuery(select_type);
-      } else {
+      if (FilterResult(pkb.GetFollowedBy(right_name), left_type).empty()) {
         setClauseFlag(false);
-        cout << " No follower for this type " << endl;
+        cout << " No followee for this type " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
+      if (FilterResult(pkb.GetAllFollowedBy(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << " left stmt does not have any follower" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
-      if (pkb.GetStmtType(pkb.GetFollows(left_name)) == right_type) {
-        return GetResultFromSelectAllQuery(select_type);
-      } else {
+      if (FilterResult(pkb.GetFollows(left_name), right_type).empty()) {
         setClauseFlag(false);
-        cout << " No followee for this type " << endl;
+        cout << " No follower for this type " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
+      if (FilterResult(pkb.GetAllFollows(), right_type).empty()) {
+        setClauseFlag(false);
+        cout << " right stmt is not following anyone" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
-      break;
+      return FilterResult(pkb.GetFollowedBy(right_name), left_type);
     case kOneSynonymSelectLeftUnderscoreRight:
-      break;
+      return FilterResult(pkb.GetAllFollowedBy(), left_type);
     case kOneSynonymSelectRight:
-      break;
+      return FilterResult(pkb.GetFollows(left_name), right_type);
     case kOneSynonymSelectRightUnderscoreLeft:
-      break;
+      return FilterResult(pkb.GetAllFollows(), right_type);
     case kTwoSynonym:
+      // Filter left and right
+      if (FilterPairResult(kFilterBoth, pkb.GetAllFollowsPair(), left_type,
+                           right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << " no pair of (lefttype,righttype)" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
-      break;
+      return GetAllLeftOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllFollowsPair(), left_type, right_type));
     case kTwoSynonymSelectRight:
-      break;
+      return GetAllRightOfPair(FilterPairResult(
+          kFilterBoth, pkb.GetAllFollowsPair(), left_type, right_type));
   }
 
   return results;
@@ -302,8 +325,7 @@ list<string> PqlEvaluator::EvaluateFollowsT(
       }
       break;
     case kOneSynonymLeftUnderscoreRight:
-      //////////////////////////////TODO///////////////////////////////////////////////
-      if (FilterResult(pkb.GetAllParent(), left_type).empty()) {
+      if (FilterResult(pkb.GetAllFollowedBy(), left_type).empty()) {
         setClauseFlag(false);
         cout << " left stmt does not have any follower" << endl;
       } else {
@@ -319,10 +341,9 @@ list<string> PqlEvaluator::EvaluateFollowsT(
       }
       break;
     case kOneSynonymRightUnderscoreLeft:
-      //////////////////////////////TODO///////////////////////////////////////////////
-      if (FilterResult(pkb.GetAllParent(), right_type).empty()) {
+      if (FilterResult(pkb.GetAllFollows(), right_type).empty()) {
         setClauseFlag(false);
-        cout << " right stmt is not followed" << endl;
+        cout << " right stmt is not following anyone" << endl;
       } else {
         return GetResultFromSelectAllQuery(select_type);
       }
@@ -330,15 +351,11 @@ list<string> PqlEvaluator::EvaluateFollowsT(
     case kOneSynonymSelectLeft:
       return FilterResult(pkb.GetFollowedByT(right_name), left_type);
     case kOneSynonymSelectLeftUnderscoreRight:
-      //////////////////////////////TODO///////////////////////////////////////////////
-
-      break;
+      return FilterResult(pkb.GetAllFollowedBy(), left_type);
     case kOneSynonymSelectRight:
       return FilterResult(pkb.GetFollowsT(left_name), right_type);
     case kOneSynonymSelectRightUnderscoreLeft:
-      //////////////////////////////TODO///////////////////////////////////////////////
-
-      break;
+      return FilterResult(pkb.GetAllFollows(), right_type);
     case kTwoSynonym:
       // Filter left and right
       if (FilterPairResult(kFilterBoth, pkb.GetAllFollowsTPair(), left_type,
@@ -617,32 +634,98 @@ list<string> PqlEvaluator::EvaluateUsesS(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating UsesS." << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      // If stmt (left) uses variable (right)
+      if (pkb.IsUsedByS(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << "Stmt " << left_name << " doesn't use " << right_name << endl;
+      }
       break;
     case kNoSynonymUnderscoreRight:
-      break;
-    case kNoSynonymUnderscoreBoth:
+      // If nothing were used by this stmt
+      if (pkb.GetUsedVarS(left_name).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt " << left_name << " doesn't use any variable " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeft:
+      // If no stmt of left syn entity type uses the right variable
+      if (FilterResult(pkb.GetUsingStmt(right_name), left_type).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt of left type doesnt use right variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+      // If no stmt of left syn entity type uses the any variable
+      if (FilterResult(pkb.GetAllUsingStmt(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt of left type doesnt use any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (FilterVariableResult(pkb.GetUsedVarS(left_name), right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << "Stmt " << left_name << " doesnt use any variable of this type"
+             << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
+      return FilterResult(pkb.GetUsingStmt(right_name), left_type);
       break;
     case kOneSynonymSelectLeftUnderscoreRight:
+      return FilterResult(pkb.GetAllUsingStmt(), left_type);
       break;
     case kOneSynonymSelectRight:
-      break;
+      return FilterVariableResult(pkb.GetUsedVarS(left_name), right_type);
     case kTwoSynonym:
+      // Because right param only takes in variable synonym, it is exactly the
+      // same as kOneSynonymLeftUnderscoreRight
+      if (FilterResult(pkb.GetAllUsingStmt(), left_type).empty()) {
+        setClauseFlag(false);
+        cout << "Stmt of left type doesnt modify any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
+      // Because right param only takes in variable synonym, it is exactly the
+      // same as kOneSynonymSelectLeftUnderscoreRight
+      return FilterResult(pkb.GetAllUsingStmt(), left_type);
       break;
     case kTwoSynonymSelectRight:
-      break;
+      // Because right param only takes in variable synonym, just need to filter
+      // left of the pair. Get all right of pair as it is select right
+      cout << "Two syn select right var" << endl;
+      if (left_type == PqlDeclarationEntity::kStmt) {
+        return pkb.GetAllUsedVar();
+      } else {
+        return GetAllRightOfPair(FilterPairResult(
+            kFilterLeft, pkb.GetAllUsesPairS(), left_type, right_type));
+      }
   }
 
   return results;
@@ -653,32 +736,78 @@ list<string> PqlEvaluator::EvaluateUsesP(
     PqlArrangementOfSynonymInSuchthatParam arrangement) {
   list<string> results;
   PKB pkb = getPKB();
+  // Getting parameter of such that
+  pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>
+      such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  cout << "Evaluating UsesP." << endl;
 
   switch (arrangement) {
     case kNoSynonym:
+      if (pkb.IsUsedByP(left_name, right_name)) {
+        return GetResultFromSelectAllQuery(select_type);
+      } else {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesn't use " << right_name << endl;
+      }
       break;
     case kNoSynonymUnderscoreRight:
-      break;
-    case kNoSynonymUnderscoreBoth:
+      if (pkb.GetUsedVarP(left_name).empty()) {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesn't use any variable " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeft:
+      if (pkb.GetUsingProc(right_name).empty()) {
+        setClauseFlag(false);
+        cout << "Proc doesnt use right variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymLeftUnderscoreRight:
+      if (pkb.GetAllUsingProc().empty()) {
+        setClauseFlag(false);
+        cout << "Proc doesnt use any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymRight:
+      if (FilterVariableResult(pkb.GetUsedVarP(left_name), right_type)
+              .empty()) {
+        setClauseFlag(false);
+        cout << "Proc " << left_name << " doesnt use any variable" << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kOneSynonymSelectLeft:
-      break;
+      return pkb.GetUsingProc(right_name);
     case kOneSynonymSelectLeftUnderscoreRight:
-      break;
+      return pkb.GetAllUsingProc();
     case kOneSynonymSelectRight:
-      break;
+      return pkb.GetUsedVarP(left_name);
     case kTwoSynonym:
+      if ((pkb.GetAllUsingProc().empty())) {
+        setClauseFlag(false);
+        cout << "None of the proc modify any variable " << endl;
+      } else {
+        return GetResultFromSelectAllQuery(select_type);
+      }
       break;
     case kTwoSynonymSelectLeft:
-      break;
+      return pkb.GetAllUsingProc();
     case kTwoSynonymSelectRight:
-      break;
+      return pkb.GetAllUsedVar();
   }
 
   return results;
@@ -766,7 +895,7 @@ list<string> PqlEvaluator::EvaluateModifiesS(
     case kTwoSynonymSelectLeft:
       // Because right param only takes in variable synonym, it is exactly the
       // same as kOneSynonymSelectLeftUnderscoreRight
-      return FilterResult(pkb.GetAllModifyingS(), select_type);
+      return FilterResult(pkb.GetAllModifyingS(), left_type);
     case kTwoSynonymSelectRight:
       // Because right param only takes in variable synonym, just need to filter
       // left of the pair. Get all right of pair as it is select right
@@ -777,7 +906,6 @@ list<string> PqlEvaluator::EvaluateModifiesS(
         return GetAllRightOfPair(FilterPairResult(
             kFilterLeft, pkb.GetAllModifiesPairS(), left_type, right_type));
       }
-
       break;
   }
 
@@ -890,6 +1018,22 @@ list<string> PqlEvaluator::FilterResult(list<string> unfiltered_result,
 
     if (pkb.GetStmtType(iter) == select_type) {
       filtered_result.push_back(result);
+    }
+  }
+
+  return filtered_result;
+}
+
+list<string> PqlEvaluator::FilterVariableResult(
+    list<string> unfiltered_result, PqlDeclarationEntity variable_type) {
+  list<string> filtered_result;
+
+  for (auto& iter : unfiltered_result) {
+    if (variable_type == PqlDeclarationEntity::kConstant && isdigit(iter[0])) {
+      filtered_result.push_back(iter);
+    } else if (variable_type == PqlDeclarationEntity::kVariable &&
+               !isdigit(iter[0])) {
+      filtered_result.push_back(iter);
     }
   }
 

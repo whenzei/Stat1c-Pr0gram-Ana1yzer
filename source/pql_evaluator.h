@@ -175,6 +175,14 @@ class PqlEvaluator {
   list<string> FilterResult(list<string> unfiltered_result,
                             PqlDeclarationEntity select_type);
 
+   /**
+   * Filter the result list based on the variable entity type
+   * @input unfiltered result list and variable entity type (e.g constant)
+   * @returns result list that only contains result of a certain entity type
+   */
+  list<string> FilterVariableResult(list<string> unfiltered_result,
+                            PqlDeclarationEntity variable_type);
+
   /**
    * Filter the result pair list based on the selection entity type and filter
    * type
