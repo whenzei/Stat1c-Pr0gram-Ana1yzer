@@ -6,7 +6,7 @@
 using std::find;
 using std::make_pair;
 
-void ModifiesTable::InsertModifies(StmtNum stmt_num, VarName var_name) {
+void ModifiesTable::InsertModifies(StmtNum stmt_num, StmtListIndex stmtlist_index, VarName var_name) {
   if (!IsModifiedBy(stmt_num, var_name)) {
     if (modifies_map_.count(stmt_num) == 0) {
       modifying_stmt_num_list_.push_back(stmt_num);
@@ -17,6 +17,7 @@ void ModifiesTable::InsertModifies(StmtNum stmt_num, VarName var_name) {
     modifies_map_[stmt_num].push_back(var_name);
     modified_by_map_[var_name].push_back(stmt_num);
   }
+  modifies_stmtlist_map_[stmtlist_index].insert(var_name);
 }
 
 bool ModifiesTable::IsModifiedBy(StmtNum stmt_num, VarName var_name) {
@@ -43,6 +44,10 @@ VarNameList ModifiesTable::GetModifiedVar(StmtNum stmt_num) {
   } else {
     return VarNameList();
   }
+}
+
+VarNameSet ModifiesTable::GetModifiedVar(StmtListIndex stmtlist_index) {
+  return modifies_stmtlist_map_[stmtlist_index];
 }
 
 VarNameList ModifiesTable::GetAllModifiedVar() {

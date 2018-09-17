@@ -5,11 +5,13 @@
 
 #include <list>
 #include <unordered_map>
+#include <unordered_set>
 #include <string>
 
 using std::list;
 using std::make_pair;
 using std::unordered_map;
+using std::unordered_set;
 using std::string;
 using std::pair;
 
@@ -19,19 +21,26 @@ using VarName = string;
 using VarNameList = list<string>;
 using UsesMap = unordered_map<string, list<string>>;
 using UsedByMap = unordered_map<string, list<string>>;
+using UsesStmtListMap = unordered_map<int, unordered_set<string>>;
 using StmtVarPairList = list<pair<string, string>>;
+using StmtListIndex = int;
+using VarNameSet = unordered_set<string>;
 
 class UsesTable {
+  StmtList using_stmts_list_;
+  VarNameList used_vars_list_;
   UsesMap uses_map_;
   UsedByMap used_by_map_;
+  UsesStmtListMap uses_stmt_list_map_;
 
 public:
   // Inserts a uses relationship in the Uses Map and Used By Map.
   // @params variable being used, identified by var_name
   // @params statement using the var, identified by stmt_num
+  // @params stmt_list_index of the statement
   // @returns true if insertion is successful
   // @returns false if no same relationship already exists in the map or otherwise
-  bool InsertUses(VarName var_name, StmtNum stmt_num);
+  bool InsertUses(VarName var_name, StmtNum stmt_num, StmtListIndex stmt_list_index);
 
   // Checks and returns all variables used in the program, if any.
   // @returns a list of variables used in the program (can be empty)
@@ -42,6 +51,12 @@ public:
   // @returns a list of variables used in statement identified by stmt_num
   // (can be empty)
   VarNameList GetAllUsedVar(StmtNum stmt_num);
+
+  // Returns a set of all variables used by statements in the given statement index
+  // @params stmt list index
+  // @returns a set of variables used by statements with the stmt list index
+  // can be empty
+  VarNameSet GetVarUsedByStmtList(StmtListIndex stmt_list_num);
 
   // Checks and returns all statements that are using any variables in the program, if any.
   // @returns a list of statement numbers of statements using a variable

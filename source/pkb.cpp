@@ -43,15 +43,18 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);
     }
-    modifies_table_.InsertModifies(stmt_num, modified_var_name);
+    modifies_table_.InsertModifies(stmt_num, stmtlist_index, modified_var_name);
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
     // add uses and parent relationship
     for (auto& var_name : used_var_name_set) {
       for (StmtNum& parent : parents) {
-        modifies_table_.InsertModifies(parent, modified_var_name);
-        uses_table_.InsertUses(var_name, parent);
-      } 
-      uses_table_.InsertUses(var_name, stmt_num);
+        uses_table_.InsertUses(var_name, parent, stmtlist_index);
+      }
+      uses_table_.InsertUses(var_name, stmt_num, stmtlist_index);
+    }
+
+    for (StmtNum& parent : parents) {
+      modifies_table_.InsertModifies(parent, stmtlist_index, modified_var_name);
     }
     return true;
   } else {
@@ -73,23 +76,51 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
     for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
     }
-    // insert follow relationships
-    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(parent_stmtlist_index)) {
-      follows_table_.InsertFollows(followed_stmt_num, stmt_num);
-    }
     // insert parent relationships
     parent_table_.InsertDirectParentRelationship(stmt_num,
                                                  child_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
-    // insert uses and parent relationship
-    for (auto& var_name : control_var_name_set) {
-      for (StmtNum& indirect_parent : indirect_parents) {
-        parent_table_.InsertIndirectParentRelationship(indirect_parent,
-          child_stmtlist_index);
-        uses_table_.InsertUses(var_name, indirect_parent);
+
+    StmtNumList children_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(child_stmtlist_index);
+    for (StmtNum& child_stmtnum : children_stmtnum_list) {
+      StmtListIndexList indirect_children_stmtlist_indices =
+          parent_table_.GetChildT(child_stmtnum);
+      for (StmtListIndex& indirect_child_stmtlist_index :
+           indirect_children_stmtlist_indices) {
+        parent_table_.InsertIndirectParentRelationship(
+            stmt_num, indirect_child_stmtlist_index);
+        for (StmtNum& indirect_parent : indirect_parents) {
+          parent_table_.InsertIndirectParentRelationship(
+              indirect_parent, indirect_child_stmtlist_index);
+        }
       }
-      uses_table_.InsertUses(var_name, stmt_num);
+    }
+    for (StmtNum& indirect_parent : indirect_parents) {
+      parent_table_.InsertIndirectParentRelationship(indirect_parent,
+                                                     child_stmtlist_index);
+    }
+    // insert modifies relationship (if any)
+    VarNameSet var_modified_by_children =
+        modifies_table_.GetModifiedVar(child_stmtlist_index);
+    for (auto var_name : var_modified_by_children) {
+      modifies_table_.InsertModifies(stmt_num, parent_stmtlist_index, var_name);
+    }
+    // insert follow relationships
+    for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(parent_stmtlist_index)) {
+      follows_table_.InsertFollows(followed_stmt_num, stmt_num);
+    }
+    // insert uses relationship for control variables
+    for (auto& control_var_name : control_var_name_set) {
+      for (StmtNum& indirect_parent : indirect_parents) {
+        uses_table_.InsertUses(control_var_name, indirect_parent, stmt_table_.GetStmtListIndex(indirect_parent));
+      }
+      uses_table_.InsertUses(control_var_name, stmt_num, parent_stmtlist_index);
+    }
+    // insert uses relationship for already added children's variables
+    for (auto& child_var_name : uses_table_.GetVarUsedByStmtList(child_stmtlist_index)) {
+      uses_table_.InsertUses(child_var_name, stmt_num, parent_stmtlist_index);
     }
     return true;
   } else {
@@ -120,17 +151,58 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
     parent_table_.InsertDirectParentRelationship(stmt_num, else_stmtlist_index);
     StmtNumList indirect_parents =
         parent_table_.GetParentT(parent_stmtlist_index);
+
+    
+    StmtNumList children_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(then_stmtlist_index);
+    StmtNumList else_stmtnum_list =
+        stmtlist_table_.GetStmtNumList(else_stmtlist_index);
+    children_stmtnum_list.insert(children_stmtnum_list.end(),
+                                 else_stmtnum_list.begin(),
+                                 else_stmtnum_list.end());
+    for (StmtNum& child_stmtnum : children_stmtnum_list) {
+      StmtListIndexList indirect_children_stmtlist_indices =
+          parent_table_.GetChildT(child_stmtnum);
+      for (StmtListIndex& indirect_child_stmtlist_index :
+           indirect_children_stmtlist_indices) {
+        parent_table_.InsertIndirectParentRelationship(
+            stmt_num, indirect_child_stmtlist_index);
+        for (StmtNum& indirect_parent : indirect_parents) {
+          parent_table_.InsertIndirectParentRelationship(
+              indirect_parent, indirect_child_stmtlist_index);
+        }
+      }
+    }
     // insert uses relationship
     for (auto& var_name : control_var_name_set) {
       for (StmtNum& indirect_parent : indirect_parents) {
+        // insert parent relationships
+        // will be skipped if there are duplicates
         parent_table_.InsertIndirectParentRelationship(indirect_parent,
           then_stmtlist_index);
         parent_table_.InsertIndirectParentRelationship(indirect_parent,
           else_stmtlist_index);
-        uses_table_.InsertUses(var_name, indirect_parent);
+        uses_table_.InsertUses(var_name, indirect_parent, stmt_table_.GetStmtListIndex(indirect_parent));
       }
-      uses_table_.InsertUses(var_name, stmt_num);
+      uses_table_.InsertUses(var_name, stmt_num, parent_stmtlist_index);
     }
+    // insert uses relationship for already added children's variables
+    for (auto& child_var_name : uses_table_.GetVarUsedByStmtList(then_stmtlist_index)) {
+      uses_table_.InsertUses(child_var_name, stmt_num, parent_stmtlist_index);
+    }
+    for (auto& child_var_name : uses_table_.GetVarUsedByStmtList(else_stmtlist_index)) {
+      uses_table_.InsertUses(child_var_name, stmt_num, parent_stmtlist_index);
+    }
+	  // insert modifies relationship (if any)
+    VarNameSet var_modified_by_children =
+        modifies_table_.GetModifiedVar(then_stmtlist_index);
+    VarNameSet var_modified_by_else_stmtlist =
+        modifies_table_.GetModifiedVar(else_stmtlist_index);
+    var_modified_by_children.insert(var_modified_by_else_stmtlist.begin(),
+                                    var_modified_by_else_stmtlist.end());
+    for (auto var_name : var_modified_by_children) {
+      modifies_table_.InsertModifies(stmt_num, parent_stmtlist_index, var_name);
+	  }
     return true;
   } else {
     return false;
@@ -151,9 +223,9 @@ bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
     }
     // insert modifies relationship
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    modifies_table_.InsertModifies(stmt_num, var_name);
+    modifies_table_.InsertModifies(stmt_num, stmtlist_index, var_name);
     for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, var_name);
+      modifies_table_.InsertModifies(parent, stmtlist_index, var_name);
     }
     return true;
   } else {
@@ -173,9 +245,9 @@ bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
     // insert uses relationship
     StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
     for (StmtNum& parent : parents) {
-      uses_table_.InsertUses(var_name, parent);
+      uses_table_.InsertUses(var_name, parent, stmt_table_.GetStmtListIndex(parent));
     }
-    uses_table_.InsertUses(var_name, stmt_num);
+    uses_table_.InsertUses(var_name, stmt_num, stmtlist_index);
     // insert follows relationship
     for (StmtNum& followed_stmt_num : stmtlist_table_.GetStmtNumList(stmtlist_index)) {
       follows_table_.InsertFollows(followed_stmt_num, stmt_num);

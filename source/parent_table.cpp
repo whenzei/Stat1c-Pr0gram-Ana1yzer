@@ -7,18 +7,26 @@ using std::find;
 
 void ParentTable::InsertDirectParentRelationship(StmtNum stmt_num,
                                                  StmtListIndex stmtlist_index) {
-  parents_map_[stmtlist_index].push_back(stmt_num);
-  direct_parent_map_[stmtlist_index] = stmt_num;
-  children_map_[stmt_num].push_back(stmtlist_index);
-  direct_children_map_[stmt_num].push_back(stmtlist_index);
-  parents_set_.insert(stmt_num);
-  children_set_.insert(stmtlist_index);
+  if (!IsParent(stmt_num, stmtlist_index)) {
+    parents_map_[stmtlist_index].push_back(stmt_num);
+    direct_parent_map_[stmtlist_index] = stmt_num;
+    children_map_[stmt_num].push_back(stmtlist_index);
+    direct_children_map_[stmt_num].push_back(stmtlist_index);
+  }
+  if (parents_set_.find(stmt_num) == parents_set_.end()) {
+    parents_set_.insert(stmt_num);
+  }
+  if (children_set_.find(stmtlist_index) == children_set_.end()) {
+    children_set_.insert(stmtlist_index);
+  }
 }
 
 void ParentTable::InsertIndirectParentRelationship(
     StmtNum stmt_num, StmtListIndex stmtlist_index) {
-  parents_map_[stmtlist_index].push_back(stmt_num);
-  children_map_[stmt_num].push_back(stmtlist_index);
+  if (!IsParentT(stmt_num, stmtlist_index)) {
+    parents_map_[stmtlist_index].push_back(stmt_num);
+    children_map_[stmt_num].push_back(stmtlist_index);
+  }
 }
 
 bool ParentTable::IsParent(StmtNum stmt_num, StmtListIndex stmtlist_index) {
@@ -79,7 +87,6 @@ StmtListIndexList ParentTable::GetChildT(StmtNum stmt_num) {
   } else {
     return StmtListIndexList();
   }
-  return children_map_[stmt_num];
 }
 
 ChildrenSet ParentTable::GetChildrenSet() { return children_set_; }

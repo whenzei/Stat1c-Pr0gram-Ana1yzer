@@ -2,20 +2,22 @@
 
 #include "uses_table.h"
 
-bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num) {
+bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num, StmtListIndex stmt_list_index) {
   // returns false if same uses relationship already exists in the uses map
   if (IsUsedBy(var_name, stmt_num)) { return false; }
+  // check for duplicates
+  if (uses_map_.count(stmt_num) == 0) {
+    using_stmts_list_.push_back(stmt_num);
+  }
+  if (used_by_map_.count(var_name) == 0) { used_vars_list_.push_back(var_name); }
   uses_map_[stmt_num].push_back(var_name);
   used_by_map_[var_name].push_back(stmt_num);
+  if (uses_stmt_list_map_[stmt_list_index].count(var_name)==0) uses_stmt_list_map_[stmt_list_index].insert(var_name);
   return true;
 }
 
 VarNameList UsesTable::GetAllUsedVar() {
-  VarNameList used_vars;
-  for (auto entry : used_by_map_) {
-    used_vars.push_back(entry.first);
-  }
-  return used_vars;
+  return used_vars_list_;
 }
 
 VarNameList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
@@ -26,12 +28,12 @@ VarNameList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
   return used_vars;
 }
 
+VarNameSet UsesTable::GetVarUsedByStmtList(StmtListIndex stmt_list_index) {
+  return uses_stmt_list_map_[stmt_list_index];
+}
+
 StmtList UsesTable::GetAllUsingStmt() {
-  StmtList using_stmts;
-  for (auto entry : uses_map_) {
-    using_stmts.push_back(entry.first);
-  }
-  return using_stmts;
+  return using_stmts_list_;
 }
 
 StmtList UsesTable::GetAllUsingStmt(VarName var_name) {
@@ -43,7 +45,14 @@ StmtList UsesTable::GetAllUsingStmt(VarName var_name) {
 }
 
 bool UsesTable::IsUsedBy(VarName var_name, StmtNum stmt_num) {
-  return (find(uses_map_[stmt_num].begin(), uses_map_[stmt_num].end(), var_name) != uses_map_[stmt_num].end());
+  if (uses_map_.find(stmt_num) != uses_map_.end()) {
+    VarNameList var_name_list = (*uses_map_.find(stmt_num)).second;
+    return find(var_name_list.begin(), var_name_list.end(), var_name) !=
+      var_name_list.end();
+  }
+  else {
+    return false;
+  }
 }
 
 bool UsesTable::HasUsesRelationship() {
