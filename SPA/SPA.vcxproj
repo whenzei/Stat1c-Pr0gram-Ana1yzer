@@ -27,6 +27,7 @@
     <ClCompile Include="..\source\stmt_table.cpp" />
     <ClCompile Include="..\source\stmtlist_table.cpp" />
     <ClCompile Include="..\source\stmt_type_list.cpp" />
+    <ClCompile Include="..\source\uses_table.cpp" />
     <ClCompile Include="..\source\var_list.cpp" />
     <ClCompile Include="..\source\const_list.cpp" />
     <ClCompile Include="..\source\parent_table.cpp" />
@@ -50,6 +51,7 @@
     <ClInclude Include="..\source\stmt_table.h" />
     <ClInclude Include="..\source\stmtlist_table.h" />
     <ClInclude Include="..\source\stmt_type_list.h" />
+    <ClInclude Include="..\source\uses_table.h" />
     <ClInclude Include="..\source\var_list.h" />
     <ClInclude Include="..\source\const_list.h" />
     <ClInclude Include="..\source\parent_table.h" />

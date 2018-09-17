@@ -93,8 +93,11 @@
     <ClCompile Include="..\source\pql_validator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\uses_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\follows_table.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="..\source\pql_pattern.cpp">
       <Filter>Source Files\PQL</Filter>
@@ -164,8 +167,11 @@
     <ClInclude Include="..\source\pql_enum.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\uses_table.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\follows_table.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_pattern.h">
       <Filter>Header Files\PQL</Filter>
