@@ -1,9 +1,9 @@
+#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "pkb.h"
 #include "pql_enum.h"
 #include "pql_evaluator.h"
 #include "pql_query.h"
-#include "stdafx.h"
 
 #include <list>
 #include <string>
