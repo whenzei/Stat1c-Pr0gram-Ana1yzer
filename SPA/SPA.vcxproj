@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\design_extractor.cpp" />
+    <ClCompile Include="..\source\expression_helper.cpp" />
     <ClCompile Include="..\source\follows_table.cpp" />
     <ClCompile Include="..\source\modifies_table.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
@@ -34,6 +35,7 @@
     <ClCompile Include="..\source\pql_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\expression_helper.h" />
     <ClInclude Include="..\source\follows_table.h" />
     <ClInclude Include="..\source\modifies_table.h" />
     <ClInclude Include="..\source\parser.h" />

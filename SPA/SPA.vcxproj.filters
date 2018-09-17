@@ -90,6 +90,9 @@
     <ClCompile Include="..\source\util.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\expression_helper.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\uses_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -156,6 +159,9 @@
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\util.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\expression_helper.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
     <ClInclude Include="..\source\uses_table.h">
