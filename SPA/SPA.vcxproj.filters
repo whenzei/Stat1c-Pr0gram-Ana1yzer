@@ -101,9 +101,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\statement.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\parser.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
@@ -168,6 +165,9 @@
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\follows_table.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\statement.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
   </ItemGroup>

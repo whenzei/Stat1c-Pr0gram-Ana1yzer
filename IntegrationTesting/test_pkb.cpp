@@ -4,7 +4,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace IntegrationTesting {
+namespace PKBTests {
 TEST_CLASS(TestPKB) {
   const ProcName kProcName = "abc";
   const StmtNumInt kStmtNumInt1 = 1;

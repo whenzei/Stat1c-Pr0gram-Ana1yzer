@@ -11,7 +11,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace IntegrationTesting {
+namespace PKBPQLTests {
 TEST_CLASS(TestPKBPQL){
   public :
 
