@@ -3,12 +3,12 @@
 #ifndef SPA_STMT_TYPE_LIST_H
 #define SPA_STMT_TYPE_LIST_H
 
-#include <string>
 #include <list>
+#include <string>
 #include <vector>
 
-using std::string;
 using std::list;
+using std::string;
 using std::vector;
 
 // StmtNum is defined as a string inside PKB, because query results have to be
@@ -19,43 +19,28 @@ using StmtNumList = list<string>;
 using StmtTypeVector = vector<list<string>>;
 
 // The statement type list class for the PKB component
-// Used to store the statement numbers that belong to each statement type (e.g. assign, if)
+// Used to store the statement numbers that belong to each statement type (e.g.
+// assign, if)
 class StmtTypeList {
   StmtTypeVector stmt_type_vector_;
 
-  enum StmtTypeEnum { 
-	kAll,
+ public:
+  enum StmtTypeEnum {
+    kAll,
     kAssign,
     kWhile,
-	kIf,
-	kRead,
-	kPrint,
-	kSizeOfVector
+    kIf,
+    kRead,
+    kPrint,
+    kSizeOfVector
   };
-  
- public:
   // constructor
   StmtTypeList();
 
-  // Insert an assign statement into the StmtTypeList
+  // Insert a statement into the StmtTypeList using type provided
   // @param stmt_num the statement number of the statement to be inserted
-  void InsertAssignStmt(StmtNum stmt_num);
-
-  // Insert a while statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertWhileStmt(StmtNum stmt_num);
-
-  // Insert an if statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertIfStmt(StmtNum stmt_num);
-
-  // Insert a read statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertReadStmt(StmtNum stmt_num);
-
-  // Insert a print statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertPrintStmt(StmtNum stmt_num);
+  // @param stmt_type the type of statement
+  void InsertStmt(StmtNum stmt_num, StmtTypeEnum stmt_type);
 
   // Get the list of all statement numbers
   StmtNumList GetAllStmt();

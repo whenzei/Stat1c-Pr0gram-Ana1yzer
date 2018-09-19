@@ -6,6 +6,8 @@
 using std::make_pair;
 using std::stringstream;
 
+using StmtTypeEnum = StmtTypeList::StmtTypeEnum;
+
 bool PKB::InsertProcName(ProcName proc_name) {
   return proc_list_.InsertProcName(proc_name);
 }
@@ -31,39 +33,41 @@ bool PKB::InsertAssignStmt(StmtNumInt stmt_num_int,
                            VarName modified_var_name,
                            VarNameSet used_var_name_set) {
   StmtNum stmt_num = ToString(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kAssign,
-                             stmtlist_index)) {
-    // insert statement
-    stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-    stmt_type_list_.InsertAssignStmt(stmt_num);
-    var_list_.InsertVarName(modified_var_name);
-    // insert variables
-    for (auto& var_name : used_var_name_set) {
-      var_list_.InsertVarName(var_name);
-    }
-    for (StmtNum& followed_stmt_num :
-         stmtlist_table_.GetStmtNumList(stmtlist_index)) {
-      if (followed_stmt_num != stmt_num) {
-        follows_table_.InsertFollows(followed_stmt_num, stmt_num);
-      }
-    }
-    modifies_table_.InsertModifies(stmt_num, stmtlist_index, modified_var_name);
-    StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    // add uses and parent relationship
-    for (auto& var_name : used_var_name_set) {
-      for (StmtNum& parent : parents) {
-        uses_table_.InsertUses(var_name, parent, stmtlist_index);
-      }
-      uses_table_.InsertUses(var_name, stmt_num, stmtlist_index);
-    }
 
-    for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, stmtlist_index, modified_var_name);
-    }
-    return true;
-  } else {
+  // stmt already inserted into stmt_table_, no further processing required
+  if (!stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kAssign,
+                              stmtlist_index)) {
     return false;
   }
+
+  // insert statement
+  stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
+  stmt_type_list_.InsertStmt(stmt_num, StmtTypeEnum::kAssign);
+  var_list_.InsertVarName(modified_var_name);
+  // insert variables
+  for (auto& var_name : used_var_name_set) {
+    var_list_.InsertVarName(var_name);
+  }
+  for (StmtNum& followed_stmt_num :
+       stmtlist_table_.GetStmtNumList(stmtlist_index)) {
+    if (followed_stmt_num != stmt_num) {
+      follows_table_.InsertFollows(followed_stmt_num, stmt_num);
+    }
+  }
+  modifies_table_.InsertModifies(stmt_num, stmtlist_index, modified_var_name);
+  StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
+  // add uses and parent relationship
+  for (auto& var_name : used_var_name_set) {
+    for (StmtNum& parent : parents) {
+      uses_table_.InsertUses(var_name, parent, stmtlist_index);
+    }
+    uses_table_.InsertUses(var_name, stmt_num, stmtlist_index);
+  }
+
+  for (StmtNum& parent : parents) {
+    modifies_table_.InsertModifies(parent, stmtlist_index, modified_var_name);
+  }
+  return true;
 }
 
 bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
@@ -75,7 +79,7 @@ bool PKB::InsertWhileStmt(StmtNumInt stmt_num_int,
                              parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
-    stmt_type_list_.InsertWhileStmt(stmt_num);
+    stmt_type_list_.InsertStmt(stmt_num, StmtTypeEnum::kWhile);
     // insert variables
     for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
@@ -147,7 +151,7 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
                              parent_stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, parent_stmtlist_index);
-    stmt_type_list_.InsertIfStmt(stmt_num);
+    stmt_type_list_.InsertStmt(stmt_num, StmtTypeEnum::kIf);
     // insert variables
     for (auto& var_name : control_var_name_set) {
       var_list_.InsertVarName(var_name);
@@ -231,7 +235,7 @@ bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                              stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-    stmt_type_list_.InsertReadStmt(stmt_num);
+    stmt_type_list_.InsertStmt(stmt_num, StmtTypeEnum::kRead);
     // insert variable
     var_list_.InsertVarName(var_name);
     // insert follows relationship
@@ -260,7 +264,7 @@ bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
                              stmtlist_index)) {
     // insert statement
     stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-    stmt_type_list_.InsertPrintStmt(stmt_num);
+    stmt_type_list_.InsertStmt(stmt_num, StmtTypeEnum::kPrint);
     // insert variable
     var_list_.InsertVarName(var_name);
     // insert uses relationship

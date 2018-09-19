@@ -8,29 +8,9 @@ StmtTypeList::StmtTypeList() {
   }
 }
 
-void StmtTypeList::InsertAssignStmt(StmtNum stmt_num) {
-  stmt_type_vector_.at(kAll).push_back(stmt_num);
-  stmt_type_vector_.at(kAssign).push_back(stmt_num);
-}
-
-void StmtTypeList::InsertWhileStmt(StmtNum stmt_num) {
-  stmt_type_vector_.at(kAll).push_back(stmt_num);
-  stmt_type_vector_.at(kWhile).push_back(stmt_num);
-}
-
-void StmtTypeList::InsertIfStmt(StmtNum stmt_num) {
-  stmt_type_vector_.at(kAll).push_back(stmt_num);
-  stmt_type_vector_.at(kIf).push_back(stmt_num);
-}
-
-void StmtTypeList::InsertReadStmt(StmtNum stmt_num) {
-  stmt_type_vector_.at(kAll).push_back(stmt_num);
-  stmt_type_vector_.at(kRead).push_back(stmt_num);
-}
-
-void StmtTypeList::InsertPrintStmt(StmtNum stmt_num) {
-  stmt_type_vector_.at(kAll).push_back(stmt_num);
-  stmt_type_vector_.at(kPrint).push_back(stmt_num);
+void StmtTypeList::InsertStmt(StmtNum stmt_num, StmtTypeEnum type) {
+	stmt_type_vector_.at(kAll).push_back(stmt_num);
+	stmt_type_vector_.at(type).push_back(stmt_num);
 }
 
 StmtNumList StmtTypeList::GetAllStmt() { return stmt_type_vector_.at(kAll); }
