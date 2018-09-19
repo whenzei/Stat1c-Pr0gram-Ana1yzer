@@ -5,18 +5,20 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 using std::string;
 using std::list;
+using std::vector;
 
 using ProcName = string;
-using ProcNameList = list<string>;
+using ProcNameList = vector<string>;
 
 // The procedure list class for the PKB component
 // Used to store procedure names that are passed into PKB from the parser
 class ProcList {
   
-  ProcNameList proc_name_list_;
+ ProcNameList proc_name_list_;
 
  public:
   

@@ -16,7 +16,7 @@
 #include "pql_enum.h"
 
 using StmtNumInt = int;
-using StmtNumPairList = list<pair<string, string>>;
+using StmtNumPairList = vector<pair<string, string>>;
 
 class PKB {
   ProcList proc_list_;

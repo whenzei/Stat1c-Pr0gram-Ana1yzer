@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
+#include <vector>
 
 using std::list;
 using std::make_pair;
@@ -14,15 +15,16 @@ using std::unordered_map;
 using std::unordered_set;
 using std::string;
 using std::pair;
+using std::vector;
 
 using StmtNum = string;
-using StmtList = list<string>;
+using StmtList = vector<string>;
 using VarName = string;
-using VarNameList = list<string>;
-using UsesMap = unordered_map<string, list<string>>;
-using UsedByMap = unordered_map<string, list<string>>;
+using VarNameList = vector<string>;
+using UsesMap = unordered_map<string, vector<string>>;
+using UsedByMap = unordered_map<string, vector<string>>;
 using UsesStmtListMap = unordered_map<int, unordered_set<string>>;
-using StmtVarPairList = list<pair<string, string>>;
+using StmtVarPairList = vector<pair<string, string>>;
 using StmtListIndex = int;
 using VarNameSet = unordered_set<string>;
 
