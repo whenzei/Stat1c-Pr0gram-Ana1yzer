@@ -9,6 +9,7 @@
 #include "tokenizer.h"
 #include "util.h"
 #include "validator.h"
+#include "expression_helper.h"
 
 const bool DEBUG_FLAG = true;
 
@@ -90,11 +91,12 @@ void Parser::ProcessKeyword(int given_stmt_list_num) {
   }
 }
 
-// need to add shunting yard algo to this
 void Parser::ProcessAssignment(int given_stmt_list_num) {
   string lhs_var = current_token_.value;
   VariableSet rhs_vars;
   VariableSet rhs_consts;
+  TokenList infix_tokens_rhs;
+  TokenList postfix_tokens_rhs;
 
   while (!IsCurrentType(tt::kSemicolon)) {
     ReadNextToken();
@@ -104,7 +106,13 @@ void Parser::ProcessAssignment(int given_stmt_list_num) {
     if (IsCurrentType(tt::kDigit)) {
       rhs_consts.insert(current_token_.value);
     }
+				
+				infix_tokens_rhs.push_back(current_token_);
   }
+
+		postfix_tokens_rhs = ExpressionHelper::ToPostfix(infix_tokens_rhs);
+
+		// postfix_tokens_rhs to be passed into PKB
 
   // Update PKB of assignment statement
   pkb_->InsertAssignStmt(stmt_num_, given_stmt_list_num, lhs_var, rhs_vars);
