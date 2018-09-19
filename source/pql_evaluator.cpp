@@ -989,7 +989,7 @@ QueryResultList PqlEvaluator::EvaluateModifiesP(
   return results;
 }
 
-QueryResultList PqlEvaluator::FilterResult(list<string> unfiltered_result,
+QueryResultList PqlEvaluator::FilterResult(vector<string> unfiltered_result,
                                            PqlDeclarationEntity select_type) {
   QueryResultList filtered_result;
   PKB pkb = GetPKB();
@@ -1013,7 +1013,7 @@ QueryResultList PqlEvaluator::FilterResult(list<string> unfiltered_result,
 }
 
 QueryResultList PqlEvaluator::FilterVariableResult(
-    list<string> unfiltered_result, PqlDeclarationEntity variable_type) {
+    vector<string> unfiltered_result, PqlDeclarationEntity variable_type) {
   QueryResultList filtered_result;
 
   for (auto& iter : unfiltered_result) {
@@ -1028,11 +1028,11 @@ QueryResultList PqlEvaluator::FilterVariableResult(
   return filtered_result;
 }
 
-list<pair<string, string>> PqlEvaluator::FilterPairResult(
+QueryResultPairList PqlEvaluator::FilterPairResult(
     PqlResultFilterType filter_type,
-    list<pair<string, string>> unfiltered_pair_result,
+    vector<pair<string, string>> unfiltered_pair_result,
     PqlDeclarationEntity left_type, PqlDeclarationEntity right_type) {
-  list<pair<string, string>> filtered_result;
+  QueryResultPairList filtered_result;
   PKB pkb = GetPKB();
 
   // Nothing to filter if the type is stmt
@@ -1089,7 +1089,7 @@ list<pair<string, string>> PqlEvaluator::FilterPairResult(
 }
 
 QueryResultList PqlEvaluator::GetAllLeftOfPair(
-    list<pair<string, string>> filtered_list) {
+  QueryResultPairList filtered_list) {
   QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.first);
@@ -1098,7 +1098,7 @@ QueryResultList PqlEvaluator::GetAllLeftOfPair(
 }
 
 QueryResultList PqlEvaluator::GetAllRightOfPair(
-    list<pair<string, string>> filtered_list) {
+  QueryResultPairList filtered_list) {
   QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.second);

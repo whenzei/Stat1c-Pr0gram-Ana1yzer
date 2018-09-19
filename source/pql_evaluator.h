@@ -6,6 +6,7 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "pkb.h"
 #include "pql_evaluator.h"
@@ -14,7 +15,9 @@
 using std::list;
 using std::string;
 using std::unordered_map;
-using QueryResultList = list<string>;
+using std::vector;
+using QueryResultList = vector<string>;
+using QueryResultPairList = vector<pair<string, string>>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -163,7 +166,7 @@ class PqlEvaluator {
    * @input unfiltered result list and selection entity type (e.g assign)
    * @returns result list that only contains result of a certain entity type
    */
-  QueryResultList FilterResult(list<string> unfiltered_result,
+  QueryResultList FilterResult(vector<string> unfiltered_result,
                                PqlDeclarationEntity select_type);
 
   /**
@@ -171,7 +174,7 @@ class PqlEvaluator {
    * @input unfiltered result list and variable entity type (e.g constant)
    * @returns result list that only contains result of a certain entity type
    */
-  QueryResultList FilterVariableResult(list<string> unfiltered_result,
+  QueryResultList FilterVariableResult(vector<string> unfiltered_result,
                                        PqlDeclarationEntity variable_type);
 
   /**
@@ -182,9 +185,9 @@ class PqlEvaluator {
    * @returns result pair list that only contains result of a certain entity
    * type
    */
-  list<pair<string, string>> FilterPairResult(
+  QueryResultPairList FilterPairResult(
       PqlResultFilterType filter_type,
-      list<pair<string, string>> unfiltered_pair_result,
+      vector<pair<string, string>> unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
 
   /**
@@ -192,14 +195,14 @@ class PqlEvaluator {
    * @input the list of pairs
    * @returns list of result in the left of the pair
    */
-  QueryResultList GetAllLeftOfPair(list<pair<string, string>> filtered_list);
+  QueryResultList GetAllLeftOfPair(QueryResultPairList filtered_list);
 
   /**
    * Get all the result from right of the pair and return it in a list
    * @input the list of pairs
    * @returns list of result in the right of the pair
    */
-  QueryResultList GetAllRightOfPair(list<pair<string, string>> filtered_list);
+  QueryResultList GetAllRightOfPair(QueryResultPairList filtered_list);
 };
 
 #endif  // !QUERY_EVALUATOR_H
