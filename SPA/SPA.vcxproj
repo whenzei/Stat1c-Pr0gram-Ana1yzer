@@ -33,6 +33,7 @@
     <ClCompile Include="..\source\parent_table.cpp" />
     <ClCompile Include="..\source\pql_query.cpp" />
     <ClCompile Include="..\source\pql_evaluator.cpp" />
+    <ClCompile Include="..\source\pql_result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\expression_helper.h" />
@@ -58,6 +59,7 @@
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\pql_evaluator.h" />
     <ClInclude Include="..\source\pql_parser.h" />
+    <ClInclude Include="..\source\pql_result.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

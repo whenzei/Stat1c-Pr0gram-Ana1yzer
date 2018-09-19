@@ -22,6 +22,9 @@ PqlEvaluator::PqlEvaluator() {}
 QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetQuery(*query);
   SetPKB(pkb);
+  //Initialise new result table class
+  PqlResult *pql_result = new PqlResult();
+  SetPqlResult(*pql_result);
   // Default value should be true, unless the clause returns a false
   SetClauseFlag(true);
   QueryResultList results;
@@ -44,6 +47,10 @@ QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   cout << "Result size: " << results.size() << endl;
 
   return results;
+}
+
+FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
+  ResultTable result_table = GetPqlResult().GetResultTable();
 }
 
 QueryResultList PqlEvaluator::GetSuchThatResult(PqlSuchthat suchthat) {
@@ -1241,3 +1248,9 @@ PKB PqlEvaluator::GetPKB() { return pkb_; }
 void PqlEvaluator::SetQuery(PqlQuery query) { this->pql_query_ = query; }
 
 PqlQuery PqlEvaluator::GetQuery() { return pql_query_; }
+
+void PqlEvaluator::SetPqlResult(PqlResult pql_result) {
+  this->pql_result_ = pql_result;
+}
+
+PqlResult PqlEvaluator::GetPqlResult() { return pql_result_; }

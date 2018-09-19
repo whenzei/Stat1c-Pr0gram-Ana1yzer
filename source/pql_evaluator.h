@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef QUERY_EVALUATOR_H
-#define QUERY_EVALUATOR_H
+#ifndef PQL_EVALUATOR_H
+#define PQL_EVALUATOR_H
 
 #include <list>
 #include <string>
@@ -11,11 +11,13 @@
 #include "pkb.h"
 #include "pql_evaluator.h"
 #include "pql_query.h"
+#include "pql_result.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
+using FinalResult = list<string>;
 using QueryResultList = vector<string>;
 using QueryResultPairList = vector<pair<string, string>>;
 
@@ -27,6 +29,7 @@ class PqlEvaluator {
   PKB pkb_;          // pkb database
   bool clause_flag_;
   PqlQuery pql_query_;
+  PqlResult pql_result_;
 
  public:
   /* Contructor */
@@ -37,17 +40,27 @@ class PqlEvaluator {
   void SetSelectType(PqlDeclarationEntity);
   void SetPKB(PKB);
   void SetClauseFlag(bool);
+  void SetPqlResult(PqlResult);
 
   /* Getter */
   PqlQuery GetQuery();
   PqlDeclarationEntity GetSelectType();
   PKB GetPKB();
   bool GetClauseFlag();
+  PqlResult GetPqlResult();
+
+  /**
+   * Get the final result based on the var name that user is 'selecting'
+   * @input result table and select var name
+   * @returns a list of string if there is result,
+   * or an empty list otherwise
+   */
+  FinalResult GetFinalResultFromTable(string select_var);
 
   /**
    * Use the @Query provided by user
    * and return a list of results based on the query
-   * @param query the query by the user
+   * @input query the query by the user
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
