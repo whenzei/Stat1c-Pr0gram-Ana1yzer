@@ -211,13 +211,14 @@ TEST_CLASS(TestQueryEvaluator) {
     string expected_result = "1";
 
     Assert::AreEqual(expected_result, first_result);
-  } /*
+  } 
+
   TEST_METHOD(TestSelectAllIf) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(2, 0, unordered_set<string>());
+    pkb.PKB::InsertIfStmt(2, 0, 1, 1, unordered_set<string>());
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");
@@ -233,12 +234,13 @@ TEST_CLASS(TestQueryEvaluator) {
 
     Assert::AreEqual(expected_result, first_result);
   }
+
   TEST_METHOD(TestSelectAllWhile) {
     // TODO: Your test code here
-    QueryEvaluator qe;
+    PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertWhileStmt(3, 0, unordered_set<string>());
+    pkb.PKB::InsertWhileStmt(3, 0, 1, unordered_set<string>());
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("while");
@@ -253,7 +255,7 @@ TEST_CLASS(TestQueryEvaluator) {
     string expected_result = "3";
 
     Assert::AreEqual(expected_result, first_result);
-  } */
+  } 
   TEST_METHOD(TestSelectAllRead) {
     // TODO: Your test code here
     PqlEvaluator qe;
