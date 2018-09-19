@@ -21,27 +21,34 @@ class Parser {
   TokenList tokens_;
   Token current_token_;
   int current_index_;
-  int stmt_index_;
-  int stmt_list_index_;
+  int stmt_num_;
+  int stmt_list_num_;
 
+  bool IsAtEnd();
   Token ReadNextToken();
   Token PeekNextToken();
   void EatNumTokens(int num);
-  void ProcessKeyword(int curr_stmt_list_index);
-  void ProcessAssignment(int curr_stmt_list_index);
+  bool IsNextType(Tokenizer::TokenType type);
+  bool IsCurrentType(Tokenizer::TokenType type);
+  bool IsNextKeywordType(Tokenizer::TokenSubtype type);
+  bool IsCurrentKeywordType(Tokenizer::TokenSubtype type);
+  bool IsNextTokenKeyword();
+  bool IsCurrentTokenKeyword();
+
+  void ProcessKeyword(int given_stmt_list_index);
+  void ProcessAssignment(int given_stmt_list_index);
+  void ProcessStatementList(int given_stmt_list_index);
+  void ProcessStatement(int given_stmt_list_index);
 
   // Process the if block with its counterpart else block
-  void ProcessIfBlock(int curr_stmt_list_index);
-  void ProcessWhileBlock(int curr_stmt_list_index);
+  void ProcessIfBlock(int given_stmt_list_index);
+  void ProcessWhileBlock(int given_stmt_list_index);
 
-  // Process the contents in a block
-  // Contents in between '{'  and '}'
-  // Used in ProcessIfBlock, ProcessWhileBlock
-  void ProcessBlockContent(int curr_stmt_list_index);
-
-  void ProcessProcedure();
+  void ProcessProcedure(int given_stmt_list_index);
 
   VariableSet ProcessConditional();
+
+  void ParseProgram();
 
  public:
   Parser(PKB* pkb);

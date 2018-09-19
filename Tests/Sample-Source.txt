@@ -1,25 +1,26 @@
+                                                     \\ stmt# | stmtLst#
 procedure One {
-    if (((a>b) && (b > c)) || (d > e)) then {             \\ 0 (1)
-        if = while;       	   \\ 1 (2)
+    if (((a>b) && (b > c)) || (c > e)) then {             \\ 1 (1)
+        if = while;       	                          \\ 2 (2)
     } else {
-        if (while + if > (b + c - (d * e))) then {    \\ 2 (3)
-            e = if;                \\ 3 (4)
-            g = h;                 \\ 3 (5)
+        if (while + if > (b + c - (c * e))) then {        \\ 3 (3)
+            e = if;                                       \\ 4 (4)
+            g = h;                                        \\ 5 (4)
         } else {
-            while = b;             \\ 4 (6)
+            while = b;                                    \\ 6 (5)
         }
-        b = c;                     \\ 2 (7)
+        b = c;                                            \\ 7 (3)
     }
     
-    g = f;                         \\ 0 (8)
-    while (a < b) {                \\ 0 (9)
-        then = a + 1;              \\ 5 (10)
-        if (s == t) then {         \\ 5 (11)
-            s = s + 1;             \\ 6 (12)
+    g = f;                                                \\ 8 (1)
+    while (a < b) {                                       \\ 9 (1)
+        then = a + 1;                                     \\ 10 (6)
+        if (s == t) then {                                \\ 11 (6)
+            s = s + 1;                                    \\ 12 (7)
         } else { 
-            call = t + 1;          \\ 7 (13)
+            call = t + 1;                                 \\ 13 (8)
         }
-        b = b + 2;		   \\ 5 (14)
+        b = b + 2;                                        \\ 14 (6)
     }
-    s = (f/ e) * e / (d - e) + 1;  \\ 0 (15)
+    s = (f/ e) * e / (c - e) + 1;                         \\ 15 (1)
 } 
