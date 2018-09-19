@@ -1089,7 +1089,7 @@ QueryResultPairList PqlEvaluator::FilterPairResult(
 }
 
 QueryResultList PqlEvaluator::GetAllLeftOfPair(
-  QueryResultPairList filtered_list) {
+    QueryResultPairList filtered_list) {
   QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.first);
@@ -1098,7 +1098,7 @@ QueryResultList PqlEvaluator::GetAllLeftOfPair(
 }
 
 QueryResultList PqlEvaluator::GetAllRightOfPair(
-  QueryResultPairList filtered_list) {
+    QueryResultPairList filtered_list) {
   QueryResultList results;
   for (auto& iter : filtered_list) {
     results.push_back(iter.second);
@@ -1212,18 +1212,11 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
   unordered_map<string, PqlDeclarationEntity> declarations =
       GetQuery().GetDeclarations();
 
-  // Find out what the user is selecting by going through the list of
-  // declarations made by the user
-  for (unordered_map<string, PqlDeclarationEntity>::iterator it =
-           declarations.begin();
-       it != declarations.end(); ++it) {
-    // Check for a match between the selection and declaration
-    if (select_var_name.compare(it->first) == 0) {
-      return it->second;
-    }
+  if (declarations.find(select_var_name) == declarations.end()) {
+    // Not found
+  } else {
+    return declarations.find(select_var_name)->second;
   }
-  // Shouldn't happen since there is validation
-  return PqlDeclarationEntity::kUnderscore;
 }
 
 /*
