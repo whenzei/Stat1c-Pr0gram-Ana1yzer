@@ -27,7 +27,7 @@ TEST_CLASS(TestPKBPQL){
       PqlParser parser(user_query, query);
       parser.Parse();
 
-			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
+			vector<string> resultlist = qe.GetResultFromQuery(query, pkb);
 
 			string output = resultlist.front();
 

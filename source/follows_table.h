@@ -7,18 +7,20 @@
 #include <unordered_map>
 #include <utility>
 #include <string>
+#include <vector>
 
 using std::list;
 using std::make_pair;
 using std::unordered_map;
 using std::string;
 using std::pair; 
+using std::vector;
 
 using StmtNum = string;
-using StmtList = list<string>;
-using StmtNumPairList = list<pair<StmtNum, StmtNum>>;
-using FollowsMap = unordered_map<string, list<string>>;
-using FollowedByMap = unordered_map<string, list<string>>;
+using StmtList = vector<string>;
+using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
+using FollowsMap = unordered_map<string, vector<string>>;
+using FollowedByMap = unordered_map<string, vector<string>>;
 
 class FollowsTable {
   FollowsMap follows_map_;
