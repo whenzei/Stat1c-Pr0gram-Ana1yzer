@@ -2,25 +2,41 @@
 
 #include "stmt_type_list.h"
 
-StmtTypeList::StmtTypeList() { 
-  for (int i = 0; i < kSizeOfVector; i++) {
-    stmt_type_vector_.push_back(StmtNumList());
-  }
+// add more entity types as needed
+StmtTypeList::StmtTypeList() {
+  stmt_type_map_.emplace(PqlDeclarationEntity::kAll, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kAssign, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kWhile, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kIf, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kRead, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumList());
 }
 
-void StmtTypeList::InsertStmt(StmtNum stmt_num, StmtTypeEnum type) {
-	stmt_type_vector_.at(kAll).push_back(stmt_num);
-	stmt_type_vector_.at(type).push_back(stmt_num);
+void StmtTypeList::InsertStmt(StmtNum stmt_num, PqlDeclarationEntity type) {
+  stmt_type_map_.at(type).push_back(stmt_num);
+  stmt_type_map_.at(PqlDeclarationEntity::kAll).push_back(stmt_num);
 }
 
-StmtNumList StmtTypeList::GetAllStmt() { return stmt_type_vector_.at(kAll); }
+StmtNumList StmtTypeList::GetAllStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kAll);
+}
 
-StmtNumList StmtTypeList::GetAllAssignStmt() { return stmt_type_vector_.at(kAssign); }
+StmtNumList StmtTypeList::GetAllAssignStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kAssign);
+}
 
-StmtNumList StmtTypeList::GetAllWhileStmt() { return stmt_type_vector_.at(kWhile); }
+StmtNumList StmtTypeList::GetAllWhileStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kWhile);
+}
 
-StmtNumList StmtTypeList::GetAllIfStmt() { return stmt_type_vector_.at(kIf); }
+StmtNumList StmtTypeList::GetAllIfStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kIf);
+}
 
-StmtNumList StmtTypeList::GetAllReadStmt() { return stmt_type_vector_.at(kRead); }
+StmtNumList StmtTypeList::GetAllReadStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kRead);
+}
 
-StmtNumList StmtTypeList::GetAllPrintStmt() { return stmt_type_vector_.at(kPrint); }
+StmtNumList StmtTypeList::GetAllPrintStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kPrint);
+}
