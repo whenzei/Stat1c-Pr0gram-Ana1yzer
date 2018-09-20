@@ -12,9 +12,6 @@
 using std::string;
 using std::unordered_set;
 
-using Variable = string;
-using VariableSet = unordered_set<string>;
-
 class Parser {
  private:
   PKB* pkb_;
@@ -46,7 +43,7 @@ class Parser {
 
   void ProcessProcedure(int given_stmt_list_index);
 
-  VariableSet ProcessConditional();
+  VarNameSet ProcessConditional();
 
   void ParseProgram();
 

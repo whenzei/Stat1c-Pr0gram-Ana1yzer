@@ -4,12 +4,13 @@
 #include <iostream>
 #include <stack>
 
+#include "expression_helper.h"
 #include "parser.h"
 #include "pkb.h"
+#include "statement_data.h"
 #include "tokenizer.h"
 #include "util.h"
 #include "validator.h"
-#include "expression_helper.h"
 
 const bool DEBUG_FLAG = true;
 
@@ -92,9 +93,9 @@ void Parser::ProcessKeyword(int given_stmt_list_num) {
 }
 
 void Parser::ProcessAssignment(int given_stmt_list_num) {
-  string lhs_var = current_token_.value;
-  VariableSet rhs_vars;
-  VariableSet rhs_consts;
+  VarName lhs_var = current_token_.value;
+  VarNameSet rhs_vars;
+  ConstValueSet rhs_consts;
   TokenList infix_tokens_rhs;
   TokenList postfix_tokens_rhs;
 
@@ -102,29 +103,28 @@ void Parser::ProcessAssignment(int given_stmt_list_num) {
     ReadNextToken();
     if (IsCurrentType(tt::kName)) {
       rhs_vars.insert(current_token_.value);
+    } else if (IsCurrentType(tt::kDigit)) {
+      rhs_consts.insert(stoi(current_token_.value));
     }
-    if (IsCurrentType(tt::kDigit)) {
-      rhs_consts.insert(current_token_.value);
-    }
-				
-				infix_tokens_rhs.push_back(current_token_);
+    infix_tokens_rhs.push_back(current_token_);
   }
 
-		postfix_tokens_rhs = ExpressionHelper::ToPostfix(infix_tokens_rhs);
-
-		// postfix_tokens_rhs to be passed into PKB
+  // postfix_tokens_rhs to be passed into PKB
+  postfix_tokens_rhs = ExpressionHelper::ToPostfix(infix_tokens_rhs);
 
   // Update PKB of assignment statement
-  pkb_->InsertAssignStmt(stmt_num_, given_stmt_list_num, lhs_var, rhs_vars);
+  pkb_->InsertAssignStmt(&AssignStmtData(stmt_num_, given_stmt_list_num,
+                                         lhs_var, rhs_vars, rhs_consts,
+                                         postfix_tokens_rhs));
 
   //**************** DEBUG********************
   string rhsvar = string();
-  for (Variable var : rhs_vars) {
+  for (VarName var : rhs_vars) {
     rhsvar = rhsvar + " " + var;
   }
   string rhsconst = string();
-  for (Variable var : rhs_consts) {
-    rhsconst = rhsconst + " " + var;
+  for (int var : rhs_consts) {
+    rhsconst = rhsconst + " " + std::to_string(var);
   }
 
   cout << "Assignment statement#" << stmt_num_
@@ -137,12 +137,12 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
   int if_stmt_num = stmt_num_;
   int then_stmt_list_num = ++stmt_list_num_;
   int else_stmt_list_num = ++stmt_list_num_;
-  VariableSet control_vars;
+  VarNameSet control_vars;
   control_vars = ProcessConditional();
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (Variable var : control_vars) {
+  for (VarName var : control_vars) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "If statement#" << if_stmt_num
@@ -183,7 +183,7 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (Variable var : control_vars) {
+  for (VarName var : control_vars) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "While statement#" << while_stmt_num
@@ -209,14 +209,14 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
                         while_stmt_list_num, control_vars);
 }
 
-VariableSet Parser::ProcessConditional() {
+VarNameSet Parser::ProcessConditional() {
   stack<Token> paren_stack;
 
   // Push "(" onto stack
   paren_stack.push(ReadNextToken());
   ReadNextToken();
 
-  VariableSet control_vars;
+  VarNameSet control_vars;
 
   while (!paren_stack.empty()) {
     if (current_token_.type == tt::kOpenParen) {
