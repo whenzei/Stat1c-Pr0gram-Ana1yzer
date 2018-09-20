@@ -10,11 +10,12 @@ using std::string;
 using std::pair;
 using Expression = pair<PqlPatternExpressionType, TokenList>;
 
+/* Stores information of a pattern clause in a PQL select statement */
 class PqlPattern {
 private:
-  PqlPatternType type_;
+  PqlPatternType type_; // assign | if | while
   pair<string, PqlDeclarationEntity> first_parameter_;
-  Expression assign_expression_;
+  Expression assign_expression_; // 2nd parameter of assign pattern
 
 public:
   PqlPattern(PqlPatternType, string, PqlDeclarationEntity);

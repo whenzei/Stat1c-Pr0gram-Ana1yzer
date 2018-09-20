@@ -51,6 +51,7 @@ enum class PqlPatternType {
   kIf
 };
 
+/* The type for the 2nd parameter of an assign pattern clause */
 enum class PqlPatternExpressionType {
   kUnderscore,
   kUnderscoreExpressionUnderscore,
