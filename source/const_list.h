@@ -6,13 +6,15 @@
 #include <list>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 using std::list;
 using std::string;
 using std::unordered_set;
+using std::vector;
 
 using ConstValue = int;
-using ConstValueList = list<string>;
+using ConstValueList = vector<string>;
 using ConstValueSet = unordered_set<int>;
 
 // The constant list class for the PKB component

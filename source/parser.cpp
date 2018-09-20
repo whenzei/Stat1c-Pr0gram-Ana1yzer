@@ -4,18 +4,16 @@
 #include <iostream>
 #include <stack>
 
+#include "util.h"
 #include "parser.h"
 #include "pkb.h"
-#include "simple_validator.h"
-#include "simple_validator2.h"
 #include "tokenizer.h"
+#include "validator.h"
 
 const bool DEBUG_FLAG = true;
 
 using std::cout;
 using std::endl;
-using std::ifstream;
-using std::istreambuf_iterator;
 using std::stack;
 
 using tt = Tokenizer::TokenType;
@@ -33,11 +31,15 @@ Parser::Parser(PKB* pkb) {
 
 void Parser::Parse(string filepath) {
   // read content from file
-  string contents = ReadContentFromFile(filepath);
+  string contents = Util::ReadContentFromFile(filepath);
   // retrieve vector of tokens
   tokens_ = Tokenizer::Tokenize(contents);
 
-  // TO DO: Implement Validator
+  // validate tokens for syntax errors
+  Validator validator = Validator(tokens_);
+  if (!validator.ValidateProgram()) {
+	  return;
+  }
 
   ReadNextToken();  // should start with "procedure"
   int curr_stmt_list_index = stmt_list_index_++;
@@ -55,22 +57,6 @@ void Parser::Parse(string filepath) {
     }
     ReadNextToken();
   }
-}
-
-bool Parser::IsValidFile(string filepath) {
-  ifstream infile(filepath);
-  return infile.good();
-}
-
-string Parser::ReadContentFromFile(string filepath) {
-  if (!IsValidFile(filepath)) {
-    cout << "File not found! Content is set to empty string" << endl;
-    return string();
-  }
-  // start reading file
-  ifstream ifs(filepath);
-  return string((istreambuf_iterator<char>(ifs)),
-                (istreambuf_iterator<char>()));
 }
 
 Token Parser::ReadNextToken() {

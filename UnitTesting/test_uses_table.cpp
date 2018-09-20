@@ -96,13 +96,10 @@ TEST_CLASS(TestUsesTable) {
     StmtList expected_using_stmts;
     UsesTable uses;
     expected_using_stmts.push_back(kSampleStmtIdx2);
-    //expected_using_stmts.push_back(kSampleStmtIdx3);
 
     uses.InsertUses(kSampleVarName1, kSampleStmtIdx2, kSampleStmtListIndex1);
-    //uses.InsertUses(kSampleVarName1, kSampleStmtIdx3);
     StmtList using_stmts = uses.GetAllUsingStmt(kSampleVarName1);
     Assert::AreEqual(expected_using_stmts.front(), using_stmts.front());
-    //Assert::AreEqual(expected_using_stmts.back(), using_stmts.back());
   }
 
   TEST_METHOD(TestIsUsedBy) {

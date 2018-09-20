@@ -35,9 +35,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_simple_validator2.cpp">
-      <Filter>Source Files\Frontend</Filter>
-    </ClCompile>
     <ClCompile Include="test_tokenizer.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
@@ -73,6 +70,12 @@
     </ClCompile>
     <ClCompile Include="test_query_validator.cpp">
       <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="test_validator.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="test_expression_helper.cpp">
+      <Filter>Source Files\Frontend</Filter>
     </ClCompile>
     <ClCompile Include="test_uses_table.cpp">
       <Filter>Source Files\PKB</Filter>

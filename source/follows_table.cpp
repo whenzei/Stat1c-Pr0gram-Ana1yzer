@@ -13,7 +13,9 @@ int FollowsTable::GetFollowsMapSize() {
 bool FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
   // if relationship is already in the follows map, return false
   if (IsFollowsT(stmt_num1, stmt_num2)) { return false; }
-  follows_map_[stmt_num2].push_front(stmt_num1);
+  // follows map has to store stmt numbers in descending order
+  // follows by map has to store stmt numbers in ascending order
+  follows_map_[stmt_num2].insert(follows_map_[stmt_num2].begin(), stmt_num1);
   followed_by_map_[stmt_num1].push_back(stmt_num2);
   return true;
 }

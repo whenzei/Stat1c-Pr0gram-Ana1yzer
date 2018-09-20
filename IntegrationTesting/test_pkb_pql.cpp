@@ -11,7 +11,7 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace IntegrationTesting {
+namespace PKBPQLTests {
 TEST_CLASS(TestPKBPQL){
   public :
 
@@ -27,10 +27,11 @@ TEST_CLASS(TestPKBPQL){
       PqlParser parser(user_query, query);
       parser.Parse();
 
-			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
-			string output = qe.FormatResultString(resultlist);
+			vector<string> resultlist = qe.GetResultFromQuery(query, pkb);
 
-			string expected_output = "statement #1, #8";
+			string output = resultlist.front();
+
+			string expected_output = "1";
 
 			Assert::AreEqual(expected_output, output);
       }

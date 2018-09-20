@@ -7,24 +7,26 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 using std::list;
 using std::pair;
 using std::string;
 using std::unordered_map;
 using std::unordered_set;
+using std::vector;
 
 using StmtNum = string;
-using StmtNumList = list<string>;
+using StmtNumList = vector<string>;
 using VarName = string;
-using VarNameList = list<string>;
+using VarNameList = vector<string>;
 using VarNameSet = unordered_set<string>;
 using StmtListIndex = int;
-using ModifiesMap = unordered_map<string, list<string>>;
-using ModifiedByMap = unordered_map<string, list<string>>;
+using ModifiesMap = unordered_map<string, vector<string>>;
+using ModifiedByMap = unordered_map<string, vector<string>>;
 using ModifiesStmtListMap = unordered_map<int, unordered_set<string>>;
-using StmtVarPairList = list<pair<string, string>>;
-using ProcVarPairList = list<pair<string, string>>;
+using StmtVarPairList = vector<pair<string, string>>;
+using ProcVarPairList = vector<pair<string, string>>;
 
 class ModifiesTable {
   StmtNumList modifying_stmt_num_list_;

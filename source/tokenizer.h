@@ -14,6 +14,7 @@ using std::vector;
 struct Token {
   int type;
   string value;
+  int subtype = 0;
 
   bool operator==(const Token& other) const {
     return std::tie(type, value) == std::tie(other.type, other.value);
@@ -35,34 +36,46 @@ using TokenizerFunc = Result (*)(string, int);
 
 class Tokenizer {
  public:
-   enum TokenType {
-     kNothing = 0,
-     kDigit,
-     kName,
-     kWord,
-     kOpenBrace,
-     kCloseBrace,
-     kSemicolon,
-     kComma,
-     kUnderscore,
-     kQuotation,
-     kAssignment,
-     kOperator,
-     kOpenParen,
-     kCloseParen,
-     kConditional,
-     kRelational,
-     kKeyword,
-     kUnknown,
-     kEOF,
-   };
+  enum TokenSubtype {
+    kNone = 0,
+    kProcedure,
+    kIf,
+    kThen,
+    kElse,
+    kWhile,
+    kPrint,
+    kCall,
+    kRead,
+  };
+
+  enum TokenType {
+    kNothing = 0,
+    kDigit,
+    kName,
+    kWord,
+    kOpenBrace,
+    kCloseBrace,
+    kSemicolon,
+    kComma,
+    kUnderscore,
+    kQuotation,
+    kAssignment,
+    kOperator,
+    kOpenParen,
+    kCloseParen,
+    kConditional,
+    kRelational,
+    kKeyword,
+    kUnknown,
+    kEOF,
+  };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
   // to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string input);
 
-  // Take in an array of tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-  // to tokenize the supplied input, returning a list of tokens
+  // Take in an array of tokenizer functions such as SkipWhiteSpace or
+  // TokenizeDigits to tokenize the supplied input, returning a list of tokens
   static TokenList Tokenize(string, TokenizerFunc[]);
 
   // Debug function, returns the contents of the token as a string
@@ -105,8 +118,8 @@ class Tokenizer {
   // and returns the result as a Result struct
   static Result TokenizeNames(string input, int current_index = 0);
 
-  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be alphanumeric or symbols),
-  // and returns the result as a Result struct
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be
+  // alphanumeric or symbols), and returns the result as a Result struct
   static Result TokenizeWords(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening
@@ -145,6 +158,11 @@ class Tokenizer {
   // tokenize the equals symbol, returns a result with kConditional type if "=="
   // matches, and kAssignment type if a single '=' is matched.
   static Result TokenizeEquals(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizePattern(...) with regex to tokenize conditional
+  // expressions ("!", "&&", "||") and returns the result as a Result struct
+  static Result Tokenizer::TokenizeConditionals(string input,
+                                                int current_index);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to tokenize relational
   // expressions (">", "<", "!=", ">=", "<=") and returns the result as a Result
