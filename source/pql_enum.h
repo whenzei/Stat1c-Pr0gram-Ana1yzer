@@ -51,6 +51,12 @@ enum class PqlPatternType {
   kIf
 };
 
+enum class PqlPatternExpressionType {
+  kUnderscore,
+  kUnderscoreExpressionUnderscore,
+  kExpression
+};
+
 /* The arrangement types for a such that clause */
 enum SuchthatParamType {
   kNoSynonym = 0,                        // e.g (1, 2)

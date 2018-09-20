@@ -1,5 +1,6 @@
 #include "pql_parser.h"
 #include "pql_validator.h"
+#include "expression_helper.h"
 
 #include <sstream>
 #include <iostream>
@@ -57,7 +58,7 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
       TokenizerFunc tokenizer_functions[] = {
         &Tokenizer::SkipWhitespace,
         &Tokenizer::TokenizeParenthesis, &Tokenizer::TokenizeComma, &Tokenizer::TokenizeQuotation,
-        &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeWords };
+        &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeOperators, &Tokenizer::TokenizeNames, &Tokenizer::TokenizeDigits };
       TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
       for (int i = 0; i < tokens.size(); i++) {
@@ -77,9 +78,9 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
           &Tokenizer::SkipWhitespace, &Tokenizer::TokenizeWords, &Tokenizer::TokenizeComma };
     TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
     
-    /*for (int i = 0; i < tokens.size(); i++) {
+    for (int i = 0; i < tokens.size(); i++) {
       std::cout << Tokenizer::Debug(tokens[i]) << std::endl;
-    }*/
+    }
 
     if (!ParseDeclaration(tokens)) return false;
   }
@@ -163,14 +164,19 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   string second;
   PqlDeclarationEntity second_type;
 
-  // 1. Identify such that type
-  suchthat_type = PqlSuchthat::StringToType(current.value);
+  // 1 Identify such that type
+  string raw_type = current.value;
+  current = tokens[++*current_index];
+  if (current.type == Tokenizer::TokenType::kOperator && current.value == "*") {
+    raw_type += "*";
+    current = tokens[++*current_index];
+  }
+  suchthat_type = PqlSuchthat::StringToType(raw_type);
   if (suchthat_type == PqlSuchthatType::kNone) {
     errorMessage_ = "Unknown such that type.";
     return false;
   }
 
-  current = tokens[++*current_index];
   // 2. Check opening parentheses
   if (current.type == Tokenizer::TokenType::kOpenParen) {
     current = tokens[++*current_index];
@@ -336,9 +342,62 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index) {
     return false;
   }
 
-  // 5. TODO: Parse expression
-  
- return true;
+  // 5. Check for underscore
+  bool underscore = false;
+  if (current.type == Tokenizer::TokenType::kUnderscore) {
+    underscore = true;
+    current = tokens[++*current_index];
+  }
+
+  TokenList expression;
+  if (current.type != Tokenizer::TokenType::kCloseParen) {
+    // 6. Parse expression
+    int paren_count = 0;
+    while(current.type != Tokenizer::TokenType::kUnderscore && (paren_count > 0 || current.type != Tokenizer::TokenType::kCloseParen)) {
+      expression.push_back(current);
+      if (current.type == Tokenizer::TokenType::kOpenParen) paren_count++;
+      if (current.type == Tokenizer::TokenType::kCloseParen) paren_count--;
+      current = tokens[++*current_index];
+    }
+    if (!PqlValidator::ValidateExpression(expression)) {
+      errorMessage_ = "Expression in second parameter of assign pattern clause is invalid.";
+      return false;
+    }
+
+    // 6. Check for underscore
+    if (underscore) {
+      if (current.type == Tokenizer::TokenType::kUnderscore) {
+        current = tokens[++*current_index];
+      }
+      else {
+        errorMessage_ = "Missing underscore in second parameter of assign pattern clause.";
+        return false;
+      }
+    }
+  }
+
+  // 7. Check close parenthesis
+  if (current.type != Tokenizer::TokenType::kCloseParen) {
+    errorMessage_ = "Missing close parenthesis in assign pattern clause.";
+    return false;
+  }
+
+  // 8. Create assign pattern object
+  PqlPattern pattern = PqlPattern(PqlPatternType::kAssign, first, first_type);
+  PqlPatternExpressionType expression_type;
+  if (underscore && expression.empty()) {
+    expression_type = PqlPatternExpressionType::kUnderscore;
+  }
+  else if (underscore && !expression.empty()) {
+    expression_type = PqlPatternExpressionType::kUnderscoreExpressionUnderscore;
+  }
+  else {
+    expression_type = PqlPatternExpressionType::kExpression;
+  }
+  pattern.SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
+  query_->AddPattern(pattern);
+
+  return true;
 }
 
 bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index) {

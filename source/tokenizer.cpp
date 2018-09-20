@@ -16,7 +16,7 @@ static const string kTokenTypeNames[] = {
     "nothing",    "digit",     "name",      "word",       "openbrace",
     "closebrace", "semicolon", "comma",     "underscore", "quotation",
     "assignment", "operator",  "openparen", "closeparen", "conditional",
-    "relational", "keyword",   "unknown",   "EOF"};
+    "relational", "keyword",   "unknown",   "suchthat",   "EOF"};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
@@ -147,7 +147,7 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 // alphanumeric or symbols), and returns the result as a Result struct
 Result Tokenizer::TokenizeWords(string input, int current_index) {
   Result result =
-      TokenizePattern(kWord, regex{R"(\w+(\**))"}, input, current_index);
+      TokenizePattern(kWord, regex{R"(\w+)"}, input, current_index);
 
   return result;
 }
