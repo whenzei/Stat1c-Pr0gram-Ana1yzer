@@ -173,5 +173,8 @@
     <ClInclude Include="..\source\statement.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\pql_pattern.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

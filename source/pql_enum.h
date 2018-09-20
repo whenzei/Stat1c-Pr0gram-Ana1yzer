@@ -44,6 +44,13 @@ enum class PqlSuchthatType {
   kNone // only used for parsing
 };
 
+/* The type for pattern clause */
+enum class PqlPatternType {
+  kAssign,
+  kWhile,
+  kIf
+};
+
 /* The arrangement types for a such that clause */
 enum SuchthatParamType {
   kNoSynonym = 0,                        // e.g (1, 2)
