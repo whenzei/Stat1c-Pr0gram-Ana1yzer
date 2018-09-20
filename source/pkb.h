@@ -3,7 +3,10 @@
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
 
+// forward declaration due to circular dependencies
 class AssignStmtData;
+class WhileStmtData;
+class IfStmtData;
 class StatementData;
 
 #include "const_list.h"
@@ -305,6 +308,11 @@ class PKB {
 
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
+  void HandleInsertVariables(VarName variable, VarNameSet var_set);
+  void HandleInsertConstants(ConstValueSet constants);
+  void HandleFollows(StatementData* stmt_data);
+  void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
+  void HandleModifies(StatementData* stmt_data, VarName modified_var);
 };
 
 #endif  // !SPA_PKB_H

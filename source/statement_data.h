@@ -10,8 +10,8 @@ class StatementData {
  public:
   string stmt_num_;
   int stmt_list_index_;
-  string GetStmtNum() { return stmt_num_; }
-  int GetStmtListIndex() { return stmt_list_index_; }
+  string GetStmtNum();
+  int GetStmtListIndex();
 };
 
 class AssignStmtData : public StatementData {

@@ -1,5 +1,13 @@
 #include "statement_data.h"
 
+int StatementData::GetStmtListIndex() {
+	return stmt_list_index_;
+}
+
+string StatementData::GetStmtNum() {
+	return stmt_num_;
+}
+
 AssignStmtData::AssignStmtData(int stmt_num, int stmt_list_index,
                                VarName lhs_var, VarNameSet rhs_vars,
                                ConstValueSet rhs_consts,

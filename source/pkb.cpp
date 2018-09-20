@@ -31,54 +31,24 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
     return false;
   }
 
+  VarNameSet used_vars = stmt_data->GetUsedVariables();
+  VarName modified_var = stmt_data->GetModifiedVariable();
+  ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
   // handle insert variables
-  var_list_.InsertVarName(stmt_data->GetModifiedVariable());
-  for (auto& var_name : stmt_data->GetUsedVariables()) {
-    var_list_.InsertVarName(var_name);
-  }
+  HandleInsertVariables(modified_var, used_vars);
+
+  // handle insert constants
+  HandleInsertConstants(used_consts);
 
   // insert follow relations
-  for (StmtNum& followed_stmt_num :
-       stmtlist_table_.GetStmtNumList(stmt_data->GetStmtListIndex())) {
-    if (followed_stmt_num != stmt_data->GetStmtNum()) {
-      follows_table_.InsertFollows(followed_stmt_num, stmt_data->GetStmtNum());
-    }
-  }
-
-  // insert modifies relations
-  modifies_table_.InsertModifies(stmt_data->GetStmtNum(),
-                                 stmt_data->GetStmtListIndex(),
-                                 stmt_data->GetModifiedVariable());
-  StmtNumList parents = parent_table_.GetParentT(stmt_data->GetStmtListIndex());
+  HandleFollows(stmt_data);
 
   // insert uses relationship
-  for (auto& var_name : stmt_data->GetUsedVariables()) {
-    for (StmtNum& parent : parents) {
-      uses_table_.InsertUses(var_name, parent, stmt_data->GetStmtListIndex());
-    }
-    uses_table_.InsertUses(var_name, stmt_data->GetStmtNum(),
-                           stmt_data->GetStmtListIndex());
-  }
+  HandleUses(stmt_data, used_vars);
 
-  // insert parents relationship
-  for (StmtNum& parent : parents) {
-    modifies_table_.InsertModifies(parent, stmt_data->GetStmtListIndex(),
-                                   stmt_data->GetModifiedVariable());
-  }
-
-  return true;
-}
-
-bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmtlist_index = stmt_data->GetStmtListIndex();
-
-  // stmt already inserted into stmt_table_, no further processing required
-  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, stmtlist_index)) {
-    return false;
-  }
-  stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-  stmt_type_list_.InsertStmt(stmt_num, stmt_type);
+  // insert modifies relationship
+  HandleModifies(stmt_data, modified_var);
 
   return true;
 }
@@ -595,4 +565,68 @@ ProcVarPairList PKB::GetAllUsesPairP() {
         make_pair(proc_list_.GetAllProcName().front(), var));
   }
   return proc_var_list;
+}
+
+void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
+  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+
+  StmtNumList parents = parent_table_.GetParentT(stmt_list_index);
+
+  for (auto& var_name : used_vars) {
+    for (StmtNum& parent : parents) {
+      uses_table_.InsertUses(var_name, parent, stmt_list_index);
+    }
+    uses_table_.InsertUses(var_name, stmt_num, stmt_list_index);
+  }
+}
+
+void PKB::HandleModifies(StatementData* stmt_data, VarName modified_var) {
+  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+  StmtNumList parents = parent_table_.GetParentT(stmt_list_index);
+
+  modifies_table_.InsertModifies(stmt_num, stmt_list_index, modified_var);
+  for (StmtNum& parent : parents) {
+    modifies_table_.InsertModifies(parent, stmt_list_index, modified_var);
+  }
+}
+
+bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+  StmtListIndex stmtlist_index = stmt_data->GetStmtListIndex();
+
+  // stmt already inserted into stmt_table_, no further processing required
+  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, stmtlist_index)) {
+    return false;
+  }
+  stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
+  stmt_type_list_.InsertStmt(stmt_num, stmt_type);
+
+  return true;
+}
+
+void PKB::HandleFollows(StatementData* stmt_data) {
+  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+  for (StmtNum& followed_stmt_num :
+       stmtlist_table_.GetStmtNumList(stmt_list_index)) {
+    if (followed_stmt_num != stmt_num) {
+      follows_table_.InsertFollows(followed_stmt_num, stmt_num);
+    }
+  }
+}
+
+void PKB::HandleInsertVariables(VarName variable,
+                                VarNameSet var_set = VarNameSet()) {
+  var_list_.InsertVarName(variable);
+  for (auto& var_name : var_set) {
+    var_list_.InsertVarName(var_name);
+  }
+}
+
+void PKB::HandleInsertConstants(ConstValueSet constants) {
+  for (auto& constant : constants) {
+    const_list_.InsertConstValue(constant);
+  }
 }
