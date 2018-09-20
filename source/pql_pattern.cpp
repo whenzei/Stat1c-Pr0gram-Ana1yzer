@@ -9,6 +9,8 @@ PqlPatternType PqlPattern::GetType() { return type_; }
 
 pair<string, PqlDeclarationEntity> PqlPattern::GetFirstParameter() { return first_parameter_; }
 
+Expression PqlPattern::GetAssignExpression() { return assign_expression_; }
+
 void PqlPattern::SetAssignExpression(PqlPatternExpressionType type, TokenList tokens) {
   assign_expression_ = std::make_pair(type, tokens);
 }

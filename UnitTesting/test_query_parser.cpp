@@ -353,6 +353,28 @@ public:
     Assert::IsTrue(query->GetSuchThats()[1].GetParameters().second.second == PqlDeclarationEntity::kVariable);
   };
 
+  TEST_METHOD(TestPatternAssign) {
+    string content = "variable v; assign a; Select v pattern a(v,_a*2_)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["v"] == PqlDeclarationEntity::kVariable);
+    Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetVarName() == "v");
+
+    Assert::IsTrue(query->GetPatterns()[0].GetType() == PqlPatternType::kAssign);
+    Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().first == "v");
+    Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().second == PqlDeclarationEntity::kVariable);
+    Expression expression = query->GetPatterns()[0].GetAssignExpression();
+    Assert::IsTrue(expression.first == PqlPatternExpressionType::kUnderscoreExpressionUnderscore);
+  };
+
+  TEST_METHOD(TestInvalidPatternAssign) {
+    string content = "variable v; assign a; Select v pattern a(v, _2*a)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  };
   TEST_METHOD(TestPatternWhile) {
     string content = "variable v; while w; Select v pattern w(v,_)";
     PqlQuery* query = new PqlQuery();
