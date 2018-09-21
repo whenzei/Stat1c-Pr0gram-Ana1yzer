@@ -362,7 +362,8 @@ public:
     Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(query->GetVarName() == "v");
 
-    Assert::IsTrue(query->GetPatterns()[0].GetType() == PqlPatternType::kAssign);
+    Assert::IsTrue(query->GetPatterns()[0].GetType().first == "a");
+    Assert::IsTrue(query->GetPatterns()[0].GetType().second == PqlPatternType::kAssign);
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().first == "v");
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().second == PqlDeclarationEntity::kVariable);
     Expression expression = query->GetPatterns()[0].GetAssignExpression();
@@ -384,7 +385,8 @@ public:
     Assert::IsTrue(query->GetDeclarations()["w"] == PqlDeclarationEntity::kWhile);
     Assert::IsTrue(query->GetVarName() == "v");
 
-    Assert::IsTrue(query->GetPatterns()[0].GetType() == PqlPatternType::kWhile);
+    Assert::IsTrue(query->GetPatterns()[0].GetType().first == "w");
+    Assert::IsTrue(query->GetPatterns()[0].GetType().second == PqlPatternType::kWhile);
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().first == "v");
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().second == PqlDeclarationEntity::kVariable);
   };
@@ -405,7 +407,8 @@ public:
     Assert::IsTrue(query->GetDeclarations()["if"] == PqlDeclarationEntity::kIf);
     Assert::IsTrue(query->GetVarName() == "v");
 
-    Assert::IsTrue(query->GetPatterns()[0].GetType() == PqlPatternType::kIf);
+    Assert::IsTrue(query->GetPatterns()[0].GetType().first == "if");
+    Assert::IsTrue(query->GetPatterns()[0].GetType().second == PqlPatternType::kIf);
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().first == "v");
     Assert::IsTrue(query->GetPatterns()[0].GetFirstParameter().second == PqlDeclarationEntity::kVariable);
   };

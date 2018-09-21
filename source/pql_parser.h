@@ -60,9 +60,9 @@ class PqlParser {
   */
   bool ParsePattern(TokenList, int*);
 
-  bool ParsePatternAssign(TokenList, int*);
-  bool ParsePatternWhile(TokenList, int*);
-  bool ParsePatternIf(TokenList, int*);
+  bool ParsePatternAssign(TokenList, int*, string);
+  bool ParsePatternWhile(TokenList, int*, string);
+  bool ParsePatternIf(TokenList, int*, string);
   /**
   Parses the parameters in the such that/pattern clause of the select statement
   Reads synonym | '_' | '"' IDENT '"' | INTEGER

@@ -275,15 +275,15 @@ bool PqlParser::ParsePattern(TokenList tokens, int* current_index) {
     switch(declarations.at(current.value)) {
     case PqlDeclarationEntity::kAssign:
       *current_index += 1;
-      if(!ParsePatternAssign(tokens, current_index)) return false;
+      if(!ParsePatternAssign(tokens, current_index, current.value)) return false;
       break;
     case PqlDeclarationEntity::kWhile:
       *current_index += 1;
-      if (!ParsePatternWhile(tokens, current_index)) return false;
+      if (!ParsePatternWhile(tokens, current_index, current.value)) return false;
       break;
     case PqlDeclarationEntity::kIf:
       *current_index += 1;
-      if (!ParsePatternIf(tokens, current_index)) return false;
+      if (!ParsePatternIf(tokens, current_index, current.value)) return false;
       break;
     default:
       errorMessage_ = "Pattern clause not of type 'assign', 'while', or 'if'.";
@@ -298,7 +298,7 @@ bool PqlParser::ParsePattern(TokenList tokens, int* current_index) {
   return true;
 }
 
-bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index) {
+bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index, string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -383,7 +383,7 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index) {
   }
 
   // 8. Create assign pattern object
-  PqlPattern pattern = PqlPattern(PqlPatternType::kAssign, first, first_type);
+  PqlPattern pattern = PqlPattern(type_name, PqlPatternType::kAssign, first, first_type);
   PqlPatternExpressionType expression_type;
   if (underscore && expression.empty()) {
     expression_type = PqlPatternExpressionType::kUnderscore;
@@ -400,7 +400,7 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index) {
   return true;
 }
 
-bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index) {
+bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index, string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -460,12 +460,12 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index) {
   }
 
   // 7. Create pattern object
-  query_->AddPattern(PqlPattern(PqlPatternType::kWhile, first, first_type));
+  query_->AddPattern(PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
 
   return true;
 }
 
-bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index) {
+bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index, string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -544,7 +544,7 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index) {
   }
 
   // 9. Create pattern object
-  query_->AddPattern(PqlPattern(PqlPatternType::kIf, first, first_type));
+  query_->AddPattern(PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
 
   return true;
 }
