@@ -218,7 +218,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(2, 0, 1, 1, unordered_set<string>());
+    pkb.PKB::InsertIfStmt(&IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");

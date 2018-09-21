@@ -170,8 +170,8 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
   cout << "[leaving if block]" << endl;
 
   // Update PKB of the 'if' block
-  pkb_->InsertIfStmt(if_stmt_num, given_stmt_list_num, then_stmt_list_num,
-                     else_stmt_list_num, used_set.first);
+  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num, then_stmt_list_num,
+                     else_stmt_list_num, used_set.first, used_set.second));
 }
 
 void Parser::ProcessWhileBlock(int given_stmt_list_num) {
