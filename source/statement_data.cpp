@@ -9,7 +9,8 @@ AssignStmtData::AssignStmtData(int stmt_num, int stmt_list_index,
                                ConstValueSet rhs_consts,
                                TokenList postfixed_expr) {
   stmt_num_ = std::to_string(stmt_num);
-  stmt_list_index_ = stmt_list_index_;
+  stmt_num_int_ = stmt_num;
+  stmt_list_index_ = stmt_list_index;
   lhs_var_ = lhs_var;
   rhs_vars_ = rhs_vars;
   rhs_consts_ = rhs_consts;
@@ -25,7 +26,8 @@ WhileStmtData::WhileStmtData(int stmt_num, int stmt_list_index,
                              int child_stmt_list_index, VarNameSet control_vars,
                              ConstValueSet used_consts) {
   stmt_num_ = std::to_string(stmt_num);
-  stmt_list_index_ = stmt_list_index_;
+  stmt_num_int_ = stmt_num;
+  stmt_list_index_ = stmt_list_index;
   child_stmt_list_index_ = child_stmt_list_index;
   control_vars_ = control_vars;
   used_consts_ = used_consts;
@@ -42,6 +44,7 @@ ConstValueSet WhileStmtData::GetUsedConstants() { return used_consts_; }
 ReadStmtData::ReadStmtData(int stmt_num, int stmtlist_index,
                            VarName modified_var) {
   stmt_num_ = std::to_string(stmt_num);
+  stmt_num_int_ = stmt_num;
   stmt_list_index_ = stmtlist_index;
   modified_var_ = modified_var;
 }
@@ -51,6 +54,7 @@ VarName ReadStmtData::GetModifiedVariable() { return modified_var_; }
 PrintStmtData::PrintStmtData(int stmt_num, int stmtlist_index,
                              VarName used_var) {
   stmt_num_ = std::to_string(stmt_num);
+  stmt_num_int_ = stmt_num;
   stmt_list_index_ = stmtlist_index;
   used_var_ = used_var;
 }
