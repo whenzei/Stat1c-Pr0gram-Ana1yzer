@@ -86,10 +86,12 @@ class PKB {
   // statement
   // @returns true if the statement number cannot be found in the table and the
   // while statement is successfully inserted, false otherwise
-  bool InsertWhileStmt(StmtNumInt stmt_num_int,
-                       StmtListIndex parent_stmtlist_index,
-                       StmtListIndex child_stmtlist_index,
-                       VarNameSet control_var_name_set);
+  //bool InsertWhileStmt(StmtNumInt stmt_num_int,
+  //                     StmtListIndex parent_stmtlist_index,
+  //                     StmtListIndex child_stmtlist_index,
+  //                     VarNameSet control_var_name_set);
+
+  bool InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -309,10 +311,16 @@ class PKB {
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
+  void HandleInsertVariables(VarNameSet var_set);
   void HandleInsertConstants(ConstValueSet constants);
   void HandleFollows(StatementData* stmt_data);
   void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
+  void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
+  void UpdateParentModifies(StatementData* stmt_data, VarName modified_var);
   void HandleModifies(StatementData* stmt_data, VarName modified_var);
+  void UpdateModifiesFromChild(StatementData* stmt_data, StmtListIndex child_stmtlist_index);
+  void UpdateUsesFromChild(StatementData* stmt_data, StmtListIndex child_stmtlist_index);
+  void UpdateParentRelationship(StatementData* stmt_data, StmtListIndex child_stmtlist_index);
 };
 
 #endif  // !SPA_PKB_H

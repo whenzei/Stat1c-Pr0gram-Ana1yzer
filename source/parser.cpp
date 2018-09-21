@@ -137,12 +137,11 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
   int if_stmt_num = stmt_num_;
   int then_stmt_list_num = ++stmt_list_num_;
   int else_stmt_list_num = ++stmt_list_num_;
-  VarNameSet control_vars;
-  control_vars = ProcessConditional();
+  pair<VarNameSet, ConstValueSet> used_set = ProcessConditional();
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (VarName var : control_vars) {
+  for (VarName var : used_set.first) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "If statement#" << if_stmt_num
@@ -172,18 +171,17 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
 
   // Update PKB of the 'if' block
   pkb_->InsertIfStmt(if_stmt_num, given_stmt_list_num, then_stmt_list_num,
-                     else_stmt_list_num, control_vars);
+                     else_stmt_list_num, used_set.first);
 }
 
 void Parser::ProcessWhileBlock(int given_stmt_list_num) {
-  VarNameSet control_vars;
   int while_stmt_num = stmt_num_;
   int while_stmt_list_num = ++stmt_list_num_;
-  control_vars = ProcessConditional();
+  pair<VarNameSet, ConstValueSet> used_set = ProcessConditional();
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (VarName var : control_vars) {
+  for (VarName var : used_set.first) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "While statement#" << while_stmt_num
@@ -205,11 +203,12 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
   cout << "[leaving while block]" << endl;
 
   // Update PKB of the 'while' block
-  pkb_->InsertWhileStmt(while_stmt_num, given_stmt_list_num,
-                        while_stmt_list_num, control_vars);
+  pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
+                                       while_stmt_list_num, used_set.first,
+                                       used_set.second));
 }
 
-VarNameSet Parser::ProcessConditional() {
+pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {
   stack<Token> paren_stack;
 
   // Push "(" onto stack
@@ -217,25 +216,28 @@ VarNameSet Parser::ProcessConditional() {
   ReadNextToken();
 
   VarNameSet control_vars;
+  ConstValueSet used_consts;
 
   while (!paren_stack.empty()) {
-    if (current_token_.type == tt::kOpenParen) {
+    if (IsCurrentType(tt::kOpenParen)) {
       paren_stack.push(current_token_);
-    }
-    if (current_token_.type == tt::kName) {
+    } else if (IsCurrentType(tt::kName)) {
       control_vars.insert(current_token_.value);
-    }
-    if (current_token_.type == tt::kCloseParen) {
+    } else if (IsCurrentType(tt::kDigit)) {
+      used_consts.insert(stoi(current_token_.value));
+    } else if (IsCurrentType(tt::kCloseParen)) {
       paren_stack.pop();
+
+      if (paren_stack.empty()) {
+        break;
+      }
     }
 
     // Stops reading the next token when at the end of conditional ')'
-    if (!paren_stack.empty()) {
-      ReadNextToken();
-    }
+    ReadNextToken();
   }
 
-  return control_vars;
+  return make_pair(control_vars, used_consts);
 }
 
 // Helper methods

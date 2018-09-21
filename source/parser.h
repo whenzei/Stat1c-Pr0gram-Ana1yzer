@@ -43,7 +43,7 @@ class Parser {
 
   void ProcessProcedure(int given_stmt_list_index);
 
-  VarNameSet ProcessConditional();
+  pair<VarNameSet, ConstValueSet> ProcessConditional();
 
   void ParseProgram();
 
