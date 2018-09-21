@@ -58,14 +58,13 @@ class ReadStmtData : public StatementData {
 };
 
 class PrintStmtData : public StatementData {
-  // set is used even though it is just 1 variable so the function that updates
-  // uses can be used without overloading
-  VarNameSet used_vars_;
+
+  VarName used_var_;
 
  public:
-  PrintStmtData(int stmt_num, int stmtlist_index, VarNameSet used_vars);
+  PrintStmtData(int stmt_num, int stmtlist_index, VarName used_var);
 
-  VarNameSet GetUsedVariables();
+  VarName GetUsedVariable();
 };
 
 #endif  // !SPA_STMT_DATA_H

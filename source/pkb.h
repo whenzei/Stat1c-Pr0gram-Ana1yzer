@@ -6,6 +6,8 @@
 // forward declaration due to circular dependencies
 class AssignStmtData;
 class WhileStmtData;
+class ReadStmtData;
+class PrintStmtData;
 class IfStmtData;
 class StatementData;
 
@@ -109,25 +111,17 @@ class PKB {
 
   // inserts the given read statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the read statement
-  // @param stmtlist_index the statement list index the read statement belongs
-  // to
-  // @param var_name the read variable
+  // @param stmt_data the statement data as encapsulated by ReadStmtData structure
   // @returns true if the read statement is inserted successfully, false if
   // insertion fails (read statement was already inside StmtTable)
-  bool InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                      VarName var_name);
+  bool InsertReadStmt(ReadStmtData* stmt_data);
 
   // inserts the given print statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the print statement
-  // @param stmtlist_index the statement list index the print statement belongs
-  // to
-  // @param var_name the printed variable
+  // @param stmt_data the statement data as encapsulated by PrintStmtData structure
   // @returns true if the print statement is inserted successfully, false if
   // insertion fails (print statement was already inside StmtTable)
-  bool InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                       VarName var_name);
+  bool InsertPrintStmt(PrintStmtData* stmt_data);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -312,9 +306,11 @@ class PKB {
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
   void HandleInsertVariables(VarNameSet var_set);
+  void HandleInsertVariable(VarName variable);
   void HandleInsertConstants(ConstValueSet constants);
   void HandleFollows(StatementData* stmt_data);
   void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
+  void HandleUses(StatementData* stmt_data, VarName used_var);
   void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
   void UpdateParentModifies(StatementData* stmt_data, VarName modified_var);
   void HandleModifies(StatementData* stmt_data, VarName modified_var);

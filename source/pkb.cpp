@@ -50,6 +50,10 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   // insert modifies relationship
   HandleModifies(stmt_data, modified_var);
 
+  // just in case, update parents
+  UpdateParentModifies(stmt_data, modified_var);
+  UpdateParentUses(stmt_data, used_vars);
+
   return true;
 }
 
@@ -164,63 +168,44 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
   }
 }
 
-bool PKB::InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                         VarName var_name) {
-  StmtNum stmt_num = std::to_string(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kRead,
-                             stmtlist_index)) {
-    // insert statement
-    stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-    stmt_type_list_.InsertStmt(stmt_num, StmtType::kRead);
-    // insert variable
-    var_list_.InsertVarName(var_name);
-    // insert follows relationship
-    for (StmtNum& followed_stmt_num :
-         stmtlist_table_.GetStmtNumList(stmtlist_index)) {
-      if (followed_stmt_num != stmt_num) {
-        follows_table_.InsertFollows(followed_stmt_num, stmt_num);
-      }
-    }
-    // insert modifies relationship
-    StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    modifies_table_.InsertModifies(stmt_num, stmtlist_index, var_name);
-    for (StmtNum& parent : parents) {
-      modifies_table_.InsertModifies(parent, stmtlist_index, var_name);
-    }
-    return true;
-  } else {
+bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
+  // handle insert stmts
+  if (!HandleInsertStatement(stmt_data, StmtType::kRead)) {
     return false;
   }
+
+  VarName modified_var = stmt_data->GetModifiedVariable();
+
+  // handle insert variables
+  HandleInsertVariable(modified_var);
+
+  // insert follow relations
+  HandleFollows(stmt_data);
+
+  // insert modifies relationship
+  HandleModifies(stmt_data, modified_var);
+
+  return true;
 }
 
-bool PKB::InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                          VarName var_name) {
-  StmtNum stmt_num = std::to_string(stmt_num_int);
-  if (stmt_table_.InsertStmt(stmt_num, PqlDeclarationEntity::kPrint,
-                             stmtlist_index)) {
-    // insert statement
-    stmtlist_table_.InsertStmt(stmt_num, stmtlist_index);
-    stmt_type_list_.InsertStmt(stmt_num, StmtType::kPrint);
-    // insert variable
-    var_list_.InsertVarName(var_name);
-    // insert uses relationship
-    StmtNumList parents = parent_table_.GetParentT(stmtlist_index);
-    for (StmtNum& parent : parents) {
-      uses_table_.InsertUses(var_name, parent,
-                             stmt_table_.GetStmtListIndex(parent));
-    }
-    uses_table_.InsertUses(var_name, stmt_num, stmtlist_index);
-    // insert follows relationship
-    for (StmtNum& followed_stmt_num :
-         stmtlist_table_.GetStmtNumList(stmtlist_index)) {
-      if (followed_stmt_num != stmt_num) {
-        follows_table_.InsertFollows(followed_stmt_num, stmt_num);
-      }
-    }
-    return true;
-  } else {
+bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
+  // handle insert stmts
+  if (!HandleInsertStatement(stmt_data, StmtType::kPrint)) {
     return false;
   }
+
+  VarName used_var = stmt_data->GetUsedVariable();
+
+  // handle insert variables
+  HandleInsertVariable(used_var);
+
+  // insert follow relations
+  HandleFollows(stmt_data);
+
+  // insert used relationship
+  HandleUses(stmt_data, used_var);
+
+  return true;
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -529,6 +514,13 @@ void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
   }
 }
 
+void PKB::HandleUses(StatementData* stmt_data, VarName used_var) {
+  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+
+  uses_table_.InsertUses(used_var, stmt_num, stmt_list_index);
+}
+
 void PKB::UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
   StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
@@ -605,6 +597,10 @@ void PKB::HandleInsertVariables(VarName variable,
   for (auto& var_name : var_set) {
     var_list_.InsertVarName(var_name);
   }
+}
+
+void PKB::HandleInsertVariable(VarName variable) {
+  var_list_.InsertVarName(variable);
 }
 
 // overloaded method for just the set

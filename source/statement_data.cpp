@@ -49,10 +49,10 @@ ReadStmtData::ReadStmtData(int stmt_num, int stmtlist_index,
 VarName ReadStmtData::GetModifiedVariable() { return modified_var_; }
 
 PrintStmtData::PrintStmtData(int stmt_num, int stmtlist_index,
-                             VarNameSet used_vars) {
-  stmt_num_ = stmt_num;
+                             VarName used_var) {
+  stmt_num_ = std::to_string(stmt_num);
   stmt_list_index_ = stmtlist_index;
-  used_vars_ = used_vars;
+  used_var_ = used_var;
 }
 
-VarNameSet PrintStmtData::GetUsedVariables() { return used_vars_; }
+VarName PrintStmtData::GetUsedVariable() { return used_var_; }

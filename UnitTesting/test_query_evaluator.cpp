@@ -261,7 +261,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertReadStmt(5, 0, "x");
+    pkb.PKB::InsertReadStmt(&ReadStmtData(5, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("read");
@@ -282,7 +282,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertPrintStmt(6, 0, "x");
+    pkb.PKB::InsertPrintStmt(&PrintStmtData(6, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("print");
