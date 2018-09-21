@@ -13,7 +13,7 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertAssignStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertAssignStmt(kStmtNum1);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
     StmtNumList result1 = stmt_type_list.GetAllAssignStmt();
     StmtNumList result2 = stmt_type_list.GetAllStmt();
     Assert::AreEqual(kStmtNum1, result1.front());
@@ -22,7 +22,7 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertWhileStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertWhileStmt(kStmtNum1);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kWhile);
     StmtNumList result1 = stmt_type_list.GetAllWhileStmt();
     StmtNumList result2 = stmt_type_list.GetAllStmt();
     Assert::AreEqual(kStmtNum1, result1.front());
@@ -31,7 +31,7 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertIfStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertIfStmt(kStmtNum1);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kIf);
     StmtNumList result1 = stmt_type_list.GetAllIfStmt();
     StmtNumList result2 = stmt_type_list.GetAllStmt();
     Assert::AreEqual(kStmtNum1, result1.front());
@@ -40,7 +40,7 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertReadStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertReadStmt(kStmtNum1);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kRead);
     StmtNumList result1 = stmt_type_list.GetAllReadStmt();
     StmtNumList result2 = stmt_type_list.GetAllStmt();
     Assert::AreEqual(kStmtNum1, result1.front());
@@ -49,7 +49,7 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertPrintStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertPrintStmt(kStmtNum1);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kPrint);
     StmtNumList result1 = stmt_type_list.GetAllPrintStmt();
     StmtNumList result2 = stmt_type_list.GetAllStmt();
     Assert::AreEqual(kStmtNum1, result1.front());
@@ -58,9 +58,9 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestInsertMultipleStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertAssignStmt(kStmtNum1);
-    stmt_type_list.InsertWhileStmt(kStmtNum2);
-    stmt_type_list.InsertAssignStmt(kStmtNum3);
+    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
+    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kWhile);
+    stmt_type_list.InsertStmt(kStmtNum3, PqlDeclarationEntity::kAssign);
     StmtNumList result1 = stmt_type_list.GetAllAssignStmt();
     StmtNumList result2 = stmt_type_list.GetAllWhileStmt();
     StmtNumList result3 = stmt_type_list.GetAllStmt();
@@ -74,4 +74,4 @@ TEST_CLASS(TestStmtTypeList) {
     Assert::AreEqual(kStmtNum3, result3.back());
   }
 };
-}  // namespace UnitTesting
+}  // namespace PKBTests
