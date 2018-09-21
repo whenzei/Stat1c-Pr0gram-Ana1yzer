@@ -133,7 +133,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(1, 0, "x", unordered_set<string>());
+    pkb.PKB::InsertAssignStmt(&AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("a");
@@ -196,7 +196,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(1, 0, "x", unordered_set<string>());
+    pkb.PKB::InsertAssignStmt(&AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("s");
@@ -218,7 +218,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(2, 0, 1, 1, unordered_set<string>());
+    pkb.PKB::InsertIfStmt(&IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");
@@ -240,7 +240,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertWhileStmt(3, 0, 1, unordered_set<string>());
+    pkb.PKB::InsertWhileStmt(&WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("while");
@@ -261,7 +261,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertReadStmt(5, 0, "x");
+    pkb.PKB::InsertReadStmt(&ReadStmtData(5, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("read");
@@ -282,7 +282,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertPrintStmt(6, 0, "x");
+    pkb.PKB::InsertPrintStmt(&PrintStmtData(6, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("print");

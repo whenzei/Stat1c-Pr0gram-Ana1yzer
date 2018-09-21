@@ -20,7 +20,8 @@ enum class PqlDeclarationEntity {
   kIdent, // only used for validation, not an actual entity type
   kUnderscore, // only used for validation, not an actual entity type
   kSynonym, // only used for validation, not an actual entity type
-  kNone
+  kNone,
+  kAll		// used for PKB to hold all entity types
 };
 
 /* The relationship types for a such that clause */
