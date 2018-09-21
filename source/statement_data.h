@@ -21,7 +21,9 @@ class AssignStmtData : public StatementData {
   TokenList postfixed_expr_;
 
  public:
-  AssignStmtData(int, int, VarName, VarNameSet, ConstValueSet, TokenList);
+  AssignStmtData(int stmt_num, int stmtlist_index, VarName, VarNameSet,
+                 ConstValueSet, TokenList);
+
   VarName GetModifiedVariable();
   VarNameSet GetUsedVariables();
   ConstValueSet GetUsedConstants();
@@ -33,8 +35,17 @@ class IfStmtData {
   StmtListIndex else_stmt_list_index_;
 };
 
-class WhileStmtData {
-  StmtListIndex while_stmt_list_index_;
+class WhileStmtData : public StatementData {
+  StmtListIndex child_stmt_list_index_;
+  VarNameSet control_vars_;
+  ConstValueSet used_consts_;
+
+ public:
+  WhileStmtData(int stmt_num, int stmtlist_index, int child_stmtlist_index,
+                VarNameSet control_vars, ConstValueSet used_consts);
+  StmtListIndex GetChildStmtListIndex();
+  VarNameSet GetUsedVariables();
+  ConstValueSet GetUsedConstants();
 };
 
 #endif  // !SPA_STMT_DATA_H
