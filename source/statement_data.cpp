@@ -60,3 +60,23 @@ PrintStmtData::PrintStmtData(int stmt_num, int stmtlist_index,
 }
 
 VarName PrintStmtData::GetUsedVariable() { return used_var_; }
+
+IfStmtData::IfStmtData(int stmt_num, int stmt_list_index,
+                       int then_stmtlist_index, int else_stmtlist_index,
+                       VarNameSet control_vars, ConstValueSet used_consts) {
+  stmt_num_ = std::to_string(stmt_num);
+  stmt_num_int_ = stmt_num;
+  stmt_list_index_ = stmt_list_index;
+  then_stmt_list_index_ = then_stmtlist_index;
+  else_stmt_list_index_ = else_stmtlist_index;
+  control_vars_ = control_vars;
+  used_consts_ = used_consts;
+}
+
+StmtListIndex IfStmtData::GetThenStmtListIndex() { return then_stmt_list_index_; }
+
+StmtListIndex IfStmtData::GetElseStmtListIndex() { return else_stmt_list_index_; }
+
+VarNameSet IfStmtData::GetUsedVariables() { return control_vars_; }
+
+ConstValueSet IfStmtData::GetUsedConstants() { return used_consts_; }
