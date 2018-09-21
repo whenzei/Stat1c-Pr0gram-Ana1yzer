@@ -6,14 +6,18 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-using std::string;
-using std::unordered_map;
-using std::vector;
 
 #include "pql_enum.h"
 
+using std::pair;
+using std::string;
+using std::unordered_map;
+using std::vector;
 using ColumnHeader = unordered_map<string, int>;
 using ResultTable = vector<vector<string>>;
+using ResultRow = vector<string>;
+using QueryResultList = vector<string>;
+using QueryResultPairList = vector<pair<string, string>>;
 
 /*
 This class stores the PQL result as a table
@@ -29,6 +33,14 @@ class PqlResult {
  public:
   /* Constructor */
   PqlResult();
+
+  void InitTable(QueryResultList);
+
+  void InitTable(QueryResultPairList);
+
+  void MergeResults(QueryResultList, PqlResultTableConflict, int);
+
+  void MergeResults(QueryResultPairList, PqlResultTableConflict);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);

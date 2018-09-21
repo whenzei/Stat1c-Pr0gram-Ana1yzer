@@ -22,8 +22,8 @@ PqlEvaluator::PqlEvaluator() {}
 QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetQuery(*query);
   SetPKB(pkb);
-  //Initialise new result table class
-  PqlResult *pql_result = new PqlResult();
+  // Initialise new result table class
+  PqlResult* pql_result = new PqlResult();
   SetPqlResult(*pql_result);
   // Default value should be true, unless the clause returns a false
   SetClauseFlag(true);
@@ -50,7 +50,10 @@ QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 }
 
 FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
+  list<string> final_result;
   ResultTable result_table = GetPqlResult().GetResultTable();
+
+  return final_result;
 }
 
 QueryResultList PqlEvaluator::GetSuchThatResult(PqlSuchthat suchthat) {
