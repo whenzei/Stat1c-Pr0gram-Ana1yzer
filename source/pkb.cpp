@@ -32,9 +32,11 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   VarNameSet used_vars = stmt_data->GetUsedVariables();
   VarName modified_var = stmt_data->GetModifiedVariable();
   ConstValueSet used_consts = stmt_data->GetUsedConstants();
+  TokenList rhs_expr = stmt_data->GetPostfixedExpr();
 
   HandleInsertVariables(modified_var, used_vars);
   HandleInsertConstants(used_consts);
+  HandleInsertAssignPattern(stmt_data, modified_var, rhs_expr);
   HandleUses(stmt_data, used_vars);
   HandleModifies(stmt_data, modified_var);
 
@@ -58,7 +60,6 @@ bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
   HandleUses(stmt_data, used_vars);
 
   UpdateParentRelationship(stmt_data, child_stmtlist_index);
-
 
   UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
   UpdateUsesFromChild(stmt_data, child_stmtlist_index);
@@ -421,6 +422,34 @@ ProcVarPairList PKB::GetAllUsesPairP() {
   return proc_var_list;
 }
 
+
+StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
+  if (var_name.compare("") == 0) {
+    return pattern_table_.GetAssignWithSubExpr(sub_expr);
+  } else if (sub_expr.empty()) {
+    return pattern_table_.GetAssignWithLfsVar(var_name);
+  } else {
+    return pattern_table_.GetAssignWithPattern(var_name, sub_expr);
+  }
+}
+
+StmtNumList PKB::GetAssignWithExactPattern(VarName var_name,
+                                           TokenList exact_expr) {
+  if (var_name.compare("") == 0) {
+    return pattern_table_.GetAssignWithExactExpr(exact_expr);
+  } else {
+    return pattern_table_.GetAssignWithExactPattern(var_name, exact_expr);
+  }
+}
+
+StmtVarPairList PKB::GetAllAssignPatternPair(TokenList sub_expr) {
+  return pattern_table_.GetAllAssignPatternPair(sub_expr);
+}
+
+StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
+  return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
+}
+
 /***********************************
 **** Private methods begin here ****
 ***********************************/
@@ -499,8 +528,7 @@ bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   return true;
 }
 
-
-void PKB::InsertFollows (StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
+void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
@@ -570,4 +598,11 @@ void PKB::UpdateUsesFromChild(StatementData* stmt_data,
        uses_table_.GetVarUsedByStmtList(child_stmtlist_index)) {
     uses_table_.InsertUses(child_var_name, stmt_num, stmtlist_index);
   }
+}
+
+void PKB::HandleInsertAssignPattern(StatementData* stmt_data, VarName lhs_var,
+                                    TokenList rhs_expr) {
+  StmtNum stmt_num = stmt_data->GetStmtNum();
+  pattern_table_.InsertAssignPattern(stmt_num, lhs_var,
+                                     rhs_expr);
 }
