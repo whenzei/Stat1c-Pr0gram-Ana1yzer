@@ -118,6 +118,9 @@ class PKB {
   // insertion fails (print statement was already inside StmtTable)
   bool InsertPrintStmt(PrintStmtData* stmt_data);
 
+		// Expose follows_table InsertFollows method to Parser
+		void InsertFollows(StmtNum followee, StmtNum follower);
+
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
@@ -297,13 +300,14 @@ class PKB {
   // variable and the variable name
   ProcVarPairList GetAllUsesPairP();
 
+
+
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
   void HandleInsertVariables(VarNameSet var_set);
   void HandleInsertVariable(VarName variable);
   void HandleInsertConstants(ConstValueSet constants);
-  void HandleFollows(StatementData* stmt_data);
   void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
   void HandleUses(StatementData* stmt_data, VarName used_var);
   void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);

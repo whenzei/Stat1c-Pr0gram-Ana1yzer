@@ -34,7 +34,7 @@ class Parser {
 
   void ProcessProcedure(int given_stmt_list_index);
   void ProcessStatementList(int given_stmt_list_index);
-  void ProcessStatement(int given_stmt_list_index);
+  int ProcessStatement(int given_stmt_list_index);
   void ProcessKeyword(int given_stmt_list_index);
   void ProcessAssignment(int given_stmt_list_index);
 
@@ -46,6 +46,9 @@ class Parser {
   void ProcessPrint(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
+
+
+		void PopulatePkbFollows(vector<int> stmt_num);
 
   void ParseProgram();
 

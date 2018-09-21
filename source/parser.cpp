@@ -65,19 +65,24 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
 }
 
 void Parser::ProcessStatementList(int given_stmt_list_num) {
+  vector<int> stmt_nums;
   do {
-    ProcessStatement(given_stmt_list_num);
+    int stmt_num = ProcessStatement(given_stmt_list_num);
+    stmt_nums.push_back(stmt_num);
   } while (!IsNextType(tt::kCloseBrace));
+		
+		PopulatePkbFollows(stmt_nums);
 }
 
-void Parser::ProcessStatement(int given_stmt_list_num) {
-  ++stmt_num_;
+int Parser::ProcessStatement(int given_stmt_list_num) {
+  int num_to_return = ++stmt_num_;
   ReadNextToken();
   if (IsCurrentTokenKeyword() && !IsNextType(tt::kAssignment)) {
     ProcessKeyword(given_stmt_list_num);
   } else {
     ProcessAssignment(given_stmt_list_num);
   }
+  return num_to_return;
 }
 
 void Parser::ProcessKeyword(int given_stmt_list_num) {
@@ -88,26 +93,28 @@ void Parser::ProcessKeyword(int given_stmt_list_num) {
   } else if (IsCurrentKeywordType(ts::kCall)) {
     // todo call handling
   } else if (IsCurrentKeywordType(ts::kRead)) {
-	  ProcessRead(given_stmt_list_num);
+    ProcessRead(given_stmt_list_num);
   } else if (IsCurrentKeywordType(ts::kPrint)) {
-	  ProcessPrint(given_stmt_list_num);
+    ProcessPrint(given_stmt_list_num);
   }
 }
 
 void Parser::ProcessRead(int given_stmt_list_num) {
-	VarName modified_var = ReadNextToken().value;
-	pkb_->InsertReadStmt(&ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
+  VarName modified_var = ReadNextToken().value;
+  pkb_->InsertReadStmt(
+      &ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
 
-	// eat semicolon
-	ReadNextToken();
+  // eat semicolon
+  ReadNextToken();
 }
 
 void Parser::ProcessPrint(int given_stmt_list_num) {
-	VarName used_var = ReadNextToken().value;
-	pkb_->InsertPrintStmt(&PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
+  VarName used_var = ReadNextToken().value;
+  pkb_->InsertPrintStmt(
+      &PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
 
-	// eat semicolon
-	ReadNextToken();
+  // eat semicolon
+  ReadNextToken();
 }
 
 void Parser::ProcessAssignment(int given_stmt_list_num) {
@@ -188,8 +195,9 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
   cout << "[leaving if block]" << endl;
 
   // Update PKB of the 'if' block
-  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num, then_stmt_list_num,
-                     else_stmt_list_num, used_set.first, used_set.second));
+  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
+                                 then_stmt_list_num, else_stmt_list_num,
+                                 used_set.first, used_set.second));
 }
 
 void Parser::ProcessWhileBlock(int given_stmt_list_num) {
@@ -256,6 +264,17 @@ pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {
   }
 
   return make_pair(control_vars, used_consts);
+}
+
+
+void Parser::PopulatePkbFollows(vector<int> stmt_nums) {
+  for (size_t i = 0; i < stmt_nums.size(); i++) {
+    for (size_t j = i + 1; j < stmt_nums.size(); j++) {
+      string followee = std::to_string(stmt_nums[i]);
+      string follower = std::to_string(stmt_nums[j]);
+      pkb_->InsertFollows(followee, follower);
+    }
+  }
 }
 
 // Helper methods

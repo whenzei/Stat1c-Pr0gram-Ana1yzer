@@ -35,7 +35,6 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
 
   HandleInsertVariables(modified_var, used_vars);
   HandleInsertConstants(used_consts);
-  HandleFollows(stmt_data);
   HandleUses(stmt_data, used_vars);
   HandleModifies(stmt_data, modified_var);
 
@@ -60,7 +59,6 @@ bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
 
   UpdateParentRelationship(stmt_data, child_stmtlist_index);
 
-  HandleFollows(stmt_data);
 
   UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
   UpdateUsesFromChild(stmt_data, child_stmtlist_index);
@@ -86,8 +84,6 @@ bool PKB::InsertIfStmt(IfStmtData* stmt_data) {
   UpdateParentRelationship(stmt_data, then_stmtlist_index);
   UpdateParentRelationship(stmt_data, else_stmtlist_index);
 
-  HandleFollows(stmt_data);
-
   UpdateModifiesFromChild(stmt_data, then_stmtlist_index);
   UpdateModifiesFromChild(stmt_data, else_stmtlist_index);
   UpdateUsesFromChild(stmt_data, then_stmtlist_index);
@@ -106,7 +102,6 @@ bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
   VarName modified_var = stmt_data->GetModifiedVariable();
 
   HandleInsertVariable(modified_var);
-  HandleFollows(stmt_data);
   HandleModifies(stmt_data, modified_var);
 
   UpdateParentModifies(stmt_data, modified_var);
@@ -122,7 +117,6 @@ bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   VarName used_var = stmt_data->GetUsedVariable();
 
   HandleInsertVariable(used_var);
-  HandleFollows(stmt_data);
   HandleUses(stmt_data, used_var);
 
   UpdateParentUses(stmt_data, VarNameSet{used_var});
@@ -505,15 +499,9 @@ bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   return true;
 }
 
-void PKB::HandleFollows(StatementData* stmt_data) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  for (StmtNum& followed_stmt_num :
-       stmtlist_table_.GetStmtNumList(stmt_list_index)) {
-    if (followed_stmt_num != stmt_num) {
-      follows_table_.InsertFollows(followed_stmt_num, stmt_num);
-    }
-  }
+
+void PKB::InsertFollows (StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
+  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
 void PKB::HandleInsertVariables(VarName variable, VarNameSet var_set) {
