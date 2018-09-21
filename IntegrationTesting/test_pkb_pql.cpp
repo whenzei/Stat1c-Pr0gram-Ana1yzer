@@ -11,29 +11,30 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace IntegrationTesting {
+namespace PKBPQLTests {
 TEST_CLASS(TestPKBPQL){
-  public :
+public:
+  TEST_METHOD(TestSelectAssignQuery){
+    PKB pkb;
+	AssignStmtData stmt1(1, 0, "x", unordered_set<string>(), unordered_set<int>(), TokenList());
+	AssignStmtData stmt2(8, 0, "i", unordered_set<string>(), unordered_set<int>(), TokenList());
 
-      TEST_METHOD(TestSelectAssignQuery){
-          // TODO: Your test code here
-			PKB pkb;
-			pkb.InsertAssignStmt(1, 0, "x", unordered_set<string>());
-			pkb.InsertAssignStmt(8, 0, "i", unordered_set<string>());
+	pkb.InsertAssignStmt(&stmt1);
+	pkb.InsertAssignStmt(&stmt2);
 
-			PqlEvaluator qe;
-			string user_query = "assign a; Select a";
-      PqlQuery* query = new PqlQuery();
-      PqlParser parser(user_query, query);
-      parser.Parse();
+	PqlEvaluator qe;
+	string user_query = "assign a; Select a";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(user_query, query);
+    parser.Parse();
 
-			list<string> resultlist = qe.GetResultFromQuery(query, pkb);
-			string output = qe.FormatResultString(resultlist);
+	vector<string> resultlist = qe.GetResultFromQuery(query, pkb);
 
-			string expected_output = "statement #1, #8";
+	string output = resultlist.front();
 
-			Assert::AreEqual(expected_output, output);
-      }
+	string expected_output = "1";
 
+	Assert::AreEqual(expected_output, output);
+  }
 };
 }

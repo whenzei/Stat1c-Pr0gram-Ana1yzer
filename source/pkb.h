@@ -3,20 +3,29 @@
 #ifndef SPA_PKB_H
 #define SPA_PKB_H
 
+// forward declaration due to circular dependencies
+class AssignStmtData;
+class WhileStmtData;
+class ReadStmtData;
+class PrintStmtData;
+class IfStmtData;
+class StatementData;
+
 #include "const_list.h"
 #include "follows_table.h"
+#include "modifies_table.h"
 #include "parent_table.h"
+#include "pql_enum.h"
 #include "proc_list.h"
+#include "statement_data.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
 #include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
-#include "modifies_table.h"
-#include "pql_enum.h"
 
 using StmtNumInt = int;
-using StmtNumPairList = list<pair<string, string>>;
+using StmtNumPairList = vector<pair<string, string>>;
 
 class PKB {
   ProcList proc_list_;
@@ -59,23 +68,16 @@ class PKB {
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
 
-  // return a PqlDeclarationEntity enum to represent the statement type (assign/while/if/read/print)
+  // return a PqlDeclarationEntity enum to represent the statement type
+  // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the assign statement
-  // @param stmtlist_index the statement list index the assign statement belongs
-  // to
-  // @param modified_var_name the variable name on the left hand side of the
-  // assign statement
-  // @param used_var_name_list the list of variable names on the right hand side
-  // of the assign statement
+  // @param AssignStmtData the encapsulation of statement data for PKB use
   // @returns true if the statement number cannot be found in the table and the
   // assign statement is successfully inserted, false otherwise
-  bool InsertAssignStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                        VarName modified_var_name,
-                        VarNameSet used_var_name_set);
+  bool InsertAssignStmt(AssignStmtData*);
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -86,46 +88,38 @@ class PKB {
   // statement
   // @returns true if the statement number cannot be found in the table and the
   // while statement is successfully inserted, false otherwise
-  bool InsertWhileStmt(StmtNumInt stmt_num_int,
-                       StmtListIndex parent_stmtlist_index,
-                       StmtListIndex child_stmtlist_index,
-                       VarNameSet control_var_name_set);
+  // bool InsertWhileStmt(StmtNumInt stmt_num_int,
+  //                     StmtListIndex parent_stmtlist_index,
+  //                     StmtListIndex child_stmtlist_index,
+  //                     VarNameSet control_var_name_set);
+
+  bool InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the if statement
-  // @param stmtlist_index the statement list index the if statement belongs to
-  // @param control_var_name_list the list of control variables of the if
-  // statement
+  // @param stmt_data the statement data as encapsulated by IfStmtData structure
   // @returns true if the statement number cannot be found in the table and the
   // if statement is successfully inserted, false otherwise
-  bool InsertIfStmt(StmtNumInt stmt_num_int,
-                    StmtListIndex parent_stmtlist_index,
-                    StmtListIndex then_stmtlist_index,
-                    StmtListIndex else_stmtlist_index,
-                    VarNameSet control_var_name_set);
+  bool InsertIfStmt(IfStmtData* stmt_data);
 
   // inserts the given read statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the read statement
-  // @param stmtlist_index the statement list index the read statement belongs
-  // to
-  // @param var_name the read variable
+  // @param stmt_data the statement data as encapsulated by ReadStmtData
+  // structure
   // @returns true if the read statement is inserted successfully, false if
   // insertion fails (read statement was already inside StmtTable)
-  bool InsertReadStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                      VarName var_name);
+  bool InsertReadStmt(ReadStmtData* stmt_data);
 
   // inserts the given print statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the print statement
-  // @param stmtlist_index the statement list index the print statement belongs
-  // to
-  // @param var_name the printed variable
+  // @param stmt_data the statement data as encapsulated by PrintStmtData
+  // structure
   // @returns true if the print statement is inserted successfully, false if
   // insertion fails (print statement was already inside StmtTable)
-  bool InsertPrintStmt(StmtNumInt stmt_num_int, StmtListIndex stmtlist_index,
-                       VarName var_name);
+  bool InsertPrintStmt(PrintStmtData* stmt_data);
+
+		// Expose follows_table InsertFollows method to Parser
+		void InsertFollows(StmtNum followee, StmtNum follower);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -153,28 +147,32 @@ class PKB {
   StmtNumList GetAllPrintStmt();
 
   // Follows table public functions
-   
+
   // @returns true if FollowsT(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns true if Follows(followee, follower) holds
   bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
-  // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int, a)
+  // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int,
+  // a)
   StmtList GetFollowsT(StmtNum stmt_num);
 
-  // @returns stmt number containing statement a that satisfies Follows(stmt_num_int, a)
+  // @returns stmt number containing statement a that satisfies
+  // Follows(stmt_num_int, a)
   StmtList GetFollows(StmtNum stmt_num);
-  
+
   // @returns a list of all statements that follow some other statement
   StmtList GetAllFollows();
 
-  // @returns list of stmt numbers of a's that satisfies FollowsT(a, stmt_num_int)
+  // @returns list of stmt numbers of a's that satisfies FollowsT(a,
+  // stmt_num_int)
   StmtList GetFollowedByT(StmtNum stmt_num);
 
-  // @returns list containing statement a that satisfies Follows(a, stmt_num_int)
+  // @returns list containing statement a that satisfies Follows(a,
+  // stmt_num_int)
   StmtList GetFollowedBy(StmtNum stmt_num);
-  
+
   // @returns a list of all statements that are followed by some other statment
   StmtList GetAllFollowedBy();
 
@@ -276,10 +274,12 @@ class PKB {
   // @returns a list of all procedures that use any variable
   ProcNameList GetAllUsingProc();
 
-  // @returns a list of all statements that use the variable identified by var_name
+  // @returns a list of all statements that use the variable identified by
+  // var_name
   StmtNumList GetUsingStmt(VarName var_name);
 
-  // @returns s a list of all procedures that use the variable identified by var_name
+  // @returns s a list of all procedures that use the variable identified by
+  // var_name
   ProcNameList GetUsingProc(VarName var_name);
 
   // @returns true if var_name is used in stmt_num, false if otherwise
@@ -288,17 +288,37 @@ class PKB {
   // @returns true if var_name is used in proc_name, false if otherwise
   bool IsUsedByP(ProcName proc_name, VarName var_name);
 
-  // @returns true if Uses Table contains any uses relationships, false if otherwise
+  // @returns true if Uses Table contains any uses relationships, false if
+  // otherwise
   bool HasUsesRelationship();
 
-  // @returns a list of all <stmt_num, var_name> pairs of statements using a variable and the variable name
+  // @returns a list of all <stmt_num, var_name> pairs of statements using a
+  // variable and the variable name
   StmtVarPairList GetAllUsesPairS();
 
-  // @returns a list of all <proc_name, var_name> pairs of procedures using a variable and the variable name
+  // @returns a list of all <proc_name, var_name> pairs of procedures using a
+  // variable and the variable name
   ProcVarPairList GetAllUsesPairP();
 
+
+
  private:
-  StmtNum ToString(int stmt_num_int);
+  bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
+  void HandleInsertVariables(VarName variable, VarNameSet var_set);
+  void HandleInsertVariables(VarNameSet var_set);
+  void HandleInsertVariable(VarName variable);
+  void HandleInsertConstants(ConstValueSet constants);
+  void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
+  void HandleUses(StatementData* stmt_data, VarName used_var);
+  void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
+  void UpdateParentModifies(StatementData* stmt_data, VarName modified_var);
+  void HandleModifies(StatementData* stmt_data, VarName modified_var);
+  void UpdateModifiesFromChild(StatementData* stmt_data,
+                               StmtListIndex child_stmtlist_index);
+  void UpdateUsesFromChild(StatementData* stmt_data,
+                           StmtListIndex child_stmtlist_index);
+  void UpdateParentRelationship(StatementData* stmt_data,
+                                StmtListIndex child_stmtlist_index);
 };
 
 #endif  // !SPA_PKB_H

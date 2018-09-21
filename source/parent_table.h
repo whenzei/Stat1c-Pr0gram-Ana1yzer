@@ -7,24 +7,26 @@
 #include <list>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 using std::string;
 using std::list;
 using std::unordered_map;
 using std::unordered_set;
+using std::vector;
 
 // StmtNum is defined as a string inside PKB, because query results have to be
 // in the format list<string>. For consistency, all StmtNum inside PKB is string
 // so that it is easier to search and update the PKB data structures.
 using StmtNum = string;
-using StmtNumList = list<string>;
+using StmtNumList = vector<string>;
 using StmtListIndex = int;
-using StmtListIndexList = list<int>;
-using ParentsMap = unordered_map<int, list<string>>;
+using StmtListIndexList = vector<int>;
+using ParentsMap = unordered_map<int, vector<string>>;
 using DirectParentMap = unordered_map<int, string>;
 using ParentsSet = unordered_set<string>;
-using ChildrenMap = unordered_map<string, list<int>>;
-using DirectChildrenMap = unordered_map<string, list<int>>;
+using ChildrenMap = unordered_map<string, vector<int>>;
+using DirectChildrenMap = unordered_map<string, vector<int>>;
 using ChildrenSet = unordered_set<int>;
 
 // The parent table class for the PKB component

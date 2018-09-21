@@ -6,13 +6,15 @@
 #include <string>
 #include <list>
 #include <unordered_set>
+#include <vector>
 
 using std::string;
 using std::list;
 using std::unordered_set;
+using std::vector;
 
 using VarName = string;
-using VarNameList = list<string>;
+using VarNameList = vector<string>;
 using VarNameSet = unordered_set<string>;
 
 

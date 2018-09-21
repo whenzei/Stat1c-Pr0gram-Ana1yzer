@@ -4,58 +4,32 @@
 #define SPA_STMT_TYPE_LIST_H
 
 #include <string>
-#include <list>
 #include <vector>
+#include <unordered_map>
 
-using std::string;
-using std::list;
-using std::vector;
+#include "pql_enum.h"
 
 // StmtNum is defined as a string inside PKB, because query results have to be
-// in the format list<string>. For consistency, all StmtNum inside PKB is string
+// in the format vector<string>. For consistency, all StmtNum inside PKB is string
 // so that it is easier to search and update the PKB data structures.
-using StmtNum = string;
-using StmtNumList = list<string>;
-using StmtTypeVector = vector<list<string>>;
+using StmtNum = std::string;
+using StmtNumList = std::vector<std::string>;
+using StmtTypeMap = std::unordered_map<PqlDeclarationEntity, std::vector<std::string>>;
 
 // The statement type list class for the PKB component
-// Used to store the statement numbers that belong to each statement type (e.g. assign, if)
+// Used to store the statement numbers that belong to each statement type (e.g.
+// assign, if)
 class StmtTypeList {
-  StmtTypeVector stmt_type_vector_;
+  StmtTypeMap stmt_type_map_;
 
-  enum StmtTypeEnum { 
-	kAll,
-    kAssign,
-    kWhile,
-	kIf,
-	kRead,
-	kPrint,
-	kSizeOfVector
-  };
-  
  public:
   // constructor
   StmtTypeList();
 
-  // Insert an assign statement into the StmtTypeList
+  // Insert a statement into the StmtTypeList using type provided
   // @param stmt_num the statement number of the statement to be inserted
-  void InsertAssignStmt(StmtNum stmt_num);
-
-  // Insert a while statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertWhileStmt(StmtNum stmt_num);
-
-  // Insert an if statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertIfStmt(StmtNum stmt_num);
-
-  // Insert a read statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertReadStmt(StmtNum stmt_num);
-
-  // Insert a print statement into the StmtTypeList
-  // @param stmt_num the statement number of the statement to be inserted
-  void InsertPrintStmt(StmtNum stmt_num);
+  // @param stmt_type the PqlDeclarationEntity type of statement
+  void InsertStmt(StmtNum stmt_num, PqlDeclarationEntity stmt_type);
 
   // Get the list of all statement numbers
   StmtNumList GetAllStmt();

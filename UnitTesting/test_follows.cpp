@@ -5,7 +5,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using std::next;
 
-namespace UnitTesting {
+namespace PKBTests {
   TEST_CLASS(TestFollowsTable) {
     const StmtNum kSampleStmtIdx1 = "1";
     const StmtNum kSampleStmtIdx2 = "2";
