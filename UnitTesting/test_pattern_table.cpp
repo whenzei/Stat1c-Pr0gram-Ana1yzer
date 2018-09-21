@@ -109,5 +109,102 @@ TEST_CLASS(TestPatternTable) {
     Assert::IsTrue(result4.size() == 1);
     Assert::AreEqual(kStmtNum2, result4.front());
   }
+
+  TEST_METHOD(TestGetAssignWithExactPattern) {
+    PatternTable pattern_table;
+    pattern_table.InsertAssignPattern(kStmtNum1, kVarName1, kTokenList1);
+    StmtNumList result1 =
+        pattern_table.GetAssignWithExactPattern(kVarName1, "32 a +");
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum1, result1.front());
+    StmtNumList result5 = pattern_table.GetAssignWithExactPattern(kVarName1, "32");
+    Assert::IsTrue(result5.empty());
+    StmtNumList result6 = pattern_table.GetAssignWithExactPattern(kVarName2, "a");
+    Assert::IsTrue(result6.empty());
+    pattern_table.InsertAssignPattern(kStmtNum2, kVarName1, kTokenList2);
+    StmtNumList result2 =
+        pattern_table.GetAssignWithExactPattern(kVarName1, "32 a +");
+    Assert::IsTrue(result2.size() == 1);
+    Assert::AreEqual(kStmtNum1, result2.front());
+    pattern_table.InsertAssignPattern(kStmtNum3, kVarName2, kTokenList1);
+    StmtNumList result3 =
+        pattern_table.GetAssignWithExactPattern(kVarName2, "32 a + b *");
+    Assert::IsTrue(result3.empty());
+    StmtNumList result4 =
+        pattern_table.GetAssignWithExactPattern(kVarName1, "32 a + b *");
+    Assert::IsTrue(result4.size() == 1);
+    Assert::AreEqual(kStmtNum2, result4.front());
+  }
+
+  TEST_METHOD(TestGetAllAssignPatternPair) {
+    PatternTable pattern_table;
+    pattern_table.InsertAssignPattern(kStmtNum1, kVarName1, kTokenList1);
+    StmtVarPairList result1 =
+        pattern_table.GetAllAssignPatternPair("32 a +");
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum1, result1.front().first);
+    Assert::AreEqual(kVarName1, result1.front().second);
+    StmtVarPairList result5 = pattern_table.GetAllAssignPatternPair("32");
+    Assert::IsTrue(result5.size() == 1);
+    Assert::AreEqual(kStmtNum1, result5.front().first);
+    Assert::AreEqual(kVarName1, result5.front().second);
+    StmtVarPairList result6 = pattern_table.GetAllAssignPatternPair("");
+    Assert::IsTrue(result6.size() == 1);
+    Assert::AreEqual(kStmtNum1, result6.front().first);
+    Assert::AreEqual(kVarName1, result6.front().second);
+    pattern_table.InsertAssignPattern(kStmtNum2, kVarName1, kTokenList2);
+    StmtVarPairList result2 =
+        pattern_table.GetAllAssignPatternPair("32 a +");
+    Assert::IsTrue(result2.size() == 2);
+    Assert::AreEqual(kStmtNum1, result2.front().first);
+    Assert::AreEqual(kVarName1, result2.front().second);
+    Assert::AreEqual(kStmtNum2, result2.back().first);
+    Assert::AreEqual(kVarName1, result2.back().second);
+    StmtVarPairList result3 =
+        pattern_table.GetAllAssignPatternPair("b");
+    Assert::IsTrue(result3.size() == 1);
+    Assert::AreEqual(kStmtNum2, result3.front().first);
+    Assert::AreEqual(kVarName1, result3.front().second);
+    pattern_table.InsertAssignPattern(kStmtNum3, kVarName2, kTokenList1);
+    StmtVarPairList result4 =
+        pattern_table.GetAllAssignPatternPair("");
+    Assert::IsTrue(result4.size() == 3);
+    StmtVarPairList::iterator iter = result4.begin();
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum2, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum3, (*iter).first);
+    Assert::AreEqual(kVarName2, (*iter).second);
+  }
+
+  TEST_METHOD(TestGetAllAssignExactPatternPair) {
+    PatternTable pattern_table;
+    pattern_table.InsertAssignPattern(kStmtNum1, kVarName1, kTokenList1);
+    StmtVarPairList result1 = pattern_table.GetAllAssignExactPatternPair("32 a +");
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum1, result1.front().first);
+    Assert::AreEqual(kVarName1, result1.front().second);
+    StmtVarPairList result5 = pattern_table.GetAllAssignExactPatternPair("32");
+    Assert::IsTrue(result5.empty());
+    StmtVarPairList result6 = pattern_table.GetAllAssignExactPatternPair("");
+    Assert::IsTrue(result6.empty());
+    pattern_table.InsertAssignPattern(kStmtNum2, kVarName1, kTokenList2);
+    StmtVarPairList result2 = pattern_table.GetAllAssignExactPatternPair("a");
+    Assert::IsTrue(result2.empty());
+    StmtVarPairList result3 = pattern_table.GetAllAssignExactPatternPair("32 a + b *");
+    Assert::IsTrue(result3.size() == 1);
+    Assert::AreEqual(kStmtNum2, result3.front().first);
+    Assert::AreEqual(kVarName1, result3.front().second);
+    pattern_table.InsertAssignPattern(kStmtNum3, kVarName2, kTokenList1);
+    StmtVarPairList result4 = pattern_table.GetAllAssignExactPatternPair("32 a +");
+    Assert::IsTrue(result4.size() == 2);
+    Assert::AreEqual(kStmtNum1, result4.front().first);
+    Assert::AreEqual(kVarName1, result4.front().second);
+    Assert::AreEqual(kStmtNum3, result4.back().first);
+    Assert::AreEqual(kVarName2, result4.back().second);
+  }
 };
 }  // namespace PKBTests

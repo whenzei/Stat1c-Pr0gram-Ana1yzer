@@ -44,8 +44,6 @@ class PatternTable {
 
   StmtNumList GetAssignWithExactPattern(VarName var_name, Expr exact_expr);
 
-  StmtVarPairList GetAllAssignPatternPair();
-
   StmtVarPairList GetAllAssignPatternPair(Expr sub_expr);
 
   StmtVarPairList GetAllAssignExactPatternPair(Expr exact_expr);

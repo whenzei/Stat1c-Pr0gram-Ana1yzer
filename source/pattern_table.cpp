@@ -35,6 +35,7 @@ void PatternTable::InsertAssignPattern(StmtNum stmt_num, VarName var_name,
     }
     iter++;
   }
+  assign_sub_expr_map_[string()].push_back(stmt_num);
   assign_exact_expr_map_[subtree_stack.top()].push_back(stmt_num);
   assign_stmt_var_map_[stmt_num] = var_name;
   assign_var_stmt_map_[var_name].push_back(stmt_num);
@@ -93,14 +94,6 @@ StmtNumList PatternTable::GetAssignWithExactPattern(VarName var_name,
         result.push_back(stmt_num);
       }
     }
-  }
-  return result;
-}
-
-StmtVarPairList PatternTable::GetAllAssignPatternPair() {
-  StmtVarPairList result;
-  for (auto entry : assign_stmt_var_map_) {
-    result.push_back(make_pair(entry.first, entry.second));
   }
   return result;
 }
