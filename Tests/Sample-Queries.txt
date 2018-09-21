@@ -1,7 +1,7 @@
 1 - comment
 assign a;
 Select a
-2, 4, 5, 6, 7, 8, 10, 12, 13, 14, 15
+2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
 5000
 2 - comment
 procedure a;
@@ -11,20 +11,30 @@ One
 3 - comment
 variable a;
 Select a
-a, b, if, while, call, then, c, e, f, g, h, s, t
+a, b, if, while, call, then, c, e, f, g, h, s, t, read
 5000
 4 - comment
 if a;
 Select a
-1, 3, 11
+1, 3, 12
 5000
 5 - comment
 while a;
 Select a
-9
+10
 5000
 6 - comment
 stmt a;
 Select a
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+5000
+7 - comment
+print p;
+Select p
+17
+5000
+8 - comment
+read r;
+Select r
+8
 5000

@@ -88,8 +88,26 @@ void Parser::ProcessKeyword(int given_stmt_list_num) {
   } else if (IsCurrentKeywordType(ts::kCall)) {
     // todo call handling
   } else if (IsCurrentKeywordType(ts::kRead)) {
+	  ProcessRead(given_stmt_list_num);
   } else if (IsCurrentKeywordType(ts::kPrint)) {
+	  ProcessPrint(given_stmt_list_num);
   }
+}
+
+void Parser::ProcessRead(int given_stmt_list_num) {
+	VarName modified_var = ReadNextToken().value;
+	pkb_->InsertReadStmt(&ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
+
+	// eat semicolon
+	ReadNextToken();
+}
+
+void Parser::ProcessPrint(int given_stmt_list_num) {
+	VarName used_var = ReadNextToken().value;
+	pkb_->InsertPrintStmt(&PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
+
+	// eat semicolon
+	ReadNextToken();
 }
 
 void Parser::ProcessAssignment(int given_stmt_list_num) {
