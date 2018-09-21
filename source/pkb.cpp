@@ -1,7 +1,6 @@
 #pragma once
 
 #include "pkb.h"
-#include <string>
 
 using std::make_pair;
 
@@ -35,19 +34,10 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   VarName modified_var = stmt_data->GetModifiedVariable();
   ConstValueSet used_consts = stmt_data->GetUsedConstants();
 
-  // handle insert variables
   HandleInsertVariables(modified_var, used_vars);
-
-  // handle insert constants
   HandleInsertConstants(used_consts);
-
-  // insert follow relations
   HandleFollows(stmt_data);
-
-  // insert uses relationship
   HandleUses(stmt_data, used_vars);
-
-  // insert modifies relationship
   HandleModifies(stmt_data, modified_var);
 
   // just in case, update parents
@@ -71,9 +61,9 @@ bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
 
   UpdateParentRelationship(stmt_data, child_stmtlist_index);
 
-  UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
   HandleFollows(stmt_data);
 
+  UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
   UpdateUsesFromChild(stmt_data, child_stmtlist_index);
 
   UpdateParentUses(stmt_data, used_vars);
@@ -169,41 +159,33 @@ bool PKB::InsertIfStmt(StmtNumInt stmt_num_int,
 }
 
 bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
-  // handle insert stmts
   if (!HandleInsertStatement(stmt_data, StmtType::kRead)) {
     return false;
   }
 
   VarName modified_var = stmt_data->GetModifiedVariable();
 
-  // handle insert variables
   HandleInsertVariable(modified_var);
-
-  // insert follow relations
   HandleFollows(stmt_data);
-
-  // insert modifies relationship
   HandleModifies(stmt_data, modified_var);
+
+  UpdateParentModifies(stmt_data, modified_var);
 
   return true;
 }
 
 bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
-  // handle insert stmts
   if (!HandleInsertStatement(stmt_data, StmtType::kPrint)) {
     return false;
   }
 
   VarName used_var = stmt_data->GetUsedVariable();
 
-  // handle insert variables
   HandleInsertVariable(used_var);
-
-  // insert follow relations
   HandleFollows(stmt_data);
-
-  // insert used relationship
   HandleUses(stmt_data, used_var);
+
+  UpdateParentUses(stmt_data, VarNameSet{used_var});
 
   return true;
 }
@@ -505,6 +487,9 @@ ProcVarPairList PKB::GetAllUsesPairP() {
   return proc_var_list;
 }
 
+/***********************************
+**** Private methods begin here ****
+***********************************/
 void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
   StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
   StmtNum stmt_num = stmt_data->GetStmtNum();
@@ -592,22 +577,23 @@ void PKB::HandleFollows(StatementData* stmt_data) {
 }
 
 void PKB::HandleInsertVariables(VarName variable,
-                                VarNameSet var_set = VarNameSet()) {
+                                VarNameSet var_set) {
   var_list_.InsertVarName(variable);
   for (auto& var_name : var_set) {
     var_list_.InsertVarName(var_name);
   }
-}
-
-void PKB::HandleInsertVariable(VarName variable) {
-  var_list_.InsertVarName(variable);
 }
 
 // overloaded method for just the set
-void PKB::HandleInsertVariables(VarNameSet var_set = VarNameSet()) {
+void PKB::HandleInsertVariables(VarNameSet var_set) {
   for (auto& var_name : var_set) {
     var_list_.InsertVarName(var_name);
   }
+}
+
+// just a single variable
+void PKB::HandleInsertVariable(VarName variable) {
+  var_list_.InsertVarName(variable);
 }
 
 void PKB::HandleInsertConstants(ConstValueSet constants) {
