@@ -48,4 +48,24 @@ class WhileStmtData : public StatementData {
   ConstValueSet GetUsedConstants();
 };
 
+class ReadStmtData : public StatementData {
+  VarName modified_var_;
+
+ public:
+  ReadStmtData(int stmt_num, int stmtlist_index, VarName modified_var);
+
+  VarName GetModifiedVariable();
+};
+
+class PrintStmtData : public StatementData {
+  // set is used even though it is just 1 variable so the function that updates
+  // uses can be used without overloading
+  VarNameSet used_vars_;
+
+ public:
+  PrintStmtData(int stmt_num, int stmtlist_index, VarNameSet used_vars);
+
+  VarNameSet GetUsedVariables();
+};
+
 #endif  // !SPA_STMT_DATA_H

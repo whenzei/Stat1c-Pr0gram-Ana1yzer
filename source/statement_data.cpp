@@ -38,3 +38,21 @@ StmtListIndex WhileStmtData::GetChildStmtListIndex() {
 VarNameSet WhileStmtData::GetUsedVariables() { return control_vars_; }
 
 ConstValueSet WhileStmtData::GetUsedConstants() { return used_consts_; }
+
+ReadStmtData::ReadStmtData(int stmt_num, int stmtlist_index,
+                           VarName modified_var) {
+  stmt_num_ = std::to_string(stmt_num);
+  stmt_list_index_ = stmtlist_index;
+  modified_var_ = modified_var;
+}
+
+VarName ReadStmtData::GetModifiedVariable() { return modified_var_; }
+
+PrintStmtData::PrintStmtData(int stmt_num, int stmtlist_index,
+                             VarNameSet used_vars) {
+  stmt_num_ = stmt_num;
+  stmt_list_index_ = stmtlist_index;
+  used_vars_ = used_vars;
+}
+
+VarNameSet PrintStmtData::GetUsedVariables() { return used_vars_; }
