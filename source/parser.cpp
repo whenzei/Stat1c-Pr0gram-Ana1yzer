@@ -47,6 +47,18 @@ void Parser::Parse(string filepath) {
   ParseProgram();
 }
 
+//Method for testing which provides pre-written tokens of a program
+void Parser::Parse(TokenList program_tokenized) {
+  tokens_ = program_tokenized;
+  // validate tokens for syntax errors
+  Validator validator = Validator(tokens_);
+  if (!validator.ValidateProgram()) {
+    return;
+  }
+
+  ParseProgram();
+}
+
 void Parser::ParseProgram() {
   do {
     ProcessProcedure(stmt_list_num_);

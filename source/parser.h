@@ -55,6 +55,9 @@ class Parser {
  public:
   Parser(PKB* pkb);
   void Parse(string filepath);
+
+		//For testing purposes
+  void Parse(TokenList program_tokenized);
 };
 
 #endif  //! SPA_PARSER_H
