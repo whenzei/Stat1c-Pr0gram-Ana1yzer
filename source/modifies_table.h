@@ -21,10 +21,8 @@ using StmtNumList = vector<string>;
 using VarName = string;
 using VarNameList = vector<string>;
 using VarNameSet = unordered_set<string>;
-using StmtListIndex = int;
 using ModifiesMap = unordered_map<string, vector<string>>;
 using ModifiedByMap = unordered_map<string, vector<string>>;
-using ModifiesStmtListMap = unordered_map<int, unordered_set<string>>;
 using StmtVarPairList = vector<pair<string, string>>;
 using ProcVarPairList = vector<pair<string, string>>;
 
@@ -33,19 +31,15 @@ class ModifiesTable {
   VarNameList modified_var_name_list_;
   ModifiesMap modifies_map_;
   ModifiedByMap modified_by_map_;
-  ModifiesStmtListMap modifies_stmtlist_map_;
 
  public:
-  void InsertModifies(StmtNum stmt_num, StmtListIndex stmtlist_index,
-                      VarName var_name);
+  void InsertModifies(StmtNum stmt_num, VarName var_name);
 
   bool IsModifiedBy(StmtNum stmt_num, VarName var_name);
 
   bool IsModified(VarName var_name);
 
   VarNameList GetModifiedVar(StmtNum stmt_num);
-
-  VarNameSet GetModifiedVar(StmtListIndex stmtlist_index);
 
   VarNameList GetAllModifiedVar();
 

@@ -3,12 +3,10 @@
 #ifndef SPA_STMTLIST_TABLE_H
 #define SPA_STMTLIST_TABLE_H
 
-#include <list>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-using std::list;
 using std::string;
 using std::pair;
 using std::unordered_map;

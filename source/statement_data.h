@@ -32,30 +32,23 @@ class AssignStmtData : public StatementData {
 };
 
 class IfStmtData : public StatementData {
-  StmtListIndex then_stmt_list_index_;
-  StmtListIndex else_stmt_list_index_;
   VarNameSet control_vars_;
   ConstValueSet used_consts_;
 
  public:
-  IfStmtData(int stmt_num, int stmt_list_index, int then_stmtlist_index,
-             int else_stmtlist_index, VarNameSet control_vars,
+  IfStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
              ConstValueSet used_consts);
-  StmtListIndex GetThenStmtListIndex();
-  StmtListIndex GetElseStmtListIndex();
   VarNameSet GetUsedVariables();
   ConstValueSet GetUsedConstants();
 };
 
 class WhileStmtData : public StatementData {
-  StmtListIndex child_stmt_list_index_;
   VarNameSet control_vars_;
   ConstValueSet used_consts_;
 
  public:
-  WhileStmtData(int stmt_num, int stmt_list_index, int child_stmtlist_index,
-                VarNameSet control_vars, ConstValueSet used_consts);
-  StmtListIndex GetChildStmtListIndex();
+  WhileStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
+                ConstValueSet used_consts);
   VarNameSet GetUsedVariables();
   ConstValueSet GetUsedConstants();
 };
