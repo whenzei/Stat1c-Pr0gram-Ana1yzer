@@ -11,6 +11,7 @@
 
 using std::string;
 using std::unordered_set;
+using std::tuple;
 
 class Parser {
  private:
@@ -33,22 +34,22 @@ class Parser {
   bool IsCurrentTokenKeyword();
 
   void ProcessProcedure(int given_stmt_list_index);
-  void ProcessStatementList(int given_stmt_list_index);
-  int ProcessStatement(int given_stmt_list_index);
-  void ProcessKeyword(int given_stmt_list_index);
-  void ProcessAssignment(int given_stmt_list_index);
+  tuple<StmtNumListInt ,VarNameSet, VarNameSet> ProcessStatementList(int given_stmt_list_index);
+  tuple<int, VarNameSet, VarNameSet> ProcessStatement(int given_stmt_list_index);
+  pair<VarNameSet, VarNameSet> ProcessKeyword(int given_stmt_list_index);
+  pair<VarName, VarNameSet> ProcessAssignment(int given_stmt_list_index);
 
   // Process the if block with its counterpart else block
-  void ProcessIfBlock(int given_stmt_list_index);
-  void ProcessWhileBlock(int given_stmt_list_index);
+  pair<VarNameSet, VarNameSet> ProcessIfBlock(int given_stmt_list_index);
+  pair<VarNameSet, VarNameSet> ProcessWhileBlock(int given_stmt_list_index);
 
-  void ProcessRead(int given_stmt_list_index);
-  void ProcessPrint(int given_stmt_list_index);
+  VarName ProcessRead(int given_stmt_list_index);
+  VarName ProcessPrint(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
-
-		void PopulatePkbFollows(vector<int> stmt_num);
+  void PopulatePkbFollows(StmtNumListInt stmt_nums);
+  void PopulatePkbParent(int stmt, StmtNumListInt stmt_nums);
 
   void ParseProgram();
 
@@ -56,7 +57,7 @@ class Parser {
   Parser(PKB* pkb);
   void Parse(string filepath);
 
-		//For testing purposes
+  // For testing purposes
   void Parse(TokenList program_tokenized);
 };
 
