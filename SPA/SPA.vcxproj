@@ -18,6 +18,7 @@
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
+    <ClCompile Include="..\source\pql_pattern.cpp" />
     <ClCompile Include="..\source\pql_suchthat.cpp" />
     <ClCompile Include="..\source\pql_validator.cpp" />
     <ClCompile Include="..\source\statement_data.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_enum.h" />
+    <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />
     <ClInclude Include="..\source\statement_data.h" />
