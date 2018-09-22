@@ -18,12 +18,10 @@ using std::cout;
 using std::endl;
 using std::stack;
 using std::vector;
-using std::tuple;
 using std::get;
 
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
-using StmtNumListInt = vector<int>;
 
 const std::unordered_set<string> kKeywords({"procedure", "read", "call",
                                             "print", "if", "then", "else",
@@ -80,7 +78,7 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
 }
 
-StmtNumListInt Parser::ProcessStatementList(int given_stmt_list_num) {
+tuple<StmtNumListInt, VarNameSet, VarNameSet> Parser::ProcessStatementList(int given_stmt_list_num) {
   StmtNumListInt stmt_nums;
   VarNameSet modified_vars;
   VarNameSet used_vars;
@@ -101,7 +99,8 @@ StmtNumListInt Parser::ProcessStatementList(int given_stmt_list_num) {
   } while (!IsNextType(tt::kCloseBrace));
 
   PopulatePkbFollows(stmt_nums);
-  return stmt_nums;
+
+  return make_tuple(stmt_nums, used_vars, modified_vars);
 }
 
 tuple<int, VarNameSet, VarNameSet> Parser::ProcessStatement(int given_stmt_list_num) {
@@ -115,10 +114,11 @@ tuple<int, VarNameSet, VarNameSet> Parser::ProcessStatement(int given_stmt_list_
     used_vars = get<0>(keyword_stmt_info);
     modified_vars = get<1>(keyword_stmt_info);
   } else {
-    pair<VarName, VarNameSet> assignment_stmt_info = ProcessAssignment(given_stmt_list_num);
-    used_vars.insert(get<0>(assignment_stmt_info));
-				modified_vars = get<1>(assignment_stmt_info);
+    pair<VarNameSet, VarName> assignment_stmt_info = ProcessAssignment(given_stmt_list_num);
+    used_vars = get<0>(assignment_stmt_info);
+				modified_vars.insert(get<1>(assignment_stmt_info));
   }
+
   return make_tuple(num_to_return, used_vars, modified_vars);
 }
 
@@ -141,6 +141,8 @@ pair<VarNameSet, VarNameSet> Parser::ProcessKeyword(int given_stmt_list_num) {
     used_vars.insert(used_var);
     return make_pair(used_vars, modified_vars);
   }
+
+  exit(-1);
 }
 
 VarName Parser::ProcessRead(int given_stmt_list_num) {
@@ -163,7 +165,7 @@ VarName Parser::ProcessPrint(int given_stmt_list_num) {
   return used_var;
 }
 
-pair<VarName, VarNameSet> Parser::ProcessAssignment(int given_stmt_list_num) {
+pair<VarNameSet, VarName> Parser::ProcessAssignment(int given_stmt_list_num) {
   VarName lhs_var = current_token_.value;
   VarNameSet rhs_vars;
   ConstValueSet rhs_consts;
@@ -188,6 +190,9 @@ pair<VarName, VarNameSet> Parser::ProcessAssignment(int given_stmt_list_num) {
                                          lhs_var, rhs_vars, rhs_consts,
                                          postfix_tokens_rhs));
 
+		PopulatePkbModifies(stmt_num_, lhs_var);
+		PopulatePkbUses(stmt_num_, rhs_vars);
+
   //**************** DEBUG********************
   string rhsvar = string();
   for (VarName var : rhs_vars) {
@@ -203,18 +208,18 @@ pair<VarName, VarNameSet> Parser::ProcessAssignment(int given_stmt_list_num) {
        << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
   //***********************************************
 
-  return make_pair(lhs_var, rhs_vars);
+  return make_pair(rhs_vars, lhs_var);
 }
 
 pair<VarNameSet, VarNameSet> Parser::ProcessIfBlock(int given_stmt_list_num) {
   int if_stmt_num = stmt_num_;
   int then_stmt_list_num = ++stmt_list_num_;
   int else_stmt_list_num = ++stmt_list_num_;
-  pair<VarNameSet, ConstValueSet> used_set = ProcessConditional();
+  pair<VarNameSet, ConstValueSet> used_set_conditionals = ProcessConditional();
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (VarName var : used_set.first) {
+  for (VarName var : used_set_conditionals.first) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "If statement#" << if_stmt_num
@@ -228,7 +233,7 @@ pair<VarNameSet, VarNameSet> Parser::ProcessIfBlock(int given_stmt_list_num) {
   cout << "[inside then block, stmtLst# should be " << then_stmt_list_num << "]"
        << endl;
   // Process everything inside the if block
-  StmtNumListInt children_stmt_nums_part_1 =
+  tuple<StmtNumListInt, VarNameSet, VarNameSet> children_stmt_info_part_1 =
       ProcessStatementList(then_stmt_list_num);
 
   // eat "} else {" tokens
@@ -236,19 +241,49 @@ pair<VarNameSet, VarNameSet> Parser::ProcessIfBlock(int given_stmt_list_num) {
   cout << "[inside else block, stmtLst# should be " << else_stmt_list_num << "]"
        << endl;
   // Process everything inside the counterpart else block
-  StmtNumListInt children_stmt_nums_part_2 =
+  tuple<StmtNumListInt,VarNameSet, VarNameSet> children_stmt_info_part_2 =
       ProcessStatementList(else_stmt_list_num);
 
 		// Get all child statements in the then and else block
 		// Used for populating Parent relation in PKB
-  StmtNumListInt children_stmt_nums;
-  children_stmt_nums.insert(
-      children_stmt_nums_part_1.begin(), children_stmt_nums_part_2.begin(),
-      children_stmt_nums_part_2.end());
+  StmtNumListInt stmt_nums_part_1 = get<0>(children_stmt_info_part_1);
+  StmtNumListInt stmt_nums_part_2 = get<0>(children_stmt_info_part_2);
+  StmtNumListInt children_stmt_nums(stmt_nums_part_1);
+
+		children_stmt_nums.insert(children_stmt_nums.end(), stmt_nums_part_2.begin(),
+                            stmt_nums_part_2.end());
 
 		PopulatePkbParent(if_stmt_num, children_stmt_nums);
 
-  // eat closing brace
+		// Get all used vars in the then and else block
+		// Used for populating Uses relation in PKB
+		VarNameSet used_vars_part_1 = get<1>(children_stmt_info_part_1); 
+		VarNameSet used_vars_part_2 = get<1>(children_stmt_info_part_2); 
+		VarNameSet used_vars;
+		
+		used_vars.insert(get<0>(used_set_conditionals).begin(),
+                                 get<0>(used_set_conditionals).end());
+		used_vars.insert(used_vars_part_1.begin(),
+                         used_vars_part_1.end());
+		used_vars.insert(used_vars_part_2.begin(),
+                         used_vars_part_2.end());
+
+		PopulatePkbUses(if_stmt_num, used_vars);
+
+		// Get all used vars in the then and else block
+		// Used for populating Uses relation in PKB
+		VarNameSet modified_vars_part_1 = get<2>(children_stmt_info_part_1); 
+		VarNameSet modified_vars_part_2 = get<2>(children_stmt_info_part_2); 
+		VarNameSet modified_vars;
+		
+		modified_vars.insert(modified_vars_part_1.begin(),
+                         modified_vars_part_1.end());
+		modified_vars.insert(modified_vars_part_2.begin(),
+                         modified_vars_part_2.end());
+
+		PopulatePkbModifies(if_stmt_num, modified_vars);
+  
+		// eat closing brace
   ReadNextToken();
 
   cout << "[leaving if block]" << endl;
@@ -256,17 +291,18 @@ pair<VarNameSet, VarNameSet> Parser::ProcessIfBlock(int given_stmt_list_num) {
   // Update PKB of the 'if' block
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
                                  then_stmt_list_num, else_stmt_list_num,
-                                 used_set.first, used_set.second));
+                                 used_set_conditionals.first, used_set_conditionals.second));
+  return make_pair(used_vars, modified_vars);
 }
 
-void Parser::ProcessWhileBlock(int given_stmt_list_num) {
+pair<VarNameSet, VarNameSet> Parser::ProcessWhileBlock(int given_stmt_list_num) {
   int while_stmt_num = stmt_num_;
   int while_stmt_list_num = ++stmt_list_num_;
-  pair<VarNameSet, ConstValueSet> used_set = ProcessConditional();
+  pair<VarNameSet, ConstValueSet> used_set_conditional = ProcessConditional();
 
   //************* DEBUG******************
   string control_var_str = string();
-  for (VarName var : used_set.first) {
+  for (VarName var : used_set_conditional.first) {
     control_var_str = control_var_str + " " + var;
   }
   cout << "While statement#" << while_stmt_num
@@ -280,8 +316,18 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
   cout << "[inside while block, stmtLst# should be " << while_stmt_list_num
        << "]" << endl;
 
-  StmtNumListInt children_stmt_nums = ProcessStatementList(while_stmt_list_num);
+  tuple<StmtNumListInt,VarNameSet, VarNameSet> children_stmt_info = ProcessStatementList(while_stmt_list_num);
+  StmtNumListInt children_stmt_nums = get<0>(children_stmt_info);
+  VarNameSet used_vars = get<1>(children_stmt_info);
+  VarNameSet modified_vars = get<2>(children_stmt_info);
+
+		// Update variables used in conditionals
+		used_vars.insert(used_set_conditional.first.begin(),
+                   used_set_conditional.first.end());
+
   PopulatePkbParent(while_stmt_num, children_stmt_nums);
+  PopulatePkbUses(while_stmt_list_num, used_vars);
+  PopulatePkbModifies(while_stmt_list_num, modified_vars);
 
   // eat close brace
   ReadNextToken();
@@ -290,8 +336,10 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
 
   // Update PKB of the 'while' block
   pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
-                                       while_stmt_list_num, used_set.first,
-                                       used_set.second));
+                                       while_stmt_list_num, used_set_conditional.first,
+                                       used_set_conditional.second));
+
+		return make_pair(used_vars, modified_vars);
 }
 
 pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {
@@ -344,6 +392,33 @@ void Parser::PopulatePkbParent(int parent_num, StmtNumListInt children_stmt_nums
   }
 }
 
+void Parser::PopulatePkbUses(int stmt_num,
+                               VarNameSet used_vars) {
+  string stmt_num_str = std::to_string(stmt_num);
+  for (const auto& var : used_vars) {
+				//pkb_.InsertUses(stmt_num_str, var);
+		}
+}
+
+void Parser::PopulatePkbUses(int stmt_num,
+                               VarName used_var) {
+  string stmt_num_str = std::to_string(stmt_num);
+		//pkb_.InsertUses(stmt_num_str, var);
+}
+
+
+
+void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
+  string stmt_num_str = std::to_string(stmt_num);
+  for (const auto& var : modified_vars) {
+    // pkb_.InsertModifies(stmt_num_str, var);
+  }
+}
+
+void Parser::PopulatePkbModifies(int stmt_num, VarName modified_var) {
+  string stmt_num_str = std::to_string(stmt_num);
+  // pkb_.InsertModifies(stmt_num_str, var);
+}
 
 // Helper methods
 bool Parser::IsAtEnd() { return PeekNextToken().type == tt::kEOF; }
