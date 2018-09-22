@@ -322,13 +322,6 @@ class PKB {
   void HandleInsertVariables(VarNameSet var_set);
   void HandleInsertVariable(VarName variable);
   void HandleInsertConstants(ConstValueSet constants);
-  //void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
-  //void HandleUses(StatementData* stmt_data, VarName used_var);
-  //void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
-  //void UpdateUsesFromChild(StatementData* stmt_data,
-  //                         StmtListIndex child_stmtlist_index);
-  //void UpdateParentRelationship(StatementData* stmt_data,
-    //                            StmtListIndex child_stmtlist_index);
 };
 
 #endif  // !SPA_PKB_H
