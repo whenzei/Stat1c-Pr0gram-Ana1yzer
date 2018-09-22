@@ -147,7 +147,7 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 // alphanumeric or symbols), and returns the result as a Result struct
 Result Tokenizer::TokenizeWords(string input, int current_index) {
   Result result =
-      TokenizePattern(kWord, regex{R"(\w+(\**))"}, input, current_index);
+      TokenizePattern(kWord, regex{R"(\w+)"}, input, current_index);
 
   return result;
 }

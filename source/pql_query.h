@@ -14,26 +14,29 @@ using std::pair;
 using std::unordered_set;
 
 #include "pql_suchthat.h"
+#include "pql_pattern.h"
 #include "pql_enum.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
-using SuchthatSet = unordered_set<PqlDeclarationEntity>;
-using SuchthatParameters = pair<SuchthatSet, SuchthatSet>;
+using EntitySet = unordered_set<PqlDeclarationEntity>;
+using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
+using PatternTable = unordered_map<PqlSuchthatType, EntitySet>;
 
 /*
+SELECT SUCH THAT CLAUSE
 For each suchthat types, the first and second parameters can only accept a certain type of PqlDeclarationEntity
 For example, Follows(x, y), x can either be a kStmt, kRead, kPrint, ..., kUnderscore
 */
 
 // Follows
-const SuchthatSet follows_first = {
+const EntitySet follows_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
 PqlDeclarationEntity::kUnderscore
 };
-const SuchthatSet follows_second = {
+const EntitySet follows_second = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
@@ -41,13 +44,13 @@ PqlDeclarationEntity::kUnderscore
 };
 
 // FollowsT
-const SuchthatSet follows_t_first = {
+const EntitySet follows_t_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
 PqlDeclarationEntity::kUnderscore
 };
-const SuchthatSet follows_t_second = {
+const EntitySet follows_t_second = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
@@ -55,11 +58,11 @@ PqlDeclarationEntity::kUnderscore
 };
 
 // Parent
-const SuchthatSet parent_first = {
+const EntitySet parent_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore
 };
-const SuchthatSet parent_second = {
+const EntitySet parent_second = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
@@ -67,11 +70,11 @@ PqlDeclarationEntity::kUnderscore
 };
 
 // ParentT
-const SuchthatSet parent_t_first = {
+const EntitySet parent_t_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kProgline,
 PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore
 };
-const SuchthatSet parent_t_second = {
+const EntitySet parent_t_second = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
 PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
 PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
@@ -79,40 +82,38 @@ PqlDeclarationEntity::kUnderscore
 };
 
 // UsesS
-const SuchthatSet uses_s_first = {
+const EntitySet uses_s_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kPrint, PqlDeclarationEntity::kCall,
 PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kAssign,
 PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger
 };
-const SuchthatSet uses_s_second = {
-PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kIdent,
-PqlDeclarationEntity::kUnderscore
+const EntitySet uses_s_second = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
 // UsesP
-const SuchthatSet uses_p_first = {
+const EntitySet uses_p_first = {
 PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent
 };
-const SuchthatSet uses_p_second = {
-PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kIdent,
-PqlDeclarationEntity::kUnderscore
+const EntitySet uses_p_second = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
 // ModifiesS
-const SuchthatSet modifies_s_first = {
+const EntitySet modifies_s_first = {
 PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kCall,
 PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kAssign,
 PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger
 };
-const SuchthatSet modifies_s_second = {
+const EntitySet modifies_s_second = {
 PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
 // ModifiesP
-const SuchthatSet modifies_p_first = {
+const EntitySet modifies_p_first = {
 PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent
 };
-const SuchthatSet modifies_p_second = {
+const EntitySet modifies_p_second = {
 PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
@@ -129,17 +130,40 @@ const SuchthatTable suchthat_table = {
 };
 
 /*
+SELECT PATTERN CLAUSE
+For each pattern types, the first parameters can only accept a certain type of PqlDeclarationEntity
+For example, Follows(x, y), x can either be a kStmt, kRead, kPrint, ..., kUnderscore
+*/
+
+// Assign
+const EntitySet pattern_assign = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kIdent
+};
+
+// While
+const EntitySet pattern_while = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kIdent
+};
+
+// If
+const EntitySet pattern_if = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kIdent
+};
+
+/*
 This class stores the PQL query, including the declarations and
 'Select' statement.
 */
 class PqlQuery {
 private:
-  /* a map that maps the name to the type */
+  /* a map that maps the name to the entity type */
   Declarations declarations_;
   /* the variable name of the 'Select' statement */
   string var_name_;
   /* collection of such that clauses in the 'Select' statement */
   vector<PqlSuchthat> suchthats_;
+  /* collection of pattern clauses in the 'Select' statement */
+  vector<PqlPattern> patterns_;
 
 public:
   /* Constructor */
@@ -149,11 +173,13 @@ public:
   bool AddDeclaration(PqlDeclarationEntity, string);
   void SetVarName(string);
   void AddSuchthat(PqlSuchthat);
+  void AddPattern(PqlPattern);
 
   /* Getters */
   Declarations GetDeclarations();
   string GetVarName();
   vector<PqlSuchthat> GetSuchThats();
+  vector<PqlPattern> GetPatterns();
   static PqlDeclarationEntity DeclarationStringToType(string);
 };
 

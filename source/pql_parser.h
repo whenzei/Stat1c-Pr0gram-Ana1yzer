@@ -54,13 +54,24 @@ class PqlParser {
   */
   bool ParseSuchthat(TokenList, int*);
   /**
-  Parses the parameters in the such that clause of the select statement
+  Parses the such that clause of the select statement
+  @TokenList the list of tokens
+  @int* the pointer to the current index of the TokenList
+  */
+  bool ParsePattern(TokenList, int*);
+
+  bool ParsePatternAssign(TokenList, int*, string);
+  bool ParsePatternWhile(TokenList, int*, string);
+  bool ParsePatternIf(TokenList, int*, string);
+  /**
+  Parses the parameters in the such that/pattern clause of the select statement
+  Reads synonym | '_' | '"' IDENT '"' | INTEGER
   @TokenList the list of tokens
   @int* the pointer to the current index of the TokenList
   @string* the pointer to the variable that we want to store the value in
   @PqlDeclarationEntity* the pointer to the object we want to store the type in
   */
-  bool ParseSuchthatParameter(TokenList, int*, string*, PqlDeclarationEntity*);
+  bool ParseParameter(TokenList, int*, string*, PqlDeclarationEntity*);
 };
 
 #endif

@@ -18,11 +18,17 @@ void PqlQuery::AddSuchthat(PqlSuchthat suchthat) {
   suchthats_.push_back(suchthat);
 }
 
+void PqlQuery::AddPattern(PqlPattern pattern) {
+  patterns_.push_back(pattern);
+}
+
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
 string PqlQuery::GetVarName() { return var_name_; }
 
 vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }
+
+vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
 
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {

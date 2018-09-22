@@ -18,8 +18,10 @@
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
+    <ClCompile Include="..\source\pql_pattern.cpp" />
     <ClCompile Include="..\source\pql_suchthat.cpp" />
     <ClCompile Include="..\source\pql_validator.cpp" />
+    <ClCompile Include="..\source\statement_data.cpp" />
     <ClCompile Include="..\source\util.cpp" />
     <ClCompile Include="..\source\validator.cpp" />
     <ClCompile Include="..\source\tokenizer.cpp" />
@@ -42,13 +44,14 @@
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_enum.h" />
+    <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />
+    <ClInclude Include="..\source\statement_data.h" />
     <ClInclude Include="..\source\util.h" />
     <ClInclude Include="..\source\validator.h" />
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\proc_list.h" />
-    <ClInclude Include="..\source\statement.h" />
     <ClInclude Include="..\source\stmt_table.h" />
     <ClInclude Include="..\source\stmtlist_table.h" />
     <ClInclude Include="..\source\stmt_type_list.h" />
