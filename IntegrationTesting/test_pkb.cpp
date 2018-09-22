@@ -101,13 +101,6 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(PqlDeclarationEntity::kPrint == pkb.GetStmtType(kStmtNum5));
   }
 
-  TEST_METHOD(TestInsertAssignStmt) {
-    PKB pkb;
-    bool result1 = pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
-                                        kVarName1, kVarNameSet1, kConstValueSet1, kTokenList));
-    Assert::IsTrue(result1);
-  }
-
   TEST_METHOD(TestGetAllAssignStmt) {
     PKB pkb;
     pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
@@ -118,13 +111,6 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
     Assert::AreEqual(kStmtNum2, result.back());
-  }
-
-  TEST_METHOD(TestInsertWhileStmt) {
-    PKB pkb;
-    bool result = pkb.InsertWhileStmt(&WhileStmtData(
-        kStmtNumInt1, kStmtListIndex1, kVarNameSet1, kConstValueSet1));
-    Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllWhileStmt) {
@@ -139,13 +125,6 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum2, result.back());
   }
 
-  TEST_METHOD(TestInsertIfStmt) {
-    PKB pkb;
-    bool result = pkb.InsertIfStmt(&IfStmtData(kStmtNumInt1, kStmtListIndex1,
-                                               kVarNameSet1, kConstValueSet1));
-    Assert::IsTrue(result);
-  }
-
   TEST_METHOD(TestGetAllIfStmt) {
     PKB pkb;
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt1, kStmtListIndex1, kVarNameSet1,
@@ -158,12 +137,6 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum2, result.back());
   }
 
-  TEST_METHOD(TestInsertReadStmt) {
-    PKB pkb;
-    bool result = pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    Assert::IsTrue(result);
-  }
-
   TEST_METHOD(TestGetAllReadStmt) {
     PKB pkb;
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
@@ -173,12 +146,6 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
     Assert::AreEqual(kStmtNum2, result.back());
-  }
-
-  TEST_METHOD(TestInsertPrintStmt) {
-    PKB pkb;
-    bool result = pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllPrintStmt) {

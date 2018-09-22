@@ -24,69 +24,49 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
-bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kAssign)) {
-    return false;
+void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    VarName modified_var = stmt_data->GetModifiedVariable();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(modified_var, used_vars);
+    HandleInsertConstants(used_consts);
   }
-
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  VarName modified_var = stmt_data->GetModifiedVariable();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-
-  HandleInsertVariables(modified_var, used_vars);
-  HandleInsertConstants(used_consts);
-
-  return true;
 }
 
-bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kWhile)) {
-    return false;
+void PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kWhile)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(used_vars);
+    HandleInsertConstants(used_consts);
   }
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-
-  HandleInsertVariables(used_vars);
-  HandleInsertConstants(used_consts);
-
-  return true;
 }
 
-bool PKB::InsertIfStmt(IfStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kIf)) {
-    return false;
+void PKB::InsertIfStmt(IfStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kIf)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(used_vars);
+    HandleInsertConstants(used_consts);
   }
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-
-  HandleInsertVariables(used_vars);
-  HandleInsertConstants(used_consts);
-
-  return true;
 }
 
-bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kRead)) {
-    return false;
+void PKB::InsertReadStmt(ReadStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kRead)) {
+    VarName modified_var = stmt_data->GetModifiedVariable();
+    HandleInsertVariable(modified_var);
   }
-
-  VarName modified_var = stmt_data->GetModifiedVariable();
-
-  HandleInsertVariable(modified_var);
-
-  return true;
 }
 
-bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kPrint)) {
-    return false;
+void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kPrint)) {
+    VarName used_var = stmt_data->GetUsedVariable();
+    HandleInsertVariable(used_var);
   }
-
-  VarName used_var = stmt_data->GetUsedVariable();
-
-  HandleInsertVariable(used_var);
-
-  return true;
 }
 
 
