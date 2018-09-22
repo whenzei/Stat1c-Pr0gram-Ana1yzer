@@ -121,9 +121,13 @@ class PKB {
   // Expose follows_table InsertFollows method to Parser
   void InsertFollows(StmtNum followee, StmtNum follower);
 
-  // Expose modifiess_table InsertModifies method to Parser
+  // Expose modifies_table InsertModifies method to Parser
   // TODO: add InsertModifies(proc_name, modified_var) for iter 2
   void InsertModifies(StmtNum modifying_stmt, VarName modified_var);
+
+  // Expose uses_table InsertUses method to Parser
+  // TODO: add InsertUses(proc_name, modified_var) for iter 2
+  void InsertUses(StmtNum using_stmt, VarName used_var);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -312,11 +316,11 @@ class PKB {
   void HandleInsertVariables(VarNameSet var_set);
   void HandleInsertVariable(VarName variable);
   void HandleInsertConstants(ConstValueSet constants);
-  void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
-  void HandleUses(StatementData* stmt_data, VarName used_var);
-  void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
-  void UpdateUsesFromChild(StatementData* stmt_data,
-                           StmtListIndex child_stmtlist_index);
+  //void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
+  //void HandleUses(StatementData* stmt_data, VarName used_var);
+  //void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
+  //void UpdateUsesFromChild(StatementData* stmt_data,
+  //                         StmtListIndex child_stmtlist_index);
   void UpdateParentRelationship(StatementData* stmt_data,
                                 StmtListIndex child_stmtlist_index);
 };

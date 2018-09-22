@@ -35,12 +35,12 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
 
   HandleInsertVariables(modified_var, used_vars);
   HandleInsertConstants(used_consts);
-  HandleUses(stmt_data, used_vars);
+  //HandleUses(stmt_data, used_vars);
   //HandleModifies(stmt_data, modified_var);
 
   // just in case, update parents
   //UpdateParentModifies(stmt_data, modified_var);
-  UpdateParentUses(stmt_data, used_vars);
+  //UpdateParentUses(stmt_data, used_vars);
 
   return true;
 }
@@ -55,15 +55,15 @@ bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
 
   HandleInsertVariables(used_vars);
   HandleInsertConstants(used_consts);
-  HandleUses(stmt_data, used_vars);
+  //HandleUses(stmt_data, used_vars);
 
   UpdateParentRelationship(stmt_data, child_stmtlist_index);
 
 
   //UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, child_stmtlist_index);
+  //UpdateUsesFromChild(stmt_data, child_stmtlist_index);
 
-  UpdateParentUses(stmt_data, used_vars);
+  //UpdateParentUses(stmt_data, used_vars);
 
   return true;
 }
@@ -79,17 +79,17 @@ bool PKB::InsertIfStmt(IfStmtData* stmt_data) {
 
   HandleInsertVariables(used_vars);
   HandleInsertConstants(used_consts);
-  HandleUses(stmt_data, used_vars);
+  //HandleUses(stmt_data, used_vars);
 
   UpdateParentRelationship(stmt_data, then_stmtlist_index);
   UpdateParentRelationship(stmt_data, else_stmtlist_index);
 
   //UpdateModifiesFromChild(stmt_data, then_stmtlist_index);
   //UpdateModifiesFromChild(stmt_data, else_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, then_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, else_stmtlist_index);
+  //UpdateUsesFromChild(stmt_data, then_stmtlist_index);
+  //UpdateUsesFromChild(stmt_data, else_stmtlist_index);
 
-  UpdateParentUses(stmt_data, used_vars);
+  //UpdateParentUses(stmt_data, used_vars);
 
   return true;
 }
@@ -117,9 +117,9 @@ bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   VarName used_var = stmt_data->GetUsedVariable();
 
   HandleInsertVariable(used_var);
-  HandleUses(stmt_data, used_var);
+  //HandleUses(stmt_data, used_var);
 
-  UpdateParentUses(stmt_data, VarNameSet{used_var});
+  //UpdateParentUses(stmt_data, VarNameSet{used_var});
 
   return true;
 }
@@ -131,6 +131,10 @@ void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
 
 void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
   modifies_table_.InsertModifies(modifying_stmt, modified_var);
+}
+
+void PKB::InsertUses(StmtNum using_stmt, VarName used_var) {
+  uses_table_.InsertUses(used_var, using_stmt);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -433,7 +437,7 @@ ProcVarPairList PKB::GetAllUsesPairP() {
 /***********************************
 **** Private methods begin here ****
 ***********************************/
-void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
+/*void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
   StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
   StmtNum stmt_num = stmt_data->GetStmtNum();
 
@@ -463,7 +467,7 @@ void PKB::UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars) {
   }
 }
 
-/*void PKB::UpdateParentModifies(StatementData* stmt_data, VarName modified_var) {
+void PKB::UpdateParentModifies(StatementData* stmt_data, VarName modified_var) {
   StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
   StmtNum stmt_num = stmt_data->GetStmtNum();
   StmtNumList indirect_parents = parent_table_.GetParentT(stmt_list_index);
@@ -565,7 +569,7 @@ void PKB::UpdateParentRelationship(StatementData* stmt_data,
   }
 }
 
-void PKB::UpdateUsesFromChild(StatementData* stmt_data,
+/*void PKB::UpdateUsesFromChild(StatementData* stmt_data,
                               StmtListIndex child_stmtlist_index) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
   StmtListIndex stmtlist_index = stmt_data->GetStmtListIndex();
@@ -574,4 +578,4 @@ void PKB::UpdateUsesFromChild(StatementData* stmt_data,
        uses_table_.GetVarUsedByStmtList(child_stmtlist_index)) {
     uses_table_.InsertUses(child_var_name, stmt_num, stmtlist_index);
   }
-}
+}*/

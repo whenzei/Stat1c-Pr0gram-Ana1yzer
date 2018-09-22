@@ -662,7 +662,7 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kVarName1, result3.front().second);
     Assert::AreEqual(kProcName, result3.back().first);
     Assert::AreEqual(kVarName2, result3.back().second);
-  }*/
+  }
 
   TEST_METHOD(TestGetAllUsedVar) {
     PKB pkb;
@@ -848,6 +848,6 @@ TEST_CLASS(TestPKB) {
     iter_2++;
     Assert::AreEqual((*iter_2).first, (*iter_1).first);
     Assert::AreEqual((*iter_2).second, (*iter_1).second);
-  }
+  }*/
 };
 }  // namespace PKBTests
