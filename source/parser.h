@@ -8,11 +8,10 @@
 
 #include "pkb.h"
 #include "tokenizer.h"
+#include "parse_data.h"
 
 using std::string;
-using std::tuple;
 using std::unordered_set;
-using StmtNumListInt = vector<int>;
 
 class Parser {
  private:
@@ -36,44 +35,44 @@ class Parser {
 
   void ProcessProcedure(int given_stmt_list_index);
 
-  // @returns tuple consisting of list of statement numbers, set of Used
+  // @returns ParseData consisting of list of statement numbers, set of Used
   // variable names, and set of Modified variable names
-  tuple<StmtNumListInt, VarNameSet, VarNameSet> ProcessStatementList(
+  ParseData ProcessStatementList(
       int given_stmt_list_index);
 
-  // @returns tuple consisting of statement num, set of Used variable names, and
+  // @returns ParseData consisting of statement num, set of Used variable names, and
   // set of Modified variable names
-  tuple<int, VarNameSet, VarNameSet> ProcessStatement(
+  ParseData ProcessStatement(
       int given_stmt_list_index);
 
-  // @returns tuple consisting of set of Used variable names, and set of
+  // @returns ParseData consisting of set of Used variable names, and set of
   // Modified variable names
-  pair<VarNameSet, VarNameSet> ProcessKeyword(int given_stmt_list_index);
+  ParseData ProcessKeyword(int given_stmt_list_index);
 
-  // @returns tuple consisting of set of Used variable names, and a Modified
+  // @returns ParseData consisting of set of Used variable names, and a Modified
   // variable name
-  pair<VarNameSet, VarName> ProcessAssignment(int given_stmt_list_index);
+  ParseData ProcessAssignment(int given_stmt_list_index);
 
   // Process the if block with its counterpart else block
-  // @returns pair consisting of set of Used variable names, and a set of
+  // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
-  pair<VarNameSet, VarNameSet> ProcessIfBlock(int given_stmt_list_index);
+  ParseData ProcessIfBlock(int given_stmt_list_index);
 
   // Process the while block with its counterpart else block
-  // @returns pair consisting of set of Used variable names, and a set of
+  // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
-  pair<VarNameSet, VarNameSet> ProcessWhileBlock(int given_stmt_list_index);
+  ParseData ProcessWhileBlock(int given_stmt_list_index);
 
-  // @returns the variable name modified
+  // @returns the modified variable name
   VarName ProcessRead(int given_stmt_list_index);
 
-  // @returns the variable name used
+  // @returns the used variable name
   VarName ProcessPrint(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
-  void PopulatePkbFollows(StmtNumListInt stmt_nums);
-  void PopulatePkbParent(int stmt, StmtNumListInt stmt_nums);
+  void PopulatePkbFollows(StmtNumIntList stmt_nums);
+  void PopulatePkbParent(int stmt, StmtNumIntList stmt_nums);
   void PopulatePkbUses(int stmt_num, VarNameSet used_vars);
   void PopulatePkbUses(int stmt_num, VarName used_var);
   void PopulatePkbModifies(int stmt_num, VarNameSet modified_vars);
