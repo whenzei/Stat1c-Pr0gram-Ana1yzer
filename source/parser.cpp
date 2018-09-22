@@ -387,7 +387,7 @@ void Parser::PopulatePkbParent(int parent_num, StmtNumListInt children_stmt_nums
   string parent_num_str = std::to_string(parent_num);
 		for (size_t i = 0; i < children_stmt_nums.size(); i++) {
     string child_num_str = std::to_string(children_stmt_nums[i]);
-				//pkb_.InsertParent(parent_num_str, child_num_str);
+				pkb_->InsertParent(parent_num_str, child_num_str);
   }
 }
 
@@ -395,14 +395,14 @@ void Parser::PopulatePkbUses(int stmt_num,
                                VarNameSet used_vars) {
   string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : used_vars) {
-				//pkb_.InsertUses(stmt_num_str, var);
+				pkb_->InsertUses(stmt_num_str, var);
 		}
 }
 
 void Parser::PopulatePkbUses(int stmt_num,
                                VarName used_var) {
   string stmt_num_str = std::to_string(stmt_num);
-		//pkb_.InsertUses(stmt_num_str, var);
+		pkb_->InsertUses(stmt_num_str, used_var);
 }
 
 
@@ -410,13 +410,13 @@ void Parser::PopulatePkbUses(int stmt_num,
 void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
   string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : modified_vars) {
-    // pkb_.InsertModifies(stmt_num_str, var);
+    pkb_->InsertModifies(stmt_num_str, var);
   }
 }
 
 void Parser::PopulatePkbModifies(int stmt_num, VarName modified_var) {
   string stmt_num_str = std::to_string(stmt_num);
-  // pkb_.InsertModifies(stmt_num_str, var);
+  pkb_->InsertModifies(stmt_num_str, modified_var);
 }
 
 // Helper methods
