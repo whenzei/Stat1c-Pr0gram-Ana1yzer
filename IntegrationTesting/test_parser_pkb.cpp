@@ -312,5 +312,157 @@ namespace PKBPQLTests {
 				// Should have one parent of stmt_num 5
 				Assert::AreEqual(*iter_1, *iter_2);	
 		}
-};
+		TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
+			PKB test_pkb = PKB();
+				Parser parser = Parser(&test_pkb);
+				string program = "	procedure one {\n"					
+                      "a = b;\n"														//1
+                      "c =  d + e + f;\n"					//2
+                      "j = k + l + 1;\n"						//3
+                     "}\n";																				
+
+					
+				TokenList tokenized_program = Tokenizer::Tokenize(program);
+				parser.Parse(tokenized_program);
+
+				PKB true_pkb = PKB();
+				true_pkb.InsertUses("1", "b");
+				true_pkb.InsertUses("2", "d");
+				true_pkb.InsertUses("2", "e");
+				true_pkb.InsertUses("2", "f");
+				true_pkb.InsertUses("3", "k");
+				true_pkb.InsertUses("3", "l");
+
+				//*******************************
+
+				StmtNumList test_all_using_stmts = test_pkb.GetAllUsingStmt();
+				StmtNumList true_all_using_stmts = true_pkb.GetAllUsingStmt();
+				
+				StmtNumList::iterator iter_1 = test_all_using_stmts.begin(); 
+				StmtNumList::iterator iter_2 = true_all_using_stmts.begin();
+
+				// Should only have three using statements
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_all_used_vars = test_pkb.GetAllUsedVar();
+				StmtNumList true_all_used_vars = true_pkb.GetAllUsedVar();
+				
+				iter_1 = test_all_used_vars.begin(); 
+				iter_2 = true_all_used_vars.begin();
+
+				// Should have six used vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("3");
+				StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("3");
+				
+				iter_1 = test_used_var_of_stmt.begin(); 
+				iter_2 = true_used_var_of_stmt.begin();
+
+				// Should have two used vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+		}
+
+		TEST_METHOD(TestUsesOfNestedStatements) {
+				PKB test_pkb = PKB();
+				Parser parser = Parser(&test_pkb);
+				string program = "	procedure one {\n"					
+                      "a = b;\n"														//1
+                      "if (a > b) then {\n"   //2               
+																								"e = f;\n"            //3          
+																								"asd = ddd;\n"        //4     
+																								"while (a < 10) {\n"				//5
+																											"a = a + 1;\n"							//6
+																											"k = k + 1;\n"							//7
+																									"}\n"
+																						"}\n"
+																						"else {\n"
+                        "k = 3;\n"												//8
+                      "}\n"																				
+                     "}\n";																				
+
+					
+				TokenList tokenized_program = Tokenizer::Tokenize(program);
+				parser.Parse(tokenized_program);
+
+				PKB true_pkb = PKB();
+				true_pkb.InsertUses("1", "b");
+				true_pkb.InsertUses("3", "f");
+				true_pkb.InsertUses("4", "ddd");
+				true_pkb.InsertUses("6", "a");
+				true_pkb.InsertUses("7", "k");
+				true_pkb.InsertUses("5", "a");
+				true_pkb.InsertUses("5", "a");
+				true_pkb.InsertUses("5", "k");
+				true_pkb.InsertUses("2", "a");
+				true_pkb.InsertUses("2", "b");
+				true_pkb.InsertUses("2", "f");
+				true_pkb.InsertUses("2", "ddd");
+				true_pkb.InsertUses("2", "a");
+				true_pkb.InsertUses("2", "a");
+				true_pkb.InsertUses("2", "k");
+
+				//*******************************
+
+				StmtNumList test_all_using_stmts = test_pkb.GetAllUsingStmt();
+				StmtNumList true_all_using_stmts = true_pkb.GetAllUsingStmt();
+				
+				StmtNumList::iterator iter_1 = test_all_using_stmts.begin(); 
+				StmtNumList::iterator iter_2 = true_all_using_stmts.begin();
+
+				// Should only have seven using statements
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_all_used_vars = test_pkb.GetAllUsedVar();
+				StmtNumList true_all_used_vars = true_pkb.GetAllUsedVar();
+				
+				iter_1 = test_all_used_vars.begin(); 
+				iter_2 = true_all_used_vars.begin();
+
+				// Should have five used vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+				StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("2");
+				StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("2");
+				
+				iter_1 = test_used_var_of_stmt.begin(); 
+				iter_2 = true_used_var_of_stmt.begin();
+
+				// Should have five used vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+		}
+ };
 }
