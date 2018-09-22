@@ -36,10 +36,10 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   HandleInsertVariables(modified_var, used_vars);
   HandleInsertConstants(used_consts);
   HandleUses(stmt_data, used_vars);
-  HandleModifies(stmt_data, modified_var);
+  //HandleModifies(stmt_data, modified_var);
 
   // just in case, update parents
-  UpdateParentModifies(stmt_data, modified_var);
+  //UpdateParentModifies(stmt_data, modified_var);
   UpdateParentUses(stmt_data, used_vars);
 
   return true;
@@ -60,7 +60,7 @@ bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
   UpdateParentRelationship(stmt_data, child_stmtlist_index);
 
 
-  UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
+  //UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
   UpdateUsesFromChild(stmt_data, child_stmtlist_index);
 
   UpdateParentUses(stmt_data, used_vars);
@@ -84,8 +84,8 @@ bool PKB::InsertIfStmt(IfStmtData* stmt_data) {
   UpdateParentRelationship(stmt_data, then_stmtlist_index);
   UpdateParentRelationship(stmt_data, else_stmtlist_index);
 
-  UpdateModifiesFromChild(stmt_data, then_stmtlist_index);
-  UpdateModifiesFromChild(stmt_data, else_stmtlist_index);
+  //UpdateModifiesFromChild(stmt_data, then_stmtlist_index);
+  //UpdateModifiesFromChild(stmt_data, else_stmtlist_index);
   UpdateUsesFromChild(stmt_data, then_stmtlist_index);
   UpdateUsesFromChild(stmt_data, else_stmtlist_index);
 
@@ -102,9 +102,9 @@ bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
   VarName modified_var = stmt_data->GetModifiedVariable();
 
   HandleInsertVariable(modified_var);
-  HandleModifies(stmt_data, modified_var);
+  //HandleModifies(stmt_data, modified_var);
 
-  UpdateParentModifies(stmt_data, modified_var);
+  //UpdateParentModifies(stmt_data, modified_var);
 
   return true;
 }
@@ -122,6 +122,15 @@ bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   UpdateParentUses(stmt_data, VarNameSet{used_var});
 
   return true;
+}
+
+
+void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
+  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
+}
+
+void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
+  modifies_table_.InsertModifies(modifying_stmt, modified_var);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -454,7 +463,7 @@ void PKB::UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars) {
   }
 }
 
-void PKB::UpdateParentModifies(StatementData* stmt_data, VarName modified_var) {
+/*void PKB::UpdateParentModifies(StatementData* stmt_data, VarName modified_var) {
   StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
   StmtNum stmt_num = stmt_data->GetStmtNum();
   StmtNumList indirect_parents = parent_table_.GetParentT(stmt_list_index);
@@ -483,7 +492,7 @@ void PKB::UpdateModifiesFromChild(StatementData* stmt_data,
   for (auto var_name : var_modified_by_children) {
     modifies_table_.InsertModifies(stmt_num, stmt_list_index, var_name);
   }
-}
+}*/
 
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
@@ -497,11 +506,6 @@ bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   stmt_type_list_.InsertStmt(stmt_num, stmt_type);
 
   return true;
-}
-
-
-void PKB::InsertFollows (StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
-  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
 void PKB::HandleInsertVariables(VarName variable, VarNameSet var_set) {

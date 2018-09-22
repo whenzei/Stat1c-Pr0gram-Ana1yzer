@@ -432,7 +432,7 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum4, (*iter).second);
   }
 
-  TEST_METHOD(TestIsModifiedByS) {
+  /*TEST_METHOD(TestIsModifiedByS) {
     PKB pkb;
     Assert::IsFalse(pkb.IsModifiedByS(kStmtNum1, kVarName1));
     pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
@@ -662,7 +662,8 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kVarName1, result3.front().second);
     Assert::AreEqual(kProcName, result3.back().first);
     Assert::AreEqual(kVarName2, result3.back().second);
-  }
+  }*/
+
   TEST_METHOD(TestGetAllUsedVar) {
     PKB pkb;
     pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,

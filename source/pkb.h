@@ -118,8 +118,12 @@ class PKB {
   // insertion fails (print statement was already inside StmtTable)
   bool InsertPrintStmt(PrintStmtData* stmt_data);
 
-		// Expose follows_table InsertFollows method to Parser
-		void InsertFollows(StmtNum followee, StmtNum follower);
+  // Expose follows_table InsertFollows method to Parser
+  void InsertFollows(StmtNum followee, StmtNum follower);
+
+  // Expose modifiess_table InsertModifies method to Parser
+  // TODO: add InsertModifies(proc_name, modified_var) for iter 2
+  void InsertModifies(StmtNum modifying_stmt, VarName modified_var);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -311,10 +315,6 @@ class PKB {
   void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
   void HandleUses(StatementData* stmt_data, VarName used_var);
   void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
-  void UpdateParentModifies(StatementData* stmt_data, VarName modified_var);
-  void HandleModifies(StatementData* stmt_data, VarName modified_var);
-  void UpdateModifiesFromChild(StatementData* stmt_data,
-                               StmtListIndex child_stmtlist_index);
   void UpdateUsesFromChild(StatementData* stmt_data,
                            StmtListIndex child_stmtlist_index);
   void UpdateParentRelationship(StatementData* stmt_data,
