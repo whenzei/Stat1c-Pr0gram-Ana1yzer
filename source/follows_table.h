@@ -40,9 +40,7 @@ private:
 public:
   // Inserts a follows relationship to the follows map and followed by map.
   // @params 2 stmt nums; stmt_num2 that follows stmt_num1
-  // @returns true if relationship is successfully added to both maps
-  // @returns false if otherwise
-  bool InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2);
+  void InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2);
 
   // Checks if stmt s2 follows stmt s1. Includes transitive follows.
   // @params

@@ -196,7 +196,6 @@ void Parser::ProcessIfBlock(int given_stmt_list_num) {
 
   // Update PKB of the 'if' block
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
-                                 then_stmt_list_num, else_stmt_list_num,
                                  used_set.first, used_set.second));
 }
 
@@ -230,8 +229,7 @@ void Parser::ProcessWhileBlock(int given_stmt_list_num) {
 
   // Update PKB of the 'while' block
   pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
-                                       while_stmt_list_num, used_set.first,
-                                       used_set.second));
+                                       used_set.first, used_set.second));
 }
 
 pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {

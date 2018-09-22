@@ -12,26 +12,6 @@ namespace PKBTests {
     const StmtNum kSampleStmtIdx3 = "3";
     const StmtNum kSampleStmtIdx4 = "4";
     const StmtNum kSampleStmtIdx5 = "5";
-    TEST_METHOD(TestInsertFollowsSingleRel) {
-      FollowsTable follows_table;
-      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::IsTrue(result);
-    }
-
-    TEST_METHOD(TestInsertFollowsDuplicateRel) {
-      FollowsTable follows_table;
-      follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::IsFalse(result);
-    }
-
-    TEST_METHOD(TestInsertFollowsMultipleRel) {
-      FollowsTable follows_table;
-      bool result = follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
-      Assert::IsTrue(result);
-      result = follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
-      Assert::IsTrue(result);
-    }
 
     TEST_METHOD(TestIsFollowsT) {
       FollowsTable follows_table;

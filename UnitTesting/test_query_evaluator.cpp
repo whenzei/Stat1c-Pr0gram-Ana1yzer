@@ -218,7 +218,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(&IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
+    pkb.PKB::InsertIfStmt(&IfStmtData(2, 0, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");
@@ -240,7 +240,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertWhileStmt(&WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
+    pkb.PKB::InsertWhileStmt(&WhileStmtData(3, 0, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("while");

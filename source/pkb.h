@@ -129,6 +129,12 @@ class PKB {
   // TODO: add InsertUses(proc_name, modified_var) for iter 2
   void InsertUses(StmtNum using_stmt, VarName used_var);
 
+  // Expose parent_table InsertParent method to Parser
+  void InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+
+  // Expose parent_table InsertParentT method to Parser
+  void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
@@ -321,8 +327,8 @@ class PKB {
   //void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
   //void UpdateUsesFromChild(StatementData* stmt_data,
   //                         StmtListIndex child_stmtlist_index);
-  void UpdateParentRelationship(StatementData* stmt_data,
-                                StmtListIndex child_stmtlist_index);
+  //void UpdateParentRelationship(StatementData* stmt_data,
+    //                            StmtListIndex child_stmtlist_index);
 };
 
 #endif  // !SPA_PKB_H
