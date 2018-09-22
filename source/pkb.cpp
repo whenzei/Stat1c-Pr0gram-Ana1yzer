@@ -69,7 +69,6 @@ void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   }
 }
 
-
 void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
@@ -87,7 +86,8 @@ void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
 }
 
 void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
-  parent_table_.InsertIndirectParentRelationship(parent_stmt_num, child_stmt_num);
+  parent_table_.InsertIndirectParentRelationship(parent_stmt_num,
+                                                 child_stmt_num);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -165,9 +165,7 @@ StmtNumList PKB::GetParentT(StmtNum stmt_num) {
   return parent_table_.GetParentT(stmt_num);
 }
 
-StmtNumList PKB::GetAllParent() {
-  return parent_table_.GetAllParent();
-}
+StmtNumList PKB::GetAllParent() { return parent_table_.GetAllParent(); }
 
 StmtNumList PKB::GetChild(StmtNum stmt_num) {
   return parent_table_.GetChild(stmt_num);
@@ -177,9 +175,7 @@ StmtNumList PKB::GetChildT(StmtNum stmt_num) {
   return parent_table_.GetChildT(stmt_num);
 }
 
-StmtNumList PKB::GetAllChild() {
-  return parent_table_.GetAllChild();
-}
+StmtNumList PKB::GetAllChild() { return parent_table_.GetAllChild(); }
 
 bool PKB::HasParentRelationship() {
   return parent_table_.HasParentRelationship();

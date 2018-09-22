@@ -35,10 +35,19 @@ class Parser {
   bool IsCurrentTokenKeyword();
 
   void ProcessProcedure(int given_stmt_list_index);
+
+  // @returns tuple consisting of list of statement numbers, set of Used
+  // variable names, and set of Modified variable names
   tuple<StmtNumListInt, VarNameSet, VarNameSet> ProcessStatementList(
       int given_stmt_list_index);
+
+  // @returns tuple consisting of statement num, set of Used variable names, and
+  // set of Modified variable names
   tuple<int, VarNameSet, VarNameSet> ProcessStatement(
       int given_stmt_list_index);
+
+  // @returns tuple consisting of set of Used variable names, and set of
+  // Modified variable names
   pair<VarNameSet, VarNameSet> ProcessKeyword(int given_stmt_list_index);
 
   // @returns tuple consisting of set of Used variable names, and a Modified
@@ -55,10 +64,10 @@ class Parser {
   // Modified variable names
   pair<VarNameSet, VarNameSet> ProcessWhileBlock(int given_stmt_list_index);
 
-		// @returns the variable name modified
+  // @returns the variable name modified
   VarName ProcessRead(int given_stmt_list_index);
 
-		// @returns the variable name used
+  // @returns the variable name used
   VarName ProcessPrint(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();

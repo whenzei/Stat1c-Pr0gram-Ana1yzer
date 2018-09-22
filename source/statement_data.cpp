@@ -22,7 +22,8 @@ VarNameSet AssignStmtData::GetUsedVariables() { return rhs_vars_; }
 ConstValueSet AssignStmtData::GetUsedConstants() { return rhs_consts_; }
 TokenList AssignStmtData::GetPostfixedExpr() { return postfixed_expr_; }
 
-WhileStmtData::WhileStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
+WhileStmtData::WhileStmtData(int stmt_num, int stmt_list_index,
+                             VarNameSet control_vars,
                              ConstValueSet used_consts) {
   stmt_num_ = std::to_string(stmt_num);
   stmt_num_int_ = stmt_num;
