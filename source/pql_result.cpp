@@ -18,7 +18,6 @@ PqlResult::PqlResult() {}
 void PqlResult::MergeResults(QueryResultList result_list,
                              PqlResultTableConflict conflict_type,
                              int conflict_column_num) {
-  ColumnHeader column_headers = GetColumnHeader();
   ResultTable result_table = GetResultTable();
   ResultTable new_table;
 
@@ -55,7 +54,81 @@ void PqlResult::MergeResults(QueryResultList result_list,
 }
 
 void PqlResult::MergeResults(QueryResultPairList result_pair_list,
-                             PqlResultTableConflict conflict_type) {}
+                             PqlResultTableConflict conflict_type,
+                             int conflict_left_pair, int conflict_right_pair) {
+  ResultTable result_table = GetResultTable();
+  ResultTable new_table;
+
+  // Not found, no conflict, proceed to merge
+  if (conflict_type == kNoConflict) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column_pair : result_pair_list) {
+        // Merging
+        ResultRow new_row = row;
+        new_row.push_back(result_column_pair.first);
+        new_row.push_back(result_column_pair.second);
+        new_table.push_back(new_row);
+      }
+    }
+    SetResultTable(new_table);
+  }
+  // Left has conflict
+  else if (conflict_type == kOneConflictLeft) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column_pair : result_pair_list) {
+        // If the column value in table matches the value in result list
+        if (row[conflict_left_pair].compare(result_column_pair.first) == 0) {
+          // Row has passed the comparison
+          // Merging
+          ResultRow new_row = row;
+          new_row.push_back(result_column_pair.second);
+          new_table.push_back(new_row);
+        }
+      }
+    }
+    SetResultTable(new_table);
+  }
+  // Right has conflict
+  else if (conflict_type == kOneConflictRight) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column_pair : result_pair_list) {
+        // If the column value in table matches the value in result list
+        if (row[conflict_right_pair].compare(result_column_pair.second) == 0) {
+          // Row has passed the comparison
+          // Merging
+          ResultRow new_row = row;
+          new_row.push_back(result_column_pair.first);
+          new_table.push_back(new_row);
+        }
+      }
+    }
+    SetResultTable(new_table);
+  }
+  // Two conflict
+  else if (conflict_type == kTwoConflict) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column_pair : result_pair_list) {
+        // If the column value in table matches the value in result list
+        if ((row[conflict_left_pair].compare(result_column_pair.first) == 0) &&
+            (row[conflict_right_pair].compare(result_column_pair.second) ==
+             0)) {
+          // Row has passed the comparison
+          new_table.push_back(row);
+          break;
+        }
+      }
+    }
+    SetResultTable(new_table);
+  }
+}
 
 void PqlResult::InitTable(QueryResultList result_list) {
   for (auto& iter : result_list) {

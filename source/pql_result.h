@@ -40,7 +40,7 @@ class PqlResult {
 
   void MergeResults(QueryResultList, PqlResultTableConflict, int);
 
-  void MergeResults(QueryResultPairList, PqlResultTableConflict);
+  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);

@@ -16,22 +16,22 @@ enum class PqlDeclarationEntity {
   kConstant,
   kProgline,
   kProcedure,
-  kInteger, // only used for validation, not an actual entity type
-  kIdent, // only used for validation, not an actual entity type
-  kUnderscore, // only used for validation, not an actual entity type
-  kSynonym, // only used for validation, not an actual entity type
+  kInteger,     // only used for validation, not an actual entity type
+  kIdent,       // only used for validation, not an actual entity type
+  kUnderscore,  // only used for validation, not an actual entity type
+  kSynonym,     // only used for validation, not an actual entity type
   kNone,
-  kAll		// used for PKB to hold all entity types
+  kAll  // used for PKB to hold all entity types
 };
 
 /* The relationship types for a such that clause */
 enum class PqlSuchthatType {
   kModifiesP = 0,
   kModifiesS,
-  kModifies, // only used for parsing
+  kModifies,  // only used for parsing
   kUsesP,
   kUsesS,
-  kUses, // only used for parsing
+  kUses,  // only used for parsing
   kCalls,
   kCallsT,
   kParent,
@@ -42,15 +42,11 @@ enum class PqlSuchthatType {
   kNextT,
   kAffects,
   kAffectsT,
-  kNone // only used for parsing
+  kNone  // only used for parsing
 };
 
 /* The type for pattern clause */
-enum class PqlPatternType {
-  kAssign,
-  kWhile,
-  kIf
-};
+enum class PqlPatternType { kAssign, kWhile, kIf };
 
 /* The type for the 2nd parameter of an assign pattern clause */
 enum class PqlPatternExpressionType {
@@ -79,19 +75,15 @@ enum SuchthatParamType {
 };
 
 /* The filter type for the result */
-enum PqlResultFilterType {
-	kFilterLeft = 0,
-	kFilterRight,
-	kFilterBoth
-};
+enum PqlResultFilterType { kFilterLeft = 0, kFilterRight, kFilterBoth };
 
 /* The conflict type for result table */
 enum PqlResultTableConflict {
   kNoConflict = 0,
   kConflict,
-  kOneConflictLeft,
-  kOneConflictRight,
-  kTwoConflict
+  kOneConflictLeft,   // One conflict at the left of input pair
+  kOneConflictRight,  // One conflict at the right of input pair
+  kTwoConflict        // Two conflict for the input pair
 };
 
 #endif
