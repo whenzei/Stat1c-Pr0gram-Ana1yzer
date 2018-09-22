@@ -35,38 +35,38 @@ class Parser {
 
   void ProcessProcedure(int given_stmt_list_index);
 
-  // @returns tuple consisting of list of statement numbers, set of Used
+  // @returns ParseData consisting of list of statement numbers, set of Used
   // variable names, and set of Modified variable names
   ParseData ProcessStatementList(
       int given_stmt_list_index);
 
-  // @returns tuple consisting of statement num, set of Used variable names, and
+  // @returns ParseData consisting of statement num, set of Used variable names, and
   // set of Modified variable names
   ParseData ProcessStatement(
       int given_stmt_list_index);
 
-  // @returns tuple consisting of set of Used variable names, and set of
+  // @returns ParseData consisting of set of Used variable names, and set of
   // Modified variable names
   ParseData ProcessKeyword(int given_stmt_list_index);
 
-  // @returns tuple consisting of set of Used variable names, and a Modified
+  // @returns ParseData consisting of set of Used variable names, and a Modified
   // variable name
   ParseData ProcessAssignment(int given_stmt_list_index);
 
   // Process the if block with its counterpart else block
-  // @returns pair consisting of set of Used variable names, and a set of
+  // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
   ParseData ProcessIfBlock(int given_stmt_list_index);
 
   // Process the while block with its counterpart else block
-  // @returns pair consisting of set of Used variable names, and a set of
+  // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
   ParseData ProcessWhileBlock(int given_stmt_list_index);
 
-  // @returns the variable name modified
+  // @returns the modified variable name
   VarName ProcessRead(int given_stmt_list_index);
 
-  // @returns the variable name used
+  // @returns the used variable name
   VarName ProcessPrint(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
