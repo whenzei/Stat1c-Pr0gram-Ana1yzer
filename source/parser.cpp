@@ -17,9 +17,7 @@ const bool DEBUG_FLAG = true;
 
 using std::cout;
 using std::endl;
-using std::get;
 using std::stack;
-using std::vector;
 
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
