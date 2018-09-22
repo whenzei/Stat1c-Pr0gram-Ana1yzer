@@ -325,8 +325,8 @@ pair<VarNameSet, VarNameSet> Parser::ProcessWhileBlock(int given_stmt_list_num) 
                    used_set_conditional.first.end());
 
   PopulatePkbParent(while_stmt_num, children_stmt_nums);
-  PopulatePkbUses(while_stmt_list_num, used_vars);
-  PopulatePkbModifies(while_stmt_list_num, modified_vars);
+  PopulatePkbUses(while_stmt_num, used_vars);
+  PopulatePkbModifies(while_stmt_num, modified_vars);
 
   // eat close brace
   ReadNextToken();
