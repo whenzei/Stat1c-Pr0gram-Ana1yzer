@@ -11,6 +11,7 @@
 #include "pkb.h"
 #include "pql_evaluator.h"
 #include "pql_query.h"
+#include "pql_enum.h"
 
 using std::list;
 using std::string;
