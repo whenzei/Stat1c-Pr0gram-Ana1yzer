@@ -29,10 +29,12 @@ void PqlResult::MergeResults(QueryResultList result_list,
       // Iterating through the result list to be merged
       for (auto& result_column : result_list) {
         // Merging
-        row.push_back(result_column);
+        ResultRow new_row = row;
+        new_row.push_back(result_column);
+        new_table.push_back(new_row);
       }
     }
-	//return result_table;
+    SetResultTable(new_table);
   }
   // This column already exist, merge with comparison
   else {
@@ -48,7 +50,7 @@ void PqlResult::MergeResults(QueryResultList result_list,
         }
       }
     }
-    // return new_table;
+    SetResultTable(new_table);
   }
 }
 

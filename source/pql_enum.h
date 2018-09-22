@@ -88,6 +88,7 @@ enum PqlResultFilterType {
 /* The conflict type for result table */
 enum PqlResultTableConflict {
   kNoConflict = 0,
+  kConflict,
   kOneConflictLeft,
   kOneConflictRight,
   kTwoConflict
