@@ -36,7 +36,7 @@ bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
 
   HandleInsertVariables(modified_var, used_vars);
   HandleInsertConstants(used_consts);
-  HandleInsertAssignPattern(stmt_data, modified_var, rhs_expr);
+  HandleInsertPattern(StmtType::kAssign, stmt_data);
   HandleUses(stmt_data, used_vars);
   HandleModifies(stmt_data, modified_var);
 
@@ -422,7 +422,6 @@ ProcVarPairList PKB::GetAllUsesPairP() {
   return proc_var_list;
 }
 
-
 StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   if (var_name.compare("") == 0) {
     return pattern_table_.GetAssignWithSubExpr(sub_expr);
@@ -600,9 +599,25 @@ void PKB::UpdateUsesFromChild(StatementData* stmt_data,
   }
 }
 
-void PKB::HandleInsertAssignPattern(StatementData* stmt_data, VarName lhs_var,
-                                    TokenList rhs_expr) {
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  pattern_table_.InsertAssignPattern(stmt_num, lhs_var,
-                                     rhs_expr);
+void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
+  switch (stmt_type) {
+    case StmtType::kAssign: {
+      AssignStmtData* assign_stmt_data = (AssignStmtData*)stmt_data;
+      pattern_table_.InsertAssignPattern(
+          assign_stmt_data->GetStmtNum(),
+          assign_stmt_data->GetModifiedVariable(),
+          assign_stmt_data->GetPostfixedExpr());
+      break;
+    }
+    case StmtType::kWhile: {
+      WhileStmtData* while_stmt_data = (WhileStmtData*)stmt_data;
+      // TODO: insert while pattern
+      break;
+    }
+    case StmtType::kIf: {
+      IfStmtData* if_stmt_data = (IfStmtData*)stmt_data;
+      // TODO: insert if pattern
+      break;
+    }
+  }
 }

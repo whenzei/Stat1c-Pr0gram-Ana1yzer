@@ -335,8 +335,7 @@ class PKB {
                            StmtListIndex child_stmtlist_index);
   void UpdateParentRelationship(StatementData* stmt_data,
                                 StmtListIndex child_stmtlist_index);
-  void HandleInsertAssignPattern(StatementData* stmt_data, VarName lhs_var,
-                                 TokenList rhs_expr);
+  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 };
 
 #endif  // !SPA_PKB_H
