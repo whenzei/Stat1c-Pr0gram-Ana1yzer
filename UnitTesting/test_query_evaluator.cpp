@@ -121,7 +121,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(
+    pkb.InsertAssignStmt(
         &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
@@ -143,7 +143,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertProcName("testprocedure");
+    pkb.InsertProcName("testprocedure");
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("p");
@@ -164,7 +164,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertConstValue(8);
+    pkb.InsertConstValue(8);
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("c");
@@ -185,7 +185,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(
+    pkb.InsertAssignStmt(
         &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
@@ -208,7 +208,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(
+    pkb.InsertIfStmt(
         &IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
@@ -231,7 +231,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertWhileStmt(
+    pkb.InsertWhileStmt(
         &WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
@@ -253,7 +253,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertReadStmt(&ReadStmtData(5, 0, "x"));
+    pkb.InsertReadStmt(&ReadStmtData(5, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("read");
@@ -274,7 +274,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertPrintStmt(&PrintStmtData(6, 0, "x"));
+    pkb.InsertPrintStmt(&PrintStmtData(6, 0, "x"));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("print");

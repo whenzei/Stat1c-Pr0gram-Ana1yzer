@@ -352,15 +352,31 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index, string 
   TokenList expression;
   if (current.type != Tokenizer::TokenType::kCloseParen) {
     // 6. Parse expression
+
+	  if (current.type == Tokenizer::TokenType::kQuotation) {
+      current = tokens[++*current_index];
+    } else {
+      errorMessage_ = "Missing quotation in pattern expression parameters.";
+      return false;
+    }
+
     int paren_count = 0;
-    while(current.type != Tokenizer::TokenType::kUnderscore && (paren_count > 0 || current.type != Tokenizer::TokenType::kCloseParen)) {
-      expression.push_back(current);
+    //while(current.type != Tokenizer::TokenType::kUnderscore && (paren_count > 0 || current.type != Tokenizer::TokenType::kCloseParen)) {
+    while (current.type != Tokenizer::TokenType::kQuotation) {  
+	  expression.push_back(current);
       if (current.type == Tokenizer::TokenType::kOpenParen) paren_count++;
       if (current.type == Tokenizer::TokenType::kCloseParen) paren_count--;
       current = tokens[++*current_index];
     }
     if (!PqlValidator::ValidateExpression(expression)) {
       errorMessage_ = "Expression in second parameter of assign pattern clause is invalid.";
+      return false;
+    }
+
+	if (current.type == Tokenizer::TokenType::kQuotation) {
+      current = tokens[++*current_index];
+    } else {
+      errorMessage_ = "Missing quotation in pattern expression parameters.";
       return false;
     }
 

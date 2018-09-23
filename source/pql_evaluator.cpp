@@ -35,13 +35,19 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
-  if (GetQuery().GetSuchThats().empty()) {
+  if (GetQuery().GetSuchThats().empty() && GetQuery().GetPatterns().empty()) {
     final_results = GetFinalResultFromTable(GetQuery().GetVarName());
   }
-  // Else use GetSuchThatResult method
+  // Else use GetSuchThatResult/GetPatternResult method
   else {
-    PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
-    GetSuchThatResult(suchthat);
+    if (!GetQuery().GetSuchThats().empty()) {
+      PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
+      GetSuchThatResult(suchthat);
+    }
+    if (!GetQuery().GetPatterns().empty()) {
+      PqlPattern pattern = GetQuery().GetPatterns().front();
+      GetPatternResult(pattern);
+    }
 
     // No false clause
     if (IsValidClause()) {
@@ -78,6 +84,20 @@ FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
   }
 
   return final_result;
+}
+
+void PqlEvaluator::GetPatternResult(PqlPattern pattern) {
+  PqlPatternType pattern_type = pattern.GetType().second;
+
+  switch (pattern_type) {
+    case PqlPatternType::kAssign:
+      EvaluateAssignPattern(pattern);
+      break;
+    case PqlPatternType::kWhile:
+      break;
+    case PqlPatternType::kIf:
+      break;
+  }
 }
 
 void PqlEvaluator::GetSuchThatResult(PqlSuchthat suchthat) {
@@ -177,6 +197,120 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
 
   // Return empty result if nothing is found
   return results;
+}
+
+void PqlEvaluator::EvaluateAssignPattern(PqlPattern pattern) {
+  PKB pkb = GetPKB();
+  // Getting parameter of pattern
+  string pattern_var_name = pattern.GetType().first;
+  pair<string, PqlDeclarationEntity> first_parameter =
+      pattern.GetFirstParameter();
+  Expression expression = pattern.GetAssignExpression();
+  string left_name = first_parameter.first;
+  PqlDeclarationEntity left_type = first_parameter.second;
+  PqlPatternExpressionType expression_type = expression.first;
+  TokenList expression_token = expression.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating Assign Pattern." << endl;
+
+  switch (expression_type) {
+    case PqlPatternExpressionType::kExpression:
+      switch (left_type) {
+        case PqlDeclarationEntity::kUnderscore:
+          result_list = pkb.GetAssignWithExactPattern("", expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern " << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kIdent:
+          result_list =
+              pkb.GetAssignWithExactPattern(left_name, expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kVariable:
+          result_pair_list = pkb.GetAllAssignExactPatternPair(expression_token);
+          if (result_pair_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for variable " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_pair_list, pattern_var_name,
+                                     left_name);
+          }
+          return;
+      }
+    case PqlPatternExpressionType::kUnderscoreExpressionUnderscore:
+      switch (left_type) {
+        case PqlDeclarationEntity::kUnderscore:
+          result_list = pkb.GetAssignWithPattern("", expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern " << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kIdent:
+          result_list = pkb.GetAssignWithPattern(left_name, expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kVariable:
+          result_pair_list = pkb.GetAllAssignPatternPair(expression_token);
+          if (result_pair_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for variable " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_pair_list, pattern_var_name,
+                                     left_name);
+          }
+          return;
+      }
+    case PqlPatternExpressionType::kUnderscore:
+      switch (left_type) {
+        case PqlDeclarationEntity::kUnderscore:
+          result_list = pkb.GetAssignWithPattern("", expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern " << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kIdent:
+          result_list = pkb.GetAssignWithPattern(left_name, expression_token);
+          if (result_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_list, pattern_var_name);
+          }
+          return;
+        case PqlDeclarationEntity::kVariable:
+          result_pair_list = pkb.GetAllAssignPatternPair(expression_token);
+          if (result_pair_list.empty()) {
+            SetClauseFlag(false);
+            cout << " No such pattern for variable " << left_name << endl;
+          } else {
+            StoreClauseResultInTable(result_pair_list, pattern_var_name,
+                                     left_name);
+          }
+          return;
+      }
+  }
 }
 
 void PqlEvaluator::EvaluateFollows(PqlSuchthat suchthat,

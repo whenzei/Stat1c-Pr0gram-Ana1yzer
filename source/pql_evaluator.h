@@ -89,6 +89,22 @@ class PqlEvaluator {
   void GetSuchThatResult(PqlSuchthat suchthat);
 
   /**
+   * Return a list of results based on the query. This method will only be
+   * used when there are "pattern" clause.
+   * @input pattern clause provided by user
+   * @returns a list of string if there is result,
+   * or an empty list otherwise
+   */
+  void GetPatternResult(PqlPattern pattern);
+
+  /**
+   * Evaluate assign pattern
+   * @input pattern clause provided by user
+   * @returns results based on evaluation
+   */
+  void EvaluateAssignPattern(PqlPattern pattern);
+
+  /**
    * Evaluate such that follows
    * @input select type and such that clause provided by user
    * @returns results based on evaluation
@@ -207,7 +223,6 @@ class PqlEvaluator {
   void StoreClauseResultInTable(QueryResultList, string);
 
   void StoreClauseResultInTable(QueryResultPairList, string, string);
-
 };
 
 #endif  // !QUERY_EVALUATOR_H
