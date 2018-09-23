@@ -5,54 +5,54 @@
 
 using std::find;
 
-void ParentTable::InsertDirectParentRelationship(StmtNum stmt_num,
-                                                 StmtListIndex stmtlist_index) {
-  if (!IsParent(stmt_num, stmtlist_index)) {
-    parents_map_[stmtlist_index].push_back(stmt_num);
-    direct_parent_map_[stmtlist_index] = stmt_num;
-    children_map_[stmt_num].push_back(stmtlist_index);
-    direct_children_map_[stmt_num].push_back(stmtlist_index);
+void ParentTable::InsertDirectParentRelationship(StmtNum parent_stmt_num,
+                                                 StmtNum child_stmt_num) {
+  if (!IsParent(parent_stmt_num, child_stmt_num)) {
+    parents_map_[child_stmt_num].push_back(parent_stmt_num);
+    direct_parent_map_[child_stmt_num] = parent_stmt_num;
+    children_map_[parent_stmt_num].push_back(child_stmt_num);
+    direct_children_map_[parent_stmt_num].push_back(child_stmt_num);
   }
-  if (parents_set_.find(stmt_num) == parents_set_.end()) {
-    parents_set_.insert(stmt_num);
+  if (parents_set_.insert(parent_stmt_num).second) {
+    parents_list_.push_back(parent_stmt_num);
   }
-  if (children_set_.find(stmtlist_index) == children_set_.end()) {
-    children_set_.insert(stmtlist_index);
-  }
-}
-
-void ParentTable::InsertIndirectParentRelationship(
-    StmtNum stmt_num, StmtListIndex stmtlist_index) {
-  if (!IsParentT(stmt_num, stmtlist_index)) {
-    parents_map_[stmtlist_index].push_back(stmt_num);
-    children_map_[stmt_num].push_back(stmtlist_index);
+  if (children_set_.insert(child_stmt_num).second) {
+    children_list_.push_back(child_stmt_num);
   }
 }
 
-bool ParentTable::IsParent(StmtNum stmt_num, StmtListIndex stmtlist_index) {
-  DirectParentMap::iterator iter = direct_parent_map_.find(stmtlist_index);
+void ParentTable::InsertIndirectParentRelationship(StmtNum parent_stmt_num,
+                                                   StmtNum child_stmt_num) {
+  if (!IsParentT(parent_stmt_num, child_stmt_num)) {
+    parents_map_[child_stmt_num].push_back(parent_stmt_num);
+    children_map_[parent_stmt_num].push_back(child_stmt_num);
+  }
+}
+
+bool ParentTable::IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
+  DirectParentMap::iterator iter = direct_parent_map_.find(child_stmt_num);
   if (iter != direct_parent_map_.end()) {
-    StmtNum parent_stmt_num = (*iter).second;
-    return parent_stmt_num == stmt_num;
+    StmtNum parent = (*iter).second;
+    return parent == parent_stmt_num;
   } else {
     return false;
   }
 }
 
-bool ParentTable::IsParentT(StmtNum stmt_num, StmtListIndex stmtlist_index) {
-  ChildrenMap::iterator iter = children_map_.find(stmt_num);
+bool ParentTable::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
+  ChildrenMap::iterator iter = children_map_.find(parent_stmt_num);
   if (iter != children_map_.end()) {
-    StmtListIndexList child_stmtlist_index_list = (*iter).second;
-    return find(child_stmtlist_index_list.begin(),
-                child_stmtlist_index_list.end(),
-                stmtlist_index) != child_stmtlist_index_list.end();
+    StmtNumList children = (*iter).second;
+    return find(children.begin(),
+                children.end(), child_stmt_num) !=
+           children.end();
   } else {
     return false;
   }
 }
 
-StmtNum ParentTable::GetParent(StmtListIndex stmtlist_index) {
-  DirectParentMap::iterator iter = direct_parent_map_.find(stmtlist_index);
+StmtNum ParentTable::GetParent(StmtNum child_stmt_num) {
+  DirectParentMap::iterator iter = direct_parent_map_.find(child_stmt_num);
   if (iter != direct_parent_map_.end()) {
     return (*iter).second;
   } else {
@@ -60,8 +60,8 @@ StmtNum ParentTable::GetParent(StmtListIndex stmtlist_index) {
   }
 }
 
-StmtNumList ParentTable::GetParentT(StmtListIndex stmtlist_index) {
-  ParentsMap::iterator iter = parents_map_.find(stmtlist_index);
+StmtNumList ParentTable::GetParentT(StmtNum child_stmt_num) {
+  ParentsMap::iterator iter = parents_map_.find(child_stmt_num);
   if (iter != parents_map_.end()) {
     return (*iter).second;
   } else {
@@ -69,27 +69,27 @@ StmtNumList ParentTable::GetParentT(StmtListIndex stmtlist_index) {
   }
 }
 
-ParentsSet ParentTable::GetParentsSet() { return parents_set_; }
+ParentsList ParentTable::GetAllParent() { return parents_list_; }
 
-StmtListIndexList ParentTable::GetChild(StmtNum stmt_num) {
-  DirectChildrenMap::iterator iter = direct_children_map_.find(stmt_num);
+StmtNumList ParentTable::GetChild(StmtNum parent_stmt_num) {
+  DirectChildrenMap::iterator iter = direct_children_map_.find(parent_stmt_num);
   if (iter != direct_children_map_.end()) {
     return (*iter).second;
   } else {
-    return StmtListIndexList();
+    return StmtNumList();
   }
 }
 
-StmtListIndexList ParentTable::GetChildT(StmtNum stmt_num) {
-  ChildrenMap::iterator iter = children_map_.find(stmt_num);
+StmtNumList ParentTable::GetChildT(StmtNum parent_stmt_num) {
+  ChildrenMap::iterator iter = children_map_.find(parent_stmt_num);
   if (iter != children_map_.end()) {
     return (*iter).second;
   } else {
-    return StmtListIndexList();
+    return StmtNumList();
   }
 }
 
-ChildrenSet ParentTable::GetChildrenSet() { return children_set_; }
+ChildrenList ParentTable::GetAllChild() { return children_list_; }
 
 bool ParentTable::HasParentRelationship() {
   return !parents_map_.empty();

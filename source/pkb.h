@@ -74,51 +74,46 @@ class PKB {
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param AssignStmtData the encapsulation of statement data for PKB use
-  // @returns true if the statement number cannot be found in the table and the
-  // assign statement is successfully inserted, false otherwise
-  bool InsertAssignStmt(AssignStmtData*);
+  void InsertAssignStmt(AssignStmtData*);
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_num_int the statement number of the while statement
-  // @param stmtlist_index the statement list index the while statement belongs
-  // to
-  // @param control_var_name_list the list of control variables of the while
-  // statement
-  // @returns true if the statement number cannot be found in the table and the
-  // while statement is successfully inserted, false otherwise
-  // bool InsertWhileStmt(StmtNumInt stmt_num_int,
-  //                     StmtListIndex parent_stmtlist_index,
-  //                     StmtListIndex child_stmtlist_index,
-  //                     VarNameSet control_var_name_set);
-
-  bool InsertWhileStmt(WhileStmtData*);
+  // @param stmt_data the statement data as encapsulated by WhileStmtData structure
+  void InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param stmt_data the statement data as encapsulated by IfStmtData structure
-  // @returns true if the statement number cannot be found in the table and the
-  // if statement is successfully inserted, false otherwise
-  bool InsertIfStmt(IfStmtData* stmt_data);
+  void InsertIfStmt(IfStmtData* stmt_data);
 
   // inserts the given read statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param stmt_data the statement data as encapsulated by ReadStmtData
   // structure
-  // @returns true if the read statement is inserted successfully, false if
-  // insertion fails (read statement was already inside StmtTable)
-  bool InsertReadStmt(ReadStmtData* stmt_data);
+  void InsertReadStmt(ReadStmtData* stmt_data);
 
   // inserts the given print statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param stmt_data the statement data as encapsulated by PrintStmtData
   // structure
-  // @returns true if the print statement is inserted successfully, false if
-  // insertion fails (print statement was already inside StmtTable)
-  bool InsertPrintStmt(PrintStmtData* stmt_data);
+  void InsertPrintStmt(PrintStmtData* stmt_data);
 
   // Expose follows_table InsertFollows method to Parser
   void InsertFollows(StmtNum followee, StmtNum follower);
+
+  // Expose modifies_table InsertModifies method to Parser
+  // TODO: add InsertModifies(proc_name, modified_var) for iter 2
+  void InsertModifies(StmtNum modifying_stmt, VarName modified_var);
+
+  // Expose uses_table InsertUses method to Parser
+  // TODO: add InsertUses(proc_name, modified_var) for iter 2
+  void InsertUses(StmtNum using_stmt, VarName used_var);
+
+  // Expose parent_table InsertParent method to Parser
+  void InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+
+  // Expose parent_table InsertParentT method to Parser
+  void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -324,17 +319,6 @@ class PKB {
   void HandleInsertVariables(VarNameSet var_set);
   void HandleInsertVariable(VarName variable);
   void HandleInsertConstants(ConstValueSet constants);
-  void HandleUses(StatementData* stmt_data, VarNameSet used_vars);
-  void HandleUses(StatementData* stmt_data, VarName used_var);
-  void UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars);
-  void UpdateParentModifies(StatementData* stmt_data, VarName modified_var);
-  void HandleModifies(StatementData* stmt_data, VarName modified_var);
-  void UpdateModifiesFromChild(StatementData* stmt_data,
-                               StmtListIndex child_stmtlist_index);
-  void UpdateUsesFromChild(StatementData* stmt_data,
-                           StmtListIndex child_stmtlist_index);
-  void UpdateParentRelationship(StatementData* stmt_data,
-                                StmtListIndex child_stmtlist_index);
   void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 };
 

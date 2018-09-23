@@ -4,13 +4,11 @@
 #define SPA_PARENT_TABLE_H
 
 #include <string>
-#include <list>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 using std::string;
-using std::list;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
@@ -20,14 +18,14 @@ using std::vector;
 // so that it is easier to search and update the PKB data structures.
 using StmtNum = string;
 using StmtNumList = vector<string>;
-using StmtListIndex = int;
-using StmtListIndexList = vector<int>;
-using ParentsMap = unordered_map<int, vector<string>>;
-using DirectParentMap = unordered_map<int, string>;
+using ParentsMap = unordered_map<string, vector<string>>;
+using DirectParentMap = unordered_map<string, string>;
 using ParentsSet = unordered_set<string>;
-using ChildrenMap = unordered_map<string, vector<int>>;
-using DirectChildrenMap = unordered_map<string, vector<int>>;
-using ChildrenSet = unordered_set<int>;
+using ParentsList = vector<string>;
+using ChildrenMap = unordered_map<string, vector<string>>;
+using DirectChildrenMap = unordered_map<string, vector<string>>;
+using ChildrenSet = unordered_set<string>;
+using ChildrenList = vector<string>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships
@@ -36,48 +34,50 @@ class ParentTable {
   ParentsMap parents_map_;
   DirectParentMap direct_parent_map_;
   ParentsSet parents_set_;
+  ParentsList parents_list_;
   ChildrenMap children_map_;
   DirectChildrenMap direct_children_map_;
   ChildrenSet children_set_;
+  ChildrenList children_list_;
 
  public:
   // Insert a direct parent-child relationship into parents_map and children_map
   // @param stmt_num the statement number of the parent statement
   // @param stmtlist_index the statement list index of the child
-  void InsertDirectParentRelationship(StmtNum stmt_num, StmtListIndex stmtlist_index);
+  void InsertDirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // Insert an indirect parent-child relationship into parents_map and children_map
   // @param stmt_num the statement number of the parent statement
   // @param stmtlist_index the statement list index of the child
-  void InsertIndirectParentRelationship(StmtNum stmt_num, StmtListIndex stmtlist_index);
+  void InsertIndirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns true if the statement specified by stmt_num is the direct parent
   // of the statement list specified by stmtlist_index
-  bool IsParent(StmtNum stmt_num, StmtListIndex stmtlist_index);
+  bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns true if the statement specified by stmt_num is a parent (direct or
   // indirect) of the statement list specified by stmtlist_index
-  bool IsParentT(StmtNum stmt_num_1, StmtListIndex stmtlist_index);
+  bool IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns the statement number of the direct parent
-  StmtNum GetParent(StmtListIndex stmtlist_index);
+  StmtNum GetParent(StmtNum child_stmt_num);
 
   // @returns a list of statement numbers of the parents (direct + indirect) of the give stmtlist index
-  StmtNumList GetParentT(StmtListIndex stmtlist_index);
+  StmtNumList GetParentT(StmtNum child_stmt_num);
 
   // @returns a list of statement numbers of the statements that are parents to some statement
-  ParentsSet GetParentsSet();
+  ParentsList GetAllParent();
 
   // @returns a list of statement list indices of the direct children of the given statement
-  StmtListIndexList GetChild(StmtNum stmt_num);
+  StmtNumList GetChild(StmtNum parent_stmt_num);
 
   // @returns a list of statement list indices of the children (direct +
   // indirect) of the given statement
-  ChildrenSet GetChildrenSet();
+  ChildrenList GetAllChild();
 
   // @returns a list of statement list indices of the statements that are the children (direct +
   // indirect) of some statement
-  StmtListIndexList GetChildT(StmtNum stmt_num);
+  StmtNumList GetChildT(StmtNum parent_stmt_num);
 
   // @returns true if there exists any parent-child relationship in the table
   bool HasParentRelationship();

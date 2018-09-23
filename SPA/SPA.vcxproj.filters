@@ -111,6 +111,9 @@
     <ClCompile Include="..\source\pql_pattern.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\parse_data.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="..\source\pql_pattern.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\parse_data.h">
+      <Filter>Header Files\Frontend</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

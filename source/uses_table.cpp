@@ -2,7 +2,7 @@
 
 #include "uses_table.h"
 
-bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num, StmtListIndex stmt_list_index) {
+bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num) {
   // returns false if same uses relationship already exists in the uses map
   if (IsUsedBy(var_name, stmt_num)) { return false; }
   // check for duplicates
@@ -12,7 +12,6 @@ bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num, StmtListIndex stm
   if (used_by_map_.count(var_name) == 0) { used_vars_list_.push_back(var_name); }
   uses_map_[stmt_num].push_back(var_name);
   used_by_map_[var_name].push_back(stmt_num);
-  if (uses_stmt_list_map_[stmt_list_index].count(var_name)==0) uses_stmt_list_map_[stmt_list_index].insert(var_name);
   return true;
 }
 
@@ -26,10 +25,6 @@ VarNameList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
     used_vars = uses_map_[stmt_num];
   }
   return used_vars;
-}
-
-VarNameSet UsesTable::GetVarUsedByStmtList(StmtListIndex stmt_list_index) {
-  return uses_stmt_list_map_[stmt_list_index];
 }
 
 StmtList UsesTable::GetAllUsingStmt() {
