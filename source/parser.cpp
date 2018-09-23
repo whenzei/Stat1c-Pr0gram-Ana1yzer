@@ -46,6 +46,7 @@ void Parser::Parse(string filepath) {
   }
 
   ParseProgram();
+  pkb_->NotifyParseEnd();
 }
 
 // Method for testing which provides pre-written tokens of a program
@@ -58,6 +59,7 @@ void Parser::Parse(TokenList program_tokenized) {
   }
 
   ParseProgram();
+  pkb_->NotifyParseEnd();
 }
 
 void Parser::ParseProgram() {

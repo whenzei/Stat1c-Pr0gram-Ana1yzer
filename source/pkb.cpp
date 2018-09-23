@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pkb.h"
+#include "design_extractor.h"
 
 using std::make_pair;
 
@@ -366,6 +367,11 @@ StmtVarPairList PKB::GetAllAssignPatternPair(TokenList sub_expr) {
 
 StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
+}
+
+void PKB::NotifyParseEnd() {
+  DesignExtractor de =  DesignExtractor(this);
+  de.UpdatePkb();
 }
 
 /***********************************
