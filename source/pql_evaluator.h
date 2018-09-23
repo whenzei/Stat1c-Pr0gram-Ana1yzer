@@ -29,6 +29,7 @@ class PqlEvaluator {
       select_type_;  // the type of the variable in 'Select' statement
   PKB pkb_;          // pkb database
   bool clause_flag_;
+  bool merge_flag_;
   PqlQuery pql_query_;
   PqlResult pql_result_;
 
@@ -41,6 +42,7 @@ class PqlEvaluator {
   void SetSelectType(PqlDeclarationEntity);
   void SetPKB(PKB);
   void SetClauseFlag(bool);
+  void SetMergeFlag(bool);
   void SetPqlResult(PqlResult);
 
   /* Getter */
@@ -48,6 +50,7 @@ class PqlEvaluator {
   PqlDeclarationEntity GetSelectType();
   PKB GetPKB();
   bool IsValidClause();
+  bool IsMergeTableEmpty();
   PqlResult GetPqlResult();
 
   /**

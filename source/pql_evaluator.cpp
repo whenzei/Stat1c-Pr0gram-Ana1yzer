@@ -27,6 +27,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetPqlResult(*pql_result);
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
+  SetMergeFlag(false);
   FinalResult final_results;
 
   // Determine the declaration type of the select variable
@@ -41,7 +42,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   else {
     PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
     GetSuchThatResult(suchthat);
-    // results = GetSuchThatResult(suchthat);
+
+    // No false clause
     if (IsValidClause()) {
       final_results = GetFinalResultFromTable(GetQuery().GetVarName());
     }
@@ -66,11 +68,13 @@ FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
   }
   // Selected variable not in result table
   else {
-    cout << "Select all (GetFinalResultFromTable)" << endl;
-    SetSelectType(CheckSelectDeclarationType(select_var));
-    QueryResultList get_all_result = GetSelectAllResult(GetSelectType());
-    copy(get_all_result.begin(), get_all_result.end(),
-         back_inserter(final_result));
+    if (!IsMergeTableEmpty()) {
+      cout << "Select all (GetFinalResultFromTable)" << endl;
+      SetSelectType(CheckSelectDeclarationType(select_var));
+      QueryResultList get_all_result = GetSelectAllResult(GetSelectType());
+      copy(get_all_result.begin(), get_all_result.end(),
+           back_inserter(final_result));
+    }
   }
 
   return final_result;
@@ -872,6 +876,12 @@ void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
     }
   }
 
+  // If after merging result, result table is empty
+  if (pql_result.GetResultTable().empty()) {
+    SetMergeFlag(true);
+  } else {
+    SetMergeFlag(false);
+  }
   SetPqlResult(pql_result);
 }
 
@@ -911,6 +921,12 @@ void PqlEvaluator::StoreClauseResultInTable(
     }
   }
 
+  // If after merging result, result table is empty
+  if (pql_result.GetResultTable().empty()) {
+    SetMergeFlag(true);
+  } else {
+    SetMergeFlag(false);
+  }
   SetPqlResult(pql_result);
 }
 
@@ -1103,8 +1119,14 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
 
 /* Getters and Setters */
 
-void PqlEvaluator::SetClauseFlag(bool clauseFlag) {
-  this->clause_flag_ = clauseFlag;
+void PqlEvaluator::SetMergeFlag(bool merge_flag) {
+  this->merge_flag_ = merge_flag;
+}
+
+bool PqlEvaluator::IsMergeTableEmpty() { return merge_flag_; }
+
+void PqlEvaluator::SetClauseFlag(bool clause_flag) {
+  this->clause_flag_ = clause_flag;
 }
 
 bool PqlEvaluator::IsValidClause() { return clause_flag_; }
