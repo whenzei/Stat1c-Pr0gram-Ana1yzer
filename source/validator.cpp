@@ -33,12 +33,12 @@ void Validator::ResetTokenList(TokenList tokens) {
 // Validates the tokenized source code
 // Precondition: must be called after the constructor
 bool Validator::ValidateProgram() {
-  while (PeekNextToken().subtype == ts::kProcedure) {
+  do {
     if (!IsValidProcedure()) {
       cout << "Validation failed, invalid procedure detected" << endl;
       return false;
     }
-  }
+  } while (PeekNextToken().subtype == ts::kProcedure);
 
   // last token should be kEOF if everything is processed
   if (!IsAtEnd()) {
