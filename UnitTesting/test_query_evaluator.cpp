@@ -209,7 +209,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PKB pkb;
 
     pkb.InsertIfStmt(
-        &IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
+        &IfStmtData(2, 0, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");
@@ -232,7 +232,7 @@ TEST_CLASS(TestQueryEvaluator) {
     PKB pkb;
 
     pkb.InsertWhileStmt(
-        &WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
+        &WhileStmtData(3, 0, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("while");
