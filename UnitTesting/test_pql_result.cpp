@@ -41,6 +41,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have one column
     Assert::IsTrue(result_row_column.size() == 1);
@@ -48,6 +49,10 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have three rows
     Assert::IsTrue(result_table.size() == 3);
+
+    int expected_headera = 0;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
 
     string expected_result1 = "1";
     string expected_result3 = "3";
@@ -69,6 +74,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
@@ -76,6 +82,12 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have three rows
     Assert::IsTrue(result_table.size() == 3);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
     string expected_result1 = "1";
     string expected_result3 = "3";
@@ -109,6 +121,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
@@ -116,6 +129,12 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have nine rows
     Assert::IsTrue(result_table.size() == 9);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
     string expected_result1 = "1";
     string expected_result3 = "3";
@@ -154,6 +173,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
@@ -161,6 +181,14 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have nine rows
     Assert::IsTrue(result_table.size() == 9);
+
+    int expected_headera = 0;
+    int expected_headerb = 2;
+    int expected_headerc = 1;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
+    Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
     string expected_result1 = "1";
     string expected_result3 = "3";
@@ -210,6 +238,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
@@ -217,6 +246,12 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
     string expected_result1 = "1";
     string expected_result5 = "5";
@@ -253,6 +288,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
@@ -260,6 +296,14 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+    int expected_headerc = 2;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
+    Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
     string expected_result1 = "1";
     string expected_result5 = "5";
@@ -302,6 +346,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
@@ -309,6 +354,14 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+    int expected_headerc = 2;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
+    Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
     string expected_result2 = "2";
     string expected_result3 = "3";
@@ -350,6 +403,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
@@ -357,6 +411,12 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
     string expected_result2 = "2";
     string expected_result4 = "4";
@@ -400,6 +460,7 @@ TEST_CLASS(TestPqlResult) {
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
+    ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have four column
     Assert::IsTrue(result_row_column.size() == 4);
@@ -407,6 +468,16 @@ TEST_CLASS(TestPqlResult) {
 
     // Should have one row
     Assert::IsTrue(result_table.size() == 1);
+
+    int expected_headera = 0;
+    int expected_headerb = 1;
+    int expected_headerc = 2;
+    int expected_headerd = 3;
+
+    Assert::AreEqual(expected_headera, col_header.find("a")->second);
+    Assert::AreEqual(expected_headerb, col_header.find("b")->second);
+    Assert::AreEqual(expected_headerc, col_header.find("c")->second);
+    Assert::AreEqual(expected_headerd, col_header.find("d")->second);
 
     string expected_result1 = "1";
     string expected_result8 = "8";
