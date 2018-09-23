@@ -24,105 +24,71 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
-bool PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kAssign)) {
-    return false;
+void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    VarName modified_var = stmt_data->GetModifiedVariable();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(modified_var, used_vars);
+    HandleInsertConstants(used_consts);
+    HandleInsertPattern(StmtType::kAssign, stmt_data);
   }
-
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  VarName modified_var = stmt_data->GetModifiedVariable();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-  TokenList rhs_expr = stmt_data->GetPostfixedExpr();
-
-  HandleInsertVariables(modified_var, used_vars);
-  HandleInsertConstants(used_consts);
-  HandleInsertPattern(StmtType::kAssign, stmt_data);
-  HandleUses(stmt_data, used_vars);
-  HandleModifies(stmt_data, modified_var);
-
-  // just in case, update parents
-  UpdateParentModifies(stmt_data, modified_var);
-  UpdateParentUses(stmt_data, used_vars);
-
-  return true;
 }
 
-bool PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kWhile)) {
-    return false;
+void PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kWhile)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(used_vars);
+    HandleInsertConstants(used_consts);
   }
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-  StmtListIndex child_stmtlist_index = stmt_data->GetChildStmtListIndex();
-
-  HandleInsertVariables(used_vars);
-  HandleInsertConstants(used_consts);
-  HandleUses(stmt_data, used_vars);
-
-  UpdateParentRelationship(stmt_data, child_stmtlist_index);
-
-  UpdateModifiesFromChild(stmt_data, child_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, child_stmtlist_index);
-
-  UpdateParentUses(stmt_data, used_vars);
-
-  return true;
 }
 
-bool PKB::InsertIfStmt(IfStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kIf)) {
-    return false;
+void PKB::InsertIfStmt(IfStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kIf)) {
+    VarNameSet used_vars = stmt_data->GetUsedVariables();
+    ConstValueSet used_consts = stmt_data->GetUsedConstants();
+
+    HandleInsertVariables(used_vars);
+    HandleInsertConstants(used_consts);
   }
-  VarNameSet used_vars = stmt_data->GetUsedVariables();
-  ConstValueSet used_consts = stmt_data->GetUsedConstants();
-  StmtListIndex then_stmtlist_index = stmt_data->GetThenStmtListIndex();
-  StmtListIndex else_stmtlist_index = stmt_data->GetElseStmtListIndex();
-
-  HandleInsertVariables(used_vars);
-  HandleInsertConstants(used_consts);
-  HandleUses(stmt_data, used_vars);
-
-  UpdateParentRelationship(stmt_data, then_stmtlist_index);
-  UpdateParentRelationship(stmt_data, else_stmtlist_index);
-
-  UpdateModifiesFromChild(stmt_data, then_stmtlist_index);
-  UpdateModifiesFromChild(stmt_data, else_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, then_stmtlist_index);
-  UpdateUsesFromChild(stmt_data, else_stmtlist_index);
-
-  UpdateParentUses(stmt_data, used_vars);
-
-  return true;
 }
 
-bool PKB::InsertReadStmt(ReadStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kRead)) {
-    return false;
+void PKB::InsertReadStmt(ReadStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kRead)) {
+    VarName modified_var = stmt_data->GetModifiedVariable();
+    HandleInsertVariable(modified_var);
   }
-
-  VarName modified_var = stmt_data->GetModifiedVariable();
-
-  HandleInsertVariable(modified_var);
-  HandleModifies(stmt_data, modified_var);
-
-  UpdateParentModifies(stmt_data, modified_var);
-
-  return true;
 }
 
-bool PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
-  if (!HandleInsertStatement(stmt_data, StmtType::kPrint)) {
-    return false;
+void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kPrint)) {
+    VarName used_var = stmt_data->GetUsedVariable();
+    HandleInsertVariable(used_var);
   }
+}
 
-  VarName used_var = stmt_data->GetUsedVariable();
+void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
+  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
+}
 
-  HandleInsertVariable(used_var);
-  HandleUses(stmt_data, used_var);
+void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
+  modifies_table_.InsertModifies(modifying_stmt, modified_var);
+}
 
-  UpdateParentUses(stmt_data, VarNameSet{used_var});
+void PKB::InsertUses(StmtNum using_stmt, VarName used_var) {
+  uses_table_.InsertUses(used_var, using_stmt);
+}
 
-  return true;
+void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
+  parent_table_.InsertDirectParentRelationship(parent_stmt_num, child_stmt_num);
+}
+
+void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
+  parent_table_.InsertIndirectParentRelationship(parent_stmt_num,
+                                                 child_stmt_num);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -180,21 +146,16 @@ StmtNumPairList PKB::GetAllFollowsTPair() {
 }
 
 bool PKB::IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
-  StmtListIndex child_stmtlist_index =
-      stmt_table_.GetStmtListIndex(child_stmt_num);
-  return parent_table_.IsParent(parent_stmt_num, child_stmtlist_index);
+  return parent_table_.IsParent(parent_stmt_num, child_stmt_num);
 }
 
 bool PKB::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
-  StmtListIndex child_stmtlist_index =
-      stmt_table_.GetStmtListIndex(child_stmt_num);
-  return parent_table_.IsParentT(parent_stmt_num, child_stmtlist_index);
+  return parent_table_.IsParentT(parent_stmt_num, child_stmt_num);
 }
 
 StmtNumList PKB::GetParent(StmtNum stmt_num) {
-  StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
   StmtNumList direct_parent_stmtnum_list;
-  StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmtlist_index);
+  StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmt_num);
   if (direct_parent_stmtnum.compare("") != 0) {
     direct_parent_stmtnum_list.push_back(direct_parent_stmtnum);
   }
@@ -202,53 +163,20 @@ StmtNumList PKB::GetParent(StmtNum stmt_num) {
 }
 
 StmtNumList PKB::GetParentT(StmtNum stmt_num) {
-  StmtListIndex stmtlist_index = stmt_table_.GetStmtListIndex(stmt_num);
-  return parent_table_.GetParentT(stmtlist_index);
+  return parent_table_.GetParentT(stmt_num);
 }
 
-StmtNumList PKB::GetAllParent() {
-  ParentsSet parent_stmt_num_set = parent_table_.GetParentsSet();
-  StmtNumList parent_stmt_num_list;
-  for (auto parent_stmt_num : parent_stmt_num_set) {
-    parent_stmt_num_list.push_back(parent_stmt_num);
-  }
-  return parent_stmt_num_list;
-}
+StmtNumList PKB::GetAllParent() { return parent_table_.GetAllParent(); }
 
 StmtNumList PKB::GetChild(StmtNum stmt_num) {
-  StmtListIndexList children_stmtlist_indices =
-      parent_table_.GetChild(stmt_num);
-  StmtNumList result;
-  for (StmtListIndex& stmtlist_index : children_stmtlist_indices) {
-    StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(stmtlist_index);
-    result.insert(result.end(), stmt_num_list.begin(), stmt_num_list.end());
-  }
-  return result;
+  return parent_table_.GetChild(stmt_num);
 }
 
 StmtNumList PKB::GetChildT(StmtNum stmt_num) {
-  StmtListIndexList children_stmtlist_indices =
-      parent_table_.GetChildT(stmt_num);
-  StmtNumList child_stmt_num_list;
-  for (StmtListIndex& stmtlist_index : children_stmtlist_indices) {
-    StmtNumList stmt_num_list = stmtlist_table_.GetStmtNumList(stmtlist_index);
-    child_stmt_num_list.insert(child_stmt_num_list.end(), stmt_num_list.begin(),
-                               stmt_num_list.end());
-  }
-  return child_stmt_num_list;
+  return parent_table_.GetChildT(stmt_num);
 }
 
-StmtNumList PKB::GetAllChild() {
-  ChildrenSet child_stmtlist_index_set = parent_table_.GetChildrenSet();
-  StmtNumList child_stmt_num_list;
-  for (auto child_stmtlist_index : child_stmtlist_index_set) {
-    StmtNumList stmt_num_list =
-        stmtlist_table_.GetStmtNumList(child_stmtlist_index);
-    child_stmt_num_list.insert(child_stmt_num_list.end(), stmt_num_list.begin(),
-                               stmt_num_list.end());
-  }
-  return child_stmt_num_list;
-}
+StmtNumList PKB::GetAllChild() { return parent_table_.GetAllChild(); }
 
 bool PKB::HasParentRelationship() {
   return parent_table_.HasParentRelationship();
@@ -258,11 +186,7 @@ StmtNumPairList PKB::GetAllParentPair() {
   StmtNumPairList parent_pair_list;
   DirectParentMap parents_map = parent_table_.GetDirectParentMap();
   for (auto entry : parents_map) {
-    StmtNumList child_stmt_num_list =
-        stmtlist_table_.GetStmtNumList(entry.first);
-    for (StmtNum& child_stmt_num : child_stmt_num_list) {
-      parent_pair_list.push_back(make_pair(entry.second, child_stmt_num));
-    }
+    parent_pair_list.push_back(make_pair(entry.first, entry.second));
   }
   return parent_pair_list;
 }
@@ -271,13 +195,8 @@ StmtNumPairList PKB::GetAllParentTPair() {
   StmtNumPairList parent_t_pair_list;
   ParentsMap parents_map = parent_table_.GetParentsMap();
   for (auto entry : parents_map) {
-    StmtNumList child_stmt_num_list =
-        stmtlist_table_.GetStmtNumList(entry.first);
-    for (StmtNum& child_stmt_num : child_stmt_num_list) {
-      for (StmtNum& parent_stmt_num : entry.second) {
-        parent_t_pair_list.push_back(
-            make_pair(parent_stmt_num, child_stmt_num));
-      }
+    for (StmtNum& parent_stmt_num : entry.second) {
+      parent_t_pair_list.push_back(make_pair(parent_stmt_num, entry.first));
     }
   }
   return parent_t_pair_list;
@@ -452,67 +371,6 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
 /***********************************
 **** Private methods begin here ****
 ***********************************/
-void PKB::HandleUses(StatementData* stmt_data, VarNameSet used_vars) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-
-  for (auto& var_name : used_vars) {
-    uses_table_.InsertUses(var_name, stmt_num, stmt_list_index);
-  }
-}
-
-void PKB::HandleUses(StatementData* stmt_data, VarName used_var) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-
-  uses_table_.InsertUses(used_var, stmt_num, stmt_list_index);
-}
-
-void PKB::UpdateParentUses(StatementData* stmt_data, VarNameSet used_vars) {
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-
-  StmtNumList indirect_parents = parent_table_.GetParentT(stmt_list_index);
-  // insert uses relationship for parents
-  for (auto& var_name : used_vars) {
-    for (StmtNum& indirect_parent : indirect_parents) {
-      uses_table_.InsertUses(var_name, indirect_parent,
-                             stmt_table_.GetStmtListIndex(indirect_parent));
-    }
-  }
-}
-
-void PKB::UpdateParentModifies(StatementData* stmt_data, VarName modified_var) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtNumList indirect_parents = parent_table_.GetParentT(stmt_list_index);
-  for (StmtNum& indirect_parent : indirect_parents) {
-    modifies_table_.InsertModifies(
-        indirect_parent, stmt_table_.GetStmtListIndex(indirect_parent),
-        modified_var);
-  }
-}
-
-void PKB::HandleModifies(StatementData* stmt_data, VarName modified_var) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-
-  modifies_table_.InsertModifies(stmt_num, stmt_list_index, modified_var);
-}
-
-void PKB::UpdateModifiesFromChild(StatementData* stmt_data,
-                                  StmtListIndex child_stmtlist_index) {
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-
-  // insert modifies relationship (if any)
-  VarNameSet var_modified_by_children =
-      modifies_table_.GetModifiedVar(child_stmtlist_index);
-  for (auto var_name : var_modified_by_children) {
-    modifies_table_.InsertModifies(stmt_num, stmt_list_index, var_name);
-  }
-}
-
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
   StmtListIndex stmtlist_index = stmt_data->GetStmtListIndex();
@@ -525,10 +383,6 @@ bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   stmt_type_list_.InsertStmt(stmt_num, stmt_type);
 
   return true;
-}
-
-void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
-  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
 void PKB::HandleInsertVariables(VarName variable, VarNameSet var_set) {
@@ -553,49 +407,6 @@ void PKB::HandleInsertVariable(VarName variable) {
 void PKB::HandleInsertConstants(ConstValueSet constants) {
   for (auto& constant : constants) {
     const_list_.InsertConstValue(constant);
-  }
-}
-
-void PKB::UpdateParentRelationship(StatementData* stmt_data,
-                                   StmtListIndex child_stmtlist_index) {
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmt_list_index = stmt_data->GetStmtListIndex();
-  // insert parent relationships
-  parent_table_.InsertDirectParentRelationship(stmt_num, child_stmtlist_index);
-
-  StmtNumList indirect_parents = parent_table_.GetParentT(stmt_list_index);
-
-  StmtNumList children_stmtnum_list =
-      stmtlist_table_.GetStmtNumList(child_stmtlist_index);
-
-  for (StmtNum& child_stmtnum : children_stmtnum_list) {
-    StmtListIndexList indirect_children_stmtlist_indices =
-        parent_table_.GetChildT(child_stmtnum);
-    for (StmtListIndex& indirect_child_stmtlist_index :
-         indirect_children_stmtlist_indices) {
-      parent_table_.InsertIndirectParentRelationship(
-          stmt_num, indirect_child_stmtlist_index);
-      for (StmtNum& indirect_parent : indirect_parents) {
-        parent_table_.InsertIndirectParentRelationship(
-            indirect_parent, indirect_child_stmtlist_index);
-      }
-    }
-  }
-
-  for (StmtNum& indirect_parent : indirect_parents) {
-    parent_table_.InsertIndirectParentRelationship(indirect_parent,
-                                                   child_stmtlist_index);
-  }
-}
-
-void PKB::UpdateUsesFromChild(StatementData* stmt_data,
-                              StmtListIndex child_stmtlist_index) {
-  StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmtlist_index = stmt_data->GetStmtListIndex();
-  // insert uses relationship for already added children's variables
-  for (auto& child_var_name :
-       uses_table_.GetVarUsedByStmtList(child_stmtlist_index)) {
-    uses_table_.InsertUses(child_var_name, stmt_num, stmtlist_index);
   }
 }
 
