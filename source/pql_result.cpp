@@ -13,11 +13,11 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 
-PqlResult::PqlResult() {}
+PqlResult::PqlResult() { SetColumnCount(0); }
 
 void PqlResult::MergeResults(QueryResultList result_list,
                              PqlResultTableConflict conflict_type,
-                             int conflict_column_num) {
+                             int conflict_column_num, string header_name) {
   ResultTable result_table = GetResultTable();
   ResultTable new_table;
 
@@ -34,6 +34,10 @@ void PqlResult::MergeResults(QueryResultList result_list,
       }
     }
     SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_name, col_num);
+    SetColumnCount(++col_num);
   }
   // This column already exist, merge with comparison
   else {
@@ -51,11 +55,19 @@ void PqlResult::MergeResults(QueryResultList result_list,
     }
     SetResultTable(new_table);
   }
+
+  // If table is empty
+  if (new_table.empty()) {
+    // Remove all the column header
+    SetColumnCount(0);
+    ClearColumnHeader();
+  }
 }
 
 void PqlResult::MergeResults(QueryResultPairList result_pair_list,
                              PqlResultTableConflict conflict_type,
-                             int conflict_left_pair, int conflict_right_pair) {
+                             int conflict_left_pair, int conflict_right_pair,
+                             string header_left, string header_right) {
   ResultTable result_table = GetResultTable();
   ResultTable new_table;
 
@@ -73,6 +85,11 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
       }
     }
     SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_left, col_num);
+    AddColumnHeader(header_right, ++col_num);
+    SetColumnCount(++col_num);
   }
   // Left has conflict
   else if (conflict_type == kOneConflictLeft) {
@@ -91,6 +108,10 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
       }
     }
     SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_right, col_num);
+    SetColumnCount(++col_num);
   }
   // Right has conflict
   else if (conflict_type == kOneConflictRight) {
@@ -109,6 +130,10 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
       }
     }
     SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_left, col_num);
+    SetColumnCount(++col_num);
   }
   // Two conflict
   else if (conflict_type == kTwoConflict) {
@@ -128,9 +153,16 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
     }
     SetResultTable(new_table);
   }
+
+  // If table is empty
+  if (new_table.empty()) {
+    // Remove all the column header
+    SetColumnCount(0);
+    ClearColumnHeader();
+  }
 }
 
-void PqlResult::InitTable(QueryResultList result_list) {
+void PqlResult::InitTable(QueryResultList result_list, string header_name) {
   for (auto& iter : result_list) {
     ResultRow new_row;
     // Add one new column
@@ -138,9 +170,14 @@ void PqlResult::InitTable(QueryResultList result_list) {
     // Add row to result table
     this->result_table_.push_back(new_row);
   }
+  // Manage column header
+  int col_num = GetColumnCount();
+  AddColumnHeader(header_name, col_num);
+  SetColumnCount(++col_num);
 }
 
-void PqlResult::InitTable(QueryResultPairList result_pair_list) {
+void PqlResult::InitTable(QueryResultPairList result_pair_list,
+                          string header_left, string header_right) {
   for (auto& iter : result_pair_list) {
     ResultRow new_row;
     // Add two new column
@@ -149,12 +186,19 @@ void PqlResult::InitTable(QueryResultPairList result_pair_list) {
     // Add row to result table
     this->result_table_.push_back(new_row);
   }
+  // Manage column header
+  int col_num = GetColumnCount();
+  AddColumnHeader(header_left, col_num);
+  AddColumnHeader(header_right, ++col_num);
+  SetColumnCount(++col_num);
 }
 
 /* Getter and Setter */
 
+void PqlResult::ClearColumnHeader() { this->column_header_.clear(); }
+
 void PqlResult::AddColumnHeader(string var_name, int column_num) {
-  column_header_.insert(std::make_pair(var_name, column_num));
+  this->column_header_.insert(std::make_pair(var_name, column_num));
 }
 
 void PqlResult::SetResultTable(ResultTable result_table) {

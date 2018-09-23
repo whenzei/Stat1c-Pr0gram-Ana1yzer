@@ -34,7 +34,7 @@ TEST_CLASS(TestQueryEvaluator) {
     SuchthatParamType result;
     SuchthatParamType expected_result = kNoSynonymUnderscoreBoth;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
@@ -47,7 +47,7 @@ TEST_CLASS(TestQueryEvaluator) {
     SuchthatParamType result;
     SuchthatParamType expected_result = kNoSynonymUnderscoreLeft;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
@@ -60,7 +60,7 @@ TEST_CLASS(TestQueryEvaluator) {
     SuchthatParamType result;
     SuchthatParamType expected_result = kNoSynonymUnderscoreRight;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
@@ -72,7 +72,7 @@ TEST_CLASS(TestQueryEvaluator) {
     SuchthatParamType result;
     SuchthatParamType expected_result = kNoSynonym;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
@@ -85,55 +85,44 @@ TEST_CLASS(TestQueryEvaluator) {
     SuchthatParamType result;
     SuchthatParamType expected_result = kOneSynonymLeft;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
 
-  TEST_METHOD(TestCheckSuchthatParamTypeOneSynonymSelectLeftUnderscoreRight) {
+  TEST_METHOD(TestCheckSuchthatParamTypeOneSynonymRight) {
     PqlEvaluator qe;
     PqlSuchthat such_that_clause = PqlSuchthat(
-        PqlSuchthatType::kFollows, "a", PqlDeclarationEntity::kAssign, "_",
-        PqlDeclarationEntity::kUnderscore);
+        PqlSuchthatType::kFollows, "3", PqlDeclarationEntity::kInteger, "a",
+        PqlDeclarationEntity::kAssign);
     SuchthatParamType result;
-    SuchthatParamType expected_result = kOneSynonymSelectLeftUnderscoreRight;
+    SuchthatParamType expected_result = kOneSynonymRight;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
 
-  TEST_METHOD(TestCheckSuchthatParamTypeOneSynonymSelectLeft) {
+  TEST_METHOD(TestCheckSuchthatParamTypeTwoSynonym) {
     PqlEvaluator qe;
     PqlSuchthat such_that_clause = PqlSuchthat(
-        PqlSuchthatType::kFollows, "a", PqlDeclarationEntity::kAssign, "2",
-        PqlDeclarationEntity::kInteger);
+        PqlSuchthatType::kFollows, "w", PqlDeclarationEntity::kWhile, "a",
+        PqlDeclarationEntity::kAssign);
     SuchthatParamType result;
-    SuchthatParamType expected_result = kOneSynonymSelectLeft;
+    SuchthatParamType expected_result = kTwoSynonym;
 
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
+    result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
   }
 
-  TEST_METHOD(TestCheckSuchthatParamTypeTwoSynonymSelectRight) {
-    PqlEvaluator qe;
-    PqlSuchthat such_that_clause =
-        PqlSuchthat(PqlSuchthatType::kFollows, "if", PqlDeclarationEntity::kIf,
-                    "a", PqlDeclarationEntity::kAssign);
-    SuchthatParamType result;
-    SuchthatParamType expected_result = kTwoSynonymSelectRight;
-
-    result = qe.CheckSuchthatParamType("a", such_that_clause.GetParameters());
-
-    Assert::IsTrue(expected_result == result);
-  }
   TEST_METHOD(TestSelectAllAssign) {
     // TODO: Your test code here
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(&AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
+    pkb.PKB::InsertAssignStmt(
+        &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("a");
@@ -196,7 +185,8 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertAssignStmt(&AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
+    pkb.PKB::InsertAssignStmt(
+        &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("s");
@@ -211,14 +201,15 @@ TEST_CLASS(TestQueryEvaluator) {
     string expected_result = "1";
 
     Assert::AreEqual(expected_result, first_result);
-  } 
+  }
 
   TEST_METHOD(TestSelectAllIf) {
     // TODO: Your test code here
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertIfStmt(&IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
+    pkb.PKB::InsertIfStmt(
+        &IfStmtData(2, 0, 1, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("if");
@@ -240,7 +231,8 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.PKB::InsertWhileStmt(&WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
+    pkb.PKB::InsertWhileStmt(
+        &WhileStmtData(3, 0, 1, VarNameSet(), ConstValueSet()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("while");
@@ -255,7 +247,7 @@ TEST_CLASS(TestQueryEvaluator) {
     string expected_result = "3";
 
     Assert::AreEqual(expected_result, first_result);
-  } 
+  }
   TEST_METHOD(TestSelectAllRead) {
     // TODO: Your test code here
     PqlEvaluator qe;

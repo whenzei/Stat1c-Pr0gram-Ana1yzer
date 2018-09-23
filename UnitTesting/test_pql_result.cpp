@@ -37,13 +37,14 @@ TEST_CLASS(TestPqlResult) {
     test_result_list.push_back("2");
     test_result_list.push_back("3");
 
-    pql_result.InitTable(test_result_list);
+    pql_result.InitTable(test_result_list, "a");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have one column
     Assert::IsTrue(result_row_column.size() == 1);
+    Assert::IsTrue(pql_result.GetColumnCount() == 1);
 
     // Should have three rows
     Assert::IsTrue(result_table.size() == 3);
@@ -64,13 +65,14 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("2", "b"));
     test_resultpair_list.push_back(std::make_pair("3", "c"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
+    Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have three rows
     Assert::IsTrue(result_table.size() == 3);
@@ -97,19 +99,20 @@ TEST_CLASS(TestPqlResult) {
     test_result_list.push_back("2");
     test_result_list.push_back("3");
 
-    pql_result.InitTable(test_result_list);
+    pql_result.InitTable(test_result_list, "a");
 
     test_merge_list.push_back("a");
     test_merge_list.push_back("b");
     test_merge_list.push_back("c");
 
-    pql_result.MergeResults(test_merge_list, kNoConflict, -1);
+    pql_result.MergeResults(test_merge_list, kNoConflict, -1, "b");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
+    Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have nine rows
     Assert::IsTrue(result_table.size() == 9);
@@ -141,19 +144,20 @@ TEST_CLASS(TestPqlResult) {
     test_result_list.push_back("2");
     test_result_list.push_back("3");
 
-    pql_result.InitTable(test_result_list);
+    pql_result.InitTable(test_result_list, "a");
 
     test_mergepair_list.push_back(std::make_pair("a", "4"));
     test_mergepair_list.push_back(std::make_pair("b", "5"));
     test_mergepair_list.push_back(std::make_pair("c", "6"));
 
-    pql_result.MergeResults(test_mergepair_list, kNoConflict, -1, -1);
+    pql_result.MergeResults(test_mergepair_list, kNoConflict, -1, -1, "c", "b");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
+    Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have nine rows
     Assert::IsTrue(result_table.size() == 9);
@@ -196,19 +200,20 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_merge_list.push_back("1");
     test_merge_list.push_back("5");
 
     // Conflict with column 0
-    pql_result.MergeResults(test_merge_list, kConflict, 0);
+    pql_result.MergeResults(test_merge_list, kConflict, 0, "a");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
+    Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
@@ -237,19 +242,21 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_mergepair_list.push_back(std::make_pair("1", "x"));
     test_mergepair_list.push_back(std::make_pair("5", "y"));
 
     // Conflict with column 0
-    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1);
+    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
+                            "c");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
+    Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
@@ -284,19 +291,21 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_mergepair_list.push_back(std::make_pair("s", "b"));
     test_mergepair_list.push_back(std::make_pair("p", "c"));
 
     // Conflict with column 0
-    pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1);
+    pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
+                            "b");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have three column
     Assert::IsTrue(result_row_column.size() == 3);
+    Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
@@ -331,19 +340,20 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_mergepair_list.push_back(std::make_pair("d", "4"));
     test_mergepair_list.push_back(std::make_pair("b", "2"));
 
     // Conflict with column 0 & 1
-    pql_result.MergeResults(test_mergepair_list, kTwoConflict, 1, 0);
+    pql_result.MergeResults(test_mergepair_list, kTwoConflict, 1, 0, "b", "a");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have two column
     Assert::IsTrue(result_row_column.size() == 2);
+    Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have two rows
     Assert::IsTrue(result_table.size() == 2);
@@ -372,25 +382,28 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_mergepair_list.push_back(std::make_pair("1", "x"));
     test_mergepair_list.push_back(std::make_pair("5", "y"));
 
     // Conflict with column 0
-    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1);
+    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
+                            "c");
 
     test_mergepair_list2.push_back(std::make_pair("8", "x"));
     test_mergepair_list2.push_back(std::make_pair("9", "z"));
 
     // Conflict with column 2
-    pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2);
+    pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
+                            "c");
 
     ResultTable result_table = pql_result.GetResultTable();
     ResultRow result_row_column = result_table.front();
 
     // Should have four column
     Assert::IsTrue(result_row_column.size() == 4);
+    Assert::IsTrue(pql_result.GetColumnCount() == 4);
 
     // Should have one row
     Assert::IsTrue(result_table.size() == 1);
@@ -419,19 +432,21 @@ TEST_CLASS(TestPqlResult) {
     test_resultpair_list.push_back(std::make_pair("4", "d"));
     test_resultpair_list.push_back(std::make_pair("5", "e"));
 
-    pql_result.InitTable(test_resultpair_list);
+    pql_result.InitTable(test_resultpair_list, "a", "b");
 
     test_mergepair_list.push_back(std::make_pair("1", "x"));
     test_mergepair_list.push_back(std::make_pair("5", "y"));
 
     // Conflict with column 0
-    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1);
+    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
+                            "c");
 
     test_mergepair_list2.push_back(std::make_pair("8", "x"));
     test_mergepair_list2.push_back(std::make_pair("9", "z"));
 
     // Conflict with column 2
-    pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2);
+    pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
+                            "c");
 
     // This final constraint 1 b does not match the table with 1 a
     test_mergepair_list3.push_back(std::make_pair("1", "b"));
@@ -439,13 +454,15 @@ TEST_CLASS(TestPqlResult) {
     test_mergepair_list3.push_back(std::make_pair("3", "c"));
 
     // Conflict with column 0, 1
-    pql_result.MergeResults(test_mergepair_list3, kTwoConflict, 0, 1);
+    pql_result.MergeResults(test_mergepair_list3, kTwoConflict, 0, 1, "a", "b");
 
     // Should be an empty table
     ResultTable result_table = pql_result.GetResultTable();
 
     // Should have no row
-    Assert::IsTrue(result_table.size() == 0);
+    Assert::IsTrue(result_table.empty());
+    Assert::IsTrue(pql_result.GetColumnHeader().empty());
+    Assert::IsTrue(pql_result.GetColumnCount() == 0);
   }
 };
 }  // namespace PQLTests

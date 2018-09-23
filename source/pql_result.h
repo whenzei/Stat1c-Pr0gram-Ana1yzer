@@ -34,16 +34,17 @@ class PqlResult {
   /* Constructor */
   PqlResult();
 
-  void InitTable(QueryResultList);
+  void InitTable(QueryResultList, string);
 
-  void InitTable(QueryResultPairList);
+  void InitTable(QueryResultPairList, string, string);
 
-  void MergeResults(QueryResultList, PqlResultTableConflict, int);
+  void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
 
-  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int);
+  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int, string, string);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);
+  void ClearColumnHeader();
   void SetResultTable(ResultTable);
   void SetColumnCount(int);
 

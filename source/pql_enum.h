@@ -65,13 +65,7 @@ enum SuchthatParamType {
   kOneSynonymLeftUnderscoreRight,        // e.g (a, _)
   kOneSynonymRight,                      // e.g (1, a)
   kOneSynonymRightUnderscoreLeft,        // e.g (_, a)
-  kOneSynonymSelectLeft,                 // e.g (s, 2)
-  kOneSynonymSelectLeftUnderscoreRight,  // e.g (s, _)
-  kOneSynonymSelectRight,                // e.g (1, s)
-  kOneSynonymSelectRightUnderscoreLeft,  // e.g (_, s)
   kTwoSynonym,                           // e.g (a, b)
-  kTwoSynonymSelectLeft,                 // e.g (s, a)
-  kTwoSynonymSelectRight                 // e.g (a, s)
 };
 
 /* The filter type for the result */
