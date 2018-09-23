@@ -39,8 +39,12 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   }
   // Else use GetSuchThatResult method
   else {
-    // PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
+    PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
+    GetSuchThatResult(suchthat);
     // results = GetSuchThatResult(suchthat);
+    if (IsValidClause()) {
+      final_results = GetFinalResultFromTable(GetQuery().GetVarName());
+    }
   }
 
   cout << "Result size: " << final_results.size() << endl;
@@ -62,6 +66,7 @@ FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
   }
   // Selected variable not in result table
   else {
+    cout << "Select all (GetFinalResultFromTable)" << endl;
     SetSelectType(CheckSelectDeclarationType(select_var));
     QueryResultList get_all_result = GetSelectAllResult(GetSelectType());
     copy(get_all_result.begin(), get_all_result.end(),
@@ -775,7 +780,7 @@ void PqlEvaluator::EvaluateModifiesS(PqlSuchthat suchthat,
 }
 
 void PqlEvaluator::EvaluateModifiesP(PqlSuchthat suchthat,
-    SuchthatParamType arrangement) {
+                                     SuchthatParamType arrangement) {
   PKB pkb = GetPKB();
   // Getting parameter of such that
   Parameters such_that_param = suchthat.GetParameters();
@@ -866,6 +871,8 @@ void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
       pql_result.MergeResults(result_list, kNoConflict, -1, new_header_name);
     }
   }
+
+  SetPqlResult(pql_result);
 }
 
 void PqlEvaluator::StoreClauseResultInTable(
@@ -903,6 +910,8 @@ void PqlEvaluator::StoreClauseResultInTable(
                               header_name_left, header_name_right);
     }
   }
+
+  SetPqlResult(pql_result);
 }
 
 QueryResultList PqlEvaluator::FilterResult(vector<string> unfiltered_result,
