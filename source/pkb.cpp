@@ -32,6 +32,7 @@ void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
 
     HandleInsertVariables(modified_var, used_vars);
     HandleInsertConstants(used_consts);
+    HandleInsertPattern(StmtType::kAssign, stmt_data);
   }
 }
 
@@ -340,6 +341,33 @@ ProcVarPairList PKB::GetAllUsesPairP() {
   return proc_var_list;
 }
 
+StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
+  if (var_name.compare("") == 0) {
+    return pattern_table_.GetAssignWithSubExpr(sub_expr);
+  } else if (sub_expr.empty()) {
+    return pattern_table_.GetAssignWithLfsVar(var_name);
+  } else {
+    return pattern_table_.GetAssignWithPattern(var_name, sub_expr);
+  }
+}
+
+StmtNumList PKB::GetAssignWithExactPattern(VarName var_name,
+                                           TokenList exact_expr) {
+  if (var_name.compare("") == 0) {
+    return pattern_table_.GetAssignWithExactExpr(exact_expr);
+  } else {
+    return pattern_table_.GetAssignWithExactPattern(var_name, exact_expr);
+  }
+}
+
+StmtVarPairList PKB::GetAllAssignPatternPair(TokenList sub_expr) {
+  return pattern_table_.GetAllAssignPatternPair(sub_expr);
+}
+
+StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
+  return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
+}
+
 /***********************************
 **** Private methods begin here ****
 ***********************************/
@@ -379,5 +407,28 @@ void PKB::HandleInsertVariable(VarName variable) {
 void PKB::HandleInsertConstants(ConstValueSet constants) {
   for (auto& constant : constants) {
     const_list_.InsertConstValue(constant);
+  }
+}
+
+void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
+  switch (stmt_type) {
+    case StmtType::kAssign: {
+      AssignStmtData* assign_stmt_data = (AssignStmtData*)stmt_data;
+      pattern_table_.InsertAssignPattern(
+          assign_stmt_data->GetStmtNum(),
+          assign_stmt_data->GetModifiedVariable(),
+          assign_stmt_data->GetPostfixedExpr());
+      break;
+    }
+    case StmtType::kWhile: {
+      WhileStmtData* while_stmt_data = (WhileStmtData*)stmt_data;
+      // TODO: insert while pattern
+      break;
+    }
+    case StmtType::kIf: {
+      IfStmtData* if_stmt_data = (IfStmtData*)stmt_data;
+      // TODO: insert if pattern
+      break;
+    }
   }
 }

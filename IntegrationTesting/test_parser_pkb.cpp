@@ -1,7 +1,7 @@
+#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "parser.h"
 #include "pkb.h"
-#include "stdafx.h"
 
 #include <list>
 #include <string>

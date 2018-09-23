@@ -21,7 +21,7 @@ using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
-using PatternTable = unordered_map<PqlSuchthatType, EntitySet>;
+using PqlPatternTable = unordered_map<PqlSuchthatType, EntitySet>;
 
 /*
 SELECT SUCH THAT CLAUSE

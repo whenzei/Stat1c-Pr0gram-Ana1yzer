@@ -44,6 +44,9 @@
     <ClCompile Include="test_parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_pattern_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="test_modifies_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>

@@ -14,7 +14,7 @@ AssignStmtData::AssignStmtData(int stmt_num, int stmt_list_index,
   lhs_var_ = lhs_var;
   rhs_vars_ = rhs_vars;
   rhs_consts_ = rhs_consts;
-  postfixed_expr_ = postfixed_expr_;
+  postfixed_expr_ = postfixed_expr;
 }
 
 VarName AssignStmtData::GetModifiedVariable() { return lhs_var_; }
