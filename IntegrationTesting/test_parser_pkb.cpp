@@ -464,5 +464,190 @@ namespace PKBPQLTests {
 
 				//*******************************
 		}
+		TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
+				PKB test_pkb = PKB();
+				Parser parser = Parser(&test_pkb);
+				string program = "	procedure one {\n"					
+                      "a = b;\n"														//1
+                      "while = k + 1;\n"						//2
+                      "if = x+ y + z;\n"						//3
+                      "if = 2;\n"													//4
+                      "if = 1;\n"													//5
+																						"}";
+					
+				TokenList tokenized_program = Tokenizer::Tokenize(program);
+				parser.Parse(tokenized_program);
+
+				PKB true_pkb = PKB();
+				true_pkb.InsertModifies("1", "a");
+				true_pkb.InsertModifies("2", "while");
+				true_pkb.InsertModifies("3", "if");
+				true_pkb.InsertModifies("4", "if");
+				true_pkb.InsertModifies("5", "if");
+
+				//*******************************
+
+				StmtNumList test_all_modified_stmts = test_pkb.GetAllModifyingS();
+				StmtNumList true_all_modified_stmts = true_pkb.GetAllModifyingS();
+				
+				StmtNumList::iterator iter_1 = test_all_modified_stmts.begin(); 
+				StmtNumList::iterator iter_2 = true_all_modified_stmts.begin();
+
+				// Should only have five modified statements
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_all_modified_vars = test_pkb.GetAllModifiedVar();
+				StmtNumList true_all_modified_vars = true_pkb.GetAllModifiedVar();
+				
+				iter_1 = test_all_modified_vars.begin(); 
+				iter_2 = true_all_modified_vars.begin();
+
+				// Should only have three modified vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_modified_var_at_stmts = test_pkb.GetModifyingS("if");
+				StmtNumList true_modified_var_at_stmts = true_pkb.GetModifyingS("if");
+				
+				iter_1 = test_modified_var_at_stmts.begin(); 
+				iter_2 = true_modified_var_at_stmts.begin();
+
+				// Should only have three stmt_num that modifies "if" variable
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS("2");
+				StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS("2");
+				
+				iter_1 = test_modified_stmt_get_var.begin(); 
+				iter_2 = true_modified_stmt_get_var.begin();
+
+				// Should only have one modified variable at stmt_num 2
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+
+		}	
+		TEST_METHOD(TestModifiesOfNestedStatements) {
+				PKB test_pkb = PKB();
+				Parser parser = Parser(&test_pkb);
+				string program = "	procedure one {\n"					
+                      "a = b;\n"																		//1
+                      "while (x < y) {\n"									//2
+																								"if (a == 1) then {\n"				//3
+																										"if = 2;\n"													//4
+																										"z = a +1;\n"											//5
+																								"} else {\n"														
+                          "t = abc;\n"												//6
+                          "while (a == b) {\n"				//7
+																													"w = 1 + 2;\n"							//8
+																													"a = b + 1;\n"							//9
+																										"}\n"																
+																								"}\n"
+																						"}"
+																						"}";
+					
+				TokenList tokenized_program = Tokenizer::Tokenize(program);
+				parser.Parse(tokenized_program);
+
+				PKB true_pkb = PKB();
+				true_pkb.InsertModifies("1", "a");
+				true_pkb.InsertModifies("4", "if");
+				true_pkb.InsertModifies("5", "z");
+				true_pkb.InsertModifies("6", "t");
+				true_pkb.InsertModifies("8", "w");
+				true_pkb.InsertModifies("9", "a");
+				true_pkb.InsertModifies("7", "w");
+				true_pkb.InsertModifies("7", "a");
+				true_pkb.InsertModifies("3", "if");
+				true_pkb.InsertModifies("3", "z");
+				true_pkb.InsertModifies("3", "t");
+				true_pkb.InsertModifies("3", "w");
+				true_pkb.InsertModifies("3", "a");
+				true_pkb.InsertModifies("2", "if");
+				true_pkb.InsertModifies("2", "w");
+				true_pkb.InsertModifies("2", "z");
+				true_pkb.InsertModifies("2", "t");
+				true_pkb.InsertModifies("2", "a");
+
+				//*****************************
+
+				StmtNumList test_all_modified_stmts = test_pkb.GetAllModifyingS();
+				StmtNumList true_all_modified_stmts = true_pkb.GetAllModifyingS();
+
+				StmtNumList::iterator iter_1 = test_all_modified_stmts.begin(); 
+				StmtNumList::iterator iter_2 = true_all_modified_stmts.begin();
+
+				// Should only have nine modified statements
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*****************************
+
+				StmtNumList test_all_modified_vars = test_pkb.GetAllModifiedVar();
+				StmtNumList true_all_modified_vars = true_pkb.GetAllModifiedVar();
+				
+				iter_1 = test_all_modified_vars.begin(); 
+				iter_2 = true_all_modified_vars.begin();
+
+				// Should only have five modified vars
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_modified_var_at_stmts = test_pkb.GetModifyingS("a");
+				StmtNumList true_modified_var_at_stmts = true_pkb.GetModifyingS("a");
+				
+				iter_1 = test_modified_var_at_stmts.begin(); 
+				iter_2 = true_modified_var_at_stmts.begin();
+
+				// Should only have five stmt_num that modifies variable "a"
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+
+				StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS("2");
+				StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS("2");
+				
+				iter_1 = test_modified_stmt_get_var.begin(); 
+				iter_2 = true_modified_stmt_get_var.begin();
+
+				// Should only have five modified variable at stmt_num 2
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1++, *iter_2++);
+				Assert::AreEqual(*iter_1, *iter_2);
+
+				//*******************************
+		}
  };
 }
