@@ -42,9 +42,6 @@
     <ClCompile Include="..\source\const_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\design_extractor.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -109,6 +106,9 @@
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="..\source\parse_data.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\design_extractor.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
   </ItemGroup>
@@ -189,6 +189,9 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\parse_data.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\design_extractor.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
   </ItemGroup>

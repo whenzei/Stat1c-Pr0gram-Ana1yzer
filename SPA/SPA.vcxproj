@@ -39,6 +39,7 @@
     <ClCompile Include="..\source\pql_evaluator.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\design_extractor.h" />
     <ClInclude Include="..\source\expression_helper.h" />
     <ClInclude Include="..\source\follows_table.h" />
     <ClInclude Include="..\source\modifies_table.h" />

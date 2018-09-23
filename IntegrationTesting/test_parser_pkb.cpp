@@ -312,6 +312,79 @@ TEST_METHOD(TestParentOfNestedStatements) {
   // Should have one parent of stmt_num 5
   Assert::AreEqual(*iter_1, *iter_2);
 }
+TEST_METHOD(TestParentStarOfNestedStatements) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "	procedure one {\n"
+      "a = b;\n"             // 1
+      "if (a > b) then {\n"  // 2
+       "e = f;\n"             // 3
+       "asd = ddd;\n"         // 4
+       "while (a < 10) {\n"   // 5
+        "a = a + 1;\n"         // 6
+        "t = t + 1;\n"         // 7
+        "while (t == 10) {"    // 8
+           "f = f + 1;"         // 9
+        "}"
+       "}\n"
+      "} else {\n"
+        "k = 3;\n"             // 10
+      "}\n"
+      "}\n";
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  PKB true_pkb = PKB();
+  true_pkb.InsertParent("8", "9");
+  true_pkb.InsertParent("5", "6");
+  true_pkb.InsertParent("5", "7");
+  true_pkb.InsertParent("5", "8");
+  true_pkb.InsertParent("2", "3");
+  true_pkb.InsertParent("2", "4");
+  true_pkb.InsertParent("2", "5");
+  true_pkb.InsertParent("2", "10");
+
+  true_pkb.InsertParentT("5", "9");
+  true_pkb.InsertParentT("2", "5");
+  true_pkb.InsertParentT("2", "6");
+  true_pkb.InsertParentT("2", "7");
+  true_pkb.InsertParentT("2", "8");
+  true_pkb.InsertParentT("2", "9");
+  //*******************************
+
+  StmtNumList test_parent_t = test_pkb.GetParentT("9");
+  StmtNumList true_parent_t = true_pkb.GetParentT("9");
+
+  StmtNumList::iterator iter_1 = test_parent_t.begin();
+  StmtNumList::iterator iter_2 = true_parent_t.begin();
+
+  // Should only have three parents*
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1, *iter_2);
+
+  //*******************************
+
+  StmtNumList test_child_t = test_pkb.GetChildT("2");
+  StmtNumList true_child_t = true_pkb.GetChildT("2");
+
+  iter_1 = test_child_t.begin();
+  iter_2 = true_child_t.begin();
+
+  // Should only have eight child direct/indirect
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1, *iter_2);
+
+  //*******************************
+}
 TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
   PKB test_pkb = PKB();
   Parser parser = Parser(&test_pkb);
