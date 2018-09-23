@@ -16,6 +16,7 @@
     <ClCompile Include="..\source\follows_table.cpp" />
     <ClCompile Include="..\source\modifies_table.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
+    <ClCompile Include="..\source\pattern_table.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
     <ClCompile Include="..\source\pql_pattern.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\source\follows_table.h" />
     <ClInclude Include="..\source\modifies_table.h" />
     <ClInclude Include="..\source\parser.h" />
+    <ClInclude Include="..\source\pattern_table.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_enum.h" />
     <ClInclude Include="..\source\pql_pattern.h" />

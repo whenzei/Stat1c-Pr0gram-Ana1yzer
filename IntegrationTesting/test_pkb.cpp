@@ -3,6 +3,7 @@
 #include "pkb.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using TokenType = Tokenizer::TokenType;
 
 namespace PKBTests {
 TEST_CLASS(TestPKB) {
@@ -35,7 +36,16 @@ TEST_CLASS(TestPKB) {
   const VarNameSet kVarNameSet2 = {"d", "e"};
   const VarNameSet kVarNameSet3 = {"f", "g"};
   const ConstValueSet kConstValueSet1 = {1, 2};
+  const Token kToken32 = {TokenType::kDigit, "32"};
+  const Token kTokenA = {TokenType::kName, "a"};
+  const Token kTokenPlus = {TokenType::kOperator, "+"};
+  const Token kTokenB = {TokenType::kName, "b"};
+  const Token kTokenMult = {TokenType::kOperator, "*"};
   const TokenList kTokenList = TokenList();
+  const TokenList kTokenList1 = {kToken32, kTokenA, kTokenPlus};
+  const TokenList kTokenList2 = {kToken32, kTokenA, kTokenPlus, kTokenB,
+                                 kTokenMult};
+  const TokenList kTokenList3 = {kToken32};
 
  public:
   TEST_METHOD(TestInsertProcName) {
@@ -89,11 +99,14 @@ TEST_CLASS(TestPKB) {
                                          kVarName1, kVarNameSet1,
                                          kConstValueSet1, kTokenList));
     pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex2,
-                                       kStmtListIndex3, kVarNameSet1, kConstValueSet1));
+                                       kStmtListIndex3, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex3, kStmtListIndex4,
-                     kStmtListIndex5, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex5, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex5, kVarName1));
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt5, kStmtListIndex5, kVarName1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt5, kStmtListIndex5, kVarName1));
     Assert::IsTrue(PqlDeclarationEntity::kAssign == pkb.GetStmtType(kStmtNum1));
     Assert::IsTrue(PqlDeclarationEntity::kWhile == pkb.GetStmtType(kStmtNum2));
     Assert::IsTrue(PqlDeclarationEntity::kIf == pkb.GetStmtType(kStmtNum3));
@@ -103,17 +116,20 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestInsertAssignStmt) {
     PKB pkb;
-    bool result1 = pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
-                                        kVarName1, kVarNameSet1, kConstValueSet1, kTokenList));
+    bool result1 = pkb.InsertAssignStmt(
+        &AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1, kVarNameSet1,
+                        kConstValueSet1, kTokenList));
     Assert::IsTrue(result1);
   }
 
   TEST_METHOD(TestGetAllAssignStmt) {
     PKB pkb;
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1, kVarName2,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1,
+                                         kVarName2, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     StmtNumList result = pkb.GetAllAssignStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -122,17 +138,20 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestInsertWhileStmt) {
     PKB pkb;
-    bool result = pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
-                                      kStmtListIndex2, kVarNameSet1, kConstValueSet1));
+    bool result = pkb.InsertWhileStmt(
+        &WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
+                       kVarNameSet1, kConstValueSet1));
     Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllWhileStmt) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex2,
+                                       kStmtListIndex3, kVarNameSet1,
+                                       kConstValueSet1));
     StmtNumList result = pkb.GetAllWhileStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -141,18 +160,20 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestInsertIfStmt) {
     PKB pkb;
-    bool result =
-        pkb.InsertIfStmt(&IfStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                         kStmtListIndex3, kVarNameSet1, kConstValueSet1));
+    bool result = pkb.InsertIfStmt(&IfStmtData(kStmtNumInt1, kStmtListIndex1,
+                                               kStmtListIndex2, kStmtListIndex3,
+                                               kVarNameSet1, kConstValueSet1));
     Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllIfStmt) {
     PKB pkb;
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                     kStmtListIndex3, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex3, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex4,
-                     kStmtListIndex5, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex5, kVarNameSet1,
+                                 kConstValueSet1));
     StmtNumList result = pkb.GetAllIfStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -161,15 +182,15 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestInsertReadStmt) {
     PKB pkb;
-    bool result = pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    bool result = pkb.InsertReadStmt(
+        &ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
     Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllReadStmt) {
     PKB pkb;
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt2, kStmtListIndex1, kVarName2)
-	);
+    pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt2, kStmtListIndex1, kVarName2));
     StmtNumList result = pkb.GetAllReadStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -178,14 +199,17 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestInsertPrintStmt) {
     PKB pkb;
-    bool result = pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    bool result = pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
     Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllPrintStmt) {
     PKB pkb;
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName2));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName2));
     StmtNumList result = pkb.GetAllPrintStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -194,14 +218,18 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllStmt) {
     PKB pkb;
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex3, kVarName1));
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt5, kStmtListIndex3, kVarName2));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt5, kStmtListIndex3, kVarName2));
     StmtNumList result = pkb.GetAllStmt();
     Assert::IsTrue(result.size() == 5);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -218,10 +246,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestIsParent) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     Assert::IsTrue(pkb.IsParent(kStmtNum1, kStmtNum2));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
@@ -233,10 +263,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestIsParentT) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     Assert::IsTrue(pkb.IsParentT(kStmtNum1, kStmtNum2));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
@@ -248,10 +280,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetParent) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     StmtNumList result1 = pkb.GetParent(kStmtNum1);
     Assert::IsTrue(result1.size() == 0);
     StmtNumList result2 = pkb.GetParent(kStmtNum2);
@@ -269,10 +303,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetParentT) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     StmtNumList result1 = pkb.GetParentT(kStmtNum1);
     Assert::IsTrue(result1.size() == 0);
     StmtNumList result2 = pkb.GetParentT(kStmtNum2);
@@ -292,10 +328,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllParent) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
     StmtNumList result = pkb.GetAllParent();
@@ -306,10 +344,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetChild) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     StmtNumList result1 = pkb.GetChild(kStmtNum1);
     Assert::IsTrue(result1.size() == 1);
     Assert::AreEqual(kStmtNum2, result1.front());
@@ -329,10 +369,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetChildT) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     StmtNumList result1 = pkb.GetChildT(kStmtNum1);
     Assert::IsTrue(result1.size() == 1);
     Assert::AreEqual(kStmtNum2, result1.front());
@@ -359,10 +401,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllChild) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
     StmtNumList result = pkb.GetAllChild();
@@ -379,18 +423,21 @@ TEST_CLASS(TestPKB) {
     Assert::IsFalse(pkb.HasParentRelationship());
     pkb.GetParentT(kStmtNum1);
     Assert::IsFalse(pkb.HasParentRelationship());
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1));
     Assert::IsTrue(pkb.HasParentRelationship());
   }
 
   TEST_METHOD(TestGetAllParentPair) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
     StmtNumPairList result = pkb.GetAllParentPair();
@@ -407,10 +454,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllParentTPair) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt2, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt3, kStmtListIndex3, kVarName1));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex4, kVarName2));
     StmtNumPairList result = pkb.GetAllParentTPair();
@@ -435,8 +484,9 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestIsModifiedByS) {
     PKB pkb;
     Assert::IsFalse(pkb.IsModifiedByS(kStmtNum1, kVarName1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     Assert::IsTrue(pkb.IsModifiedByS(kStmtNum1, kVarName1));
   }
 
@@ -444,23 +494,28 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
     Assert::IsFalse(pkb.IsModifiedByP(kProcName, kVarName1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     Assert::IsTrue(pkb.IsModifiedByP(kProcName, kVarName1));
     Assert::IsFalse(pkb.IsModifiedByP(kProcName, kVarName2));
   }
 
   TEST_METHOD(TestGetModifiedVarS) {
     PKB pkb;
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3, kVarName2,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt5, kStmtListIndex4, kVarName1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     VarNameList result4 = pkb.GetModifiedVarS(kStmtNum4);
     Assert::IsTrue(result4.size() == 1);
     Assert::AreEqual(kVarName2, result4.front());
@@ -480,12 +535,14 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetModifiedVarP) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     VarNameList result1 = pkb.GetModifiedVarP(kProcName);
     Assert::IsTrue(result1.size() == 0);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     VarNameList result2 = pkb.GetModifiedVarP(kProcName);
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kVarName1, result2.front());
@@ -493,8 +550,9 @@ TEST_CLASS(TestPKB) {
     VarNameList result3 = pkb.GetModifiedVarP(kProcName);
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kVarName1, result3.front());
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex2, kVarName2,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex2,
+                                         kVarName2, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     VarNameList result4 = pkb.GetModifiedVarP(kProcName);
     Assert::IsTrue(result4.size() == 2);
     Assert::AreEqual(kVarName1, result4.front());
@@ -505,12 +563,14 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllModifiedVar) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     VarNameList result1 = pkb.GetAllModifiedVar();
     Assert::IsTrue(result1.size() == 0);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     VarNameList result2 = pkb.GetAllModifiedVar();
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kVarName1, result2.front());
@@ -518,8 +578,9 @@ TEST_CLASS(TestPKB) {
     VarNameList result3 = pkb.GetAllModifiedVar();
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kVarName1, result3.front());
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex2, kVarName2,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex2,
+                                         kVarName2, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     VarNameList result4 = pkb.GetAllModifiedVar();
     Assert::IsTrue(result4.size() == 2);
     Assert::AreEqual(kVarName1, result4.front());
@@ -528,15 +589,19 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetModifyingS) {
     PKB pkb;
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3, kVarName2,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt5, kStmtListIndex4, kVarName1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     StmtNumList result3 = pkb.GetModifyingS(kVarName1);
     Assert::IsTrue(result3.size() == 4);
     StmtNumList::iterator iter1 = result3.begin();
@@ -560,20 +625,24 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetModifyingP) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     ProcNameList result1 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result1.size() == 0);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     ProcNameList result2 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front());
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3, kVarName2,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt5, kStmtListIndex4, kVarName1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     ProcNameList result3 = pkb.GetModifyingP(kVarName1);
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kProcName, result3.front());
@@ -586,22 +655,26 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestHasModifiesRelationship) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     Assert::IsFalse(pkb.HasModifiesRelationship());
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     Assert::IsTrue(pkb.HasModifiesRelationship());
   }
 
   TEST_METHOD(TestGetAllModifiesPairS) {
     PKB pkb;
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     StmtVarPairList result1 = pkb.GetAllModifiesPairS();
     Assert::IsTrue(result1.size() == 0);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     StmtVarPairList result2 = pkb.GetAllModifiesPairS();
     Assert::IsTrue(result2.size() == 2);
     Assert::AreEqual(kStmtNum2, result2.front().first);
@@ -609,9 +682,11 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum1, result2.back().first);
     Assert::AreEqual(kVarName1, result2.back().second);
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3, kVarName2,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt5, kStmtListIndex4, kVarName1));
     StmtVarPairList result3 = pkb.GetAllModifiesPairS();
     Assert::IsTrue(result3.size() == 7);
@@ -641,21 +716,25 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetAllModifiesPairP) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt1, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
     ProcVarPairList result1 = pkb.GetAllModifiesPairP();
     Assert::IsTrue(result1.size() == 0);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2, kVarName1,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex2,
+                                         kVarName1, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     ProcVarPairList result2 = pkb.GetAllModifiesPairP();
     Assert::IsTrue(result2.size() == 1);
     Assert::AreEqual(kProcName, result2.front().first);
     Assert::AreEqual(kVarName1, result2.front().second);
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3, kVarName2,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt4, kStmtListIndex3,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt5, kStmtListIndex4, kVarName1));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt3, kStmtListIndex2, kStmtListIndex3,
-                     kStmtListIndex4, kVarNameSet1, kConstValueSet1));
+                                 kStmtListIndex4, kVarNameSet1,
+                                 kConstValueSet1));
     ProcVarPairList result3 = pkb.GetAllModifiesPairP();
     Assert::IsTrue(result3.size() == 2);
     Assert::AreEqual(kProcName, result3.front().first);
@@ -665,13 +744,15 @@ TEST_CLASS(TestPKB) {
   }
   TEST_METHOD(TestGetAllUsedVar) {
     PKB pkb;
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     VarNameList used_vars = pkb.GetAllUsedVar();
     Assert::IsTrue(used_vars.size() == 2);
     Assert::AreEqual(kVarName2, used_vars.front());
     Assert::AreEqual(kVarName3, used_vars.back());
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName1));
     used_vars = pkb.GetAllUsedVar();
     Assert::IsTrue(used_vars.size() == 3);
     Assert::AreEqual(kVarName1, used_vars.back());
@@ -681,12 +762,15 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     // Double nested uses
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt4, kStmtListIndex2, kStmtListIndex2,
-                     kStmtListIndex3, kVarNameSet3, kConstValueSet1));
+                                 kStmtListIndex3, kVarNameSet3,
+                                 kConstValueSet1));
     VarNameList used_vars = pkb.GetUsedVarS(kStmtNum2);
     Assert::IsTrue(used_vars.size() == 6);
   }
@@ -695,10 +779,12 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     VarNameList used_vars = pkb.GetUsedVarP(kProcName);
     Assert::IsTrue(used_vars.size() == 4);
   }
@@ -706,12 +792,15 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetAllUsingStmt) {
     PKB pkb;
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     pkb.InsertIfStmt(&IfStmtData(kStmtNumInt4, kStmtListIndex2, kStmtListIndex2,
-                     kStmtListIndex3, kVarNameSet2, kConstValueSet1));
+                                 kStmtListIndex3, kVarNameSet2,
+                                 kConstValueSet1));
     StmtList using_stmts = pkb.GetAllUsingStmt();
     StmtList expected_list;
     expected_list.push_back(kStmtNum2);
@@ -732,10 +821,12 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     ProcNameList using_proc = pkb.GetAllUsingProc();
     Assert::IsTrue(using_proc.size() == 1);
     Assert::AreEqual(kProcName, using_proc.front());
@@ -744,10 +835,12 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetUsingStmt) {
     PKB pkb;
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName2));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet1, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName2,
-                         kVarNameSet2, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet1,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName2, kVarNameSet2,
+                                         kConstValueSet1, kTokenList));
     StmtList using_stmt = pkb.GetUsingStmt(kVarName2);
     Assert::AreEqual(kStmtNum2, using_stmt.front());
   }
@@ -755,9 +848,11 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetUsingProc) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
     ProcNameList using_proc = pkb.GetUsingProc(kVarName1);
     Assert::IsTrue(using_proc.size() == 1);
     Assert::AreEqual(kProcName, using_proc.front());
@@ -765,9 +860,11 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestIsUsedByS) {
     PKB pkb;
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
     bool result_1 = pkb.IsUsedByS(kStmtNum1, kVarName1);
     Assert::IsTrue(result_1);
     bool result_2 = pkb.IsUsedByS(kStmtNum2, kVarName1);
@@ -778,10 +875,12 @@ TEST_CLASS(TestPKB) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
-    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2, kVarName1,
-                         kVarNameSet1, kConstValueSet1, kTokenList));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex2,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList));
     bool result = pkb.IsUsedByP(kProcName, kVarName2);
     Assert::IsTrue(result);
   }
@@ -791,16 +890,19 @@ TEST_CLASS(TestPKB) {
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
     bool result = pkb.HasUsesRelationship();
     Assert::IsFalse(result);
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt2, kStmtListIndex1, kVarName1));
     result = pkb.HasUsesRelationship();
     Assert::IsTrue(result);
   }
 
   TEST_METHOD(TestGetAllUsesPairS) {
     PKB pkb;
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
     StmtVarPairList expected_list;
     StmtVarPairList uses_pair_list = pkb.GetAllUsesPairS();
     expected_list.push_back(make_pair(kStmtNum1, kVarName1));
@@ -825,9 +927,11 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetAllUsesPairP) {
     PKB pkb;
     pkb.InsertProcName(kProcName);
-    pkb.InsertPrintStmt(&PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
-    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1, kStmtListIndex2,
-                        kVarNameSet2, kConstValueSet1));
+    pkb.InsertPrintStmt(
+        &PrintStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
+    pkb.InsertWhileStmt(&WhileStmtData(kStmtNumInt2, kStmtListIndex1,
+                                       kStmtListIndex2, kVarNameSet2,
+                                       kConstValueSet1));
     StmtVarPairList expected_list;
     StmtVarPairList uses_pair_list = pkb.GetAllUsesPairP();
     expected_list.push_back(make_pair(kProcName, kVarName1));
@@ -847,6 +951,143 @@ TEST_CLASS(TestPKB) {
     iter_2++;
     Assert::AreEqual((*iter_2).first, (*iter_1).first);
     Assert::AreEqual((*iter_2).second, (*iter_1).second);
+  }
+
+  TEST_METHOD(TestGetAssignWithPattern) {
+    PKB pkb;
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList2));
+    StmtNumList result1 = pkb.GetAssignWithPattern(kVarName1, {kToken32});
+    Assert::IsTrue(result1.size() == 2);
+    Assert::AreEqual(kStmtNum1, result1.front());
+    Assert::AreEqual(kStmtNum3, result1.back());
+    StmtNumList result2 = pkb.GetAssignWithPattern(kVarName2, kTokenList);
+    Assert::IsTrue(result2.size() == 1);
+    Assert::AreEqual(kStmtNum2, result2.front());
+    StmtNumList result3 = pkb.GetAssignWithPattern("", {kTokenA});
+    Assert::IsTrue(result3.size() == 3);
+    StmtNumList::iterator iter1 = result3.begin();
+    Assert::AreEqual(kStmtNum1, *iter1);
+    iter1++;
+    Assert::AreEqual(kStmtNum2, *iter1);
+    iter1++;
+    Assert::AreEqual(kStmtNum3, *iter1);
+    StmtNumList result4 = pkb.GetAssignWithPattern("", kTokenList);
+    Assert::IsTrue(result4.size() == 3);
+    StmtNumList::iterator iter2 = result4.begin();
+    Assert::AreEqual(kStmtNum1, *iter2);
+    iter2++;
+    Assert::AreEqual(kStmtNum2, *iter2);
+    iter2++;
+    Assert::AreEqual(kStmtNum3, *iter2);
+  }
+
+  TEST_METHOD(TestGetAssignWithExactPattern) {
+    PKB pkb;
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList2));
+    StmtNumList result1 = pkb.GetAssignWithExactPattern(kVarName1, kTokenList1);
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum1, result1.front());
+    StmtNumList result2 = pkb.GetAssignWithExactPattern(kVarName1, {kTokenA});
+    Assert::IsTrue(result2.empty());
+    StmtNumList result3 = pkb.GetAssignWithExactPattern("", kTokenList1);
+    Assert::IsTrue(result3.size() == 2);
+    Assert::AreEqual(kStmtNum1, result3.front());
+    Assert::AreEqual(kStmtNum2, result3.back());
+    StmtNumList result4 = pkb.GetAssignWithExactPattern("", kTokenList2);
+    Assert::IsTrue(result4.size() == 1);
+    Assert::AreEqual(kStmtNum3, result4.front());
+    StmtNumList result5 = pkb.GetAssignWithExactPattern(kVarName1, kTokenList);
+    Assert::IsTrue(result5.empty());
+  }
+
+  TEST_METHOD(TestGetAllAssignPatternPair) {
+    PKB pkb;
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList2));
+    StmtVarPairList result1 = pkb.GetAllAssignPatternPair({kTokenB});
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum3, result1.front().first);
+    Assert::AreEqual(kVarName1, result1.front().second);
+    StmtVarPairList result2 = pkb.GetAllAssignPatternPair({kTokenA});
+    Assert::IsTrue(result2.size() == 3);
+    StmtVarPairList::iterator iter = result2.begin();
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum2, (*iter).first);
+    Assert::AreEqual(kVarName2, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum3, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    StmtVarPairList result3 = pkb.GetAllAssignPatternPair(kTokenList2);
+    Assert::IsTrue(result3.size() == 1);
+    Assert::AreEqual(kStmtNum3, result3.front().first);
+    Assert::AreEqual(kVarName1, result3.front().second);
+    StmtVarPairList result4 = pkb.GetAllAssignPatternPair(kTokenList);
+    Assert::IsTrue(result4.size() == 3);
+    StmtVarPairList::iterator iter1 = result4.begin();
+    Assert::AreEqual(kStmtNum1, (*iter1).first);
+    Assert::AreEqual(kVarName1, (*iter1).second);
+    iter1++;
+    Assert::AreEqual(kStmtNum2, (*iter1).first);
+    Assert::AreEqual(kVarName2, (*iter1).second);
+    iter1++;
+    Assert::AreEqual(kStmtNum3, (*iter1).first);
+    Assert::AreEqual(kVarName1, (*iter1).second);
+    StmtVarPairList result5 = pkb.GetAllAssignPatternPair({kTokenPlus});
+    Assert::IsTrue(result5.empty());
+  }
+
+  TEST_METHOD(TestGetAllAssignExactPatternPair) {
+    PKB pkb;
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt2, kStmtListIndex1,
+                                         kVarName2, kVarNameSet1,
+                                         kConstValueSet1, kTokenList1));
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt3, kStmtListIndex1,
+                                         kVarName1, kVarNameSet1,
+                                         kConstValueSet1, kTokenList2));
+    StmtVarPairList result1 = pkb.GetAllAssignExactPatternPair(kTokenList2);
+    Assert::IsTrue(result1.size() == 1);
+    Assert::AreEqual(kStmtNum3, result1.front().first);
+    Assert::AreEqual(kVarName1, result1.front().second);
+    StmtVarPairList result2 = pkb.GetAllAssignExactPatternPair(kTokenList1);
+    Assert::IsTrue(result2.size() == 2);
+    StmtVarPairList::iterator iter = result2.begin();
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum2, (*iter).first);
+    Assert::AreEqual(kVarName2, (*iter).second);
+    StmtVarPairList result3 = pkb.GetAllAssignExactPatternPair({kToken32});
+    Assert::IsTrue(result3.empty());
+    StmtVarPairList result4 = pkb.GetAllAssignExactPatternPair(kTokenList);
+    Assert::IsTrue(result4.empty());
   }
 };
 }  // namespace PKBTests
