@@ -19,7 +19,7 @@ using std::vector;
 
 PqlEvaluator::PqlEvaluator() {}
 
-QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
+FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetQuery(*query);
   SetPKB(pkb);
   // Initialise new result table class
@@ -27,31 +27,46 @@ QueryResultList PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetPqlResult(*pql_result);
   // Default value should be true, unless the clause returns a false
   SetClauseFlag(true);
-  QueryResultList results;
+  FinalResult final_results;
 
   // Determine the declaration type of the select variable
-  SetSelectType(CheckSelectDeclarationType(GetQuery().GetVarName()));
+  //SetSelectType(CheckSelectDeclarationType(GetQuery().GetVarName()));
 
-  // If there is no such that clause, then evaluator will use
+  // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
   if (GetQuery().GetSuchThats().empty()) {
-    PqlDeclarationEntity select_type = GetSelectType();
-    results = GetSelectAllResult(select_type);
+    final_results = GetFinalResultFromTable(GetQuery().GetVarName());
   }
   // Else use GetSuchThatResult method
   else {
-    PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
-    results = GetSuchThatResult(suchthat);
+    //PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
+    //results = GetSuchThatResult(suchthat);
   }
 
-  cout << "Result size: " << results.size() << endl;
+  cout << "Result size: " << final_results.size() << endl;
 
-  return results;
+  return final_results;
 }
 
 FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
   list<string> final_result;
   ResultTable result_table = GetPqlResult().GetResultTable();
+
+  ColumnHeader column_header = GetPqlResult().GetColumnHeader();
+
+  if (column_header.find(select_var) != column_header.end()) {
+    int column_index = column_header.find(select_var)->second;
+    for (auto& row : result_table) {
+      final_result.push_back(row[column_index]);
+    }
+  }
+  // Selected variable not in result table
+  else {
+    SetSelectType(CheckSelectDeclarationType(select_var));
+    QueryResultList get_all_result = GetSelectAllResult(GetSelectType());
+    copy(get_all_result.begin(), get_all_result.end(),
+         back_inserter(final_result));
+  }
 
   return final_result;
 }
@@ -1222,9 +1237,7 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
   unordered_map<string, PqlDeclarationEntity> declarations =
       GetQuery().GetDeclarations();
 
-  if (declarations.find(select_var_name) == declarations.end()) {
-    // Not found
-  } else {
+  if (declarations.find(select_var_name) != declarations.end()) {
     return declarations.find(select_var_name)->second;
   }
 }

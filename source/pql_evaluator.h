@@ -12,6 +12,7 @@
 #include "pql_evaluator.h"
 #include "pql_query.h"
 #include "pql_result.h"
+#include "pql_enum.h"
 
 using std::list;
 using std::string;
@@ -64,7 +65,7 @@ class PqlEvaluator {
    * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  QueryResultList GetResultFromQuery(PqlQuery* query, PKB pkb);
+  FinalResult GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
    * Return a list of results based on the query. This method will only be

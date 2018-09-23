@@ -141,7 +141,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -162,7 +162,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -183,7 +183,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -204,7 +204,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -226,7 +226,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -248,7 +248,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -269,7 +269,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
@@ -290,7 +290,7 @@ TEST_CLASS(TestQueryEvaluator) {
     q->AddDeclaration(keyword_variable, "v");
     q->AddDeclaration(keyword_procedure, "p");
 
-    vector<string> resultlist = qe.GetResultFromQuery(q, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
 
     string first_result = resultlist.front();
 
