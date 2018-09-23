@@ -14,6 +14,7 @@ class StatementData;
 #include "const_list.h"
 #include "follows_table.h"
 #include "modifies_table.h"
+#include "pattern_table.h"
 #include "parent_table.h"
 #include "pql_enum.h"
 #include "proc_list.h"
@@ -31,14 +32,12 @@ class PKB {
   ProcList proc_list_;
   VarList var_list_;
   ConstList const_list_;
-  StmtTable stmt_table_;  // TODO: insert stmt to stmt table in all InsertXxStmt
-                          // functions
-  StmtListTable stmtlist_table_;  // TODO: insert stmt to stmtlist table in all
-                                  // InsertXxStmt functions
-  StmtTypeList stmt_type_list_;   // TODO: insert stmt to stmt type list in all
-                                  // InsertXxStmt functions
+  StmtTable stmt_table_;
+  StmtListTable stmtlist_table_;
+  StmtTypeList stmt_type_list_;
   FollowsTable follows_table_;
   ParentTable parent_table_;
+  PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
 
@@ -118,8 +117,8 @@ class PKB {
   // insertion fails (print statement was already inside StmtTable)
   bool InsertPrintStmt(PrintStmtData* stmt_data);
 
-		// Expose follows_table InsertFollows method to Parser
-		void InsertFollows(StmtNum followee, StmtNum follower);
+  // Expose follows_table InsertFollows method to Parser
+  void InsertFollows(StmtNum followee, StmtNum follower);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -300,7 +299,24 @@ class PKB {
   // variable and the variable name
   ProcVarPairList GetAllUsesPairP();
 
+  // @returns a list of statement numbers of assign statements that satisfy
+  // pattern a(var_name, _sub_expr_)
+  // var_name can be an empty string, sub_expr can be an empty TokenList (to
+  // represent underscore)
+  StmtNumList GetAssignWithPattern(VarName var_name,
+                                   TokenList sub_expr);
 
+  // @returns a list of statement numbers of assign statements that satisfy
+  // pattern a(var_name, exact_expr)
+  // var_name can be an empty string (to represent underscore)
+  StmtNumList GetAssignWithExactPattern(VarName var_name,
+                                        TokenList exact_expr);
+
+  // @returns a list of pairs of a and v that satisfy pattern a(v, _sub_expr_)
+  StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
+
+  // @returns a list of pairs of a and v that satisfy pattern a(v, exact_expr)
+  StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
@@ -319,6 +335,7 @@ class PKB {
                            StmtListIndex child_stmtlist_index);
   void UpdateParentRelationship(StatementData* stmt_data,
                                 StmtListIndex child_stmtlist_index);
+  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 };
 
 #endif  // !SPA_PKB_H
