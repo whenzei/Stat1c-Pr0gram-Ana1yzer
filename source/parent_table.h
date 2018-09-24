@@ -26,15 +26,18 @@ using ChildrenMap = unordered_map<string, vector<string>>;
 using DirectChildrenMap = unordered_map<string, vector<string>>;
 using ChildrenSet = unordered_set<string>;
 using ChildrenList = vector<string>;
+using StmtNumPairList = vector<pair<string, string>>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships
 // between statements and statement list indices
 class ParentTable {
+  // Stores parents relationships as <key=child, value=parent>
   ParentsMap parents_map_;
   DirectParentMap direct_parent_map_;
   ParentsSet parents_set_;
   ParentsList parents_list_;
+  // Stores parents relationships as <key=parent, value=child>
   ChildrenMap children_map_;
   DirectChildrenMap direct_children_map_;
   ChildrenSet children_set_;

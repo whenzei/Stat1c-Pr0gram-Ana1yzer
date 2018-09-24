@@ -23,7 +23,9 @@ using FollowsMap = unordered_map<string, vector<string>>;
 using FollowedByMap = unordered_map<string, vector<string>>;
 
 class FollowsTable {
+  // Stores follows relationship in <key=follower, value=followed_by>
   FollowsMap follows_map_;
+  // Stores follows relationship in <key=followed by, value=follower>
   FollowedByMap followed_by_map_;
 
 private:
