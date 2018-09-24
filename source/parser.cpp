@@ -151,6 +151,8 @@ VarName Parser::ProcessRead(int given_stmt_list_num) {
   pkb_->InsertReadStmt(
       &ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
 
+  PopulatePkbModifies(stmt_num_, modified_var);
+
   // eat semicolon
   ReadNextToken();
   return modified_var;
@@ -160,6 +162,8 @@ VarName Parser::ProcessPrint(int given_stmt_list_num) {
   VarName used_var = ReadNextToken().value;
   pkb_->InsertPrintStmt(
       &PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
+
+  PopulatePkbUses(stmt_num_, used_var);
 
   // eat semicolon
   ReadNextToken();
