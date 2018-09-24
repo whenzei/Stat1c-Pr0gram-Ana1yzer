@@ -25,9 +25,7 @@ class StatementData;
 #include "uses_table.h"
 #include "var_list.h"
 
-
 using StmtNumInt = int;
-using StmtNumPairList = vector<pair<string, string>>;
 
 class PKB {
   ProcList proc_list_;

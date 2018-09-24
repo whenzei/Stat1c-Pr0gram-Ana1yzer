@@ -95,6 +95,26 @@ bool ParentTable::HasParentRelationship() {
   return !parents_map_.empty();
 }
 
+StmtNumPairList ParentTable::GetAllParentPair() {
+  StmtNumPairList parent_pair_list;
+  DirectParentMap parents_map = GetDirectParentMap();
+  for (auto entry : parents_map) {
+    parent_pair_list.push_back(make_pair(entry.second, entry.first));
+  }
+  return parent_pair_list;
+}
+
+StmtNumPairList ParentTable::GetAllParentTPair() {
+  StmtNumPairList parent_t_pair_list;
+  ParentsMap parents_map = GetParentsMap();
+  for (auto entry : parents_map) {
+    for (StmtNum& parent_stmt_num : entry.second) {
+      parent_t_pair_list.push_back(make_pair(parent_stmt_num, entry.first));
+    }
+  }
+  return parent_t_pair_list;
+}
+
 DirectParentMap ParentTable::GetDirectParentMap() { return direct_parent_map_; }
 
 ParentsMap ParentTable::GetParentsMap() { return parents_map_; }

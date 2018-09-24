@@ -9,9 +9,11 @@
 #include <vector>
 
 using std::string;
+using std::make_pair;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
+using std::pair;
 
 // StmtNum is defined as a string inside PKB, because query results have to be
 // in the format list<string>. For consistency, all StmtNum inside PKB is string
@@ -26,15 +28,18 @@ using ChildrenMap = unordered_map<string, vector<string>>;
 using DirectChildrenMap = unordered_map<string, vector<string>>;
 using ChildrenSet = unordered_set<string>;
 using ChildrenList = vector<string>;
+using StmtNumPairList = vector<pair<string, string>>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships
 // between statements and statement list indices
 class ParentTable {
+  // Stores parents relationships as <key=child, value=parent>
   ParentsMap parents_map_;
   DirectParentMap direct_parent_map_;
   ParentsSet parents_set_;
   ParentsList parents_list_;
+  // Stores parents relationships as <key=parent, value=child>
   ChildrenMap children_map_;
   DirectChildrenMap direct_children_map_;
   ChildrenSet children_set_;
@@ -81,6 +86,12 @@ class ParentTable {
 
   // @returns true if there exists any parent-child relationship in the table
   bool HasParentRelationship();
+
+  // @returns a list of direct <parent_stmt_num, child_stmt_num> pairs
+  StmtNumPairList GetAllParentPair();
+
+  // @returns a list of <parent_stmt_num, child_stmt_num> pairs
+  StmtNumPairList GetAllParentTPair();
 
   // @returns the direct_parent_map_
   DirectParentMap GetDirectParentMap();

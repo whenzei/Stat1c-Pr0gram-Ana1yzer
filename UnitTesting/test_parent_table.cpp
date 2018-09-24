@@ -130,6 +130,32 @@ TEST_CLASS(TestParentTable) {
     Assert::IsTrue(parent_table.HasParentRelationship());
   }
 
+  TEST_METHOD(TestGetAllParentPair) {
+    ParentTable parent_table;
+    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
+    StmtNumPairList parent_pair = parent_table.GetAllParentPair();
+    Assert::IsTrue(parent_pair.size() == 1);
+    Assert::AreEqual(kStmtNum1, parent_pair.front().first);
+    Assert::AreEqual(kStmtNum2, parent_pair.front().second);
+    parent_table.InsertIndirectParentRelationship(kStmtNum2, kStmtNum4);
+    parent_pair = parent_table.GetAllParentPair();
+    Assert::IsTrue(parent_pair.size() == 1);
+  }
+
+  TEST_METHOD(TestGetAllParentTPair) {
+    ParentTable parent_table;
+    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
+    StmtNumPairList parent_pair = parent_table.GetAllParentTPair();
+    Assert::IsTrue(parent_pair.size() == 1);
+    Assert::AreEqual(kStmtNum1, parent_pair.front().first);
+    Assert::AreEqual(kStmtNum2, parent_pair.front().second);
+    parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum4);
+    parent_pair = parent_table.GetAllParentTPair();
+    Assert::IsTrue(parent_pair.size() == 2);
+    Assert::AreEqual(kStmtNum1, parent_pair.back().first);
+    Assert::AreEqual(kStmtNum4, parent_pair.back().second);
+  }
+
   TEST_METHOD(TestGetDirectParentMap) {
     ParentTable parent_table;
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
