@@ -354,7 +354,7 @@ public:
   };
 
   TEST_METHOD(TestPatternAssign) {
-    string content = "variable v; assign a; Select v pattern a(v,_a*2_)";
+    string content = "variable v; assign a; Select v pattern a(v,_\"a*2\"_)";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsTrue(parser.Parse());
@@ -371,7 +371,7 @@ public:
   };
 
   TEST_METHOD(TestInvalidPatternAssign) {
-    string content = "variable v; assign a; Select v pattern a(v, _2*a)";
+    string content = "variable v; assign a; Select v pattern a(v, _\"2*a\")";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());

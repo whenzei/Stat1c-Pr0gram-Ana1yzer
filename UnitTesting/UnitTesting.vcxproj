@@ -185,6 +185,7 @@
     <ClCompile Include="test_pattern_table.cpp" />
     <ClCompile Include="test_modifies_table.cpp" />
     <ClCompile Include="test_query_evaluator.cpp" />
+    <ClCompile Include="test_pql_result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPA\SPA.vcxproj">

@@ -28,7 +28,7 @@ public:
     PqlParser parser(user_query, query);
     parser.Parse();
 
-	vector<string> resultlist = qe.GetResultFromQuery(query, pkb);
+	FinalResult resultlist = qe.GetResultFromQuery(query, pkb);
 
 	string output = resultlist.front();
 
