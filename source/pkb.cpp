@@ -79,8 +79,12 @@ void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
   modifies_table_.InsertModifies(modifying_stmt, modified_var);
 }
 
-void PKB::InsertUses(StmtNum using_stmt, VarName used_var) {
-  uses_table_.InsertUses(used_var, using_stmt);
+void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
+  uses_table_.InsertUsesS(using_stmt, used_var);
+}
+
+void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
+  uses_table_.InsertUsesP(using_proc, used_var);
 }
 
 void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
@@ -263,72 +267,38 @@ ProcVarPairList PKB::GetAllModifiesPairP() {
 VarNameList PKB::GetAllUsedVar() { return uses_table_.GetAllUsedVar(); }
 
 VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
-  return uses_table_.GetAllUsedVar(stmt_num);
+  return uses_table_.GetUsedVarS(stmt_num);
 }
 
 VarNameList PKB::GetUsedVarP(ProcName proc_name) {
-  VarNameList used_var;
-  ProcNameList proc_names = proc_list_.GetAllProcName();
-  if (find(proc_names.begin(), proc_names.end(), proc_name) !=
-      proc_names.end()) {
-    used_var = uses_table_.GetAllUsedVar();
-  }
-  return used_var;
+  return uses_table_.GetUsedVarP(proc_name);
 }
 
 StmtNumList PKB::GetAllUsingStmt() { return uses_table_.GetAllUsingStmt(); }
 
-ProcNameList PKB::GetAllUsingProc() {
-  ProcNameList using_proc;
-  if (uses_table_.HasUsesRelationship()) {
-    using_proc = proc_list_.GetAllProcName();
-  }
-  return using_proc;
-}
+ProcNameList PKB::GetAllUsingProc() { return uses_table_.GetAllUsingProc(); }
 
 StmtNumList PKB::GetUsingStmt(VarName var_name) {
-  return uses_table_.GetAllUsingStmt(var_name);
+  return uses_table_.GetUsingStmt(var_name);
 }
 
 ProcNameList PKB::GetUsingProc(VarName var_name) {
-  ProcNameList using_proc;
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  if (find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
-    using_proc = proc_list_.GetAllProcName();
-  }
-  return using_proc;
+  return uses_table_.GetUsingProc(var_name);
 }
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
-  return uses_table_.IsUsedBy(var_name, stmt_num);
+  return uses_table_.IsUsedByS(stmt_num, var_name);
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
-  ProcNameList proc_names = proc_list_.GetAllProcName();
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  // For iteration 1, return true if given procedure exists and given variable
-  // is used anywhere in the program
-  if (find(proc_names.begin(), proc_names.end(), proc_name) !=
-          proc_names.end() &&
-      find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
-    return true;
-  }
-  return false;
+  return uses_table_.IsUsedByP(proc_name, var_name);
 }
 
 bool PKB::HasUsesRelationship() { return uses_table_.HasUsesRelationship(); }
 
-StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesPair(); }
+StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }
 
-ProcVarPairList PKB::GetAllUsesPairP() {
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  ProcVarPairList proc_var_list;
-  for (auto& var : used_vars) {
-    proc_var_list.push_back(
-        make_pair(proc_list_.GetAllProcName().front(), var));
-  }
-  return proc_var_list;
-}
+ProcVarPairList PKB::GetAllUsesPairP() { return uses_table_.GetAllUsesPPair(); }
 
 StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   if (var_name.compare("") == 0) {

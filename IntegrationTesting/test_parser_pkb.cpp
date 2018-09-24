@@ -399,12 +399,12 @@ TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertUses("1", "b");
-  true_pkb.InsertUses("2", "d");
-  true_pkb.InsertUses("2", "e");
-  true_pkb.InsertUses("2", "f");
-  true_pkb.InsertUses("3", "k");
-  true_pkb.InsertUses("3", "l");
+  true_pkb.InsertUsesS("1", "b");
+  true_pkb.InsertUsesS("2", "d");
+  true_pkb.InsertUsesS("2", "e");
+  true_pkb.InsertUsesS("2", "f");
+  true_pkb.InsertUsesS("3", "k");
+  true_pkb.InsertUsesS("3", "l");
 
   //*******************************
 
@@ -473,21 +473,21 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertUses("1", "b");
-  true_pkb.InsertUses("3", "f");
-  true_pkb.InsertUses("4", "ddd");
-  true_pkb.InsertUses("6", "a");
-  true_pkb.InsertUses("7", "k");
-  true_pkb.InsertUses("5", "a");
-  true_pkb.InsertUses("5", "a");
-  true_pkb.InsertUses("5", "k");
-  true_pkb.InsertUses("2", "a");
-  true_pkb.InsertUses("2", "b");
-  true_pkb.InsertUses("2", "f");
-  true_pkb.InsertUses("2", "ddd");
-  true_pkb.InsertUses("2", "a");
-  true_pkb.InsertUses("2", "a");
-  true_pkb.InsertUses("2", "k");
+  true_pkb.InsertUsesS("1", "b");
+  true_pkb.InsertUsesS("3", "f");
+  true_pkb.InsertUsesS("4", "ddd");
+  true_pkb.InsertUsesS("6", "a");
+  true_pkb.InsertUsesS("7", "k");
+  true_pkb.InsertUsesS("5", "a");
+  true_pkb.InsertUsesS("5", "a");
+  true_pkb.InsertUsesS("5", "k");
+  true_pkb.InsertUsesS("2", "a");
+  true_pkb.InsertUsesS("2", "b");
+  true_pkb.InsertUsesS("2", "f");
+  true_pkb.InsertUsesS("2", "ddd");
+  true_pkb.InsertUsesS("2", "a");
+  true_pkb.InsertUsesS("2", "a");
+  true_pkb.InsertUsesS("2", "k");
 
   //*******************************
 

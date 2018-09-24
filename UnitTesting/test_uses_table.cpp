@@ -12,115 +12,128 @@ TEST_CLASS(TestUsesTable) {
   const StmtNum kSampleStmtIdx4 = "27";
   const VarName kSampleVarName1 = "j";
   const VarName kSampleVarName2 = "iter";
-
-  TEST_METHOD(TestInsertUsesSingleRel) {
-    UsesTable uses;
-    bool result =
-        uses.InsertUses(kSampleVarName1, kSampleStmtIdx1);
-    Assert::IsTrue(result);
-  }
-
-  TEST_METHOD(TestInsertUsesDuplicateRel) {
-    UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    bool result = uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    Assert::IsFalse(result);
-  }
-
-  TEST_METHOD(TestInsertUsesMultipleRel) {
-    UsesTable uses;
-    bool result = uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    Assert::IsTrue(result);
-    result = uses.InsertUses(kSampleVarName2, kSampleStmtIdx3);
-    Assert::IsTrue(result);
-    result = uses.InsertUses(kSampleVarName2, kSampleStmtIdx4);
-    Assert::IsTrue(result);
-  }
+  const ProcName kSampleProcName1 = "simple";
+  const ProcName kSampleProcName2 = "p";
 
   TEST_METHOD(TestGetAllUsedVar) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName2, kSampleStmtIdx3);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName2);
+    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName1);
     VarNameList used_vars = uses.GetAllUsedVar();
     Assert::IsTrue(used_vars.size() == 2);
+    Assert::AreEqual(kSampleVarName1, used_vars.front());
+    Assert::AreEqual(kSampleVarName2, used_vars.back());
   }
 
-  TEST_METHOD(TestGetAllUsedVarDuplicate) {
+  TEST_METHOD(TestGetUsedVarS) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx3);
-    VarNameList used_vars = uses.GetAllUsedVar();
-    Assert::IsTrue(used_vars.size() == 1);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName2);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName2);
+    VarNameList used_vars = uses.GetUsedVarS(kSampleStmtIdx2);
+    Assert::IsTrue(used_vars.size() == 2);
+    Assert::AreEqual(kSampleVarName1, used_vars.front());
+    Assert::AreEqual(kSampleVarName2, used_vars.back());
   }
 
-  TEST_METHOD(TestGetAllUsedVarSpecified) {
-    VarNameList expected_used_vars;
+  TEST_METHOD(TestGetUsedVarP) {
     UsesTable uses;
-    expected_used_vars.push_back(kSampleVarName1);
-    expected_used_vars.push_back(kSampleVarName2);
-
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName2, kSampleStmtIdx2);
-    VarNameList used_vars = uses.GetAllUsedVar(kSampleStmtIdx2);
-    Assert::AreEqual(expected_used_vars.front(), used_vars.front());
-    Assert::AreEqual(expected_used_vars.back(), used_vars.back());
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName2);
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName2);
+    VarNameList used_vars = uses.GetUsedVarP(kSampleProcName1);
+    Assert::IsTrue(used_vars.size() == 2);
+    Assert::AreEqual(kSampleVarName1, used_vars.front());
+    Assert::AreEqual(kSampleVarName2, used_vars.back());
   }
 
   TEST_METHOD(TestGetAllUsingStmt) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName2, kSampleStmtIdx3);
-    StmtList using_stmts = uses.GetAllUsingStmt();
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName2);
+    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName1);
+    StmtNumList using_stmts = uses.GetAllUsingStmt();
     Assert::IsTrue(using_stmts.size() == 2);
+    Assert::AreEqual(kSampleStmtIdx2, using_stmts.front());
+    Assert::AreEqual(kSampleStmtIdx3, using_stmts.back());
   }
 
-  TEST_METHOD(TestGetAllUsingStmtDuplicate) {
+  TEST_METHOD(TestGetAllUsingProc) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName2, kSampleStmtIdx2);
-    StmtList using_stmts = uses.GetAllUsingStmt();
-    Assert::IsTrue(using_stmts.size() == 1);
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName2, kSampleVarName2);
+    uses.InsertUsesP(kSampleProcName2, kSampleVarName1);
+    ProcNameList using_stmts = uses.GetAllUsingProc();
+    Assert::IsTrue(using_stmts.size() == 2);
+    Assert::AreEqual(kSampleProcName1, using_stmts.front());
+    Assert::AreEqual(kSampleProcName2, using_stmts.back());
   }
 
-  TEST_METHOD(TestGetAllUsingStmtSpecified) {
-    StmtList expected_using_stmts;
+  TEST_METHOD(TestGetUsingStmt) {
     UsesTable uses;
-    expected_using_stmts.push_back(kSampleStmtIdx2);
-
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    StmtList using_stmts = uses.GetAllUsingStmt(kSampleVarName1);
-    Assert::AreEqual(expected_using_stmts.front(), using_stmts.front());
+    uses.InsertUsesS(kSampleStmtIdx1, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx1, kSampleVarName1);
+    StmtNumList using_stmts = uses.GetUsingStmt(kSampleVarName1);
+    Assert::IsTrue(using_stmts.size() == 2);
+    Assert::AreEqual(kSampleStmtIdx1, using_stmts.front());
+    Assert::AreEqual(kSampleStmtIdx2, using_stmts.back());
   }
 
-  TEST_METHOD(TestIsUsedBy) {
+  TEST_METHOD(TestGetUsingProc) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx3);
-    bool result = uses.IsUsedBy(kSampleVarName1, kSampleStmtIdx3);
-    Assert::IsTrue(result);
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName2, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    ProcNameList using_proc = uses.GetUsingProc(kSampleVarName1);
+    Assert::IsTrue(using_proc.size() == 2);
+    Assert::AreEqual(kSampleProcName1, using_proc.front());
+    Assert::AreEqual(kSampleProcName2, using_proc.back());
+  }
+
+  TEST_METHOD(TestIsUsedByS) {
+    UsesTable uses;
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName1);
+    Assert::IsTrue(uses.IsUsedByS(kSampleStmtIdx3, kSampleVarName1));
+  }
+
+  TEST_METHOD(TestIsUsedByP) {
+    UsesTable uses;
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName2, kSampleVarName1);
+    Assert::IsTrue(uses.IsUsedByP(kSampleProcName2, kSampleVarName1));
   }
 
   TEST_METHOD(TestHasUsesRelationships) {
     UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    bool result = uses.HasUsesRelationship();
-    Assert::IsTrue(result);
+    Assert::IsFalse(uses.HasUsesRelationship());
+    uses.InsertUsesS(kSampleVarName1, kSampleStmtIdx2);
+    Assert::IsTrue(uses.HasUsesRelationship());
   }
 
-  TEST_METHOD(TestHasUsesRelationshipsEmpty) {
+  TEST_METHOD(TestGetAllUsesSPair) {
     UsesTable uses;
-    bool result = uses.HasUsesRelationship();
-    Assert::IsFalse(result);
-  }
-
-  TEST_METHOD(TestGetAllUsesPair) {
-    UsesTable uses;
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx1);
-    uses.InsertUses(kSampleVarName1, kSampleStmtIdx2);
-    StmtVarPairList uses_pair_list = uses.GetAllUsesPair();
+    uses.InsertUsesS(kSampleStmtIdx1, kSampleVarName1);
+    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
+    StmtVarPairList uses_pair_list = uses.GetAllUsesSPair();
+    Assert::IsTrue(uses_pair_list.size() == 2);
     Assert::AreEqual(kSampleStmtIdx1, uses_pair_list.front().first);
     Assert::AreEqual(kSampleVarName1, uses_pair_list.front().second);
     Assert::AreEqual(kSampleStmtIdx2, uses_pair_list.back().first);
+    Assert::AreEqual(kSampleVarName1, uses_pair_list.back().second);
+  }
+
+  TEST_METHOD(TestGetAllUsesPPair) {
+    UsesTable uses;
+    uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
+    uses.InsertUsesP(kSampleProcName2, kSampleVarName1);
+    ProcVarPairList uses_pair_list = uses.GetAllUsesPPair();
+    Assert::IsTrue(uses_pair_list.size() == 2);
+    Assert::AreEqual(kSampleProcName2, uses_pair_list.front().first);
+    Assert::AreEqual(kSampleVarName1, uses_pair_list.front().second);
+    Assert::AreEqual(kSampleProcName1, uses_pair_list.back().first);
     Assert::AreEqual(kSampleVarName1, uses_pair_list.back().second);
   }
 };

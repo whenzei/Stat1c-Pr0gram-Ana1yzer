@@ -388,13 +388,13 @@ void Parser::PopulatePkbParent(int parent_num,
 void Parser::PopulatePkbUses(int stmt_num, VarNameSet used_vars) {
   string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : used_vars) {
-    pkb_->InsertUses(stmt_num_str, var);
+    pkb_->InsertUsesS(stmt_num_str, var);
   }
 }
 
 void Parser::PopulatePkbUses(int stmt_num, VarName used_var) {
   string stmt_num_str = std::to_string(stmt_num);
-  pkb_->InsertUses(stmt_num_str, used_var);
+  pkb_->InsertUsesS(stmt_num_str, used_var);
 }
 
 void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
