@@ -89,21 +89,31 @@ Select s such that Parent(1, s)
 2, 3, 7
 5000
 19- comment
+stmt s;
+Select s such that Parent*(1, s)
+2, 3, 4, 5, 6, 7
+5000
+20- comment
+stmt s;
+Select s such that Parent*(s, 14)
+10, 12
+5000
+20 - comment
 assign a;
 Select a pattern a(_, "h")
 5
 5000
-20- comment
+21 - comment
 assign a;
 Select a pattern a(_,_)
 2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
 5000
-21- comment
+22- comment
 assign a;
 Select a pattern a(_,_) such that Modifies(a,"g")
 5, 9
 5000
-22- comment
+23- comment
 assign a;
 Select a such that Modifies(a,"g") pattern a(_,"h") 
 5

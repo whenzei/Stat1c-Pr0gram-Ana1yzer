@@ -25,6 +25,7 @@ class StatementData;
 #include "uses_table.h"
 #include "var_list.h"
 
+
 using StmtNumInt = int;
 using StmtNumPairList = vector<pair<string, string>>;
 
@@ -312,6 +313,10 @@ class PKB {
 
   // @returns a list of pairs of a and v that satisfy pattern a(v, exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
+
+  // Parser calls this method to notify pkb end of parse.
+  // PKB will proceed with design extraction
+  void NotifyParseEnd();
 
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
