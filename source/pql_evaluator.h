@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef QUERY_EVALUATOR_H
-#define QUERY_EVALUATOR_H
+#ifndef PQL_EVALUATOR_H
+#define PQL_EVALUATOR_H
 
 #include <list>
 #include <string>
@@ -9,25 +9,28 @@
 #include <vector>
 
 #include "pkb.h"
+#include "pql_enum.h"
 #include "pql_evaluator.h"
 #include "pql_query.h"
-#include "pql_enum.h"
+#include "pql_result.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
+using FinalResult = list<string>;
 using QueryResultList = vector<string>;
 using QueryResultPairList = vector<pair<string, string>>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
  private:
-  PqlDeclarationEntity
-      select_type_;  // the type of the variable in 'Select' statement
-  PKB pkb_;          // pkb database
-  bool clause_flag_;
-  PqlQuery pql_query_;
+  PqlDeclarationEntity select_type_;  // the entity type of the select-variable
+  PKB pkb_;                           // pkb database
+  bool clause_flag_;                  // to determine if clauses are true/false
+  bool merge_flag_;       // to determine if result table is empty after a merge
+  PqlQuery pql_query_;    // the object where user query is stored
+  PqlResult pql_result_;  // the object where results are stored
 
  public:
   /* Contructor */
@@ -38,153 +41,150 @@ class PqlEvaluator {
   void SetSelectType(PqlDeclarationEntity);
   void SetPKB(PKB);
   void SetClauseFlag(bool);
+  void SetMergeFlag(bool);
+  void SetPqlResult(PqlResult);
 
   /* Getter */
   PqlQuery GetQuery();
   PqlDeclarationEntity GetSelectType();
   PKB GetPKB();
-  bool GetClauseFlag();
+  bool IsValidClause();
+  bool IsMergeTableEmpty();
+  PqlResult GetPqlResult();
 
   /**
-   * Use the @Query provided by user
+   * Called by the GUI. Use the Query provided by user
    * and return a list of results based on the query
-   * @param query the query by the user
-   * @returns a list of string if there is result,
+   * @param the query object and pkb
+   * @returns a list<string> if there is result,
    * or an empty list otherwise
    */
-  QueryResultList GetResultFromQuery(PqlQuery* query, PKB pkb);
+  FinalResult GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
-   * Return a list of results based on the query. This method will only be
-   * used when there are no "such that" or "pattern" clause.
-   * @input declaration entities of select variable and pkb
-   * @returns a list of string if there is result,
+   * Get the final result based on the var name that user is 'selecting'
+   * @param select-variable name
+   * @returns a list<string> if there is result,
+   * or an empty list otherwise
+   */
+  FinalResult GetFinalResultFromTable(string select_var);
+
+  /**
+   * Return a list of all the result of a certain type
+   * @param declaration entity type
+   * @returns a vector<string> if there is result,
    * or an empty list otherwise
    */
   QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
 
   /**
-   * Return a list of results based on the query. This method will only be
-   * used when there are "such that" clause.
-   * @input such that clause provided by user
-   * @returns a list of string if there is result,
-   * or an empty list otherwise
+   * The main method for all suchthat-type queries
+   * Method will determine which type of such that clause is to be evaluated, it
+   * will also determine the arrangement of clause arguments
+   * @param such that clause in the Query
    */
-  QueryResultList GetSuchThatResult(PqlSuchthat suchthat);
+  void GetSuchThatResult(PqlSuchthat suchthat);
 
   /**
-   * Evaluate such that follows
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * The main method for all pattern-type queries
+   * Method will determine which type of pattern clause is to be evaluated
+   * @param pattern clause in the Query
    */
-  QueryResultList EvaluateFollows(PqlDeclarationEntity select_type,
-                                  PqlSuchthat suchthat,
-                                  SuchthatParamType arrangement);
+  void GetPatternResult(PqlPattern pattern);
 
   /**
-   * Evaluate such that follows*
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate assign pattern and store result in PqlResult table
+   * @param pattern clause in the Query
    */
-  QueryResultList EvaluateFollowsT(PqlDeclarationEntity select_type,
-                                   PqlSuchthat suchthat,
-                                   SuchthatParamType arrangement);
+  void EvaluateAssignPattern(PqlPattern pattern);
 
   /**
-   * Evaluate such that parent
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate follows clause and store result in PqlResult table
+   * @param follows clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateParent(PqlDeclarationEntity select_type,
-                                 PqlSuchthat suchthat,
-                                 SuchthatParamType arrangement);
+  void EvaluateFollows(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Evaluate such that parent*
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate follows* clause and store result in PqlResult table
+   * @param follows* clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateParentT(PqlDeclarationEntity select_type,
-                                  PqlSuchthat suchthat,
-                                  SuchthatParamType arrangement);
+  void EvaluateFollowsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Evaluate such that uses stmt
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate parent clause and store result in PqlResult table
+   * @param parent clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateUsesS(PqlDeclarationEntity select_type,
-                                PqlSuchthat suchthat,
-                                SuchthatParamType arrangement);
+  void EvaluateParent(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Evaluate such that uses procedure
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate parent* clause and store result in PqlResult table
+   * @param parent* clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateUsesP(PqlDeclarationEntity select_type,
-                                PqlSuchthat suchthat,
-                                SuchthatParamType arrangement);
+  void EvaluateParentT(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Evaluate such that modify stmt
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate uses (stmt) clause and store result in PqlResult table
+   * @param uses clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateModifiesS(PqlDeclarationEntity select_type,
-                                    PqlSuchthat suchthat,
-                                    SuchthatParamType arrangement);
+  void EvaluateUsesS(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Evaluate such that modify procedure
-   * @input select type and such that clause provided by user
-   * @returns results based on evaluation
+   * Evaluate uses (procedure) clause and store result in PqlResult table
+   * @param uses clause in the Query and arrangement of clause arguments
    */
-  QueryResultList EvaluateModifiesP(PqlDeclarationEntity select_type,
-                                    PqlSuchthat suchthat,
-                                    SuchthatParamType arrangement);
+  void EvaluateUsesP(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate modifies (stmt) clause and store result in PqlResult table
+   * @param modifies clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateModifiesS(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate modifies (procedure) clause and store result in PqlResult table
+   * @param modifies clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateModifiesP(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
    * Determine the declaration type of the select variable
-   * @input select clause and declaration entities provided by user
-   * @returns PqlDeclarationEntity of the select variable
+   * @param select-variable name
+   * @returns entity type of the select-variable
    */
   PqlDeclarationEntity CheckSelectDeclarationType(string select_var_name);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
-   * Follows(a,b) => 2 entity) also determines whether the synonym in the param
-   * is a select variable (e.g Select a)
-   * @input left and right param of the such that clause
-   * @returns properties of synonym in the form of
-   * PqlPropertyOfEntityInSuchthatParam
+   * Follows(a,b) => 2 synonyms)
+   * @param parameter/arguments of the such that clause
+   * @returns arangement of arguments in the form of SuchthatParamType enum
    */
-  SuchthatParamType CheckSuchthatParamType(string select_var_name,
-                                           Parameters such_that_param);
+  SuchthatParamType CheckSuchthatParamType(Parameters such_that_param);
 
   /**
-   * Filter the result list based on the selection entity type
-   * @input unfiltered result list and selection entity type (e.g assign)
-   * @returns result list that only contains result of a certain entity type
+   * Filter the pkb list based on the declaration entity type
+   * @param unfiltered list and declaration entity type (e.g assign)
+   * @returns vector<string> list that only contains result of a certain entity
+   * type
    */
   QueryResultList FilterResult(vector<string> unfiltered_result,
-                               PqlDeclarationEntity select_type);
+                               PqlDeclarationEntity entity_type);
 
   /**
-   * Filter the result list based on the variable entity type
-   * @input unfiltered result list and variable entity type (e.g constant)
-   * @returns result list that only contains result of a certain entity type
+   * Filter the pkb list based on the variable entity type
+   * @param unfiltered list and variable entity type (e.g constant)
+   * @returns vector<string> list that only contains result of a certain entity
+   * type
    */
   QueryResultList FilterVariableResult(vector<string> unfiltered_result,
                                        PqlDeclarationEntity variable_type);
 
   /**
-   * Filter the result pair list based on the selection entity type and filter
-   * type
-   * @input the filter type, unfiltered result list and selection entity type
-   * (e.g assign) for left and right of the pair
-   * @returns result pair list that only contains result of a certain entity
-   * type
+   * Filter the pkb list of pairs based on the declaration entity type
+   * @param the filter type, unfiltered list and declaration entity type
+   * for the left and right of the pair
+   * @returns vector<string> of result pair that only contains result of a
+   * certain entity type
    */
   QueryResultPairList FilterPairResult(
       PqlResultFilterType filter_type,
@@ -192,18 +192,30 @@ class PqlEvaluator {
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
 
   /**
-   * Get all the result from left of the pair and return it in a list
-   * @input the list of pairs
-   * @returns list of result in the left of the pair
+   * Get all the result from left of a pair and return it as a list
+   * @param the vector<string> of pairs
+   * @returns vector<string> of result in the left of the pair
    */
   QueryResultList GetAllLeftOfPair(QueryResultPairList filtered_list);
 
   /**
-   * Get all the result from right of the pair and return it in a list
-   * @input the list of pairs
-   * @returns list of result in the right of the pair
+   * Get all the result from right of a pair and return it as a list
+   * @param the vector<string> of pairs
+   * @returns vector<string> of result in the right of the pair
    */
   QueryResultList GetAllRightOfPair(QueryResultPairList filtered_list);
+
+  /**
+   * Stores the list of results into the PqlResult table
+   * @param the vector<string> of results and synonym-variable name
+   */
+  void StoreClauseResultInTable(QueryResultList, string);
+
+  /**
+   * Stores the list of pair into the PqlResult table
+   * @param the vector<string> of pairs and the pair's synonym-variable name
+   */
+  void StoreClauseResultInTable(QueryResultPairList, string, string);
 };
 
 #endif  // !QUERY_EVALUATOR_H
