@@ -9,9 +9,11 @@
 #include <vector>
 
 using std::string;
+using std::make_pair;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
+using std::pair;
 
 // StmtNum is defined as a string inside PKB, because query results have to be
 // in the format list<string>. For consistency, all StmtNum inside PKB is string
@@ -84,6 +86,12 @@ class ParentTable {
 
   // @returns true if there exists any parent-child relationship in the table
   bool HasParentRelationship();
+
+  // @returns a list of direct <parent_stmt_num, child_stmt_num> pairs
+  StmtNumPairList GetAllParentPair();
+
+  // @returns a list of <parent_stmt_num, child_stmt_num> pairs
+  StmtNumPairList GetAllParentTPair();
 
   // @returns the direct_parent_map_
   DirectParentMap GetDirectParentMap();

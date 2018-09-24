@@ -184,23 +184,11 @@ bool PKB::HasParentRelationship() {
 }
 
 StmtNumPairList PKB::GetAllParentPair() {
-  StmtNumPairList parent_pair_list;
-  DirectParentMap parents_map = parent_table_.GetDirectParentMap();
-  for (auto entry : parents_map) {
-    parent_pair_list.push_back(make_pair(entry.first, entry.second));
-  }
-  return parent_pair_list;
+  return parent_table_.GetAllParentPair();
 }
 
 StmtNumPairList PKB::GetAllParentTPair() {
-  StmtNumPairList parent_t_pair_list;
-  ParentsMap parents_map = parent_table_.GetParentsMap();
-  for (auto entry : parents_map) {
-    for (StmtNum& parent_stmt_num : entry.second) {
-      parent_t_pair_list.push_back(make_pair(parent_stmt_num, entry.first));
-    }
-  }
-  return parent_t_pair_list;
+  return parent_table_.GetAllParentTPair();
 }
 
 bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
