@@ -361,7 +361,6 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index, string 
     }
 
     int paren_count = 0;
-    //while(current.type != Tokenizer::TokenType::kUnderscore && (paren_count > 0 || current.type != Tokenizer::TokenType::kCloseParen)) {
     while (current.type != Tokenizer::TokenType::kQuotation) {  
 	  expression.push_back(current);
       if (current.type == Tokenizer::TokenType::kOpenParen) paren_count++;

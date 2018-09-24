@@ -57,15 +57,15 @@ enum class PqlPatternExpressionType {
 
 /* The arrangement types for a such that clause */
 enum SuchthatParamType {
-  kNoSynonym = 0,                        // e.g (1, 2)
-  kNoSynonymUnderscoreLeft,              // e.g (_, 2)
-  kNoSynonymUnderscoreRight,             // e.g (1, _)
-  kNoSynonymUnderscoreBoth,              // e.g (_, _)
-  kOneSynonymLeft,                       // e.g (a, 2)
-  kOneSynonymLeftUnderscoreRight,        // e.g (a, _)
-  kOneSynonymRight,                      // e.g (1, a)
-  kOneSynonymRightUnderscoreLeft,        // e.g (_, a)
-  kTwoSynonym,                           // e.g (a, b)
+  kNoSynonym = 0,                  // e.g (1, 2)
+  kNoSynonymUnderscoreLeft,        // e.g (_, 2)
+  kNoSynonymUnderscoreRight,       // e.g (1, _)
+  kNoSynonymUnderscoreBoth,        // e.g (_, _)
+  kOneSynonymLeft,                 // e.g (a, 2)
+  kOneSynonymLeftUnderscoreRight,  // e.g (a, _)
+  kOneSynonymRight,                // e.g (1, a)
+  kOneSynonymRightUnderscoreLeft,  // e.g (_, a)
+  kTwoSynonym,                     // e.g (a, b)
 };
 
 /* The filter type for the result */
@@ -73,11 +73,11 @@ enum PqlResultFilterType { kFilterLeft = 0, kFilterRight, kFilterBoth };
 
 /* The conflict type for result table */
 enum PqlResultTableConflict {
-  kNoConflict = 0,
-  kConflict,
-  kOneConflictLeft,   // One conflict at the left of input pair
-  kOneConflictRight,  // One conflict at the right of input pair
-  kTwoConflict        // Two conflict for the input pair
+  kNoConflict = 0,    // No conflict for single/pair list
+  kConflict,          // One conflict for single list
+  kOneConflictLeft,   // One conflict at the left of pair
+  kOneConflictRight,  // One conflict at the right of pair
+  kTwoConflict        // Two conflict for the pair
 };
 
 #endif

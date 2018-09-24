@@ -30,9 +30,6 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetMergeFlag(false);
   FinalResult final_results;
 
-  // Determine the declaration type of the select variable
-  // SetSelectType(CheckSelectDeclarationType(GetQuery().GetVarName()));
-
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
   if (GetQuery().GetSuchThats().empty() && GetQuery().GetPatterns().empty()) {
@@ -1246,9 +1243,7 @@ PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
   unordered_map<string, PqlDeclarationEntity> declarations =
       GetQuery().GetDeclarations();
 
-  if (declarations.find(select_var_name) != declarations.end()) {
-    return declarations.find(select_var_name)->second;
-  }
+  return declarations.find(select_var_name)->second;
 }
 
 /* Getters and Setters */
