@@ -101,8 +101,9 @@ class PKB {
   void InsertFollows(StmtNum followee, StmtNum follower);
 
   // Expose modifies_table InsertModifies method to Parser
-  // TODO: add InsertModifies(proc_name, modified_var) for iter 2
-  void InsertModifies(StmtNum modifying_stmt, VarName modified_var);
+  void InsertModifiesS(StmtNum modifying_stmt, VarName modified_var);
+
+  void InsertModifiesP(ProcName modifying_proc, VarName modified_var);
 
   // Expose uses_table InsertUses method to Parser
   void InsertUsesS(StmtNum using_stmt, VarName used_var);

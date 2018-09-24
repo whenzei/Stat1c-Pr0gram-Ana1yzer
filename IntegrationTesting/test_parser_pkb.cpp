@@ -553,11 +553,11 @@ TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertModifies("1", "a");
-  true_pkb.InsertModifies("2", "while");
-  true_pkb.InsertModifies("3", "if");
-  true_pkb.InsertModifies("4", "if");
-  true_pkb.InsertModifies("5", "if");
+  true_pkb.InsertModifiesS("1", "a");
+  true_pkb.InsertModifiesS("2", "while");
+  true_pkb.InsertModifiesS("3", "if");
+  true_pkb.InsertModifiesS("4", "if");
+  true_pkb.InsertModifiesS("5", "if");
 
   //*******************************
 
@@ -637,24 +637,24 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertModifies("1", "a");
-  true_pkb.InsertModifies("4", "if");
-  true_pkb.InsertModifies("5", "z");
-  true_pkb.InsertModifies("6", "t");
-  true_pkb.InsertModifies("8", "w");
-  true_pkb.InsertModifies("9", "a");
-  true_pkb.InsertModifies("7", "w");
-  true_pkb.InsertModifies("7", "a");
-  true_pkb.InsertModifies("3", "if");
-  true_pkb.InsertModifies("3", "z");
-  true_pkb.InsertModifies("3", "t");
-  true_pkb.InsertModifies("3", "w");
-  true_pkb.InsertModifies("3", "a");
-  true_pkb.InsertModifies("2", "if");
-  true_pkb.InsertModifies("2", "w");
-  true_pkb.InsertModifies("2", "z");
-  true_pkb.InsertModifies("2", "t");
-  true_pkb.InsertModifies("2", "a");
+  true_pkb.InsertModifiesS("1", "a");
+  true_pkb.InsertModifiesS("4", "if");
+  true_pkb.InsertModifiesS("5", "z");
+  true_pkb.InsertModifiesS("6", "t");
+  true_pkb.InsertModifiesS("8", "w");
+  true_pkb.InsertModifiesS("9", "a");
+  true_pkb.InsertModifiesS("7", "w");
+  true_pkb.InsertModifiesS("7", "a");
+  true_pkb.InsertModifiesS("3", "if");
+  true_pkb.InsertModifiesS("3", "z");
+  true_pkb.InsertModifiesS("3", "t");
+  true_pkb.InsertModifiesS("3", "w");
+  true_pkb.InsertModifiesS("3", "a");
+  true_pkb.InsertModifiesS("2", "if");
+  true_pkb.InsertModifiesS("2", "w");
+  true_pkb.InsertModifiesS("2", "z");
+  true_pkb.InsertModifiesS("2", "t");
+  true_pkb.InsertModifiesS("2", "a");
 
   //*****************************
 

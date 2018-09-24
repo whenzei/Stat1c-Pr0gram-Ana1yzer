@@ -75,8 +75,12 @@ void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
-void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
-  modifies_table_.InsertModifies(modifying_stmt, modified_var);
+void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {
+  modifies_table_.InsertModifiesS(modifying_stmt, modified_var);
+}
+
+void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
+  modifies_table_.InsertModifiesP(modifying_proc, modified_var);
 }
 
 void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
@@ -196,27 +200,19 @@ StmtNumPairList PKB::GetAllParentTPair() {
 }
 
 bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
-  return modifies_table_.IsModifiedBy(stmt_num, var_name);
+  return modifies_table_.IsModifiedByS(stmt_num, var_name);
 }
 
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
-  if (proc_name == proc_list_.GetAllProcName().front()) {
-    return modifies_table_.IsModified(var_name);
-  } else {
-    return false;
-  }
+  return modifies_table_.IsModifiedByP(proc_name, var_name);
 }
 
 VarNameList PKB::GetModifiedVarS(StmtNum stmt_num) {
-  return modifies_table_.GetModifiedVar(stmt_num);
+  return modifies_table_.GetModifiedVarS(stmt_num);
 }
 
 VarNameList PKB::GetModifiedVarP(ProcName proc_name) {
-  if (proc_name == proc_list_.GetAllProcName().front()) {
-    return modifies_table_.GetAllModifiedVar();
-  } else {
-    return VarNameList();
-  }
+  return modifies_table_.GetModifiedVarP(proc_name);
 }
 
 VarNameList PKB::GetAllModifiedVar() {
@@ -228,11 +224,7 @@ StmtNumList PKB::GetModifyingS(VarName var_name) {
 }
 
 ProcNameList PKB::GetModifyingP(VarName var_name) {
-  if (modifies_table_.IsModified(var_name)) {
-    return proc_list_.GetAllProcName();
-  } else {
-    return ProcNameList();
-  }
+  return modifies_table_.GetModifyingProc(var_name);
 }
 
 StmtNumList PKB::GetAllModifyingS() {
@@ -240,11 +232,7 @@ StmtNumList PKB::GetAllModifyingS() {
 }
 
 ProcNameList PKB::GetAllModifyingP() {
-  if (modifies_table_.HasModifiesRelationship()) {
-    return proc_list_.GetAllProcName();
-  } else {
-    return ProcNameList();
-  }
+  return modifies_table_.GetAllModifyingProc();
 }
 
 bool PKB::HasModifiesRelationship() {
@@ -252,16 +240,11 @@ bool PKB::HasModifiesRelationship() {
 }
 
 StmtVarPairList PKB::GetAllModifiesPairS() {
-  return modifies_table_.GetAllModifiesPair();
+  return modifies_table_.GetAllModifiesPairS();
 }
 
 ProcVarPairList PKB::GetAllModifiesPairP() {
-  ProcVarPairList proc_var_pair_list;
-  ProcName proc_name = proc_list_.GetAllProcName().front();
-  for (VarName& var_name : modifies_table_.GetAllModifiedVar()) {
-    proc_var_pair_list.push_back(make_pair(proc_name, var_name));
-  }
-  return proc_var_pair_list;
+  return modifies_table_.GetAllModifiesPairP();
 }
 
 VarNameList PKB::GetAllUsedVar() { return uses_table_.GetAllUsedVar(); }

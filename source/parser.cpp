@@ -400,13 +400,13 @@ void Parser::PopulatePkbUses(int stmt_num, VarName used_var) {
 void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
   string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : modified_vars) {
-    pkb_->InsertModifies(stmt_num_str, var);
+    pkb_->InsertModifiesS(stmt_num_str, var);
   }
 }
 
 void Parser::PopulatePkbModifies(int stmt_num, VarName modified_var) {
   string stmt_num_str = std::to_string(stmt_num);
-  pkb_->InsertModifies(stmt_num_str, modified_var);
+  pkb_->InsertModifiesS(stmt_num_str, modified_var);
 }
 
 // Helper methods
