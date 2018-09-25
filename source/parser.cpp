@@ -13,7 +13,7 @@
 #include "util.h"
 #include "validator.h"
 
-const bool DEBUG_FLAG = true;
+const bool DEBUG_FLAG = false;
 
 using std::cout;
 using std::endl;
@@ -205,20 +205,22 @@ ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
   PopulatePkbModifies(stmt_num_, lhs_var);
   PopulatePkbUses(stmt_num_, rhs_vars);
 
-  //**************** DEBUG********************
-  string rhsvar = string();
-  for (VarName var : rhs_vars) {
-    rhsvar = rhsvar + " " + var;
-  }
-  string rhsconst = string();
-  for (int var : rhs_consts) {
-    rhsconst = rhsconst + " " + std::to_string(var);
-  }
+  if (DEBUG_FLAG) {
+    //**************** DEBUG********************
+    string rhsvar = string();
+    for (VarName var : rhs_vars) {
+      rhsvar = rhsvar + " " + var;
+    }
+    string rhsconst = string();
+    for (int var : rhs_consts) {
+      rhsconst = rhsconst + " " + std::to_string(var);
+    }
 
-  cout << "Assignment statement#" << stmt_num_
-       << " added, stmtLst#: " << given_stmt_list_num << ", lhs: " << lhs_var
-       << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
-  //***********************************************
+    cout << "Assignment statement#" << stmt_num_
+         << " added, stmtLst#: " << given_stmt_list_num << ", lhs: " << lhs_var
+         << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
+    //***********************************************
+  }
 
   return ParseData(rhs_vars, lhs_var);
 }
@@ -229,28 +231,35 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   int else_stmt_list_num = ++stmt_list_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditionals = ProcessConditional();
 
-  //************* DEBUG******************
-  string control_var_str = string();
-  for (VarName var : used_set_conditionals.first) {
-    control_var_str = control_var_str + " " + var;
+  if (DEBUG_FLAG) {
+    //************* DEBUG******************
+    string control_var_str = string();
+    for (VarName var : used_set_conditionals.first) {
+      control_var_str = control_var_str + " " + var;
+    }
+    cout << "If statement#" << if_stmt_num
+         << " added, stmtLst#: " << given_stmt_list_num
+         << ", control_variable: " << control_var_str << endl;
+    //*************************************
   }
-  cout << "If statement#" << if_stmt_num
-       << " added, stmtLst#: " << given_stmt_list_num
-       << ", control_variable: " << control_var_str << endl;
-  //*************************************
 
   // eat 'then {' tokens
   EatNumTokens(2);
 
-  cout << "[inside then block, stmtLst# should be " << then_stmt_list_num << "]"
-       << endl;
+  if (DEBUG_FLAG) {
+    cout << "[inside then block, stmtLst# should be " << then_stmt_list_num
+         << "]" << endl;
+  }
   // Process everything inside the if block
   ParseData then_stmt_info = ProcessStatementList(then_stmt_list_num);
 
   // eat "} else {" tokens
   EatNumTokens(3);
-  cout << "[inside else block, stmtLst# should be " << else_stmt_list_num << "]"
-       << endl;
+
+  if (DEBUG_FLAG) {
+    cout << "[inside else block, stmtLst# should be " << else_stmt_list_num
+         << "]" << endl;
+  }
   // Process everything inside the counterpart else block
   ParseData else_stmt_info = ProcessStatementList(else_stmt_list_num);
 
@@ -289,7 +298,9 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   // eat closing brace
   ReadNextToken();
 
-  cout << "[leaving if block]" << endl;
+  if (DEBUG_FLAG) {
+    cout << "[leaving if block]" << endl;
+  }
 
   // Update PKB of the 'if' block
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
@@ -303,21 +314,25 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   int while_stmt_list_num = ++stmt_list_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditional = ProcessConditional();
 
-  //************* DEBUG******************
-  string control_var_str = string();
-  for (VarName var : used_set_conditional.first) {
-    control_var_str = control_var_str + " " + var;
+  if (DEBUG_FLAG) {
+    //************* DEBUG******************
+    string control_var_str = string();
+    for (VarName var : used_set_conditional.first) {
+      control_var_str = control_var_str + " " + var;
+    }
+    cout << "While statement#" << while_stmt_num
+         << " added, stmtList#: " << given_stmt_list_num
+         << ", control_variable: " << control_var_str << endl;
+    //*************************************
   }
-  cout << "While statement#" << while_stmt_num
-       << " added, stmtList#: " << given_stmt_list_num
-       << ", control_variable: " << control_var_str << endl;
-  //*************************************
 
   // eat open brace
   ReadNextToken();
 
-  cout << "[inside while block, stmtLst# should be " << while_stmt_list_num
-       << "]" << endl;
+  if (DEBUG_FLAG) {
+    cout << "[inside while block, stmtLst# should be " << while_stmt_list_num
+         << "]" << endl;
+  }
 
   ParseData children_stmt_info = ProcessStatementList(while_stmt_list_num);
   StmtNumIntList children_stmt_nums = children_stmt_info.GetStmtNumList();
@@ -335,7 +350,9 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   // eat close brace
   ReadNextToken();
 
-  cout << "[leaving while block]" << endl;
+  if (DEBUG_FLAG) {
+    cout << "[leaving while block]" << endl;
+  }
 
   // Update PKB of the 'while' block
   pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
