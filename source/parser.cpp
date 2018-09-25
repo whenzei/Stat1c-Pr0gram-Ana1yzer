@@ -33,7 +33,7 @@ Parser::Parser(PKB* pkb) {
   stmt_list_num_ = 1;
 }
 
-void Parser::Parse(string filepath) {
+bool Parser::Parse(string filepath) {
   // read content from file
   string contents = Util::ReadContentFromFile(filepath);
   // retrieve vector of tokens
@@ -42,24 +42,28 @@ void Parser::Parse(string filepath) {
   // validate tokens for syntax errors
   Validator validator = Validator(tokens_);
   if (!validator.ValidateProgram()) {
-    return;
+    return false;
   }
 
   ParseProgram();
   pkb_->NotifyParseEnd();
+
+  return true;
 }
 
 // Method for testing which provides pre-written tokens of a program
-void Parser::Parse(TokenList program_tokenized) {
+bool Parser::Parse(TokenList program_tokenized) {
   tokens_ = program_tokenized;
   // validate tokens for syntax errors
   Validator validator = Validator(tokens_);
   if (!validator.ValidateProgram()) {
-    return;
+    return false;
   }
 
   ParseProgram();
   pkb_->NotifyParseEnd();
+
+  return true;
 }
 
 void Parser::ParseProgram() {

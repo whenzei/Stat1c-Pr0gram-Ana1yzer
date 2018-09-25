@@ -11,13 +11,14 @@ GUIWrapper::GUIWrapper() {
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
   pkb_ = PKB();
+  parse_success_ = false;
 }
 
 // method for parsing the SIMPLE source
 void GUIWrapper::parse(std::string filename) {
   // call your parser to do the parsing
   Parser parser_(&pkb_);
-  parser_.Parse(filename);
+  parse_success_ = parser_.Parse(filename);
   std::cout << "parsed " << filename << std::endl;
   // ...rest of your code...
 }
@@ -26,6 +27,11 @@ void GUIWrapper::parse(std::string filename) {
 void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
   // call your evaluator to evaluate the query here
   // ...code to evaluate query...
+  if (!parse_success_) {
+    results.push_back("Invalid SIMPLE syntax detected, no queries can be performed.");
+    return;
+  }
+
   PqlQuery* pql_query = new PqlQuery();
   PqlParser pql_parser(query, pql_query);
   if (pql_parser.Parse()) {
