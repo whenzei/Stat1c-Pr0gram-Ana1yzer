@@ -465,7 +465,8 @@ TEST_METHOD(TestUsesOfNestedStatements) {
       "}\n"
       "}\n"
       "else {\n"
-      "k = 3;\n"  // 8
+      "k = 3;\n"             // 8
+      "print print;"         // 9
       "}\n"
       "}\n";
 
@@ -481,6 +482,7 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   true_pkb.InsertUsesS("5", "a");
   true_pkb.InsertUsesS("5", "a");
   true_pkb.InsertUsesS("5", "k");
+  true_pkb.InsertUsesS("9", "print");
   true_pkb.InsertUsesS("2", "a");
   true_pkb.InsertUsesS("2", "b");
   true_pkb.InsertUsesS("2", "f");
@@ -488,6 +490,14 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   true_pkb.InsertUsesS("2", "a");
   true_pkb.InsertUsesS("2", "a");
   true_pkb.InsertUsesS("2", "k");
+  true_pkb.InsertUsesS("2", "print");
+
+  true_pkb.InsertUsesP("one", "b");
+  true_pkb.InsertUsesP("one", "a");
+  true_pkb.InsertUsesP("one", "f");
+  true_pkb.InsertUsesP("one", "ddd");
+  true_pkb.InsertUsesP("one", "k");
+  true_pkb.InsertUsesP("one", "print");
 
   //*******************************
 
@@ -497,7 +507,7 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   StmtNumList::iterator iter_1 = test_all_using_stmts.begin();
   StmtNumList::iterator iter_2 = true_all_using_stmts.begin();
 
-  // Should only have seven using statements
+  // Should only have eight using statements
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
@@ -514,7 +524,8 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   iter_1 = test_all_used_vars.begin();
   iter_2 = true_all_used_vars.begin();
 
-  // Should have five used vars
+  // Should have six used vars
+  Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
@@ -529,6 +540,22 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   iter_2 = true_used_var_of_stmt.begin();
 
   // Should have five used vars
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1, *iter_2);
+
+  //*******************************
+  StmtNumList test_used_vars_proc = test_pkb.GetUsedVarP("one");
+  StmtNumList true_used_vars_proc = true_pkb.GetUsedVarP("one");
+
+  iter_1 = test_used_vars_proc.begin();
+  iter_2 = true_used_vars_proc.begin();
+
+  // Should have six used vars in procedure "one"
+  Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
@@ -628,6 +655,7 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
       "while (a == b) {\n"  // 7
       "w = 1 + 2;\n"        // 8
       "a = b + 1;\n"        // 9
+      "read x;"             // 10
       "}\n"
       "}\n"
       "}"
@@ -643,19 +671,29 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   true_pkb.InsertModifiesS("6", "t");
   true_pkb.InsertModifiesS("8", "w");
   true_pkb.InsertModifiesS("9", "a");
+  true_pkb.InsertModifiesS("10", "x");
   true_pkb.InsertModifiesS("7", "w");
   true_pkb.InsertModifiesS("7", "a");
+  true_pkb.InsertModifiesS("7", "x");
   true_pkb.InsertModifiesS("3", "if");
   true_pkb.InsertModifiesS("3", "z");
   true_pkb.InsertModifiesS("3", "t");
   true_pkb.InsertModifiesS("3", "w");
   true_pkb.InsertModifiesS("3", "a");
+  true_pkb.InsertModifiesS("3", "x");
   true_pkb.InsertModifiesS("2", "if");
   true_pkb.InsertModifiesS("2", "w");
   true_pkb.InsertModifiesS("2", "z");
   true_pkb.InsertModifiesS("2", "t");
   true_pkb.InsertModifiesS("2", "a");
+  true_pkb.InsertModifiesS("2", "x");
 
+  true_pkb.InsertModifiesP("one", "a");
+  true_pkb.InsertModifiesP("one", "w");
+  true_pkb.InsertModifiesP("one", "if");
+  true_pkb.InsertModifiesP("one", "z");
+  true_pkb.InsertModifiesP("one", "t");
+  true_pkb.InsertModifiesP("one", "x");
   //*****************************
 
   StmtNumList test_all_modified_stmts = test_pkb.GetAllModifyingS();
@@ -664,7 +702,8 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   StmtNumList::iterator iter_1 = test_all_modified_stmts.begin();
   StmtNumList::iterator iter_2 = true_all_modified_stmts.begin();
 
-  // Should only have nine modified statements
+  // Should only have ten modified statements
+  Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
@@ -683,7 +722,8 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   iter_1 = test_all_modified_vars.begin();
   iter_2 = true_all_modified_vars.begin();
 
-  // Should only have five modified vars
+  // Should only have six modified vars
+  Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
@@ -713,7 +753,25 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   iter_1 = test_modified_stmt_get_var.begin();
   iter_2 = true_modified_stmt_get_var.begin();
 
-  // Should only have five modified variable at stmt_num 2
+  // Should only have six modified variable at stmt_num 2
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1++, *iter_2++);
+  Assert::AreEqual(*iter_1, *iter_2);
+
+  //*******************************
+
+  
+  StmtNumList test_modified_vars_proc = test_pkb.GetModifiedVarP("one");
+  StmtNumList true_modified_vars_proc = true_pkb.GetModifiedVarP("one");
+
+  iter_1 = test_modified_vars_proc.begin();
+  iter_2 = true_modified_vars_proc.begin();
+
+  // Should only have six modified variable at procedure "one"
+  Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);

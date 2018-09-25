@@ -128,3 +128,18 @@ read r;
 Select r such that Modifies(r, "read")
 8
 5000
+26 - comment
+procedure p; variable v;
+Select v such that Modifies(p, v)
+if, e, g, while, b, read, then, s, call
+5000
+27 - comment
+procedure p; variable v;
+Select v such that Uses(p, v)
+a, b, c, e, while, if, h, f, s, t
+5000
+28 - comment
+procedure p; variable v;
+Select p such that Modifies(p, v)
+One
+5000

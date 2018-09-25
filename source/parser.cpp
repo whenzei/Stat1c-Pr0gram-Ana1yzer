@@ -401,7 +401,7 @@ void Parser::PopulatePkbUses(int stmt_num, VarNameSet used_vars) {
 
 void Parser::PopulatePkbUses(ProcName proc_name, VarNameSet used_vars) {
   for (const auto& var : used_vars) {
-    //pkb_->InsertProc(proc_name, var);
+    pkb_->InsertUsesP(proc_name, var);
   }
 }
 
@@ -419,7 +419,7 @@ void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
 
 void Parser::PopulatePkbModifies(ProcName proc_name, VarNameSet modified_vars) {
   for (const auto& var : modified_vars) {
-    //pkb_->InsertModifies(proc_name, var);
+    pkb_->InsertModifiesP(proc_name, var);
   }
 }
 
