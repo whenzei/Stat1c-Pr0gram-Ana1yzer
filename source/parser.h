@@ -6,9 +6,9 @@
 #include <iostream>
 #include <unordered_set>
 
+#include "parse_data.h"
 #include "pkb.h"
 #include "tokenizer.h"
-#include "parse_data.h"
 
 using std::string;
 using std::unordered_set;
@@ -38,13 +38,11 @@ class Parser {
 
   // @returns ParseData consisting of list of statement numbers, set of Used
   // variable names, and set of Modified variable names
-  ParseData ProcessStatementList(
-      int given_stmt_list_index);
+  ParseData ProcessStatementList(int given_stmt_list_index);
 
-  // @returns ParseData consisting of statement num, set of Used variable names, and
-  // set of Modified variable names
-  ParseData ProcessStatement(
-      int given_stmt_list_index);
+  // @returns ParseData consisting of statement num, set of Used variable names,
+  // and set of Modified variable names
+  ParseData ProcessStatement(int given_stmt_list_index);
 
   // @returns ParseData consisting of set of Used variable names, and set of
   // Modified variable names
@@ -84,11 +82,17 @@ class Parser {
   void ParseProgram();
 
  public:
+  // constructor for Parser, takes in a PKB object
   Parser(PKB* pkb);
-  void Parse(string filepath);
+
+  // parses the string contents of the file located at given filepath
+  // @param filepath file to be parsed
+  // @return true if parse successful (meaning no syntax errors), or false if
+  // validation failed
+  bool Parse(string filepath);
 
   // For testing purposes
-  void Parse(TokenList program_tokenized);
+  bool Parse(TokenList program_tokenized);
 };
 
 #endif  //! SPA_PARSER_H
