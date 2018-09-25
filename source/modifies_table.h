@@ -18,28 +18,42 @@ using std::vector;
 
 using StmtNum = string;
 using StmtNumList = vector<string>;
+using StmtNumSet = unordered_set<string>;
 using VarName = string;
 using VarNameList = vector<string>;
 using VarNameSet = unordered_set<string>;
+using ProcName = string;
+using ProcNameList = vector<string>;
+using ProcNameSet = unordered_set<string>;
 using ModifiesMap = unordered_map<string, vector<string>>;
 using ModifiedByMap = unordered_map<string, vector<string>>;
 using StmtVarPairList = vector<pair<string, string>>;
 using ProcVarPairList = vector<pair<string, string>>;
 
 class ModifiesTable {
-  StmtNumList modifying_stmt_num_list_;
-  VarNameList modified_var_name_list_;
-  ModifiesMap modifies_map_;
-  ModifiedByMap modified_by_map_;
+  StmtNumList modifying_stmt_list_;
+  StmtNumSet modifying_stmt_set_;
+  VarNameList modified_var_list_;
+  VarNameSet modified_var_set_;
+  ProcNameList modifying_proc_list_;
+  ProcNameSet modifying_proc_set_;
+  ModifiesMap modifies_s_map_;
+  ModifiedByMap modified_by_s_map_;
+  ModifiesMap modifies_p_map_;
+  ModifiedByMap modified_by_p_map_;
 
  public:
-  void InsertModifies(StmtNum stmt_num, VarName var_name);
+  void InsertModifiesS(StmtNum stmt_num, VarName var_name);
 
-  bool IsModifiedBy(StmtNum stmt_num, VarName var_name);
+  void InsertModifiesP(ProcName proc_name, VarName var_name);
 
-  bool IsModified(VarName var_name);
+  bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
-  VarNameList GetModifiedVar(StmtNum stmt_num);
+  bool IsModifiedByP(ProcName proc_name, VarName var_name);
+
+  VarNameList GetModifiedVarS(StmtNum stmt_num);
+
+  VarNameList GetModifiedVarP(ProcName proc_name);
 
   VarNameList GetAllModifiedVar();
 
@@ -47,9 +61,15 @@ class ModifiesTable {
 
   StmtNumList GetAllModifyingStmt();
 
+  ProcNameList GetModifyingProc(VarName var_name);
+
+  ProcNameList GetAllModifyingProc();
+
   bool HasModifiesRelationship();
 
-  StmtVarPairList GetAllModifiesPair();
+  StmtVarPairList GetAllModifiesPairS();
+
+  ProcVarPairList GetAllModifiesPairP();
 };
 
 #endif !SPA_MODIFIES_TABLE_H
