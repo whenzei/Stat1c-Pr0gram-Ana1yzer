@@ -1,145 +1,765 @@
-1 - comment
+1 - PARENT syn-digit, [while]
+while w;
+Select w such that Parent (w, 7)
+5
+5000
+2 - PARENT digit-syn, [assign]
 assign a;
-Select a
-2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
+Select a such that Parent (12, a)
+13, 14, 15
 5000
-2 - comment
-procedure a;
-Select a
-One
+3 - PARENT syn-syn [while, while]
+while w1, w2;
+Select w1 such that Parent (w1, w2)
+5
 5000
-3 - comment
-variable a;
-Select a
-a, b, if, while, call, then, c, e, f, g, h, s, t, read
+4 - PARENT syn-syn [if, assign]
+if ifs; assign a;
+Select ifs such that Parent (ifs, a)
+4, 11
 5000
-4 - comment
-if a;
-Select a
-1, 3, 12
+5 - PARENT syn-syn [if, assign]
+if ifs; assign a;
+Select a such that Parent(ifs, a)
+18, 19
 5000
-5 - comment
-while a;
-Select a
-10
-5000
-6 - comment
-stmt a;
-Select a
-1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
-5000
-7 - comment
-print p;
-Select p
-17
-5000
-8 - comment
-read r;
-Select r
-8
-5000
-9 - comment
+6 - PARENT syn-wild [stmt]
 stmt s;
-Select s such that Uses(s, "while")
-1, 2, 3
+Select s such that Parent (s, _)
+4, 5, 7, 9, 11, 12, 16
 5000
-10 - comment
-stmt s;
-Select s such that Uses(s, "t")
-10, 12, 14
+7 - PARENT syn-wild [assign]
+assign a;
+Select a such that Parent (a, _)
+
 5000
-11 - comment
-stmt s;
-Select s such that Modifies(s, "while")
-1, 3, 6
+8 - PARENT syn-wild [read]
+read re;
+Select re such that Parent (re, _)
+
 5000
-12 - comment
-stmt s;
-Select s such that Follows(1, s)
-8
+9 - PARENT syn-wild [print]
+print pn;
+Select pn such that Parent (pn, _)
+
 5000
-13 - comment
-stmt s;
-Select s such that Follows(s, 17)
-16
+10 - PARENT syn-wild [while]
+while w;
+Select w such that Parent (w, _)
+5, 7, 9, 12, 16
 5000
-14 - comment
-stmt s;
-Select s such that Follows*(1, s)
-8, 9, 10, 16, 17
+11 - PARENT syn-wild [if]
+if ifs;
+Select ifs such that Parent (ifs, _)
+4, 11
 5000
-15 - comment
+12 - PARENT wild-syn [stmt]
 stmt s;
-Select s such that Follows*(s, 17)
-1, 8, 9, 10, 16
+Select s such that Parent (_, s)
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
 5000
-16- comment
-stmt s;
-Select s such that Parent(s, 13)
+13 - PARENT wild-syn [assign]
+assign a;
+Select a such that Parent (_, a)
+6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+14 - PARENT wild-syn [while]
+while w;
+Select w such that Parent (_, w)
+5, 7, 9, 12, 16
+5000
+15 - PARENT wild-syn [if]
+if ifs;
+Select ifs such that Parent (_, ifs)
+11
+5000
+16 - PARENT left pattern
+while w; assign a;
+Select w such that Parent(w, 6) pattern a("beta", _)
+
+5000
+17 - PARENT left pattern
+if ifs; assign a;
+Select ifs such that Parent(ifs, a) pattern a("a", _)
+4
+5000
+18 - PARENT right pattern full
+if ifs; assign a;
+Select ifs such that Parent(ifs, a) pattern a(_, "2")
+4
+5000
+19 - PARENT right pattern wildcard
+while w; assign a;
+Select w such that Parent(w, a) pattern a(_,_"Romeo"_)
 12
 5000
-17- comment
-stmt s;
-Select s such that Parent(s, 6)
-3
-5000
-18- comment
-stmt s;
-Select s such that Parent(1, s)
-2, 3, 7
-5000
-19- comment
-stmt s;
-Select s such that Parent*(1, s)
-2, 3, 4, 5, 6, 7
-5000
-20- comment
-stmt s;
-Select s such that Parent*(s, 14)
-10, 12
-5000
-20 - comment
-assign a;
-Select a pattern a(_, "h")
+20 - PARENT* syn-digit, [while]
+while w;
+Select w such that Parent* (w, 7)
 5
 5000
-21 - comment
+21 - PARENT* digit-syn, [assign]
 assign a;
-Select a pattern a(_,_)
-2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
+Select a such that Parent*(4, a)
+6, 8, 10, 13, 14, 15, 17, 18, 19
 5000
-22- comment
-assign a;
-Select a pattern a(_,_) such that Modifies(a,"g")
+22 - PARENT* syn-syn [stmt, assign]
+stmt s; assign a;
+Select s such that Parent* (s, a)
+4, 5, 7, 9, 11, 12, 16
+5000
+23 - PARENT* syn-syn [while, while]
+while w1, w2;
+Select w1 such that Parent* (w1, w2)
 5, 9
 5000
-23- comment
+24 - PARENT* syn-syn [if, assign]
+if ifs; assign a;
+Select ifs such that Parent* (ifs, a)
+4, 11
+5000
+25 - PARENT* syn-wild [stmt]
+stmt s;
+Select s such that Parent* (s, _)
+4, 5, 7, 9, 11, 12, 16
+5000
+26 - PARENT* syn-wild [assign]
 assign a;
-Select a such that Modifies(a,"g") pattern a(_,"h") 
+Select a such that Parent* (a, _)
+
+5000
+27 - PARENT* syn-wild [while]
+while w;
+Select w such that Parent* (w, _)
+5, 7, 9, 12, 16
+5000
+28 - PARENT* syn-wild [if]
+if ifs;
+Select ifs such that Parent* (ifs, _)
+4, 11
+5000
+29 - PARENT* wild-syn [stmt]
+stmt s;
+Select s such that Parent* (_, s)
+5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+5000
+30 - PARENT* wild-syn [assign]
+assign a;
+Select a such that Parent* (_, a)
+6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+31 - PARENT* wild-syn [while]
+while w;
+Select w such that Parent* (_, w)
+5, 7, 9, 12, 16
+5000
+32 - PARENT* wild-syn [if]
+if ifs;
+Select ifs such that Parent* (_, ifs)
+11
+5000
+33 - PARENT* left pattern
+while w; assign a;
+Select w such that Parent*(w, 6) pattern a("beta", _)
+
+5000
+34 - PARENT* left pattern
+if ifs; assign a;
+Select ifs such that Parent*(ifs, a) pattern a("b", _)
+11, 4
+5000
+35 - PARENT* right pattern full
+if ifs; assign a;
+Select ifs such that Parent*(ifs, a) pattern a(_, "0")
+4, 11
+5000
+36 - PARENT* right pattern wildcard
+while w; assign a;
+Select w such that Parent*(w, a) pattern a(_,_"Romeo"_)
+12, 9
+5000
+37 - FOLLOWS digit-digit
+stmt s;
+Select s such that Follows(4, 20)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ,17, 18, 19, 20
+5000
+38 - FOLLOWS digit-syn [if]
+if ifs;
+Select ifs such that Follows(3, ifs)
+4
+5000
+39 - FOLLOWS digit-syn [stmt]
+stmt s;
+Select s such that Follows (6, s)
+7
+5000
+40 - FOLLOWS digit-syn [stmt] [eval to true]
+stmt s; variable v;
+Select v such that Follows (6, s)
+i, b, c, a, beta, oSCar, tmp, k, j1k, I, chArlie, x, left, right, Romeo, l, width, delta
+5000
+41 - FOLLOWS syn-digit [while]
+while w;
+Select w such that Follows(w, 9)
 5
 5000
-24 - comment
-print p;
-Select p such that Uses(p, "s");
+42 - FOLLOWS syn-digit [assign]
+assign a;
+Select a such that Follows(a, 3)
+2
+5000
+43 - FOLLOWS syn-digit [read]
+read r;
+Select r such that Follows(r, 2)
+1
+5000
+44 - FOLLOWS syn-syn [if] [stmt]
+assign a; if ifs; stmt s;
+Select s such that Follows (ifs, s)
+20
+5000
+45 - FOLLOWS syn-syn [if] [assign]
+assign a; if ifs; stmt s;
+Select a such that Follows (ifs, a)
+
+5000
+46 - FOLLOWS syn-syn [while] [stmt]
+while w; stmt s;
+Select s such that Follows (w, s)
+9, 18
+5000
+47 - FOLLOWS syn-wildcard [assign]
+assign a;
+Select a such that Follows (a, _)
+2, 3, 6, 10, 13, 14
+5000
+48 - FOLLOWS syn-wildcard [if]
+if ifs;
+Select ifs such that Follows (ifs, _)
+4
+5000
+49 - FOLLOWS syn-wildcard [while]
+while w;
+Select w such that Follows (w, _)
+5, 16
+5000
+50 - FOLLOWS syn-syn [assign-stmt] pattern a left wildcard right subset
+assign a; stmt s;
+Select s such that Follows (a, s) pattern a (_, _"Romeo"_)
+14
+5000
+51 - FOLLOWS syn-syn [assign-stmt] pattern a left syn right wildcard
+assign a; stmt s; variable v;
+Select v such that Follows (a, s) pattern a (v,_)
+c, oSCar, b, Romeo, x
+5000
+52 - FOLLOWS syn-digit [assign] pattern a left syn right wildcard
+assign a; variable v;
+Select v such that Follows (a, 3) pattern a (v,_)
+b
+5000
+53 - FOLLOWS* syn-digit [assign]
+assign a;
+Select a such that Follows* (a, 4)
+2, 3
+5000
+54 - FOLLOWS* digit-syn [while]
+while w;
+Select w such that Follows* (5, w)
+9
+5000
+55 - FOLLOWS* digit-digit [if]
+if ifs;
+Select ifs such that Follows* (4, 10)
+
+5000
+56 - FOLLOWS* syn-syn [print][assign]
+print prn; assign a;
+Select prn such that Follows* (a, prn)
+20
+5000
+57 - FOLLOWS* syn-syn [while][while]
+while w1, w2;
+Select w2 such that Follows* (w1, w2)
+9
+5000
+58 - FOLLOWS* syn-syn [stmt][assign]
+assign a; stmt s;
+Select a such that Follows* (a, s)
+2, 3, 6, 10, 13, 14
+5000
+59 - FOLLOWS* syn-syn [ifs][stmt]
+stmt s; if ifs;
+Select ifs such that Follows* (s, ifs)
+4, 11
+5000
+60 - FOLLOWS* digit-digit [const]
+constant c;
+Select c such that Follows* (2, 20)
+200, 0, 5, 1, 2
+5000
+61 - FOLLOWS* syn-wildcard [assign]
+assign a;
+Select a such that Follows* (a, _)
+2, 3, 6, 10, 13, 14
+5000
+62 - FOLLOWS* wildcard-syn [while]
+while w;
+Select w such that Follows* (_, w)
+9, 7
+5000
+63 - FOLLOWS* wildcard-wildcard [stmt]
+stmt s;
+Select s such that Follows* (_, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+5000
+64 - FOLLOWS* pattern
+if ifs; stmt s; assign a;
+Select s such that Follows* (ifs, s) pattern a (_, _"Romeo"_)
+20
+5000
+65 - FOLLOWS* pattern
+assign a; while w; variable v;
+Select v such that Follows* (a, w) pattern a (v,_)
+oSCar
+5000
+66 - FOLLOWS* pattern
+assign a; variable v;
+Select v such that Follows* (a, 3) pattern a (v,_)
+b
+5000
+67 - MODIFIES syn-var [stmt]
+stmt s;
+Select s such that Modifies (s, "x")
+4, 9, 10, 11, 18
+5000
+68 - MODIFIES syn-wildcard [stmt]
+stmt s;
+Select s such that Modifies (s, _)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+5000
+69 - MODIFIES syn-syn [stmt]
+stmt s; variable v;
+Select s such that Modifies (s, v)
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+5000
+70 - MODIFIES digit-syn
+variable v;
+Select v such that Modifies(6, v)
+oSCar
+5000
+71 - MODIFIES digit-var [print]
+print pr;
+Select pr such that Modifies(13, "Romeo")
+20
+5000
+72 - MODIFIES syn-var [ifs]
+if ifs;
+Select ifs such that Modifies(ifs, "Romeo")
+4, 11
+5000
+73 - MODIFIES syn-var [while]
+while w;
+Select w such that Modifies(w, "c")
+12, 9, 16
+5000
+74 - MODIFIES syn-syn [assign]
+assign a; variable v;
+Select a such that Modifies(a, v)
+2, 3, 6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+75 - MODIFIES syn-wildcard [while]
+while w;
+Select w such that Modifies(w, _)
+5, 7, 9, 12, 16
+5000
+76 - MODIFIES syn-wildcard [read]
+read r;
+Select r such that Modifies(r, _)
+1
+5000
+77 - MODIFIES right-pattern-syn [assign]
+assign a; variable v;
+Select v such that Modifies (a, v) pattern a (_, "1 * beta % tmp")
+oSCar
+5000
+78 - MODIFIES right-pattern-wildcard
+while w; variable v; assign a;
+Select a pattern a (_ , _"c"_) such that Modifies (a, v)
 17
 5000
-25 - comment
-read r;
-Select r such that Modifies(r, "read")
+79 - MODIFIES syn-var
+procedure p;
+Select p such that Modifies (p, "x")
+ABC
+5000
+80 - MODIFIES syn-wildcard
+procedure p;
+Select p such that Modifies (p, _)
+ABC
+5000
+81 - MODIFIES syn-wildcard
+procedure p; variable v;
+Select v such that Modifies (p, v)
+i, b, c, oSCar, x, a, Romeo
+5000
+82 - MODIFIES syn-syn
+procedure p; variable v;
+Select p such that Modifies (p, v)
+ABC
+5000
+83 - MODIFIES ident-syn
+variable v;
+Select v such that Modifies("ABC", v)
+i, b, c, oSCar, x, a, Romeo
+5000
+84 - MODIFIES ident-wildcard
+while w;
+Select w such that Modifies("ABC", _)
+5, 7, 9, 12, 16
+5000
+85 - MODIFIES ident-ident
+assign a;
+Select a such that Modifies("ABC", "right")
+
+5000
+86 - MODIFIES left-pattern-syn
+procedure p; assign a; if ifs; variable v;
+Select p such that Modifies(ifs, v) pattern a("b", _)
+ABC
+5000
+87 - MODIFIES right-pattern-syn
+procedure p; assign a; while w; variable v;
+Select p such that Modifies(w, v) pattern a(_, "b")
+
+5000
+88 - MODIFIES right-pattern-wildcard
+procedure p; variable v; assign a;
+Select a such that Modifies(p, v) pattern a(_,_"chArlie"_)
 8
 5000
-26 - comment
-procedure p; variable v;
-Select v such that Modifies(p, v)
-if, e, g, while, b, read, then, s, call
+89 - USES-S syn-syn [while][select right]
+variable v; while w;
+Select v such that Uses(w, v)
+delta, Romeo, width, left, right, b, c, k, j1k, chArlie, tmp, beta, x, I, l
 5000
-27 - comment
+90 - USES-S syn-syn [while][select left]
+variable v; while w;
+Select w such that Uses(w, v)
+5, 7, 9, 12, 16
+5000
+91 - USES-S syn-syn [if][select right]
+if ifs; variable v;
+Select v such that Uses(ifs, v)
+a, beta, tmp, I, k, j1k, chArlie, x, left, right, b, c, Romeo, delta, l, width
+5000
+92 - USES-S syn-syn [if][select left]
+if ifs; variable v;
+Select ifs such that Uses(ifs, v)
+4, 11
+5000
+93 - USES-S syn-syn [assign][select right]
+assign a; variable v;
+Select v such that Uses(a, v)
+a, beta, tmp, I, k, j1k, chArlie, x, Romeo, delta, width, c, l
+5000
+94 - USES-S syn-syn [assign][select left]
+assign a; variable v;
+Select a such that Uses(a, v)
+3, 6, 8, 10, 13, 15, 17, 18
+5000
+95 - USES-S syn-syn [print][select right]
+print pn; variable v;
+Select v such that Uses(pn, v)
+delta
+5000
+96 - USES-S syn-syn [print][select left]
+print pn; variable v;
+Select pn such that Uses(pn, v)
+20
+5000
+97 - USES-S syn-syn [stmt][select right]
+stmt s; variable v;
+Select v such that Uses(s, v)
+a, beta, tmp, I, k, j1k, chArlie, x, left, right, b, c, Romeo, delta, l, width
+5000
+98 - USES-S syn-syn [stmt][select left]
+stmt s; variable v;
+Select s such that Uses(s, v)
+3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 20
+5000
+99 - USES-S syn-ident [while]
+while w;
+Select w such that Uses (w, "delta")
+9, 12
+5000
+100 - USES-S syn-ident [if]
+if ifs;
+Select ifs such that Uses (ifs, "j1k")
+4
+5000
+101 - USES-S syn-ident [assign]
+assign a;
+Select a such that Uses (a, "Romeo")
+13, 15
+5000
+102 - USES-S syn-ident [print]
+print pn;
+Select pn such that Uses (pn, "delta")
+20
+5000
+103 - USES-S syn-ident [stmt]
+stmt s;
+Select s such that Uses (s, "x")
+9, 10, 18, 11, 16, 4
+5000
+104 - USES-S syn-wild [while]
+while w;
+Select w such that Uses(w, _)
+5, 7, 9, 12, 16
+5000
+105 - USES-S syn-wild [if]
+if ifs;
+Select ifs such that Uses(ifs, _)
+4, 11
+5000
+106 - USES-S syn-wild [assign]
+assign a;
+Select a such that Uses(a, _)
+3, 6, 8, 10, 13, 15, 17, 18
+5000
+107 - USES-S syn-wild [print]
+print pn;
+Select pn such that Uses(pn, _)
+20
+5000
+108 - USES-S syn-wild [stmt]
+stmt s;
+Select s such that Uses(s, _)
+3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 20
+5000
+109 - USES-S digit-syn
+variable v;
+Select v such that Uses(12, v)
+left, right, b, c, Romeo, delta, width, l
+5000
+110 - USES-S digit-ident
+read r;
+Select r such that Uses(15, "width")
+1
+5000
+111 - USES-S + P no overlap
+while w; assign a; variable v1, v2;
+Select w pattern a(v1, _) such that Uses(w, v2)
+5, 7, 9, 12, 16
+5000
+112 - USES-S + P one overlap
+assign a1, a2; variable v;
+Select v such that Uses(a2, v) pattern a1(v, _)
+a, c, x, Romeo
+5000
+113 - USES-S + P two overlap
+assign a; variable v;
+Select v pattern a(v, _) such that Uses(a, v)
+c, x, Romeo
+5000
+114 - USES-P syn-syn [select left]
+procedure p; variable v;
+Select p such that Uses(p, v)
+ABC
+5000
+115 - USES-P syn-syn [select right]
 procedure p; variable v;
 Select v such that Uses(p, v)
-a, b, c, e, while, if, h, f, s, t
+a, beta, tmp, I, k, j1k, chArlie, x, left, right, b, c, Romeo, delta, l, width
 5000
-28 - comment
-procedure p; variable v;
-Select p such that Modifies(p, v)
-One
+116 - USES-P syn-ident
+procedure p;
+Select p such that Uses(p, "tmp")
+ABC
+5000
+117 - USES-P syn-ident
+procedure p;
+Select p such that Uses(p, "oSCar")
+
+5000
+118 - USES-P syn-wild
+procedure p;
+Select p such that Uses(p, _)
+ABC
+5000
+119 - USES-P ident-syn
+variable v;
+Select v such that Uses("ABC", v)
+a, beta, tmp, I, k, j1k, chArlie, x, left, right, b, c, Romeo, delta, l, width
+5000
+120 - USES-P ident-syn
+variable v;
+Select v such that Uses("AB", v)
+
+5000
+121 - USES-P ident-ident
+if ifs;
+Select ifs such that Uses("ABC", "x")
+4, 11
+5000
+122 - USES-P ident-ident
+if ifs;
+Select ifs such that Uses("ABC", "d")
+
+5000
+123 - USES-P ident-wild
+while w;
+Select w such that Uses("ABC", _)
+5, 7, 9, 12, 16
+5000
+124 - USES-P ident-wild
+while w;
+Select w such that Uses("A", _)
+
+5000
+125 - USES-P + P no overlap
+procedure p; assign a; variable v1, v2;
+Select a pattern a(v1, _) such that Uses(p, v2)
+2, 3, 6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+126 - USES-P + P one overlap
+procedure p; assign a; variable v;
+Select a such that Uses(p, v) pattern a(v, _)
+2, 3, 10, 13, 14, 15, 17, 18, 19
+5000
+127 - PATTERN syn-wild [select a]
+assign a; variable v;
+Select a pattern a(v, _)
+2, 3, 6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+128 - PATTERN syn-wild [select v]
+assign a; variable v;
+Select v pattern a(v, _)
+b, c, oSCar, x, Romeo, a
+5000
+129 - PATTERN syn-ident [sub][select a]
+assign a; variable v;
+Select a pattern a(v, _"x + 1"_)
+10, 18
+5000
+130 - PATTERN syn-ident [sub][select v]
+assign a; variable v;
+Select v pattern a(v, _"1"_)
+oSCar, x, Romeo, c
+5000
+131 - PATTERN syn-ident [sub][correct sub-expr]
+assign a; variable v;
+Select a pattern a(v, _"delta+l/width"_)
+15
+5000
+132 - PATTERN syn-ident [sub][correct sub-expr]
+assign a; variable v;
+Select a pattern a(v, _"k + j1k*chArlie"_)
+8
+5000
+133 - PATTERN syn-ident [sub][correct exact expr]
+assign a; variable v;
+Select a pattern a(v, _"c-1"_)
+17
+5000
+134 - PATTERN syn-ident [sub][wrong sub-expr]
+assign a; variable v;
+Select a pattern a(v, _"delta+l"_)
+
+5000
+135 - PATTERN syn-ident [exact][select a]
+assign a; variable v;
+Select a pattern a(v, "x+1")
+10, 18
+5000
+136 - PATTERN syn-ident [exact][select v]
+assign a; variable v;
+Select v pattern a(v, "I -(k + j1k *chArlie )")
+oSCar
+5000
+137 - PATTERN syn-ident [exact][wrong expr]
+assign a; variable v;
+Select a pattern a(v, "I - k + j1k *chArlie ")
+
+5000
+138 - PATTERN ident-wild [select a]
+assign a;
+Select a pattern a("oSCar", _)
+6, 8
+5000
+139 - PATTERN ident-wild [select a]
+assign a;
+Select a pattern a("oscar", _)
+
+5000
+140 - PATTERN ident-wild [select other]
+assign a; read r;
+Select r pattern a("oSCar", _)
+1
+5000
+141 - PATTERN ident-wild [select other]
+assign a; read r;
+Select r pattern a("oscar", _)
+
+5000
+142 - PATTERN ident-ident [sub]
+assign a;
+Select a pattern a("oSCar", _"beta"_)
+6
+5000
+143 - PATTERN ident-ident [sub]
+assign a;
+Select a pattern a("c", _"delta+l/ width"_)
+15
+5000
+144 - PATTERN ident-ident [sub]
+assign a;
+Select a pattern a("c", _"c-1"_)
+17
+5000
+145 - PATTERN ident-ident [sub]
+assign a;
+Select a pattern a("Romeo", _"delta + l  / width +Romeo"_)
+
+5000
+146 - PATTERN ident-ident [exact]
+assign a;
+Select a pattern a("oSCar", "I - (k + j1k*chArlie)")
+8
+5000
+147 - PATTERN ident-ident [exact]
+assign a;
+Select a pattern a("oSCar", "I - k + j1k*chArlie")
+
+5000
+148 - PATTERN wild-wild [select a]
+assign a;
+Select a pattern a(_, _)
+2, 3, 6, 8, 10, 13, 14, 15, 17, 18, 19
+5000
+149 - PATTERN wild-wild [select other]
+assign a; print pn;
+Select pn pattern a(_, _)
+20
+5000
+150 - PATTERN wild-ident [sub]
+assign a;
+Select a pattern a(_, _"x + 1"_)
+10, 18
+5000
+151 - PATTERN wild-ident [sub]
+assign a; if ifs;
+Select ifs pattern a(_, _"l  / width + Romeo"_)
+
+5000
+152 - PATTERN wild-ident [exact]
+assign a;
+Select a pattern a(_, "1*beta % tmp")
+6
+5000
+157 - PATTERN wild-ident [exact]
+assign a;
+Select a pattern a(_, "Romeo  + l  /width + delta")
+
 5000

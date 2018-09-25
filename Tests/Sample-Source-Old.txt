@@ -1,0 +1,27 @@
+                                                     \\ stmt# | stmtLst#
+procedure One {
+    if (((a>b) && (b > c)) || (c > e)) then {             \\ 1 (1)
+        if = while;       	                          \\ 2 (2)
+    } else {
+        if (while + if > (b + c - (c * e))) then {        \\ 3 (3)
+            e = if;                                       \\ 4 (4)
+            g = h;                                        \\ 5 (4)
+        } else {
+            while = b;                                    \\ 6 (5)
+        }
+        b = c;                                            \\ 7 (3)
+    }
+    read read;                                            \\ 8 (1)
+    g = f;                                                \\ 9 (1)
+    while (a < b) {                                       \\ 10 (1)
+        then = a + 1;                                     \\ 11 (6)
+        if (s == t) then {                                \\ 12 (6)
+            s = s + 1;                                    \\ 13 (7)
+        } else { 
+            call = t + 1;                                 \\ 14 (8)
+        }
+        b = b + 2;                                        \\ 15 (6)
+    }
+    s = (f/ e) * e / (c - e) + 1;                         \\ 16 (1)
+    print s;                                              \\ 17 (1)
+} 
