@@ -43,9 +43,6 @@ class PKB {
  public:
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
-  // @returns true if the procedure name cannot be found in the list and is
-  // successfully inserted, false if the procedure name was already inside the
-  // list
   bool InsertProcName(ProcName proc_name);
 
   // get all procedure names stored inside procedure list
@@ -58,8 +55,6 @@ class PKB {
 
   // inserts the given constant value into the constant list
   // @param const_value the constatnt value to be inserted
-  // @returns true if the constant value cannot be found in the list and is
-  // successfully inserted, false if the value was already in the list
   bool InsertConstValue(ConstValue const_value);
 
   // get all constant values stored inside constant list
@@ -97,23 +92,27 @@ class PKB {
   // structure
   void InsertPrintStmt(PrintStmtData* stmt_data);
 
-  // Expose follows_table InsertFollows method to Parser
+  // Inserts a follows relationship between followee and follower
   void InsertFollows(StmtNum followee, StmtNum follower);
 
-  // Expose modifies_table InsertModifies method to Parser
+  // Inserts a modifies relationship between modifying_stmt and modified_var
   void InsertModifiesS(StmtNum modifying_stmt, VarName modified_var);
 
+  // Inserts a modifies relationship between modifying_proc and modified_var
   void InsertModifiesP(ProcName modifying_proc, VarName modified_var);
 
-  // Expose uses_table InsertUses method to Parser
+  // Inserts a uses relationship between using_stmt and used_var
   void InsertUsesS(StmtNum using_stmt, VarName used_var);
 
+  // Inserts a uses relationship between using_proc and used_var
   void InsertUsesP(ProcName using_proc, VarName used_var);
 
-  // Expose parent_table InsertParent method to Parser
+  // Inserts a direct parent relationship between parent_stmt_num and
+  // child_stmt_num
   void InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // Expose parent_table InsertParentT method to Parser
+  // Inserts an indirect parent relationship between parent_stmt_num and
+  // child_stmt_num
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // get statement numbers for all statements stored inside stmt type list
@@ -143,175 +142,165 @@ class PKB {
 
   // Follows table public functions
 
-  // @returns true if FollowsT(followee, follower) holds
+  // @returns true if Follows*(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns true if Follows(followee, follower) holds
   bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
-  // @returns stmt number of statement a's that satisfies FollowsT(stmt_num_int,
-  // a)
+  // @returns a list of all n's that satisfy Follows*(stmt_num, n)
   StmtList GetFollowsT(StmtNum stmt_num);
 
-  // @returns stmt number containing statement a that satisfies
-  // Follows(stmt_num_int, a)
+  // @returns a list of all n's that satisfy Follows(stmt_num, n)
   StmtList GetFollows(StmtNum stmt_num);
 
-  // @returns a list of all statements that follow some other statement
+  // @returns a list of all n's that satisfy Follows(_, n)
   StmtList GetAllFollows();
 
-  // @returns list of stmt numbers of a's that satisfies FollowsT(a,
-  // stmt_num_int)
+  // @returns a list of all n's that satisfy Follows*(n, stmt_num)
   StmtList GetFollowedByT(StmtNum stmt_num);
 
-  // @returns list containing statement a that satisfies Follows(a,
-  // stmt_num_int)
+  // @returns a list of all n's that satisfy Follows(n, stmt_num)
   StmtList GetFollowedBy(StmtNum stmt_num);
 
-  // @returns a list of all statements that are followed by some other statment
+  // @returns a list of all n's that satisfy Follows*(n, _)
   StmtList GetAllFollowedBy();
 
-  // @returns true if follows table has any follows relationships
+  // @returns true if Follows(_, _) holds
   bool HasFollowsRelationship();
 
-  // @returns list of pairs of FollowsT relationships
+  // @returns list of all pairs of <s1, s2> that satisfy Follows*(s1, s2)
   StmtNumPairList GetAllFollowsTPair();
 
-  // @returns list of pairs of Follows relationships
+  // @returns list of all pairs of <s1, s2> that satisfy Follows(s1, s2)
   StmtNumPairList GetAllFollowsPair();
 
-  // @returns true if the statement specified by parent_stmt_num is the direct
-  // parent of the statement specified by child_stmt_num
+  // @returns true if Parent(parent_stmt_num, child_stmt_num) holds
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns true if the statement specified by parent_stmt_num is a parent
-  // (direct or indirect) of the statement specified by child_stmt_num
+  // @returns true if Parent*(parent_stmt_num, child_stmt_num) holds
   bool IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns a list of the statement number (only one element) of the direct
-  // parent
+  // @returns a list of all n's that satisfy Parent(n, stmt_num)
+  // only one element
   StmtNumList GetParent(StmtNum stmt_num);
 
-  // @returns a list of statement numbers of the parents (direct + indirect)
+  // @returns a list of all n's that satisfy Parent*(n, stmt_num)
   StmtNumList GetParentT(StmtNum stmt_num);
 
-  // @returns a list of statement numbers of statements that are parents to some
-  // statement
+  // @returns a list of all n's that satisfy Parent(n, _)/Parent*(n, _)
   StmtNumList GetAllParent();
 
-  // @returns a list of statement numbers of the direct children
+  // @returns a list of all n's that satisfy Parent(stmt_num, n)
   StmtNumList GetChild(StmtNum stmt_num);
 
-  // @returns a list of statement numbers of the children (direct + indirect)
+  // @returns a list of all n's that satisfy Parent*(stmt_num, n)
   StmtNumList GetChildT(StmtNum stmt_num);
 
-  // @returns a list of statement numbers of statements that are children to
-  // some statement
+  // @returns a list of all n's that satisfy Parent(_, n)
   StmtNumList GetAllChild();
 
-  // @returns true if there exists any parent-child relationship
+  // @returns true if Parent(_, _) holds
   bool HasParentRelationship();
 
-  // returns a list of parent-child pairs (direct)
+  // @returns list of all pairs of <s1, s2> that satisfy Parent(s1, s2)
   StmtNumPairList GetAllParentPair();
 
-  // returns a list of parent-child pairs (direct + indirect)
+  // @returns list of all pairs of <s1, s2> that satisfy Parent*(s1, s2)
   StmtNumPairList GetAllParentTPair();
 
-  // @returns true modifies(stmt_num_int, var_name) holds
+  // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
-  // @returns true modifies(proc_name, var_name) holds
+  // @returns true if Modifies(proc_name, var_name) holds
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
-  // @returns a list of variables that are modified at the given statement
+  // @returns a list of all n's that satisfy Modifies(stmt_num, n)
   VarNameList GetModifiedVarS(StmtNum stmt_num);
 
-  // @returns a list of variables that are modified in the given procedure
+  // @returns a list of all n's that satisfy Modifies(proc_name, n)
   VarNameList GetModifiedVarP(ProcName proc_name);
 
   // @returns a list of variables that are modified in any statement/procedure
   VarNameList GetAllModifiedVar();
 
-  // @returns a list of statements that the given variable is modified in
+  // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, var_name)
   StmtNumList GetModifyingS(VarName var_name);
 
-  // @returns a list of procedures that the given variable is modified in
+  // @returns a list of all proc_name's that satisfy Modifies(proc_name,
+  // var_name)
   ProcNameList GetModifyingP(VarName var_name);
 
-  // @returns a list of all statements that modify some variable
+  // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, _)
   StmtNumList GetAllModifyingS();
 
-  // @returns a list of all procedures that modify some variable
+  // @returns a list of all proc_name's that satisfy Modifies(proc_name,
+  // _)
   ProcNameList GetAllModifyingP();
 
   // @returns true if there exists any modifies relationship
   bool HasModifiesRelationship();
 
-  // @returns a list of all pairs of <modifying_stmt_num, modified_var_name>
+  // @returns a list of all pairs of <stmt_num, var_name> that satisfy
+  // Modifies(stmt_num, var_name)
   StmtVarPairList GetAllModifiesPairS();
 
-  // @returns a list of all pairs of <modifying_proc_name, modified_var_name>
+  // @returns a list of all pairs of <proc_name, var_name> that satisfy
+  // Modifies(proc_name, var_name)
   ProcVarPairList GetAllModifiesPairP();
 
   // @returns a list of all variables that are used by any proc and/or stmt
   VarNameList GetAllUsedVar();
 
-  // @returns a list of variables used in the statement identified by stmt_num
+  // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
 
-  // @returns a list of variables used in the procedure identified by proc_name
+  // @returns a list of all n's that satisfy Uses(proc_name, n)
   VarNameList GetUsedVarP(ProcName proc_name);
 
-  // @returns a list of all statements that use any variable
+  // @returns a list of all stmt_num's that satisfy Uses(stmt_num, _)
   StmtNumList GetAllUsingStmt();
 
-  // @returns a list of all procedures that use any variable
+  // @returns a list of all proc_name's that satisfy Uses(proc_name, _)
   ProcNameList GetAllUsingProc();
 
-  // @returns a list of all statements that use the variable identified by
-  // var_name
+  // @returns a list of all stmt_num's that satisfy Uses(stmt_num, var_name)
   StmtNumList GetUsingStmt(VarName var_name);
 
-  // @returns s a list of all procedures that use the variable identified by
-  // var_name
+  // @returns a list of all proc_name's that satisfy Uses(proc_name, var_name)
   ProcNameList GetUsingProc(VarName var_name);
 
-  // @returns true if var_name is used in stmt_num, false if otherwise
+  // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
 
-  // @returns true if var_name is used in proc_name, false if otherwise
+  // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
 
-  // @returns true if Uses Table contains any uses relationships, false if
-  // otherwise
+  // @returns true if Uses Table contains any uses relationships
   bool HasUsesRelationship();
 
-  // @returns a list of all <stmt_num, var_name> pairs of statements using a
-  // variable and the variable name
+  // @returns a list of all pairs of <stmt_num, var_name> that satisfy
+  // Uses(stmt_num, var_name)
   StmtVarPairList GetAllUsesPairS();
 
-  // @returns a list of all <proc_name, var_name> pairs of procedures using a
-  // variable and the variable name
+  // @returns a list of all pairs of <proc_name, var_name> that satisfy
+  // Uses(proc_name, var_name)
   ProcVarPairList GetAllUsesPairP();
 
-  // @returns a list of statement numbers of assign statements that satisfy
-  // pattern a(var_name, _sub_expr_)
+  // @returns a list of a's that satisfy pattern a(var_name, _sub_expr_)
   // var_name can be an empty string, sub_expr can be an empty TokenList (to
   // represent underscore)
-  StmtNumList GetAssignWithPattern(VarName var_name,
-                                   TokenList sub_expr);
+  StmtNumList GetAssignWithPattern(VarName var_name, TokenList sub_expr);
 
-  // @returns a list of statement numbers of assign statements that satisfy
-  // pattern a(var_name, exact_expr)
+  // @returns a list of a's that satisfy pattern a(var_name, exact_expr)
   // var_name can be an empty string (to represent underscore)
   StmtNumList GetAssignWithExactPattern(VarName var_name,
                                         TokenList exact_expr);
 
-  // @returns a list of pairs of a and v that satisfy pattern a(v, _sub_expr_)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, _sub_expr_)
   StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
 
-  // @returns a list of pairs of a and v that satisfy pattern a(v, exact_expr)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
   // Parser calls this method to notify pkb end of parse.
