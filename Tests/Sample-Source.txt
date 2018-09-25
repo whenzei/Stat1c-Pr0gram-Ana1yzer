@@ -1,27 +1,25 @@
-                                                     \\ stmt# | stmtLst#
-procedure One {
-    if (((a>b) && (b > c)) || (c > e)) then {             \\ 1 (1)
-        if = while;       	                          \\ 2 (2)
-    } else {
-        if (while + if > (b + c - (c * e))) then {        \\ 3 (3)
-            e = if;                                       \\ 4 (4)
-            g = h;                                        \\ 5 (4)
-        } else {
-            while = b;                                    \\ 6 (5)
-        }
-        b = c;                                            \\ 7 (3)
-    }
-    read read;                                            \\ 8 (1)
-    g = f;                                                \\ 9 (1)
-    while (a < b) {                                       \\ 10 (1)
-        then = a + 1;                                     \\ 11 (6)
-        if (s == t) then {                                \\ 12 (6)
-            s = s + 1;                                    \\ 13 (7)
-        } else { 
-            call = t + 1;                                 \\ 14 (8)
-        }
-        b = b + 2;                                        \\ 15 (6)
-    }
-    s = (f/ e) * e / (c - e) + 1;                         \\ 16 (1)
-    print s;                                              \\ 17 (1)
-} 
+procedure ABC
+{
+  read i;						\\1
+ b=200 ;						\\2
+	c= a   ;					\\3
+if (!(a != 0)) then{					\\4
+   while (beta > 0) {					\\5
+        oSCar  = 1 * beta % tmp;			\\6
+        while (tmp< 5) {				\\7
+          oSCar = I - (k + j1k * chArlie); }}		\\8
+	while (x >tmp) {				\\9
+        x = x + 1;					\\10
+        if (left!=1) then {				\\11
+          while ((left==right) && (b>=c)){		\\12
+            Romeo = Romeo - 1;				\\13
+            b = 0;					\\14
+            c = delta    + l  / width + Romeo; }}	\\15
+        else {	
+            while ((c>0)||(x<=c)) {			\\16
+              c = c -1;} 				\\17
+            x = x+ 1; }}}				\\18
+else{	
+	a= 2;}						\\19
+print delta;						\\20
+}

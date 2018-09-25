@@ -1,0 +1,145 @@
+1 - comment
+assign a;
+Select a
+2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
+5000
+2 - comment
+procedure a;
+Select a
+One
+5000
+3 - comment
+variable a;
+Select a
+a, b, if, while, call, then, c, e, f, g, h, s, t, read
+5000
+4 - comment
+if a;
+Select a
+1, 3, 12
+5000
+5 - comment
+while a;
+Select a
+10
+5000
+6 - comment
+stmt a;
+Select a
+1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+5000
+7 - comment
+print p;
+Select p
+17
+5000
+8 - comment
+read r;
+Select r
+8
+5000
+9 - comment
+stmt s;
+Select s such that Uses(s, "while")
+1, 2, 3
+5000
+10 - comment
+stmt s;
+Select s such that Uses(s, "t")
+10, 12, 14
+5000
+11 - comment
+stmt s;
+Select s such that Modifies(s, "while")
+1, 3, 6
+5000
+12 - comment
+stmt s;
+Select s such that Follows(1, s)
+8
+5000
+13 - comment
+stmt s;
+Select s such that Follows(s, 17)
+16
+5000
+14 - comment
+stmt s;
+Select s such that Follows*(1, s)
+8, 9, 10, 16, 17
+5000
+15 - comment
+stmt s;
+Select s such that Follows*(s, 17)
+1, 8, 9, 10, 16
+5000
+16- comment
+stmt s;
+Select s such that Parent(s, 13)
+12
+5000
+17- comment
+stmt s;
+Select s such that Parent(s, 6)
+3
+5000
+18- comment
+stmt s;
+Select s such that Parent(1, s)
+2, 3, 7
+5000
+19- comment
+stmt s;
+Select s such that Parent*(1, s)
+2, 3, 4, 5, 6, 7
+5000
+20- comment
+stmt s;
+Select s such that Parent*(s, 14)
+10, 12
+5000
+20 - comment
+assign a;
+Select a pattern a(_, "h")
+5
+5000
+21 - comment
+assign a;
+Select a pattern a(_,_)
+2, 4, 5, 6, 7, 9, 11, 13, 14, 15, 16
+5000
+22- comment
+assign a;
+Select a pattern a(_,_) such that Modifies(a,"g")
+5, 9
+5000
+23- comment
+assign a;
+Select a such that Modifies(a,"g") pattern a(_,"h") 
+5
+5000
+24 - comment
+print p;
+Select p such that Uses(p, "s");
+17
+5000
+25 - comment
+read r;
+Select r such that Modifies(r, "read")
+8
+5000
+26 - comment
+procedure p; variable v;
+Select v such that Modifies(p, v)
+if, e, g, while, b, read, then, s, call
+5000
+27 - comment
+procedure p; variable v;
+Select v such that Uses(p, v)
+a, b, c, e, while, if, h, f, s, t
+5000
+28 - comment
+procedure p; variable v;
+Select p such that Modifies(p, v)
+One
+5000
