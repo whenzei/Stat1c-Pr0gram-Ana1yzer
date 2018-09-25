@@ -763,3 +763,138 @@ assign a;
 Select a pattern a(_, "Romeo  + l  /width + delta")
 
 5000
+158 - Invalid syntax left quotes
+assign a;
+Select a such that Parent("4", a)
+
+5000
+159 - Invalid syntax right quotes
+assign a;
+Select a such that Parent(4, "a")
+
+5000
+160 - Invalid syntax both quotes
+assign a;
+Select a such that Parent("4", "a")
+
+5000
+161 - Invalid syntax lowercase parent
+assign a;
+Select a such that parent(4, a)
+
+5000
+162 - Impossible statement number
+assign a;
+Select a such that Parent(-1, a)
+
+5000
+163 - Higher statement number than available
+assign a;
+Select a such that Parent(999, a)
+
+5000
+164 - Invalid pattern a
+assign a;
+Select a pattern a("x", "x+")
+
+5000
+165 - Invalid pattern a
+assign a;
+Select a pattern a("x", _"x")
+
+5000
+166 - MODIFIES left-wildcard-invalid
+variable v;
+Select v such that Modifies(_, v)
+
+5000
+167 - MODIFIES invalid-second
+assign a;
+Select a such that Modifies(a, -1)
+
+5000
+168 - MODIFIES PATTERN left-wildcard-invalid
+assign a;
+Select a pattern a(_"w"_, _) such that Modifies(a, "w")
+
+5000
+169 - USES invalid left wild
+variable v;
+Select v such that Uses(_, v)
+
+5000
+170 - USES invalid left syn
+variable v1, v2;
+Select v2 such that Uses(v1, v2)
+
+5000
+171 - USES invalid left syn
+variable v; read r;
+Select r such that Uses(r, v)
+
+5000
+172 - USES invalid left syn
+variable v; constant c;
+Select v such that Uses(c, v)
+
+5000
+173 - USES invalid right syn
+constant c; stmt s;
+Select s such that Uses(s, c)
+
+5000
+174 - USES invalid right syn
+stmt s1, s2;
+Select s1 such that Uses(s1, s2)
+
+5000
+175 - USES invalid right syn
+stmt s; assign a;
+Select s such that Uses(s, a)
+
+5000
+176 - USES invalid right syn
+prog_line pl; stmt s;
+Select s such that Uses(s, pl)
+
+5000
+177 - USES invalid right syn
+procedure p; stmt s;
+Select s such that Uses(s, p)
+
+5000
+178 - USES undeclared syn
+stmt s;
+Select s such that Uses(s, v)
+
+5000
+179 - USES invalid syntax lowercase uses
+stmt s; variable v;
+Select s such that uses(s, v)
+
+5000
+180 - USES impossible stmt num
+variable v;
+Select v such that Uses(-1, v)
+
+5000
+181 - USES stmt num with quotes
+variable v;
+Select v such that Uses("1", v)
+
+5000
+182 - USES invalid right param type
+stmt s;
+Select s such that Uses(s, 3)
+
+5000
+183 - USES invalid var name
+stmt s;
+Select s such that Uses(s, "3a")
+
+5000
+184 - USES invalid var name
+stmt s;
+Select s such that Uses(s, "_")
+
+5000
