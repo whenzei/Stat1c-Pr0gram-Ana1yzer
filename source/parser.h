@@ -12,6 +12,7 @@
 
 using std::string;
 using std::unordered_set;
+using ProcName = std::string;
 
 class Parser {
  private:
@@ -74,8 +75,10 @@ class Parser {
   void PopulatePkbFollows(StmtNumIntList stmt_nums);
   void PopulatePkbParent(int stmt, StmtNumIntList stmt_nums);
   void PopulatePkbUses(int stmt_num, VarNameSet used_vars);
+  void PopulatePkbUses(ProcName proc_name, VarNameSet used_vars);
   void PopulatePkbUses(int stmt_num, VarName used_var);
   void PopulatePkbModifies(int stmt_num, VarNameSet modified_vars);
+  void PopulatePkbModifies(ProcName proc_name, VarNameSet modified_vars);
   void PopulatePkbModifies(int stmt_num, VarName modified_var);
 
   void ParseProgram();

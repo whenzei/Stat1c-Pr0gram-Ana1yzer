@@ -70,12 +70,15 @@ void Parser::ParseProgram() {
 
 void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
-  pkb_->InsertProcName(ReadNextToken().value);
+  ProcName proc_name = ReadNextToken().value;
+  pkb_->InsertProcName(proc_name);
   // eat the open brace
   ReadNextToken();
 
-  // For the future, need to add what procedure uses
-  ProcessStatementList(given_stmt_list_index);
+  ParseData parse_data = ProcessStatementList(given_stmt_list_index);
+
+  PopulatePkbModifies(proc_name, parse_data.GetModifiedVariables());
+  PopulatePkbUses(proc_name, parse_data.GetUsedVariables());
 
   ReadNextToken();
 }
@@ -396,6 +399,12 @@ void Parser::PopulatePkbUses(int stmt_num, VarNameSet used_vars) {
   }
 }
 
+void Parser::PopulatePkbUses(ProcName proc_name, VarNameSet used_vars) {
+  for (const auto& var : used_vars) {
+    //pkb_->InsertProc(proc_name, var);
+  }
+}
+
 void Parser::PopulatePkbUses(int stmt_num, VarName used_var) {
   string stmt_num_str = std::to_string(stmt_num);
   pkb_->InsertUses(stmt_num_str, used_var);
@@ -405,6 +414,12 @@ void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
   string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : modified_vars) {
     pkb_->InsertModifies(stmt_num_str, var);
+  }
+}
+
+void Parser::PopulatePkbModifies(ProcName proc_name, VarNameSet modified_vars) {
+  for (const auto& var : modified_vars) {
+    //pkb_->InsertModifies(proc_name, var);
   }
 }
 
