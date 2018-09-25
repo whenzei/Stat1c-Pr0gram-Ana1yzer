@@ -75,12 +75,20 @@ void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
-void PKB::InsertModifies(StmtNum modifying_stmt, VarName modified_var) {
-  modifies_table_.InsertModifies(modifying_stmt, modified_var);
+void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {
+  modifies_table_.InsertModifiesS(modifying_stmt, modified_var);
 }
 
-void PKB::InsertUses(StmtNum using_stmt, VarName used_var) {
-  uses_table_.InsertUses(used_var, using_stmt);
+void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
+  modifies_table_.InsertModifiesP(modifying_proc, modified_var);
+}
+
+void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
+  uses_table_.InsertUsesS(using_stmt, used_var);
+}
+
+void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
+  uses_table_.InsertUsesP(using_proc, used_var);
 }
 
 void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
@@ -192,27 +200,19 @@ StmtNumPairList PKB::GetAllParentTPair() {
 }
 
 bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
-  return modifies_table_.IsModifiedBy(stmt_num, var_name);
+  return modifies_table_.IsModifiedByS(stmt_num, var_name);
 }
 
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
-  if (proc_name == proc_list_.GetAllProcName().front()) {
-    return modifies_table_.IsModified(var_name);
-  } else {
-    return false;
-  }
+  return modifies_table_.IsModifiedByP(proc_name, var_name);
 }
 
 VarNameList PKB::GetModifiedVarS(StmtNum stmt_num) {
-  return modifies_table_.GetModifiedVar(stmt_num);
+  return modifies_table_.GetModifiedVarS(stmt_num);
 }
 
 VarNameList PKB::GetModifiedVarP(ProcName proc_name) {
-  if (proc_name == proc_list_.GetAllProcName().front()) {
-    return modifies_table_.GetAllModifiedVar();
-  } else {
-    return VarNameList();
-  }
+  return modifies_table_.GetModifiedVarP(proc_name);
 }
 
 VarNameList PKB::GetAllModifiedVar() {
@@ -224,11 +224,7 @@ StmtNumList PKB::GetModifyingS(VarName var_name) {
 }
 
 ProcNameList PKB::GetModifyingP(VarName var_name) {
-  if (modifies_table_.IsModified(var_name)) {
-    return proc_list_.GetAllProcName();
-  } else {
-    return ProcNameList();
-  }
+  return modifies_table_.GetModifyingProc(var_name);
 }
 
 StmtNumList PKB::GetAllModifyingS() {
@@ -236,11 +232,7 @@ StmtNumList PKB::GetAllModifyingS() {
 }
 
 ProcNameList PKB::GetAllModifyingP() {
-  if (modifies_table_.HasModifiesRelationship()) {
-    return proc_list_.GetAllProcName();
-  } else {
-    return ProcNameList();
-  }
+  return modifies_table_.GetAllModifyingProc();
 }
 
 bool PKB::HasModifiesRelationship() {
@@ -248,87 +240,48 @@ bool PKB::HasModifiesRelationship() {
 }
 
 StmtVarPairList PKB::GetAllModifiesPairS() {
-  return modifies_table_.GetAllModifiesPair();
+  return modifies_table_.GetAllModifiesPairS();
 }
 
 ProcVarPairList PKB::GetAllModifiesPairP() {
-  ProcVarPairList proc_var_pair_list;
-  ProcName proc_name = proc_list_.GetAllProcName().front();
-  for (VarName& var_name : modifies_table_.GetAllModifiedVar()) {
-    proc_var_pair_list.push_back(make_pair(proc_name, var_name));
-  }
-  return proc_var_pair_list;
+  return modifies_table_.GetAllModifiesPairP();
 }
 
 VarNameList PKB::GetAllUsedVar() { return uses_table_.GetAllUsedVar(); }
 
 VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
-  return uses_table_.GetAllUsedVar(stmt_num);
+  return uses_table_.GetUsedVarS(stmt_num);
 }
 
 VarNameList PKB::GetUsedVarP(ProcName proc_name) {
-  VarNameList used_var;
-  ProcNameList proc_names = proc_list_.GetAllProcName();
-  if (find(proc_names.begin(), proc_names.end(), proc_name) !=
-      proc_names.end()) {
-    used_var = uses_table_.GetAllUsedVar();
-  }
-  return used_var;
+  return uses_table_.GetUsedVarP(proc_name);
 }
 
 StmtNumList PKB::GetAllUsingStmt() { return uses_table_.GetAllUsingStmt(); }
 
-ProcNameList PKB::GetAllUsingProc() {
-  ProcNameList using_proc;
-  if (uses_table_.HasUsesRelationship()) {
-    using_proc = proc_list_.GetAllProcName();
-  }
-  return using_proc;
-}
+ProcNameList PKB::GetAllUsingProc() { return uses_table_.GetAllUsingProc(); }
 
 StmtNumList PKB::GetUsingStmt(VarName var_name) {
-  return uses_table_.GetAllUsingStmt(var_name);
+  return uses_table_.GetUsingStmt(var_name);
 }
 
 ProcNameList PKB::GetUsingProc(VarName var_name) {
-  ProcNameList using_proc;
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  if (find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
-    using_proc = proc_list_.GetAllProcName();
-  }
-  return using_proc;
+  return uses_table_.GetUsingProc(var_name);
 }
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
-  return uses_table_.IsUsedBy(var_name, stmt_num);
+  return uses_table_.IsUsedByS(stmt_num, var_name);
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
-  ProcNameList proc_names = proc_list_.GetAllProcName();
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  // For iteration 1, return true if given procedure exists and given variable
-  // is used anywhere in the program
-  if (find(proc_names.begin(), proc_names.end(), proc_name) !=
-          proc_names.end() &&
-      find(used_vars.begin(), used_vars.end(), var_name) != used_vars.end()) {
-    return true;
-  }
-  return false;
+  return uses_table_.IsUsedByP(proc_name, var_name);
 }
 
 bool PKB::HasUsesRelationship() { return uses_table_.HasUsesRelationship(); }
 
-StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesPair(); }
+StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }
 
-ProcVarPairList PKB::GetAllUsesPairP() {
-  VarNameList used_vars = uses_table_.GetAllUsedVar();
-  ProcVarPairList proc_var_list;
-  for (auto& var : used_vars) {
-    proc_var_list.push_back(
-        make_pair(proc_list_.GetAllProcName().front(), var));
-  }
-  return proc_var_list;
-}
+ProcVarPairList PKB::GetAllUsesPairP() { return uses_table_.GetAllUsesPPair(); }
 
 StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   if (var_name.compare("") == 0) {

@@ -118,3 +118,28 @@ assign a;
 Select a such that Modifies(a,"g") pattern a(_,"h") 
 5
 5000
+24 - comment
+print p;
+Select p such that Uses(p, "s");
+17
+5000
+25 - comment
+read r;
+Select r such that Modifies(r, "read")
+8
+5000
+26 - comment
+procedure p; variable v;
+Select v such that Modifies(p, v)
+if, e, g, while, b, read, then, s, call
+5000
+27 - comment
+procedure p; variable v;
+Select v such that Uses(p, v)
+a, b, c, e, while, if, h, f, s, t
+5000
+28 - comment
+procedure p; variable v;
+Select p such that Modifies(p, v)
+One
+5000

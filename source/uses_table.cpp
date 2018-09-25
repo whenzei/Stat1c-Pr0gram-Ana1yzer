@@ -2,46 +2,79 @@
 
 #include "uses_table.h"
 
-bool UsesTable::InsertUses(VarName var_name, StmtNum stmt_num) {
-  // returns false if same uses relationship already exists in the uses map
-  if (IsUsedBy(var_name, stmt_num)) { return false; }
-  // check for duplicates
-  if (uses_map_.count(stmt_num) == 0) {
-    using_stmts_list_.push_back(stmt_num);
+void UsesTable::InsertUsesS(StmtNum stmt_num, VarName var_name) {
+  if (!IsUsedByS(stmt_num, var_name)) {
+    if (using_stmt_set_.insert(stmt_num).second) {
+      using_stmt_list_.push_back(stmt_num);
+    }
+    if (used_var_set_.insert(var_name).second) {
+      used_var_list_.push_back(var_name);
+    }
+    uses_s_map_[stmt_num].push_back(var_name);
+    used_by_s_map_[var_name].push_back(stmt_num);
   }
-  if (used_by_map_.count(var_name) == 0) { used_vars_list_.push_back(var_name); }
-  uses_map_[stmt_num].push_back(var_name);
-  used_by_map_[var_name].push_back(stmt_num);
-  return true;
+}
+
+void UsesTable::InsertUsesP(ProcName proc_name, VarName var_name) {
+  if (!IsUsedByP(proc_name, var_name)) {
+    if (using_proc_set_.insert(proc_name).second) {
+      using_proc_list_.push_back(proc_name);
+    }
+    if (used_var_set_.insert(var_name).second) {
+      used_var_list_.push_back(var_name);
+    }
+    uses_p_map_[proc_name].push_back(var_name);
+    used_by_p_map_[var_name].push_back(proc_name);
+  }
 }
 
 VarNameList UsesTable::GetAllUsedVar() {
-  return used_vars_list_;
+  return used_var_list_;
 }
 
-VarNameList UsesTable::GetAllUsedVar(StmtNum stmt_num) {
+VarNameList UsesTable::GetUsedVarS(StmtNum stmt_num) {
   VarNameList used_vars;
-  if (uses_map_.find(stmt_num) != uses_map_.end()) {
-    used_vars = uses_map_[stmt_num];
+  if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
+    used_vars = uses_s_map_[stmt_num];
   }
   return used_vars;
 }
 
-StmtList UsesTable::GetAllUsingStmt() {
-  return using_stmts_list_;
+VarNameList UsesTable::GetUsedVarP(ProcName proc_name) {
+  VarNameList used_vars;
+  if (uses_p_map_.find(proc_name) != uses_p_map_.end()) {
+    used_vars = uses_p_map_[proc_name];
+  }
+  return used_vars;
 }
 
-StmtList UsesTable::GetAllUsingStmt(VarName var_name) {
-  StmtList using_stmts;
-  if (used_by_map_.find(var_name) != used_by_map_.end()) {
-    using_stmts = used_by_map_[var_name];
+StmtNumList UsesTable::GetAllUsingStmt() {
+  return using_stmt_list_; 
+}
+
+ProcNameList UsesTable::GetAllUsingProc() {
+  return using_proc_list_;
+}
+
+StmtNumList UsesTable::GetUsingStmt(VarName var_name) {
+  StmtNumList using_stmts;
+  if (used_by_s_map_.find(var_name) != used_by_s_map_.end()) {
+    using_stmts = used_by_s_map_[var_name];
   }
   return using_stmts;
 }
 
-bool UsesTable::IsUsedBy(VarName var_name, StmtNum stmt_num) {
-  if (uses_map_.find(stmt_num) != uses_map_.end()) {
-    VarNameList var_name_list = (*uses_map_.find(stmt_num)).second;
+ProcNameList UsesTable::GetUsingProc(VarName var_name) {
+  ProcNameList using_proc;
+  if (used_by_p_map_.find(var_name) != used_by_p_map_.end()) {
+    using_proc = used_by_p_map_[var_name];
+  }
+  return using_proc;
+}
+
+bool UsesTable::IsUsedByS(StmtNum stmt_num, VarName var_name) {
+  if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
+    VarNameList var_name_list = (*uses_s_map_.find(stmt_num)).second;
     return find(var_name_list.begin(), var_name_list.end(), var_name) !=
       var_name_list.end();
   }
@@ -50,14 +83,33 @@ bool UsesTable::IsUsedBy(VarName var_name, StmtNum stmt_num) {
   }
 }
 
-bool UsesTable::HasUsesRelationship() {
-  return (!uses_map_.empty());
+bool UsesTable::IsUsedByP(ProcName proc_name, VarName var_name) {
+  if (uses_p_map_.find(proc_name) != uses_p_map_.end()) {
+    VarNameList var_name_list = (*uses_p_map_.find(proc_name)).second;
+    return find(var_name_list.begin(), var_name_list.end(), var_name) !=
+           var_name_list.end();
+  } else {
+    return false;
+  }
 }
 
-StmtVarPairList UsesTable::GetAllUsesPair() {
+bool UsesTable::HasUsesRelationship() {
+  return (!uses_s_map_.empty());
+}
+
+StmtVarPairList UsesTable::GetAllUsesSPair() {
   StmtVarPairList uses_pairs;
-  if (!HasUsesRelationship()) { return uses_pairs; }
-  for (auto entry : uses_map_) {
+  for (auto entry : uses_s_map_) {
+    for (auto var_name : entry.second) {
+      uses_pairs.push_back(make_pair(entry.first, var_name));
+    }
+  }
+  return uses_pairs;
+}
+
+ProcVarPairList UsesTable::GetAllUsesPPair() {
+  ProcVarPairList uses_pairs;
+  for (auto entry : uses_p_map_) {
     for (auto var_name : entry.second) {
       uses_pairs.push_back(make_pair(entry.first, var_name));
     }
