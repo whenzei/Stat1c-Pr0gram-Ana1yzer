@@ -60,23 +60,6 @@ TEST_CLASS(TestModifiesTable) {
     Assert::IsTrue(result2.size() == 0);
   }
 
-  TEST_METHOD(TestGetAllModifiedVar) {
-    ModifiesTable modifies_table;
-    modifies_table.InsertModifiesS(kStmtNum1, kVarName1);
-    VarNameList result1 = modifies_table.GetAllModifiedVar();
-    Assert::IsTrue(result1.size() == 1);
-    Assert::AreEqual(kVarName1, result1.front());
-    modifies_table.InsertModifiesS(kStmtNum1, kVarName1);
-    VarNameList result2 = modifies_table.GetAllModifiedVar();
-    Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kVarName1, result2.front());
-    modifies_table.InsertModifiesS(kStmtNum1, kVarName2);
-    VarNameList result3 = modifies_table.GetAllModifiedVar();
-    Assert::IsTrue(result3.size() == 2);
-    Assert::AreEqual(kVarName1, result3.front());
-    Assert::AreEqual(kVarName2, result3.back());
-  }
-
   TEST_METHOD(TestGetModifyingStmt) {
     ModifiesTable modifies_table;
     modifies_table.InsertModifiesS(kStmtNum1, kVarName1);
@@ -147,19 +130,6 @@ TEST_CLASS(TestModifiesTable) {
     Assert::IsTrue(result3.size() == 2);
     Assert::AreEqual(kProcName1, result3.front());
     Assert::AreEqual(kProcName2, result3.back());
-  }
-
-  TEST_METHOD(TestHasModifiesRelationship) {
-    ModifiesTable modifies_table;
-    Assert::IsFalse(modifies_table.HasModifiesRelationship());
-	// to make sure that these functions don't affect the table size
-    modifies_table.GetAllModifiedVar();
-    modifies_table.GetModifiedVarS(kStmtNum1);
-    modifies_table.IsModifiedByS(kStmtNum2, kVarName1);
-    modifies_table.GetAllModifiesPairS();
-    Assert::IsFalse(modifies_table.HasModifiesRelationship());
-    modifies_table.InsertModifiesS(kStmtNum1, kVarName1);
-    Assert::IsTrue(modifies_table.HasModifiesRelationship());
   }
 
   TEST_METHOD(TestGetAllModifiesPairS) {

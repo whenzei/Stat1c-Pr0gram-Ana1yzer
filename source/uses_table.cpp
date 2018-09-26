@@ -7,9 +7,6 @@ void UsesTable::InsertUsesS(StmtNum stmt_num, VarName var_name) {
     if (using_stmt_set_.insert(stmt_num).second) {
       using_stmt_list_.push_back(stmt_num);
     }
-    if (used_var_set_.insert(var_name).second) {
-      used_var_list_.push_back(var_name);
-    }
     uses_s_map_[stmt_num].push_back(var_name);
     used_by_s_map_[var_name].push_back(stmt_num);
   }
@@ -20,16 +17,9 @@ void UsesTable::InsertUsesP(ProcName proc_name, VarName var_name) {
     if (using_proc_set_.insert(proc_name).second) {
       using_proc_list_.push_back(proc_name);
     }
-    if (used_var_set_.insert(var_name).second) {
-      used_var_list_.push_back(var_name);
-    }
     uses_p_map_[proc_name].push_back(var_name);
     used_by_p_map_[var_name].push_back(proc_name);
   }
-}
-
-VarNameList UsesTable::GetAllUsedVar() {
-  return used_var_list_;
 }
 
 VarNameList UsesTable::GetUsedVarS(StmtNum stmt_num) {
@@ -91,10 +81,6 @@ bool UsesTable::IsUsedByP(ProcName proc_name, VarName var_name) {
   } else {
     return false;
   }
-}
-
-bool UsesTable::HasUsesRelationship() {
-  return (!uses_s_map_.empty());
 }
 
 StmtVarPairList UsesTable::GetAllUsesSPair() {

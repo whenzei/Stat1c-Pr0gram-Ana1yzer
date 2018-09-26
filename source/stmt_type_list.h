@@ -31,22 +31,22 @@ class StmtTypeList {
   // @param stmt_type the PqlDeclarationEntity type of statement
   void InsertStmt(StmtNum stmt_num, PqlDeclarationEntity stmt_type);
 
-  // Get the list of all statement numbers
+  // Get the list of all statements
   StmtNumList GetAllStmt();
 
-  // Get the list of all assign statement numbers
+  // Get the list of all assign statements
   StmtNumList GetAllAssignStmt();
 
-  // Get the list of all while statement numbers
+  // Get the list of all while statements
   StmtNumList GetAllWhileStmt();
 
-  // Get the list of all if statement numbers
+  // Get the list of all if statements
   StmtNumList GetAllIfStmt();
 
-  // Get the list of all read statement numbers
+  // Get the list of all read statements
   StmtNumList GetAllReadStmt();
 
-  // Get the list of all print statement numbers
+  // Get the list of all print statements
   StmtNumList GetAllPrintStmt();
 };
 

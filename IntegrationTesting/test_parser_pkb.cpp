@@ -421,22 +421,6 @@ TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
 
   //*******************************
 
-  StmtNumList test_all_used_vars = test_pkb.GetAllUsedVar();
-  StmtNumList true_all_used_vars = true_pkb.GetAllUsedVar();
-
-  iter_1 = test_all_used_vars.begin();
-  iter_2 = true_all_used_vars.begin();
-
-  // Should have six used vars
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
-
-  //*******************************
-
   StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("3");
   StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("3");
 
@@ -517,22 +501,6 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //*******************************
-
-  StmtNumList test_all_used_vars = test_pkb.GetAllUsedVar();
-  StmtNumList true_all_used_vars = true_pkb.GetAllUsedVar();
-
-  iter_1 = test_all_used_vars.begin();
-  iter_2 = true_all_used_vars.begin();
-
-  // Should have six used vars
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
-
-  //*******************************
   StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("2");
   StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("2");
 
@@ -597,19 +565,6 @@ TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
   // Should only have five modified statements
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
-
-  //*******************************
-
-  StmtNumList test_all_modified_vars = test_pkb.GetAllModifiedVar();
-  StmtNumList true_all_modified_vars = true_pkb.GetAllModifiedVar();
-
-  iter_1 = test_all_modified_vars.begin();
-  iter_2 = true_all_modified_vars.begin();
-
-  // Should only have three modified vars
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1, *iter_2);
@@ -707,22 +662,6 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
-
-  //*****************************
-
-  StmtNumList test_all_modified_vars = test_pkb.GetAllModifiedVar();
-  StmtNumList true_all_modified_vars = true_pkb.GetAllModifiedVar();
-
-  iter_1 = test_all_modified_vars.begin();
-  iter_2 = true_all_modified_vars.begin();
-
-  // Should only have six modified vars
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);
   Assert::AreEqual(*iter_1++, *iter_2++);

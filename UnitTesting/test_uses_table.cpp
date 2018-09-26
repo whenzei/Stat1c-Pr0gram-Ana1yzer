@@ -15,17 +15,6 @@ TEST_CLASS(TestUsesTable) {
   const ProcName kSampleProcName1 = "simple";
   const ProcName kSampleProcName2 = "p";
 
-  TEST_METHOD(TestGetAllUsedVar) {
-    UsesTable uses;
-    uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
-    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName2);
-    uses.InsertUsesS(kSampleStmtIdx3, kSampleVarName1);
-    VarNameList used_vars = uses.GetAllUsedVar();
-    Assert::IsTrue(used_vars.size() == 2);
-    Assert::AreEqual(kSampleVarName1, used_vars.front());
-    Assert::AreEqual(kSampleVarName2, used_vars.back());
-  }
-
   TEST_METHOD(TestGetUsedVarS) {
     UsesTable uses;
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarName1);
@@ -104,13 +93,6 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesP(kSampleProcName1, kSampleVarName1);
     uses.InsertUsesP(kSampleProcName2, kSampleVarName1);
     Assert::IsTrue(uses.IsUsedByP(kSampleProcName2, kSampleVarName1));
-  }
-
-  TEST_METHOD(TestHasUsesRelationships) {
-    UsesTable uses;
-    Assert::IsFalse(uses.HasUsesRelationship());
-    uses.InsertUsesS(kSampleVarName1, kSampleStmtIdx2);
-    Assert::IsTrue(uses.HasUsesRelationship());
   }
 
   TEST_METHOD(TestGetAllUsesSPair) {

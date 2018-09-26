@@ -65,7 +65,7 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
-    ParentsList result = parent_table.GetAllParent();
+    StmtNumList result = parent_table.GetAllParent();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
     Assert::AreEqual(kStmtNum2, result.back());
@@ -154,36 +154,6 @@ TEST_CLASS(TestParentTable) {
     Assert::IsTrue(parent_pair.size() == 2);
     Assert::AreEqual(kStmtNum1, parent_pair.back().first);
     Assert::AreEqual(kStmtNum4, parent_pair.back().second);
-  }
-
-  TEST_METHOD(TestGetDirectParentMap) {
-    ParentTable parent_table;
-    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
-    parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
-    parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
-    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum4);
-    DirectParentMap result = parent_table.GetDirectParentMap();
-    Assert::IsTrue(result.size() == 3);
-    Assert::IsTrue(result[kStmtNum2] == kStmtNum1);
-    Assert::IsTrue(result[kStmtNum3] == kStmtNum2);
-    Assert::IsTrue(result[kStmtNum4] == kStmtNum1);
-  }
-
-  TEST_METHOD(TestGetParentsMap) {
-    ParentTable parent_table;
-    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
-    parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
-    parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
-    parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum4);
-    ParentsMap result = parent_table.GetParentsMap();
-    Assert::IsTrue(result.size() == 3);
-    Assert::IsTrue(result[kStmtNum2].size() == 1);
-    Assert::IsTrue(result[kStmtNum2].front() == kStmtNum1);
-    Assert::IsTrue(result[kStmtNum3].size() == 2);
-    Assert::IsTrue(result[kStmtNum3].front() == kStmtNum2);
-    Assert::IsTrue(result[kStmtNum3].back() == kStmtNum1);
-    Assert::IsTrue(result[kStmtNum4].size() == 1);
-    Assert::IsTrue(result[kStmtNum4].front() == kStmtNum1);
   }
 };
 }  // namespace UnitTesting
