@@ -935,7 +935,7 @@ void PqlEvaluator::EvaluateModifiesP(PqlSuchthat suchthat,
       // If proc (left) doesnt modify variable (right)
       if (!pkb.IsModifiedByP(left_name, right_name)) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't modify " << right_name
+        cout << "Procedure " << left_name << " doesn't modify " << right_name
              << endl;
       }
       return;
