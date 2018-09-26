@@ -83,14 +83,15 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kVarName3, result2.back());
   }
 
-  TEST_METHOD(TestInsertAndGetConstValue) {
+  TEST_METHOD(TestGetAllConstValue) {
     PKB pkb;
-    pkb.InsertConstValue(kConstValue1);
-    pkb.InsertConstValue(kConstValue2);
+    pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,
+                                         kVarName1, VarNameSet(),
+                                         kConstValueSet1, kTokenList));
     ConstValueList result = pkb.GetAllConstValue();
     Assert::IsTrue(result.size() == 2);
-    Assert::AreEqual(string("12"), result.front());
-    Assert::AreEqual(string("345"), result.back());
+    Assert::AreEqual(string("1"), result.front());
+    Assert::AreEqual(string("2"), result.back());
   }
 
   TEST_METHOD(TestGetStmtType) {

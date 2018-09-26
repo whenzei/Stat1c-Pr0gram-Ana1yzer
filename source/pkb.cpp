@@ -13,10 +13,6 @@ ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
 
 VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
 
-bool PKB::InsertConstValue(ConstValue const_value) {
-  return const_list_.InsertConstValue(const_value);
-}
-
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
 }

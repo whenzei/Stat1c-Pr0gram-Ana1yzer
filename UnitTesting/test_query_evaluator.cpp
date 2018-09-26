@@ -164,7 +164,8 @@ TEST_CLASS(TestQueryEvaluator) {
     PqlEvaluator qe;
     PKB pkb;
 
-    pkb.InsertConstValue(8);
+    pkb.InsertAssignStmt(
+        &AssignStmtData(1, 0, "x", VarNameSet(), {8}, TokenList()));
 
     PqlQuery* q = new PqlQuery();
     q->SetVarName("c");

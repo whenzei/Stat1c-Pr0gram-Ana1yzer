@@ -53,10 +53,6 @@ class PKB {
   // @returns the list of variable names (can be empty)
   VarNameList GetAllVarName();
 
-  // inserts the given constant value into the constant list
-  // @param const_value the constatnt value to be inserted
-  bool InsertConstValue(ConstValue const_value);
-
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();

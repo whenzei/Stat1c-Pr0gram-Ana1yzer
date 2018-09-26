@@ -15,40 +15,14 @@ TEST_CLASS(TestConstList) {
   const string kConstString3 = "26";
 
  public:
-  TEST_METHOD(TestInsertSuccess) {
-    ConstList const_list;
-    bool result = const_list.InsertConstValue(kConstValue1);
-    Assert::IsTrue(result);
-  }
 
-  TEST_METHOD(TestInsertDuplicate) {
-    ConstList const_list;
-    const_list.InsertConstValue(kConstValue1);
-    bool result = const_list.InsertConstValue(kConstValue1);
-    Assert::IsFalse(result);
-  }
-
-  TEST_METHOD(TestInsertMultiple) {
-    ConstList const_list;
-    bool result_1 = const_list.InsertConstValue(kConstValue1);
-    bool result_2 = const_list.InsertConstValue(kConstValue2);
-    bool result_3 = const_list.InsertConstValue(kConstValue3);
-    Assert::IsTrue(result_1);
-    Assert::IsTrue(result_2);
-    Assert::IsTrue(result_3);
-  }
-
-  TEST_METHOD(TestGetConstValueList) {
-    ConstList const_list;
-    const_list.InsertConstValue(kConstValue1);
-    ConstValueList const_list_result = const_list.GetAllConstValue();
-    Assert::AreEqual(kConstString1, const_list_result.front());
-  }
-  TEST_METHOD(TestGetConstListMultiple) {
+  TEST_METHOD(TestGetAllConstValue) {
     ConstList const_list;
     const_list.InsertConstValue(kConstValue1);
     const_list.InsertConstValue(kConstValue2);
     const_list.InsertConstValue(kConstValue3);
+	// duplicate
+    const_list.InsertConstValue(kConstValue1);
     ConstValueList const_list_result = const_list.GetAllConstValue();
     Assert::AreEqual(kConstString1, const_list_result.front());
     ConstValueList::iterator iter = const_list_result.begin();
