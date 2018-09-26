@@ -69,7 +69,7 @@ StmtNumList ParentTable::GetParentT(StmtNum child_stmt_num) {
   }
 }
 
-ParentsList ParentTable::GetAllParent() { return parents_list_; }
+StmtNumList ParentTable::GetAllParent() { return parents_list_; }
 
 StmtNumList ParentTable::GetChild(StmtNum parent_stmt_num) {
   DirectChildrenMap::iterator iter = direct_children_map_.find(parent_stmt_num);
@@ -89,7 +89,7 @@ StmtNumList ParentTable::GetChildT(StmtNum parent_stmt_num) {
   }
 }
 
-ChildrenList ParentTable::GetAllChild() { return children_list_; }
+StmtNumList ParentTable::GetAllChild() { return children_list_; }
 
 bool ParentTable::HasParentRelationship() {
   return !parents_map_.empty();
@@ -97,8 +97,7 @@ bool ParentTable::HasParentRelationship() {
 
 StmtNumPairList ParentTable::GetAllParentPair() {
   StmtNumPairList parent_pair_list;
-  DirectParentMap parents_map = GetDirectParentMap();
-  for (auto entry : parents_map) {
+  for (auto entry : direct_parent_map_) {
     parent_pair_list.push_back(make_pair(entry.second, entry.first));
   }
   return parent_pair_list;
@@ -106,15 +105,10 @@ StmtNumPairList ParentTable::GetAllParentPair() {
 
 StmtNumPairList ParentTable::GetAllParentTPair() {
   StmtNumPairList parent_t_pair_list;
-  ParentsMap parents_map = GetParentsMap();
-  for (auto entry : parents_map) {
+  for (auto entry : parents_map_) {
     for (StmtNum& parent_stmt_num : entry.second) {
       parent_t_pair_list.push_back(make_pair(parent_stmt_num, entry.first));
     }
   }
   return parent_t_pair_list;
 }
-
-DirectParentMap ParentTable::GetDirectParentMap() { return direct_parent_map_; }
-
-ParentsMap ParentTable::GetParentsMap() { return parents_map_; }
