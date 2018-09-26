@@ -84,10 +84,11 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
 
 bool PqlParser::ParseSelect(TokenList tokens) {
   // 1. Set select variable name
-  if (PqlValidator::ValidateIdent(tokens[1].value)) {
+  Declarations declarations = query_->GetDeclarations();
+  if (declarations.find(tokens[1].value) != declarations.end()) {
     query_->SetVarName(tokens[1].value);
   } else {
-    error_message_ = "Select synonym must be in IDENT format.";
+    error_message_ = "Select synonym is not declared.";
     return false;
   }
 
