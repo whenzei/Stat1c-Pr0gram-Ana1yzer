@@ -25,11 +25,11 @@ class PqlParser {
 
   private:
   /* The input of the query */
-  string query_text_;
+  string queryText_;
   /* The Query object to store information */
   PqlQuery* query_;
   /* Stores error message if parsing fail at some stage */
-  string error_message_;
+  string errorMessage_;
 
   /**
   Parses a single statement. A statement is a single declaration, or the select clause 
