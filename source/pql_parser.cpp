@@ -1,44 +1,34 @@
 #include "pql_parser.h"
 #include "expression_helper.h"
 #include "pql_validator.h"
-
-#include <iostream>
-#include <sstream>
+#include "util.h"
 
 const bool DEBUG_FLAG = false;
 
-PqlParser::PqlParser(string queryText, PqlQuery* query) {
-  queryText_ = queryText;
+PqlParser::PqlParser(string query_text, PqlQuery* query) {
+  query_text_ = query_text;
   query_ = query;
 }
 
 bool PqlParser::Parse() {
-  if (queryText_ == "") {
-    errorMessage_ = "Query can not be empty.";
+  if (query_text_ == "") {
+    error_message_ = "Query can not be empty.";
     return false;
   }
 
-  vector<string> statements;
+  // 1. Split up individual statements by semicolon
+  vector<string> statements = Util::Split(query_text_, ';');
 
-  // 1. Split up individual statements
-  size_t last = 0;
-  size_t next = 0;
-  string text;
-  while ((next = queryText_.find(';', last)) != string::npos) {
-    text = queryText_.substr(last, next - last);
-    text = text.substr(text.find_first_not_of(' '));
-    statements.push_back(text);
-    last = next + 1;
-  }
-  text = queryText_.substr(last);
-  if (text != "") {
-    text = text.substr(text.find_first_not_of(' '));
-    statements.push_back(text);
+  // should have at least 2 statements - a SYN declaration stmt and a clause stmt
+  // early return if less than 2
+  if (statements.size() < 2) {
+    error_message_ = "Incomplete or invalid query.";
+    return false;
   }
 
   // 2. Process each statement
   for (vector<string>::const_iterator i = statements.begin();
-       i != statements.end(); ++i) {
+    i != statements.end(); ++i) {
     if (!ParseStatement(*i, i + 1 == statements.end())) return false;
   }
 
@@ -48,9 +38,10 @@ bool PqlParser::Parse() {
 bool PqlParser::ParseStatement(string statement, bool isLast) {
   if (statement == "") {
     if (isLast) {
-      errorMessage_ = "Missing select statement.";
-    } else {
-      errorMessage_ = "Declaration can not be empty.";
+      error_message_ = "Missing select statement.";
+    }
+    else {
+      error_message_ = "Declaration can not be empty.";
     }
     return false;
   }
@@ -62,7 +53,7 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
           &Tokenizer::SkipWhitespace,     &Tokenizer::TokenizeParenthesis,
           &Tokenizer::TokenizeComma,      &Tokenizer::TokenizeQuotation,
           &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeOperators,
-          &Tokenizer::TokenizeNames,      &Tokenizer::TokenizeDigits};
+          &Tokenizer::TokenizeNames,      &Tokenizer::TokenizeDigits };
       TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
       if (DEBUG_FLAG) {
@@ -74,16 +65,17 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
       }
 
       if (!ParseSelect(tokens)) return false;
-    } else {
-      errorMessage_ = "Select clause must be the last statement.";
+    }
+    else {
+      error_message_ = "Select clause must be the last statement.";
       return false;
     }
   }
   // 2. Check if it's a declaration and process it
   else {
-    TokenizerFunc tokenizer_functions[] = {&Tokenizer::SkipWhitespace,
+    TokenizerFunc tokenizer_functions[] = { &Tokenizer::SkipWhitespace,
                                            &Tokenizer::TokenizeWords,
-                                           &Tokenizer::TokenizeComma};
+                                           &Tokenizer::TokenizeComma };
     TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
     if (!ParseDeclaration(tokens)) return false;
@@ -97,7 +89,8 @@ bool PqlParser::ParseSelect(TokenList tokens) {
   Declarations declarations = query_->GetDeclarations();
   if (declarations.find(tokens[1].value) != declarations.end()) {
     query_->SetVarName(tokens[1].value);
-  } else {
+  }
+  else {
     error_message_ = "Select synonym is not declared.";
     return false;
   }
@@ -107,44 +100,51 @@ bool PqlParser::ParseSelect(TokenList tokens) {
     int current_index = 2;
     string previous_type;
     while (current_index < tokens.size() &&
-           tokens[current_index].type != Tokenizer::TokenType::kEOF) {
+      tokens[current_index].type != Tokenizer::TokenType::kEOF) {
       if (tokens[current_index].value == "such") {
         if (tokens[current_index + 1].value != "that") {
-          errorMessage_ = "Missing 'that' in such that clause.";
+          error_message_ = "Missing 'that' in such that clause.";
           return false;
         }
-      } else if (tokens[current_index].value == "that") {
+      }
+      else if (tokens[current_index].value == "that") {
         // 2.1. Handle such that clause
         current_index++;
         if (!ParseSuchthat(tokens, &current_index)) return false;
         previous_type = "suchthat";
-      } else if (tokens[current_index].value == "pattern") {
+      }
+      else if (tokens[current_index].value == "pattern") {
         // 2.2. TODO: Handle pattern clause
         current_index++;
         if (!ParsePattern(tokens, &current_index)) return false;
         previous_type = "pattern";
-      } else if (tokens[current_index].value == "with") {
+      }
+      else if (tokens[current_index].value == "with") {
         // 2.3. TODO: Handle with clause
         current_index++;
         // if (!ParseWith(tokens, &current_index)) return false;
         previous_type = "with";
-      } else if (tokens[current_index].value == "and" && previous_type != "") {
+      }
+      else if (tokens[current_index].value == "and" && previous_type != "") {
         // 2.4. Handle 'and'
         if (previous_type == "suchthat") {
           current_index++;
           if (!ParseSuchthat(tokens, &current_index)) return false;
           previous_type = "suchthat";
-        } else if (previous_type == "pattern") {
+        }
+        else if (previous_type == "pattern") {
           current_index++;
           if (!ParsePattern(tokens, &current_index)) return false;
           previous_type = "pattern";
-        } else if (previous_type == "with") {
+        }
+        else if (previous_type == "with") {
           current_index++;
           // if (!ParseWith(tokens, &current_index)) return false;
           previous_type = "with";
         }
-      } else {
-        errorMessage_ = "Unknown clause in select statement.";
+      }
+      else {
+        error_message_ = "Unknown clause in select statement.";
         return false;
       }
       current_index++;
@@ -171,15 +171,16 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
   suchthat_type = PqlSuchthat::StringToType(raw_type);
   if (suchthat_type == PqlSuchthatType::kNone) {
-    errorMessage_ = "Unknown such that type.";
+    error_message_ = "Unknown such that type.";
     return false;
   }
 
   // 2. Check opening parentheses
   if (current.type == Tokenizer::TokenType::kOpenParen) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing open parentheses in such that clause.";
+  }
+  else {
+    error_message_ = "Missing open parentheses in such that clause.";
     return false;
   }
 
@@ -190,8 +191,9 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kComma) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing comma in such that parameters.";
+  }
+  else {
+    error_message_ = "Missing comma in such that parameters.";
     return false;
   }
 
@@ -202,7 +204,7 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   // 6. Check closing parentheses
   current = tokens[*current_index];
   if (current.type != Tokenizer::TokenType::kCloseParen) {
-    errorMessage_ = "Missing closing parentheses in such that clause.";
+    error_message_ = "Missing closing parentheses in such that clause.";
     return false;
   }
 
@@ -211,16 +213,18 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
-    } else {
-      errorMessage_ = "Parameter in such that clause not declared.";
+    }
+    else {
+      error_message_ = "Parameter in such that clause not declared.";
       return false;
     }
   }
   if (second_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(second) != declarations.end()) {
       second_type = declarations.at(second);
-    } else {
-      errorMessage_ = "Parameter in such that clause not declared.";
+    }
+    else {
+      error_message_ = "Parameter in such that clause not declared.";
       return false;
     }
   }
@@ -228,16 +232,19 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   // 8. Check specific types for Modifies and Uses
   if (suchthat_type == PqlSuchthatType::kModifies) {
     if (first_type == PqlDeclarationEntity::kProcedure ||
-        first_type == PqlDeclarationEntity::kIdent) {
+      first_type == PqlDeclarationEntity::kIdent) {
       suchthat_type = PqlSuchthatType::kModifiesP;
-    } else {
+    }
+    else {
       suchthat_type = PqlSuchthatType::kModifiesS;
     }
-  } else if (suchthat_type == PqlSuchthatType::kUses) {
+  }
+  else if (suchthat_type == PqlSuchthatType::kUses) {
     if (first_type == PqlDeclarationEntity::kProcedure ||
-        first_type == PqlDeclarationEntity::kIdent) {
+      first_type == PqlDeclarationEntity::kIdent) {
       suchthat_type = PqlSuchthatType::kUsesP;
-    } else {
+    }
+    else {
       suchthat_type = PqlSuchthatType::kUsesS;
     }
   }
@@ -246,23 +253,23 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   SuchthatParameters acceptable_parameters = suchthat_table.at(suchthat_type);
   // 9.1 Check first parameter
   if (acceptable_parameters.first.find(first_type) ==
-      acceptable_parameters.first.end()) {
-    errorMessage_ =
-        "First parameter in such that clause is invalid for the type.";
+    acceptable_parameters.first.end()) {
+    error_message_ =
+      "First parameter in such that clause is invalid for the type.";
     return false;
   }
 
   // 9.2 Check second parameter
   if (acceptable_parameters.second.find(second_type) ==
-      acceptable_parameters.second.end()) {
-    errorMessage_ =
-        "Second parameter in such that clause is invalid for the type.";
+    acceptable_parameters.second.end()) {
+    error_message_ =
+      "Second parameter in such that clause is invalid for the type.";
     return false;
   }
 
   // 9. Create such that object
   query_->AddSuchthat(
-      PqlSuchthat(suchthat_type, first, first_type, second, second_type));
+    PqlSuchthat(suchthat_type, first, first_type, second, second_type));
 
   return true;
 }
@@ -273,27 +280,28 @@ bool PqlParser::ParsePattern(TokenList tokens, int* current_index) {
   Declarations declarations = query_->GetDeclarations();
   if (declarations.find(current.value) != declarations.end()) {
     switch (declarations.at(current.value)) {
-      case PqlDeclarationEntity::kAssign:
-        *current_index += 1;
-        if (!ParsePatternAssign(tokens, current_index, current.value))
-          return false;
-        break;
-      case PqlDeclarationEntity::kWhile:
-        *current_index += 1;
-        if (!ParsePatternWhile(tokens, current_index, current.value))
-          return false;
-        break;
-      case PqlDeclarationEntity::kIf:
-        *current_index += 1;
-        if (!ParsePatternIf(tokens, current_index, current.value)) return false;
-        break;
-      default:
-        errorMessage_ =
-            "Pattern clause not of type 'assign', 'while', or 'if'.";
+    case PqlDeclarationEntity::kAssign:
+      *current_index += 1;
+      if (!ParsePatternAssign(tokens, current_index, current.value))
         return false;
+      break;
+    case PqlDeclarationEntity::kWhile:
+      *current_index += 1;
+      if (!ParsePatternWhile(tokens, current_index, current.value))
+        return false;
+      break;
+    case PqlDeclarationEntity::kIf:
+      *current_index += 1;
+      if (!ParsePatternIf(tokens, current_index, current.value)) return false;
+      break;
+    default:
+      error_message_ =
+        "Pattern clause not of type 'assign', 'while', or 'if'.";
+      return false;
     }
-  } else {
-    errorMessage_ = "Pattern synonym not declared.";
+  }
+  else {
+    error_message_ = "Pattern synonym not declared.";
     return false;
   }
 
@@ -301,7 +309,7 @@ bool PqlParser::ParsePattern(TokenList tokens, int* current_index) {
 }
 
 bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
-                                   string type_name) {
+  string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -309,8 +317,9 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   // 1. Check open parenthesis
   if (current.type == Tokenizer::TokenType::kOpenParen) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing open parentheses in assign pattern clause.";
+  }
+  else {
+    error_message_ = "Missing open parentheses in assign pattern clause.";
     return false;
   }
 
@@ -322,15 +331,16 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
-    } else {
-      errorMessage_ =
-          "First parameter of assign pattern clause is not declared.";
+    }
+    else {
+      error_message_ =
+        "First parameter of assign pattern clause is not declared.";
       return false;
     }
   }
 
   if (pattern_assign.find(first_type) == pattern_assign.end()) {
-    errorMessage_ = "First parameter of assign pattern clause is invalid.";
+    error_message_ = "First parameter of assign pattern clause is invalid.";
     return false;
   }
 
@@ -338,8 +348,9 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kComma) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing comma in assign pattern parameters.";
+  }
+  else {
+    error_message_ = "Missing comma in assign pattern parameters.";
     return false;
   }
 
@@ -356,8 +367,9 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
 
     if (current.type == Tokenizer::TokenType::kQuotation) {
       current = tokens[++*current_index];
-    } else {
-      errorMessage_ = "Missing quotation in pattern expression parameters.";
+    }
+    else {
+      error_message_ = "Missing quotation in pattern expression parameters.";
       return false;
     }
 
@@ -369,15 +381,16 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
       current = tokens[++*current_index];
     }
     if (!PqlValidator::ValidateExpression(expression)) {
-      errorMessage_ =
-          "Expression in second parameter of assign pattern clause is invalid.";
+      error_message_ =
+        "Expression in second parameter of assign pattern clause is invalid.";
       return false;
     }
 
     if (current.type == Tokenizer::TokenType::kQuotation) {
       current = tokens[++*current_index];
-    } else {
-      errorMessage_ = "Missing quotation in pattern expression parameters.";
+    }
+    else {
+      error_message_ = "Missing quotation in pattern expression parameters.";
       return false;
     }
 
@@ -385,9 +398,10 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
     if (underscore) {
       if (current.type == Tokenizer::TokenType::kUnderscore) {
         current = tokens[++*current_index];
-      } else {
-        errorMessage_ =
-            "Missing underscore in second parameter of assign pattern clause.";
+      }
+      else {
+        error_message_ =
+          "Missing underscore in second parameter of assign pattern clause.";
         return false;
       }
     }
@@ -395,30 +409,32 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
 
   // 7. Check close parenthesis
   if (current.type != Tokenizer::TokenType::kCloseParen) {
-    errorMessage_ = "Missing close parenthesis in assign pattern clause.";
+    error_message_ = "Missing close parenthesis in assign pattern clause.";
     return false;
   }
 
   // 8. Create assign pattern object
   PqlPattern pattern =
-      PqlPattern(type_name, PqlPatternType::kAssign, first, first_type);
+    PqlPattern(type_name, PqlPatternType::kAssign, first, first_type);
   PqlPatternExpressionType expression_type;
   if (underscore && expression.empty()) {
     expression_type = PqlPatternExpressionType::kUnderscore;
-  } else if (underscore && !expression.empty()) {
+  }
+  else if (underscore && !expression.empty()) {
     expression_type = PqlPatternExpressionType::kUnderscoreExpressionUnderscore;
-  } else {
+  }
+  else {
     expression_type = PqlPatternExpressionType::kExpression;
   }
   pattern.SetAssignExpression(expression_type,
-                              ExpressionHelper::ToPostfix(expression));
+    ExpressionHelper::ToPostfix(expression));
   query_->AddPattern(pattern);
 
   return true;
 }
 
 bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
-                                  string type_name) {
+  string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -426,8 +442,9 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   // 1. Check open parenthesis
   if (current.type == Tokenizer::TokenType::kOpenParen) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing open parentheses in while pattern clause.";
+  }
+  else {
+    error_message_ = "Missing open parentheses in while pattern clause.";
     return false;
   }
 
@@ -439,15 +456,16 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
-    } else {
-      errorMessage_ =
-          "First parameter of while pattern clause is not declared.";
+    }
+    else {
+      error_message_ =
+        "First parameter of while pattern clause is not declared.";
       return false;
     }
   }
 
   if (pattern_while.find(first_type) == pattern_while.end()) {
-    errorMessage_ = "First parameter of while pattern clause is invalid.";
+    error_message_ = "First parameter of while pattern clause is invalid.";
     return false;
   }
 
@@ -455,34 +473,36 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kComma) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing comma in while pattern parameters.";
+  }
+  else {
+    error_message_ = "Missing comma in while pattern parameters.";
     return false;
   }
 
   // 5. Check underscore
   if (current.type == Tokenizer::TokenType::kUnderscore) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Second parameter of while pattern clause must be '_'.";
+  }
+  else {
+    error_message_ = "Second parameter of while pattern clause must be '_'.";
     return false;
   }
 
   // 6. Check close parenthesis
   if (current.type != Tokenizer::TokenType::kCloseParen) {
-    errorMessage_ = "Missing close parenthesis in while pattern clause.";
+    error_message_ = "Missing close parenthesis in while pattern clause.";
     return false;
   }
 
   // 7. Create pattern object
   query_->AddPattern(
-      PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+    PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
 
   return true;
 }
 
 bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
-                               string type_name) {
+  string type_name) {
   Token current = tokens[*current_index];
   string first;
   PqlDeclarationEntity first_type;
@@ -490,8 +510,9 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   // 1. Check open parenthesis
   if (current.type == Tokenizer::TokenType::kOpenParen) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing open parentheses in if pattern clause.";
+  }
+  else {
+    error_message_ = "Missing open parentheses in if pattern clause.";
     return false;
   }
 
@@ -503,14 +524,15 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
-    } else {
-      errorMessage_ = "First parameter of if pattern clause is not declared.";
+    }
+    else {
+      error_message_ = "First parameter of if pattern clause is not declared.";
       return false;
     }
   }
 
   if (pattern_if.find(first_type) == pattern_if.end()) {
-    errorMessage_ = "First parameter of if pattern clause is invalid.";
+    error_message_ = "First parameter of if pattern clause is invalid.";
     return false;
   }
 
@@ -518,16 +540,18 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kComma) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing comma in if pattern parameters.";
+  }
+  else {
+    error_message_ = "Missing comma in if pattern parameters.";
     return false;
   }
 
   // 5. Check underscore
   if (current.type == Tokenizer::TokenType::kUnderscore) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Second parameter of if pattern clause must be '_'.";
+  }
+  else {
+    error_message_ = "Second parameter of if pattern clause must be '_'.";
     return false;
   }
 
@@ -535,34 +559,36 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kComma) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Missing comma in if pattern parameters.";
+  }
+  else {
+    error_message_ = "Missing comma in if pattern parameters.";
     return false;
   }
 
   // 7. Check underscore
   if (current.type == Tokenizer::TokenType::kUnderscore) {
     current = tokens[++*current_index];
-  } else {
-    errorMessage_ = "Third parameter of if pattern clause must be '_'.";
+  }
+  else {
+    error_message_ = "Third parameter of if pattern clause must be '_'.";
     return false;
   }
 
   // 8. Check close parenthesis
   if (current.type != Tokenizer::TokenType::kCloseParen) {
-    errorMessage_ = "Missing close parenthesis in if pattern clause.";
+    error_message_ = "Missing close parenthesis in if pattern clause.";
     return false;
   }
 
   // 9. Create pattern object
   query_->AddPattern(
-      PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+    PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
 
   return true;
 }
 
 bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
-                               string* value, PqlDeclarationEntity* type) {
+  string* value, PqlDeclarationEntity* type) {
   Token current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kQuotation) {
     // 1. Handle quotations
@@ -572,32 +598,38 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
       *value = current.value;
       *type = PqlDeclarationEntity::kIdent;
       current = tokens[++*current_index];
-    } else {
-      errorMessage_ =
-          "Such that parameter in quotation is not in ident format.";
+    }
+    else {
+      error_message_ =
+        "Such that parameter in quotation is not in ident format.";
       return false;
     }
 
     // consume closing quotation
     if (current.type == Tokenizer::TokenType::kQuotation) {
-    } else {
-      errorMessage_ = "Missing quotation in such that parameters.";
+    }
+    else {
+      error_message_ = "Missing quotation in such that parameters.";
       return false;
     }
-  } else if (current.type == Tokenizer::TokenType::kUnderscore) {
+  }
+  else if (current.type == Tokenizer::TokenType::kUnderscore) {
     // 2. Handle underscore
     *value = "_";
     *type = PqlDeclarationEntity::kUnderscore;
-  } else if (PqlValidator::ValidateInteger(current.value)) {
+  }
+  else if (PqlValidator::ValidateInteger(current.value)) {
     // 3. Handle integer
     *value = current.value;
     *type = PqlDeclarationEntity::kInteger;
-  } else if (PqlValidator::ValidateIdent(current.value)) {
+  }
+  else if (PqlValidator::ValidateIdent(current.value)) {
     // 4. Handle ident
     *value = current.value;
     *type = PqlDeclarationEntity::kSynonym;
-  } else {
-    errorMessage_ = "Invalid parameter in such that clause.";
+  }
+  else {
+    error_message_ = "Invalid parameter in such that clause.";
     return false;
   }
 
@@ -608,9 +640,9 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
 bool PqlParser::ParseDeclaration(TokenList tokens) {
   // 1. Get declaration entity type
   PqlDeclarationEntity entity =
-      PqlQuery::DeclarationStringToType(tokens[0].value);
+    PqlQuery::DeclarationStringToType(tokens[0].value);
   if (entity == PqlDeclarationEntity::kNone) {
-    errorMessage_ = "Invalid declaration entity.";
+    error_message_ = "Invalid declaration entity.";
     return false;
   }
 
@@ -619,7 +651,7 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
     if (tokens[i].type == Tokenizer::TokenType::kEOF) break;
     if (tokens[i].type == Tokenizer::TokenType::kComma) {
       if (i + 1 >= tokens.size()) {
-        errorMessage_ = "Synonym expected after comma in declaration.";
+        error_message_ = "Synonym expected after comma in declaration.";
         return false;
       }
       continue;
@@ -631,11 +663,12 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
     if (PqlValidator::ValidateIdent(synonym)) {
       // add to declarations
       if (!query_->AddDeclaration(entity, synonym)) {
-        errorMessage_ = "Duplicated declaration synonym.";
+        error_message_ = "Duplicated declaration synonym.";
         return false;
       }
-    } else {
-      errorMessage_ = "Declaration synonym has to be in IDENT format.";
+    }
+    else {
+      error_message_ = "Declaration synonym has to be in IDENT format.";
       return false;
     }
   }
@@ -643,4 +676,4 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
   return true;
 }
 
-string PqlParser::GetErrorMessage() { return errorMessage_; }
+string PqlParser::GetErrorMessage() { return error_message_; }
