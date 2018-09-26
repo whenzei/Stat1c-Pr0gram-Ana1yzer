@@ -35,6 +35,18 @@ From the Properties page, navigate to Configuration Properties > Debugging. Ente
 
 After this has been done, run AutoTester and wait for the tests to be completed. A new `out.xml` file will be generated at `$SOURCE\Code08\Release` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
 
+We have also provided two addition sample programs (`Sample-Source-2.txt`, `Sample-Source-3.txt`) with their respective sample queries (`Sample-Queries-2.txt`, `Sample-Queries-3`) files for a total of 3 test suites. You can run them by changing the file names of the arguments in the "Command Arguments" field:
+
+```
+..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt out-2.xml
+```
+
+```
+..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt out-3.xml
+```
+
+> Note that `Sample-Source-3.txt` is purposely invalid, meaning all the queries in `Sample-Queries-3.txt` should return no results.
+
 #### AutoTester arguments
 AutoTester accepts three arguments:
 
@@ -68,7 +80,18 @@ To run the AutoTester from a command prompt, navigate to the parent directory of
 > AutoTester ../../Tests08/Sample-Source.txt ../../Tests08/Sample-Queries.txt out.xml
 ```
 
-The above command runs AutoTester with the supplied tests located at `$SOURCE\Tests08`. Similar to running AutoTester in VS2017, an `out.xml` file will be generated in `$SOURCE\Code08\Release` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
+The above command runs AutoTester with the supplied tests located at `$SOURCE\Tests08`. The two alternate test suites can also be run in the same manner:
+
+```bash
+> AutoTester ../../Tests08/Sample-Source-2.txt ../../Tests08/Sample-Queries-2.txt out-2.xml
+```
+
+```bash
+> AutoTester ../../Tests08/Sample-Source-3.txt ../../Tests08/Sample-Queries-3.txt out-3.xml
+```
+
+
+Similar to running AutoTester in VS2017, the respective `out.xml` files will be generated in `$SOURCE\Code08\Release` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
 
 ### Executing the GUI
 The GUI can either be run straight from VS2017 or via the executable `Gui.exe` located at `$SOURCE\Release\`.
