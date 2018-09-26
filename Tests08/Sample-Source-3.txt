@@ -1,0 +1,10 @@
+procedure one {
+    a = b;	                     \\ 1
+    if (a > b) then {            \\ 2
+        e = f c d * -;           \\ 3
+        asd = ddd;               \\ 4
+    } else {
+        k = 3;              	   \\ 5
+        print print;             \\ 6
+    }
+}
