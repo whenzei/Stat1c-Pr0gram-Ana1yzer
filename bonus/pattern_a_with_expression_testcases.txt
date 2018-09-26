@@ -1,0 +1,85 @@
+1 - Single pattern assignment with exact expression
+assign a;
+Select a pattern a(_,"1 * beta % tmp")
+6
+5000
+2 - Single pattern assignment with expression and wildcard
+assign a;
+Select a pattern a(_,_"k + j1k * chArlie"_)
+8
+5000
+3 - Parent and pattern assignment with exact expression
+assign a; while w;
+Select w such that Parent(w, a) pattern a(_, "x + 1")
+9
+5000
+4 - Parent and pattern assignment with expression and wild card
+assign a; stmt s;
+Select s such that Parent(s, a) pattern a(_, _"l / width"_)
+12
+5000
+5 - Parent and pattern assignment with expression not found
+assign a; stmt s;
+Select s such that Parent(s, a) pattern a(_, "l / width")
+
+5000
+6 - Uses and pattern assignment with exact expression
+assign a; if ifs;
+Select a such that Uses(ifs, "width") pattern a(_, "delta + l / width + Romeo")
+15
+5000
+7 - Uses and pattern assignment with expression and wildcard
+assign a; while w;
+Select w such that Uses(w, "I") pattern a(_, _"j1k * chArlie"_)
+5, 7
+5000
+8 - Uses and pattern assignment with expression not found
+assign a; while w;
+Select w such that Uses(w, "I") pattern a(_, "j1k * chArlie")
+
+5000
+9 - Modifies and pattern assignment with exact expression
+assign a;
+Select a such that Modifies(a, "c") pattern a(_, "c - 1")
+17
+5000
+10 - Modifies and pattern assignment with expression and wildcard
+assign a;
+Select a pattern a(_, _"delta + l/ width"_) such that Modifies(a, "c")
+15
+5000
+11 - Modifies and pattern assignment with expression not found
+assign a;
+Select a pattern a(_, "delta + l/ width") such that Modifies(a, "c")
+
+5000
+12 - Follows and pattern assignment with exact expression
+assign a;
+Select a pattern a(_, "Romeo - 1") such that Follows(a, 14)
+13
+5000
+13 - Follows and pattern assignment with expression and wildcard
+assign a; while w;
+Select w pattern a(_, _"1 * beta"_) such that Follows(a, w)
+7
+5000
+14 - Follows and pattern assignment with no matching expression
+assign a; while w;
+Select w pattern a(_, "1 * beta") such that Follows(a, w)
+
+5000
+15 - Follows* and pattern assignment with exact expression
+assign a;
+Select a pattern a(_, "delta + l / width + Romeo") such that Follows*(13, a)
+15
+5000
+16 - Follows* and pattern assignment with expression and wildcard
+assign a;
+Select a pattern a(_, _"x + 1"_) such that Follows*(a, 11)
+10
+5000
+17 - Follows* and pattern assignment with no matching expression
+assign a; while w;
+Select a pattern a(_, "1 * beta") such that Follows(a,_)
+
+5000
