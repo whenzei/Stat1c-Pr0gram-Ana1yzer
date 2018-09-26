@@ -77,17 +77,17 @@ None
 To run the AutoTester from a command prompt, navigate to the parent directory of `AutoTester.exe` at `$SOURCE\Code08\Release` from the command line and input:
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source.txt ../../Tests08/Sample-Queries.txt out.xml
+> AutoTester ..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt ..\..\Tests08\out.xml
 ```
 
 The above command runs AutoTester with the supplied tests located at `$SOURCE\Tests08`. The two alternate test suites can also be run in the same manner:
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source-2.txt ../../Tests08/Sample-Queries-2.txt out-2.xml
+> AutoTester ..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt ..\..\Tests08\out-2.xml
 ```
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source-3.txt ../../Tests08/Sample-Queries-3.txt out-3.xml
+> AutoTester ..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt ..\..\Tests08\out-3.xml
 ```
 
 
