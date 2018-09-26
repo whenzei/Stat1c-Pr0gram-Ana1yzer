@@ -14,7 +14,7 @@ AbstractWrapper* WrapperFactory::createWrapper() {
 volatile bool TestWrapper::GlobalStop = false;
 
 // a default constructor
-TestWrapper::TestWrapper() {
+TestWrapper::TestWrapper() { 
   // create any objects here as instance variables of this class
   // as well as any initialization required for your spa program
 

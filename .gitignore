@@ -22,6 +22,7 @@
 [Rr]elease/
 [Rr]eleases/
 [Gg]eneratedFiles/
+[Ii]ntermediate/
 x64/
 x86/
 bld/
