@@ -122,25 +122,25 @@ bool PKB::IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollows(followee_stmt_num, follower_stmt_num);
 }
 
-StmtList PKB::GetFollowsT(StmtNum stmt_num) {
+StmtNumList PKB::GetFollowsT(StmtNum stmt_num) {
   return follows_table_.GetFollowsT(stmt_num);
 }
 
-StmtList PKB::GetFollows(StmtNum stmt_num) {
+StmtNumList PKB::GetFollows(StmtNum stmt_num) {
   return follows_table_.GetFollows(stmt_num);
 }
 
-StmtList PKB::GetAllFollows() { return follows_table_.GetAllFollows(); }
+StmtNumList PKB::GetAllFollows() { return follows_table_.GetAllFollows(); }
 
-StmtList PKB::GetFollowedByT(StmtNum stmt_num) {
+StmtNumList PKB::GetFollowedByT(StmtNum stmt_num) {
   return follows_table_.GetFollowedByT(stmt_num);
 }
 
-StmtList PKB::GetFollowedBy(StmtNum stmt_num) {
+StmtNumList PKB::GetFollowedBy(StmtNum stmt_num) {
   return follows_table_.GetFollowedBy(stmt_num);
 }
 
-StmtList PKB::GetAllFollowedBy() { return follows_table_.GetAllFollowedBy(); }
+StmtNumList PKB::GetAllFollowedBy() { return follows_table_.GetAllFollowedBy(); }
 
 bool PKB::HasFollowsRelationship() {
   return follows_table_.HasFollowsRelationship();

@@ -149,22 +149,22 @@ class PKB {
   bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns a list of all n's that satisfy Follows*(stmt_num, n)
-  StmtList GetFollowsT(StmtNum stmt_num);
+  StmtNumList GetFollowsT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(stmt_num, n)
-  StmtList GetFollows(StmtNum stmt_num);
+  StmtNumList GetFollows(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(_, n)
-  StmtList GetAllFollows();
+  StmtNumList GetAllFollows();
 
   // @returns a list of all n's that satisfy Follows*(n, stmt_num)
-  StmtList GetFollowedByT(StmtNum stmt_num);
+  StmtNumList GetFollowedByT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(n, stmt_num)
-  StmtList GetFollowedBy(StmtNum stmt_num);
+  StmtNumList GetFollowedBy(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows*(n, _)
-  StmtList GetAllFollowedBy();
+  StmtNumList GetAllFollowedBy();
 
   // @returns true if Follows(_, _) holds
   bool HasFollowsRelationship();

@@ -34,14 +34,14 @@ namespace PKBTests {
     }
 
     TEST_METHOD(TestGetFollowsT) {
-      StmtList expected_followers;
+      StmtNumList expected_followers;
       FollowsTable follows_table;
       expected_followers.push_back(kSampleStmtIdx2);
       expected_followers.push_back(kSampleStmtIdx3);
 
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
-      StmtList followers = follows_table.GetFollowsT(kSampleStmtIdx1);
+      StmtNumList followers = follows_table.GetFollowsT(kSampleStmtIdx1);
       Assert::AreEqual(expected_followers.front(), followers.front());
       Assert::AreEqual(expected_followers.back(), followers.back());
     }
@@ -51,12 +51,12 @@ namespace PKBTests {
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx2);
       follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
 
-      StmtList follower = follows_table.GetFollows(kSampleStmtIdx1);
+      StmtNumList follower = follows_table.GetFollows(kSampleStmtIdx1);
       Assert::AreEqual(kSampleStmtIdx2, follower.front());
     }
 
     TEST_METHOD(TestGetAllFollows) {
-      StmtList expected_followers;
+      StmtNumList expected_followers;
       FollowsTable follows_table;
       expected_followers.push_back(kSampleStmtIdx2);
       expected_followers.push_back(kSampleStmtIdx3);
@@ -66,21 +66,21 @@ namespace PKBTests {
       follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
       follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
 
-      StmtList followers = follows_table.GetAllFollows();
+      StmtNumList followers = follows_table.GetAllFollows();
       Assert::IsTrue(followers.size()==3);
       Assert::AreEqual(expected_followers.front(), followers.front());
       Assert::AreEqual(expected_followers.back(), followers.back());
     }
 
     TEST_METHOD(TestGetFollowedByT) {
-      StmtList expected_followees;
+      StmtNumList expected_followees;
       FollowsTable follows_table;
       expected_followees.push_back(kSampleStmtIdx2);
       expected_followees.push_back(kSampleStmtIdx1);
 
       follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
       follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
-      StmtList followees = follows_table.GetFollowedByT(kSampleStmtIdx3);
+      StmtNumList followees = follows_table.GetFollowedByT(kSampleStmtIdx3);
       Assert::AreEqual(expected_followees.front(), followees.front());
       Assert::AreEqual(expected_followees.back(), followees.back());
     }
@@ -91,12 +91,12 @@ namespace PKBTests {
       follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
       follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
 
-      StmtList followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
+      StmtNumList followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
       Assert::AreEqual(kSampleStmtIdx2, followee.front());
     }
 
     TEST_METHOD(TestGetAllFollowedBy) {
-      StmtList expected_followees;
+      StmtNumList expected_followees;
       FollowsTable follows_table;
       expected_followees.push_back(kSampleStmtIdx1);
       expected_followees.push_back(kSampleStmtIdx2);
@@ -108,7 +108,7 @@ namespace PKBTests {
       follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
       follows_table.InsertFollows(kSampleStmtIdx5, kSampleStmtIdx4);
 
-      StmtList followees = follows_table.GetAllFollowedBy();
+      StmtNumList followees = follows_table.GetAllFollowedBy();
       Assert::IsTrue(followees.size() == 4);
       Assert::AreEqual(expected_followees.front(), followees.front());
       Assert::AreEqual(expected_followees.back(), followees.back());
