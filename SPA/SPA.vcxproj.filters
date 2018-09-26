@@ -90,6 +90,9 @@
     <ClCompile Include="..\source\validator.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\util.cpp">
+      <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\expression_helper.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
@@ -110,9 +113,6 @@
     </ClCompile>
     <ClCompile Include="..\source\design_extractor.cpp">
       <Filter>Source Files\Frontend</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\util.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +176,9 @@
     <ClInclude Include="..\source\validator.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\util.h">
+      <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\expression_helper.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
@@ -196,9 +199,6 @@
     </ClInclude>
     <ClInclude Include="..\source\design_extractor.h">
       <Filter>Header Files\Frontend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\util.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
