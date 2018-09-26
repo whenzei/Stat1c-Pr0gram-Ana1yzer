@@ -30,19 +30,21 @@ After building the solution, add the required arguments for AutoTester to perfor
 From the Properties page, navigate to Configuration Properties > Debugging. Enter the provided string in the "Command Arguments" field (assuming you have not moved any folders around):
 
 ```
-..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt out.xml
+..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt ..\..\Tests08\out.xml
 ```
 
-After this has been done, run AutoTester and wait for the tests to be completed. A new `out.xml` file will be generated at `$SOURCE\Code08\Release` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
+> Make sure the `out.xml` is located in the `Tests08` folder for the xml to be readable in Firefox. The rendering of the .xml files require the `analysis.xls` file which is located in the `Tests08` folder.
+
+After this has been done, run AutoTester and wait for the tests to be completed. A new `out.xml` file will be generated at `$SOURCE\Code08\Tests08` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
 
 We have also provided two addition sample programs (`Sample-Source-2.txt`, `Sample-Source-3.txt`) with their respective sample queries (`Sample-Queries-2.txt`, `Sample-Queries-3`) files for a total of 3 test suites. You can run them by changing the file names of the arguments in the "Command Arguments" field:
 
 ```
-..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt out-2.xml
+..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt ..\..\Tests08\out-2.xml
 ```
 
 ```
-..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt out-3.xml
+..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt ..\..\Tests08\out-3.xml
 ```
 
 > Note that `Sample-Source-3.txt` is purposely invalid, meaning all the queries in `Sample-Queries-3.txt` should return no results.
@@ -54,6 +56,7 @@ AutoTester accepts three arguments:
     - This file contains the SIMPLE source code that will be analyzed in test format.
 2. The name of the file containing the queries
     - This file contains the queries that have to be evaluated based on the SIMPLE source code. The file may contain multiple queries, one after another. Each query is defined using 5 lines, as shown in the following example:
+    - 
 ```
 1 - comment
 while w;
@@ -61,6 +64,7 @@ Select w such that Parent(w, 7)
 None
 5000
 ```
+    
     - A description of what each line represents is as follows:
         - Query id and comment
         - declaration for PQL query
@@ -77,21 +81,21 @@ None
 To run the AutoTester from a command prompt, navigate to the parent directory of `AutoTester.exe` at `$SOURCE\Code08\Release` from the command line and input:
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source.txt ../../Tests08/Sample-Queries.txt out.xml
+> AutoTester ..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt ..\..\Tests08\out.xml
 ```
 
 The above command runs AutoTester with the supplied tests located at `$SOURCE\Tests08`. The two alternate test suites can also be run in the same manner:
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source-2.txt ../../Tests08/Sample-Queries-2.txt out-2.xml
+> AutoTester ..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt ..\..\Tests08\out-2.xml
 ```
 
 ```bash
-> AutoTester ../../Tests08/Sample-Source-3.txt ../../Tests08/Sample-Queries-3.txt out-3.xml
+> AutoTester ..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt ..\..\Tests08\out-3.xml
 ```
 
 
-Similar to running AutoTester in VS2017, the respective `out.xml` files will be generated in `$SOURCE\Code08\Release` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
+Similar to running AutoTester in VS2017, the respective `out.xml` files will be generated in `$SOURCE\Code08\Test08` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
 
 ### Executing the GUI
 The GUI can either be run straight from VS2017 or via the executable `Gui.exe` located at `$SOURCE\Release\`.
