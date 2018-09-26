@@ -20,14 +20,11 @@ using std::pair;
 // so that it is easier to search and update the PKB data structures.
 using StmtNum = string;
 using StmtNumList = vector<string>;
+using StmtNumSet = unordered_set<string>;
 using ParentsMap = unordered_map<string, vector<string>>;
 using DirectParentMap = unordered_map<string, string>;
-using ParentsSet = unordered_set<string>;
-using ParentsList = vector<string>;
 using ChildrenMap = unordered_map<string, vector<string>>;
 using DirectChildrenMap = unordered_map<string, vector<string>>;
-using ChildrenSet = unordered_set<string>;
-using ChildrenList = vector<string>;
 using StmtNumPairList = vector<pair<string, string>>;
 
 // The parent table class for the PKB component
@@ -37,51 +34,45 @@ class ParentTable {
   // Stores parents relationships as <key=child, value=parent>
   ParentsMap parents_map_;
   DirectParentMap direct_parent_map_;
-  ParentsSet parents_set_;
-  ParentsList parents_list_;
+  StmtNumSet parents_set_;
+  StmtNumList parents_list_;
   // Stores parents relationships as <key=parent, value=child>
   ChildrenMap children_map_;
   DirectChildrenMap direct_children_map_;
-  ChildrenSet children_set_;
-  ChildrenList children_list_;
+  StmtNumSet children_set_;
+  StmtNumList children_list_;
 
  public:
-  // Insert a direct parent-child relationship into parents_map and children_map
-  // @param stmt_num the statement number of the parent statement
-  // @param stmtlist_index the statement list index of the child
+  // Insert a direct parent-child relationship between parent_stmt_num and
+  // child_stmt_num into direct_parents_map and direct_children_map
   void InsertDirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // Insert an indirect parent-child relationship into parents_map and children_map
-  // @param stmt_num the statement number of the parent statement
-  // @param stmtlist_index the statement list index of the child
+  // Insert an indirect parent-child relationship between parent_stmt_num and
+  // child_stmt_num into parents_map and children_map
   void InsertIndirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns true if the statement specified by stmt_num is the direct parent
-  // of the statement list specified by stmtlist_index
+  // @returns true if parent_stmt_num is the direct parent of child_stmt_num
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns true if the statement specified by stmt_num is a parent (direct or
-  // indirect) of the statement list specified by stmtlist_index
+  // @returns true if parent_stmt_num is a direct or indirect parent of child_stmt_num
   bool IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns the statement number of the direct parent
+  // @returns the direct parent of child_stmt_num
   StmtNum GetParent(StmtNum child_stmt_num);
 
-  // @returns a list of statement numbers of the parents (direct + indirect) of the give stmtlist index
+  // @returns a list of parents (direct + indirect) of child_stmt_num
   StmtNumList GetParentT(StmtNum child_stmt_num);
 
-  // @returns a list of statement numbers of the statements that are parents to some statement
-  ParentsList GetAllParent();
+  // @returns a list of all parents
+  StmtNumList GetAllParent();
 
-  // @returns a list of statement list indices of the direct children of the given statement
+  // @returns a list of direct children of parent_stmt_num
   StmtNumList GetChild(StmtNum parent_stmt_num);
 
-  // @returns a list of statement list indices of the children (direct +
-  // indirect) of the given statement
-  ChildrenList GetAllChild();
+  // @returns a list of all children
+  StmtNumList GetAllChild();
 
-  // @returns a list of statement list indices of the statements that are the children (direct +
-  // indirect) of some statement
+  // @returns a list of direct + indirect children of parent_stmt_num
   StmtNumList GetChildT(StmtNum parent_stmt_num);
 
   // @returns true if there exists any parent-child relationship in the table
@@ -92,12 +83,6 @@ class ParentTable {
 
   // @returns a list of <parent_stmt_num, child_stmt_num> pairs
   StmtNumPairList GetAllParentTPair();
-
-  // @returns the direct_parent_map_
-  DirectParentMap GetDirectParentMap();
-
-  // @returns the parents_map_ 
-  ParentsMap GetParentsMap();
 };
 
 #endif !SPA_PARENT_TABLE_H

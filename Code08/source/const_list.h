@@ -3,12 +3,10 @@
 #ifndef SPA_CONST_LIST_H
 #define SPA_CONST_LIST_H
 
-#include <list>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
-using std::list;
 using std::string;
 using std::unordered_set;
 using std::vector;
@@ -27,12 +25,9 @@ class ConstList {
   // Returns a list of all constant values in the ConstList.
   ConstValueList GetAllConstValue();
 
-  // Takes in the constant value in integer format.
-  // Checks if the same constant value already exists in the ConstList, then adds
-  // the constant value to the ConstList if not. Returns false if the same value 
-  // already exists in the ConstTable. Returns true if value is successfully added 
-  // to the ConstTable.
-  bool InsertConstValue(ConstValue const_value);
+  // Convert const_value from int to string (because output needs to be in the
+  // format vector<string>) and insert into the ConstList
+  void InsertConstValue(ConstValue const_value);
 };
 
 #endif !SPA_CONST_LIST_H

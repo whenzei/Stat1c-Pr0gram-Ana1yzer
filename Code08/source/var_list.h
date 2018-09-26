@@ -4,12 +4,10 @@
 #define SPA_VAR_LIST_H
 
 #include <string>
-#include <list>
 #include <unordered_set>
 #include <vector>
 
 using std::string;
-using std::list;
 using std::unordered_set;
 using std::vector;
 
@@ -29,13 +27,8 @@ class VarList {
   // Returns a list of all variable names in the VarList.
   VarNameList GetAllVarName();
 
-  // Takes in the variable name in string format.
-  // Prerequisite: The variable name is non-null.
-  // Checks if the same variable name already exists in the VarList, then adds
-  // variable to the VarList if not. Returns false if
-  // the same variable already exists in the VarTable. Returns true if variable is
-  // successfully added to the VarTable.
-  bool InsertVarName(VarName var_name);
+  // Inserts var_name into VarList
+  void InsertVarName(VarName var_name);
 };
 
 #endif !SPA_VAR_LIST_H

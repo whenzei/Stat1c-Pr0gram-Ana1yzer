@@ -35,10 +35,10 @@ class StmtTable {
   // into the table, false otherwise
   bool InsertStmt(StmtNum stmt_num, StmtType stmt_type, StmtListIndex stmtlist_index);
 
-  // Get the statement list index of a given statement.
+  // @return the statement list index of a given statement
   StmtListIndex GetStmtListIndex(StmtNum stmt_num);
 
-  // Get the type of a given statement.
+  // @return the type of a given statement
   StmtType GetStmtType(StmtNum stmt_num);
 };
 
