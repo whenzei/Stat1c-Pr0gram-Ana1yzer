@@ -42,7 +42,6 @@ AutoTester accepts three arguments:
     - This file contains the SIMPLE source code that will be analyzed in test format.
 2. The name of the file containing the queries
     - This file contains the queries that have to be evaluated based on the SIMPLE source code. The file may contain multiple queries, one after another. Each query is defined using 5 lines, as shown in the following example:
-    - 
 ```
 1 - comment
 while w;
