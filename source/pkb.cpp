@@ -5,8 +5,8 @@
 
 using std::make_pair;
 
-bool PKB::InsertProcName(ProcName proc_name) {
-  return proc_list_.InsertProcName(proc_name);
+void PKB::InsertProcName(ProcName proc_name) {
+  proc_list_.InsertProcName(proc_name);
 }
 
 ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }

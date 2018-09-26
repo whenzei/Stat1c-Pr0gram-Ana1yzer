@@ -48,13 +48,6 @@ TEST_CLASS(TestPKB) {
   const TokenList kTokenList3 = {kToken32};
 
  public:
-  TEST_METHOD(TestInsertProcName) {
-    PKB pkb;
-    bool result1 = pkb.InsertProcName(kProcName);
-    Assert::IsTrue(result1);
-    bool result2 = pkb.InsertProcName(kProcName);
-    Assert::IsFalse(result2);
-  }
 
   TEST_METHOD(TestGetAllProcName) {
     PKB pkb;

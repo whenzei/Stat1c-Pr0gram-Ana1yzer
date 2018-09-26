@@ -43,7 +43,7 @@ class PKB {
  public:
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
-  bool InsertProcName(ProcName proc_name);
+  void InsertProcName(ProcName proc_name);
 
   // get all procedure names stored inside procedure list
   // @returns the list of procedure names (can be empty)
