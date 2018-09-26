@@ -21,7 +21,6 @@ using StmtNumList = vector<string>;
 using StmtNumSet = unordered_set<string>;
 using VarName = string;
 using VarNameList = vector<string>;
-using VarNameSet = unordered_set<string>;
 using ProcName = string;
 using ProcNameList = vector<string>;
 using ProcNameSet = unordered_set<string>;
@@ -33,8 +32,6 @@ using ProcVarPairList = vector<pair<string, string>>;
 class ModifiesTable {
   StmtNumList modifying_stmt_list_;
   StmtNumSet modifying_stmt_set_;
-  VarNameList modified_var_list_;
-  VarNameSet modified_var_set_;
   ProcNameList modifying_proc_list_;
   ProcNameSet modifying_proc_set_;
   ModifiesMap modifies_s_map_;
@@ -55,8 +52,6 @@ class ModifiesTable {
 
   VarNameList GetModifiedVarP(ProcName proc_name);
 
-  VarNameList GetAllModifiedVar();
-
   StmtNumList GetModifyingStmt(VarName var_name);
 
   StmtNumList GetAllModifyingStmt();
@@ -64,8 +59,6 @@ class ModifiesTable {
   ProcNameList GetModifyingProc(VarName var_name);
 
   ProcNameList GetAllModifyingProc();
-
-  bool HasModifiesRelationship();
 
   StmtVarPairList GetAllModifiesPairS();
 

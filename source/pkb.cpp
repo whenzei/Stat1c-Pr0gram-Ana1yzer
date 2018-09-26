@@ -215,10 +215,6 @@ VarNameList PKB::GetModifiedVarP(ProcName proc_name) {
   return modifies_table_.GetModifiedVarP(proc_name);
 }
 
-VarNameList PKB::GetAllModifiedVar() {
-  return modifies_table_.GetAllModifiedVar();
-}
-
 StmtNumList PKB::GetModifyingS(VarName var_name) {
   return modifies_table_.GetModifyingStmt(var_name);
 }
@@ -235,10 +231,6 @@ ProcNameList PKB::GetAllModifyingP() {
   return modifies_table_.GetAllModifyingProc();
 }
 
-bool PKB::HasModifiesRelationship() {
-  return modifies_table_.HasModifiesRelationship();
-}
-
 StmtVarPairList PKB::GetAllModifiesPairS() {
   return modifies_table_.GetAllModifiesPairS();
 }
@@ -246,8 +238,6 @@ StmtVarPairList PKB::GetAllModifiesPairS() {
 ProcVarPairList PKB::GetAllModifiesPairP() {
   return modifies_table_.GetAllModifiesPairP();
 }
-
-VarNameList PKB::GetAllUsedVar() { return uses_table_.GetAllUsedVar(); }
 
 VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
   return uses_table_.GetUsedVarS(stmt_num);
@@ -276,8 +266,6 @@ bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
   return uses_table_.IsUsedByP(proc_name, var_name);
 }
-
-bool PKB::HasUsesRelationship() { return uses_table_.HasUsesRelationship(); }
 
 StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }
 

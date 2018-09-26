@@ -21,7 +21,6 @@ using StmtNumList = vector<string>;
 using StmtNumSet = unordered_set<string>;
 using VarName = string;
 using VarNameList = vector<string>;
-using VarNameSet = unordered_set<string>;
 using ProcName = string;
 using ProcNameList = vector<string>;
 using ProcNameSet = unordered_set<string>;
@@ -32,10 +31,8 @@ using ProcVarPairList = vector<pair<string, string>>;
 
 class UsesTable {
   StmtNumList using_stmt_list_;
-  VarNameList used_var_list_;
   ProcNameList using_proc_list_;
   StmtNumSet using_stmt_set_;
-  VarNameSet used_var_set_;
   ProcNameSet using_proc_set_;
   UsesMap uses_s_map_;
   UsedByMap used_by_s_map_;
@@ -52,10 +49,6 @@ class UsesTable {
   void InsertUsesS(StmtNum stmt_num, VarName var_name);
 
   void InsertUsesP(ProcName proc_name, VarName var_name);
-
-  // Checks and returns all variables used in the program, if any.
-  // @returns a list of variables used in the program (can be empty)
-  VarNameList GetAllUsedVar();
 
   // Checks and returns all variables used in the given statement, if any.
   // @params statement number stmt_num
@@ -90,11 +83,6 @@ class UsesTable {
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
 
   bool IsUsedByP(ProcName proc_name, VarName var_name);
-
-  // Checks and returns whether the UsesTable has any Uses relationships.
-  // @returns true if UsesTable is not empty
-  // @returns false otherwise
-  bool HasUsesRelationship();
 
   // Returns a list of <statement number, variable name> pairs in the Uses
   // table.

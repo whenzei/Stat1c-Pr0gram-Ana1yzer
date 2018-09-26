@@ -18,12 +18,12 @@ class StatementData;
 #include "parent_table.h"
 #include "pql_enum.h"
 #include "proc_list.h"
-#include "statement_data.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
 #include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
+#include "statement_data.h"
 
 using StmtNumInt = int;
 
@@ -221,9 +221,6 @@ class PKB {
   // @returns a list of all n's that satisfy Modifies(proc_name, n)
   VarNameList GetModifiedVarP(ProcName proc_name);
 
-  // @returns a list of variables that are modified in any statement/procedure
-  VarNameList GetAllModifiedVar();
-
   // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, var_name)
   StmtNumList GetModifyingS(VarName var_name);
 
@@ -238,9 +235,6 @@ class PKB {
   // _)
   ProcNameList GetAllModifyingP();
 
-  // @returns true if there exists any modifies relationship
-  bool HasModifiesRelationship();
-
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Modifies(stmt_num, var_name)
   StmtVarPairList GetAllModifiesPairS();
@@ -248,9 +242,6 @@ class PKB {
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
   ProcVarPairList GetAllModifiesPairP();
-
-  // @returns a list of all variables that are used by any proc and/or stmt
-  VarNameList GetAllUsedVar();
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
@@ -275,9 +266,6 @@ class PKB {
 
   // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
-
-  // @returns true if Uses Table contains any uses relationships
-  bool HasUsesRelationship();
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Uses(stmt_num, var_name)

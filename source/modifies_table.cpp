@@ -1,6 +1,5 @@
 #pragma once
 
-#include "parent_table.h"
 #include "modifies_table.h"
 
 using std::find;
@@ -11,9 +10,6 @@ void ModifiesTable::InsertModifiesS(StmtNum stmt_num, VarName var_name) {
     if (modifying_stmt_set_.insert(stmt_num).second) {
       modifying_stmt_list_.push_back(stmt_num);
     }
-    if (modified_var_set_.insert(var_name).second) {
-      modified_var_list_.push_back(var_name);
-    }
     modifies_s_map_[stmt_num].push_back(var_name);
     modified_by_s_map_[var_name].push_back(stmt_num);
   }
@@ -23,9 +19,6 @@ void ModifiesTable::InsertModifiesP(ProcName proc_name, VarName var_name) {
   if (!IsModifiedByP(proc_name, var_name)) {
     if (modifying_proc_set_.insert(proc_name).second) {
       modifying_proc_list_.push_back(proc_name);
-    }
-    if (modified_var_set_.insert(var_name).second) {
-      modified_var_list_.push_back(var_name);
     }
     modifies_p_map_[proc_name].push_back(var_name);
     modified_by_p_map_[var_name].push_back(proc_name);
@@ -72,10 +65,6 @@ VarNameList ModifiesTable::GetModifiedVarP(ProcName proc_name) {
   }
 }
 
-VarNameList ModifiesTable::GetAllModifiedVar() {
-  return modified_var_list_;
-}
-
 StmtNumList ModifiesTable::GetModifyingStmt(VarName var_name) {
   ModifiedByMap::iterator iter = modified_by_s_map_.find(var_name);
   if (iter != modified_by_s_map_.end()) {
@@ -100,10 +89,6 @@ ProcNameList ModifiesTable::GetModifyingProc(VarName var_name) {
 
 ProcNameList ModifiesTable::GetAllModifyingProc() {
   return modifying_proc_list_;
-}
-
-bool ModifiesTable::HasModifiesRelationship() {
-  return !modifies_s_map_.empty();
 }
 
 StmtVarPairList ModifiesTable::GetAllModifiesPairS() {
