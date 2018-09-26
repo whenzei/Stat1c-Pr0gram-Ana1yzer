@@ -21,6 +21,34 @@ public:
 	  Assert::IsTrue(query->GetVarName() == "");
   }
 
+  TEST_METHOD(TestNoSelect) {
+    string content = "assign a;";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestUndeclaredSelect) {
+    string content = "assign a; Select c";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSelectOnly) {
+    string content = "Select a";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestInvalidSynonymFormat) {
+    string content = "assign 123; Select 123";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
   TEST_METHOD(TestAssign) {
 	  string content = "assign a; Select a";
     PqlQuery* query = new PqlQuery();
@@ -133,6 +161,13 @@ public:
 
   TEST_METHOD(TestInvalidEntity) {
     string content = "qwerty a; Select a";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestInvalidSuchthatType) {
+    string content = "assign a; Select a such that Qwerty(a,a)";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());
@@ -343,6 +378,13 @@ public:
     Assert::IsTrue(query->GetSuchThats()[1].GetParameters().second.first == "b");
     Assert::IsTrue(query->GetSuchThats()[1].GetParameters().second.second == PqlDeclarationEntity::kVariable);
   };
+
+  TEST_METHOD(TestInvalidPatternType) {
+    string content = "assign a; prog_line p; Select a pattern p(a,_)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
 
   TEST_METHOD(TestPatternAssign) {
     string content = "variable v; assign a; Select v pattern a(v,_\"a*2\"_)";
