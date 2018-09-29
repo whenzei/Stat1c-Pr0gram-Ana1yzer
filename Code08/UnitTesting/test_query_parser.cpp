@@ -488,7 +488,7 @@ public:
   };
 
   TEST_METHOD(TestWithWithRightAttr) {
-    string content = "assign a; Select a with a = \"abc\".value";
+    string content = "assign a; Select a with a = a.value";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsTrue(parser.Parse());
@@ -499,13 +499,13 @@ public:
     Assert::IsTrue(withClause->GetLeft().first.first == "a");
     Assert::IsTrue(withClause->GetLeft().first.second == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(withClause->GetLeft().second == PqlAttrName::kNone);
-    Assert::IsTrue(withClause->GetRight().first.first == "abc");
-    Assert::IsTrue(withClause->GetRight().first.second == PqlDeclarationEntity::kIdent);
+    Assert::IsTrue(withClause->GetRight().first.first == "a");
+    Assert::IsTrue(withClause->GetRight().first.second == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(withClause->GetRight().second == PqlAttrName::kValue);
   };
 
   TEST_METHOD(TestWithInvalid) {
-    string content = "assign a; Select a with b.stmt# = 2";
+    string content = "assign a; Select a with a.stmt# = 2.stmt#";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());

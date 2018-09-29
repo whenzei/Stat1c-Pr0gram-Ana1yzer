@@ -671,8 +671,14 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   // 3. Handle period
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kPeriod) {
+    // 3.1 Check if its a synonym
+    if (left_type == PqlDeclarationEntity::kIdent || left_type == PqlDeclarationEntity::kInteger) {
+      error_message_ = "Left parameter of with clause can not have attribute.";
+      return false;
+    }
+
     current = tokens[++*current_index];
-    // 3.1. Handle attribute
+    // 3.2. Handle attribute
     ParseAttribute(tokens, current_index, &left_attr);
   }
 
@@ -705,8 +711,14 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   // 7. Handle period
   current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kPeriod) {
+    // 7.1. Check if its a synonym
+    if (right_type == PqlDeclarationEntity::kIdent || right_type == PqlDeclarationEntity::kInteger) {
+      error_message_ = "Right parameter of with clause can not have attribute.";
+      return false;
+    }
+
     current = tokens[++*current_index];
-    // 7.1. Handle attribute
+    // 7.2. Handle attribute
     ParseAttribute(tokens, current_index, &right_attr);
   }
 
