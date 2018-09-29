@@ -14,3 +14,5 @@ Expression PqlPattern::GetAssignExpression() { return assign_expression_; }
 void PqlPattern::SetAssignExpression(PqlPatternExpressionType type, TokenList tokens) {
   assign_expression_ = std::make_pair(type, tokens);
 }
+
+PqlClauseType PqlPattern::GetClauseType() { return PqlClauseType::kPattern; }

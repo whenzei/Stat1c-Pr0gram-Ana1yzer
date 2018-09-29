@@ -13,6 +13,7 @@ using std::unordered_map;
 using std::pair;
 using std::unordered_set;
 
+#include "pql_clause.h"
 #include "pql_suchthat.h"
 #include "pql_pattern.h"
 #include "pql_enum.h"
@@ -180,6 +181,7 @@ public:
   string GetVarName();
   vector<PqlSuchthat> GetSuchThats();
   vector<PqlPattern> GetPatterns();
+  vector<PqlClause> GetClauses();
   static PqlDeclarationEntity DeclarationStringToType(string);
 };
 

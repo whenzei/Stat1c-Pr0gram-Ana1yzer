@@ -24,6 +24,13 @@ enum class PqlDeclarationEntity {
   kAll  // used for PKB to hold all entity types
 };
 
+/* The type of clause */
+enum class PqlClauseType {
+  kSuchthat,
+  kPattern,
+  kWith
+};
+
 /* The relationship types for a such that clause */
 enum class PqlSuchthatType {
   kModifiesP = 0,

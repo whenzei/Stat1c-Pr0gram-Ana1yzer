@@ -51,3 +51,5 @@ PqlSuchthatType PqlSuchthat::StringToType(string input) {
     return PqlSuchthatType::kNone;
   }
 }
+
+PqlClauseType PqlSuchthat::GetClauseType() { return PqlClauseType::kSuchthat; }

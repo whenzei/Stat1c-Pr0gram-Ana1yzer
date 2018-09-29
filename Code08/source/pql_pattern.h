@@ -4,6 +4,7 @@
 #define PQL_PATTERN_H
 
 #include <string>
+#include "pql_clause.h"
 #include "tokenizer.h"
 #include "pql_enum.h"
 using std::string;
@@ -11,7 +12,7 @@ using std::pair;
 using Expression = pair<PqlPatternExpressionType, TokenList>;
 
 /* Stores information of a pattern clause in a PQL select statement */
-class PqlPattern {
+class PqlPattern : public PqlClause {
 private:
   pair<string, PqlPatternType> type_; // assign | if | while
   pair<string, PqlDeclarationEntity> first_parameter_;
@@ -19,10 +20,13 @@ private:
 
 public:
   PqlPattern(string, PqlPatternType, string, PqlDeclarationEntity);
+
   pair<string, PqlPatternType> GetType();
   pair<string, PqlDeclarationEntity> GetFirstParameter();
   Expression GetAssignExpression();
 
   void SetAssignExpression(PqlPatternExpressionType, TokenList);
+
+  PqlClauseType GetClauseType();
 };
  #endif

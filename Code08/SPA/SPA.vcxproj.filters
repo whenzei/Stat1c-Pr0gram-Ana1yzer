@@ -200,5 +200,8 @@
     <ClInclude Include="..\source\design_extractor.h">
       <Filter>Header Files\Frontend</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\pql_clause.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

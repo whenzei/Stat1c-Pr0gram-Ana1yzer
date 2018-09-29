@@ -30,6 +30,14 @@ vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }
 
 vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
 
+vector<PqlClause> PqlQuery::GetClauses() {
+  vector<PqlClause> result;
+  result.insert(result.end(), suchthats_.begin(), suchthats_.end());
+  result.insert(result.end(), patterns_.begin(), patterns_.end());
+  //result.insert(result.end(), withs_.begin(), withs_.end());
+  return result;
+}
+
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {
     return PqlDeclarationEntity::kStmt;
