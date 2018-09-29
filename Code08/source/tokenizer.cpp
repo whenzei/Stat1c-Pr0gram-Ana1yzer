@@ -16,7 +16,8 @@ static const string kTokenTypeNames[] = {
     "nothing",    "digit",     "name",      "word",       "openbrace",
     "closebrace", "semicolon", "comma",     "underscore", "quotation",
     "assignment", "operator",  "openparen", "closeparen", "period", 
-    "hash", "conditional",     "relational","keyword",    "unknown",   "EOF"};
+    "hash",       "conditional", "relational", "keyword", "unknown",
+    "EOF"};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
