@@ -12,7 +12,7 @@ using std::vector;
 
 /* A class that parses a query in PQL */
 class PqlParser {
-  public:
+public:
   /**
   @string the raw query input in string form
   @PqlQuery* the Query object to write to
@@ -23,7 +23,7 @@ class PqlParser {
   bool Parse();
   string GetErrorMessage();
 
-  private:
+private:
   /* The input of the query */
   string query_text_;
   /* The Query object to store information */
@@ -32,7 +32,7 @@ class PqlParser {
   string error_message_;
 
   /**
-  Parses a single statement. A statement is a single declaration, or the select clause 
+  Parses a single statement. A statement is a single declaration, or the select clause
   @string the statement in string form
   @bool true if this statement is the last
   */
@@ -43,7 +43,7 @@ class PqlParser {
   */
   bool ParseSelect(TokenList);
   /**
-  Parses a declaration statement 
+  Parses a declaration statement
   @TokenList the list of tokens
   */
   bool ParseDeclaration(TokenList);
@@ -59,19 +59,31 @@ class PqlParser {
   @int* the pointer to the current index of the TokenList
   */
   bool ParsePattern(TokenList, int*);
-
   bool ParsePatternAssign(TokenList, int*, string);
   bool ParsePatternWhile(TokenList, int*, string);
   bool ParsePatternIf(TokenList, int*, string);
   /**
-  Parses the parameters in the such that/pattern clause of the select statement
-  Reads synonym | '_' | '"' IDENT '"' | INTEGER
+  Parses the with clause of the select statement
+  @TokenList the list of tokens
+  @int* the pointer to the current index of the TokenList
+  */
+  bool ParseWith(TokenList, int*);
+  /**
+  Parses synonym | '_' | '"' IDENT '"' | INTEGER
   @TokenList the list of tokens
   @int* the pointer to the current index of the TokenList
   @string* the pointer to the variable that we want to store the value in
   @PqlDeclarationEntity* the pointer to the object we want to store the type in
   */
-  bool ParseParameter(TokenList, int*, string*, PqlDeclarationEntity*);
+  bool ParseParameter(TokenList, int*, string*, PqlDeclarationEntity*, string = "");
+  /**
+  Parses attribute names
+  @TokenList the list of tokens
+  @int* the pointer to the current index of the TokenList
+  @string* the pointer to the variable that we want to store the value in
+  @PqlAttrName* the pointer to the object we want to store the attribute type in
+  */
+  bool ParseAttribute(TokenList, int*, PqlAttrName*);
 };
 
 #endif

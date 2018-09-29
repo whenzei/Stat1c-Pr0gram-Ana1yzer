@@ -63,6 +63,8 @@ class Tokenizer {
     kOperator,
     kOpenParen,
     kCloseParen,
+    kPeriod,
+    kHash,
     kConditional,
     kRelational,
     kKeyword,
@@ -153,6 +155,14 @@ class Tokenizer {
   // Uses Tokenizer::TokenizeCharacter(...) with '"' as the supplied value to
   // tokenize double quotation marks, and returns the result as a Result struct
   static Result TokenizeQuotation(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizeCharacter(...) with '.' as the supplied value to
+  // tokenize periods, and returns the result as a Result struct
+  static Result TokenizePeriod(string input, int current_index = 0);
+
+  // Uses Tokenizer::TokenizeCharacter(...) with '#' as the supplied value to
+  // tokenize hash, and returns the result as a Result struct
+  static Result TokenizeHash(string input, int current_index = 0);
 
   // Uses Tokenizer::TokenizePattern(...) with regex to
   // tokenize the equals symbol, returns a result with kConditional type if "=="

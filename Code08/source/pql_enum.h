@@ -55,6 +55,14 @@ enum class PqlSuchthatType {
 /* The type for pattern clause */
 enum class PqlPatternType { kAssign, kWhile, kIf };
 
+enum class PqlAttrName {
+  kProcName,
+  kVarName,
+  kValue,
+  kStmtNo,
+  kNone
+};
+
 /* The type for the 2nd parameter of an assign pattern clause */
 enum class PqlPatternExpressionType {
   kUnderscore,

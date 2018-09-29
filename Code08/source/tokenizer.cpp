@@ -15,8 +15,8 @@ const std::unordered_map<string, Tokenizer::TokenSubtype> kKeywordsToEnum = {
 static const string kTokenTypeNames[] = {
     "nothing",    "digit",     "name",      "word",       "openbrace",
     "closebrace", "semicolon", "comma",     "underscore", "quotation",
-    "assignment", "operator",  "openparen", "closeparen", "conditional",
-    "relational", "keyword",   "unknown",   "EOF"};
+    "assignment", "operator",  "openparen", "closeparen", "period", 
+    "hash", "conditional",     "relational","keyword",    "unknown",   "EOF"};
 
 static const string kTokenSubtypeNames[] = {
     "NONE", "PROC", "IF", "THEN", "ELSE", "WHILE", "PRINT", "CALL", "PRINT"};
@@ -185,7 +185,7 @@ Result Tokenizer::TokenizeParenthesis(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize operators
 // and returns the result as a Result struct
 Result Tokenizer::TokenizeOperators(string input, int current_index) {
-  return TokenizePattern(kOperator, regex{R"([+-/%*])"}, input, current_index);
+  return TokenizePattern(kOperator, regex{R"([+\-/%*])"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizeCharacter(...) with ';' as the supplied value to
@@ -210,6 +210,18 @@ Result Tokenizer::TokenizeUnderscore(string input, int current_index) {
 // tokenize double quotation marks, and returns the result as a Result struct
 Result Tokenizer::TokenizeQuotation(string input, int current_index) {
   return TokenizeCharacter(kQuotation, '"', input, current_index);
+}
+
+// Uses Tokenizer::TokenizeCharacter(...) with '.' as the supplied value to
+// tokenize period, and returns the result as a Result struct
+Result Tokenizer::TokenizePeriod(string input, int current_index) {
+  return TokenizeCharacter(kPeriod, '\.', input, current_index);
+}
+
+// Uses Tokenizer::TokenizeCharacter(...) with '"' as the supplied value to
+// tokenize double quotation marks, and returns the result as a Result struct
+Result Tokenizer::TokenizeHash(string input, int current_index) {
+  return TokenizeCharacter(kHash, '#', input, current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to

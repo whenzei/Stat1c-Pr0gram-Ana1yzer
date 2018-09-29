@@ -1,9 +1,10 @@
 #include "pql_parser.h"
 #include "expression_helper.h"
 #include "pql_validator.h"
+#include "pql_clause.h"
 #include "util.h"
 
-const bool DEBUG_FLAG = false;
+const bool DEBUG_FLAG = true;
 
 PqlParser::PqlParser(string query_text, PqlQuery* query) {
   query_text_ = query_text;
@@ -53,7 +54,9 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
           &Tokenizer::SkipWhitespace,     &Tokenizer::TokenizeParenthesis,
           &Tokenizer::TokenizeComma,      &Tokenizer::TokenizeQuotation,
           &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeOperators,
-          &Tokenizer::TokenizeNames,      &Tokenizer::TokenizeDigits };
+          &Tokenizer::TokenizeNames,      &Tokenizer::TokenizeDigits,
+          &Tokenizer::TokenizePeriod,     &Tokenizer::TokenizeHash,
+          &Tokenizer::TokenizeEquals };
       TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
       if (DEBUG_FLAG) {
@@ -79,6 +82,45 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
     TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
     if (!ParseDeclaration(tokens)) return false;
+  }
+
+  return true;
+}
+
+bool PqlParser::ParseDeclaration(TokenList tokens) {
+  // 1. Get declaration entity type
+  PqlDeclarationEntity entity =
+    PqlQuery::DeclarationStringToType(tokens[0].value);
+  if (entity == PqlDeclarationEntity::kNone) {
+    error_message_ = "Invalid declaration entity.";
+    return false;
+  }
+
+  // 2. Get variable names
+  for (int i = 1; i < tokens.size(); i++) {
+    if (tokens[i].type == Tokenizer::TokenType::kEOF) break;
+    if (tokens[i].type == Tokenizer::TokenType::kComma) {
+      if (i + 1 >= tokens.size()) {
+        error_message_ = "Synonym expected after comma in declaration.";
+        return false;
+      }
+      continue;
+    }
+
+    string synonym = tokens[i].value;
+
+    // check for grammar
+    if (PqlValidator::ValidateIdent(synonym)) {
+      // add to declarations
+      if (!query_->AddDeclaration(entity, synonym)) {
+        error_message_ = "Duplicated declaration synonym.";
+        return false;
+      }
+    }
+    else {
+      error_message_ = "Declaration synonym has to be in IDENT format.";
+      return false;
+    }
   }
 
   return true;
@@ -114,15 +156,15 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         previous_type = "suchthat";
       }
       else if (tokens[current_index].value == "pattern") {
-        // 2.2. TODO: Handle pattern clause
+        // 2.2. Handle pattern clause
         current_index++;
         if (!ParsePattern(tokens, &current_index)) return false;
         previous_type = "pattern";
       }
       else if (tokens[current_index].value == "with") {
-        // 2.3. TODO: Handle with clause
+        // 2.3. Handle with clause
         current_index++;
-        // if (!ParseWith(tokens, &current_index)) return false;
+        if (!ParseWith(tokens, &current_index)) return false;
         previous_type = "with";
       }
       else if (tokens[current_index].value == "and" && previous_type != "") {
@@ -268,8 +310,11 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
 
   // 9. Create such that object
-  query_->AddSuchthat(
-    PqlSuchthat(suchthat_type, first, first_type, second, second_type));
+  query_->AddClause(new PqlSuchthat(suchthat_type, first, first_type, second, second_type));
+
+  /* LEGACY: TO BE DELETED */
+  query_->AddSuchthat(PqlSuchthat(suchthat_type, first, first_type, second, second_type));
+  /* LEGACY: TO BE DELETED */
 
   return true;
 }
@@ -426,9 +471,12 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   else {
     expression_type = PqlPatternExpressionType::kExpression;
   }
-  pattern.SetAssignExpression(expression_type,
-    ExpressionHelper::ToPostfix(expression));
+  pattern.SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
+  query_->AddClause(&pattern);
+
+  /* LEGACY: TO BE DELETED */
   query_->AddPattern(pattern);
+  /* LEGACY: TO BE DELETED */
 
   return true;
 }
@@ -495,8 +543,11 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   }
 
   // 7. Create pattern object
-  query_->AddPattern(
-    PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+  query_->AddClause(new PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+
+  /* LEGACY: TO BE DELETED */
+  query_->AddPattern(PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+  /* LEGACY: TO BE DELETED */
 
   return true;
 }
@@ -581,14 +632,92 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   }
 
   // 9. Create pattern object
-  query_->AddPattern(
-    PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+  query_->AddClause(new PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+
+  /* LEGACY: TO BE DELETED */
+  query_->AddPattern(PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+  /* LEGACY: TO BE DELETED */
+
+  return true;
+}
+
+bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
+  Token current = tokens[*current_index];
+  string left;
+  PqlDeclarationEntity left_type;
+  PqlAttrName left_attr = PqlAttrName::kNone;
+  string right;
+  PqlDeclarationEntity right_type;
+  PqlAttrName right_attr = PqlAttrName::kNone;
+
+  // 1. Get left
+  ParseParameter(tokens, current_index, &left, &left_type, "with ");
+  if (left_type == PqlDeclarationEntity::kUnderscore) {
+    error_message_ = "Invalid left parameter of with clause.";
+    return false;
+  }
+
+  // 2. Check if left synonym is valid
+  Declarations declarations = query_->GetDeclarations();
+  if (left_type == PqlDeclarationEntity::kSynonym) {
+    if (declarations.find(left) != declarations.end()) {
+      left_type = declarations.at(left);
+    } else {
+      error_message_ = "Left parameter of with clause not declared.";
+      return false;
+    }
+  }
+
+  // 3. Handle period
+  current = tokens[*current_index];
+  if (current.type == Tokenizer::TokenType::kPeriod) {
+    current = tokens[++*current_index];
+    // 3.1. Handle attribute
+    ParseAttribute(tokens, current_index, &left_attr);
+  }
+
+  // 4. Handle equal
+  current = tokens[*current_index];
+  if (current.type != Tokenizer::TokenType::kAssignment) {
+    error_message_ = "Missing '=' in with clause.";
+    return false;
+  }
+
+  // 5. Get right
+  current = tokens[++*current_index];
+  ParseParameter(tokens, current_index, &right, &right_type, "with ");
+  if (right_type == PqlDeclarationEntity::kUnderscore) {
+    error_message_ = "Invalid left parameter of with clause.";
+    return false;
+  }
+
+  // 6. Check if right synonym is valid
+  if (right_type == PqlDeclarationEntity::kSynonym) {
+    if (declarations.find(right) != declarations.end()) {
+      right_type = declarations.at(right);
+    }
+    else {
+      error_message_ = "Right parameter of with clause not declared.";
+      return false;
+    }
+  }
+
+  // 7. Handle period
+  current = tokens[*current_index];
+  if (current.type == Tokenizer::TokenType::kPeriod) {
+    current = tokens[++*current_index];
+    // 7.1. Handle attribute
+    ParseAttribute(tokens, current_index, &right_attr);
+  }
+
+  // 8. Create with clause
+  query_->AddClause(new PqlWith(left, left_type, left_attr, right, right_type, right_attr));
 
   return true;
 }
 
 bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
-  string* value, PqlDeclarationEntity* type) {
+  string* value, PqlDeclarationEntity* type, string error_keyword) {
   Token current = tokens[*current_index];
   if (current.type == Tokenizer::TokenType::kQuotation) {
     // 1. Handle quotations
@@ -600,8 +729,8 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
       current = tokens[++*current_index];
     }
     else {
-      error_message_ =
-        "Such that parameter in quotation is not in ident format.";
+      error_message_ = error_keyword +
+        "clause parameter in quotation is not in ident format.";
       return false;
     }
 
@@ -609,7 +738,7 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
     if (current.type == Tokenizer::TokenType::kQuotation) {
     }
     else {
-      error_message_ = "Missing quotation in such that parameters.";
+      error_message_ = "Missing quotation in " + error_keyword + "clause parameters.";
       return false;
     }
   }
@@ -629,7 +758,7 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
     *type = PqlDeclarationEntity::kSynonym;
   }
   else {
-    error_message_ = "Invalid parameter in such that clause.";
+    error_message_ = "Invalid " + error_keyword + "clause parameter.";
     return false;
   }
 
@@ -637,42 +766,36 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
   return true;
 }
 
-bool PqlParser::ParseDeclaration(TokenList tokens) {
-  // 1. Get declaration entity type
-  PqlDeclarationEntity entity =
-    PqlQuery::DeclarationStringToType(tokens[0].value);
-  if (entity == PqlDeclarationEntity::kNone) {
-    error_message_ = "Invalid declaration entity.";
+bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlAttrName* attr) {
+  Token current = tokens[*current_index];
+  if (current.type != Tokenizer::TokenType::kName) {
+    error_message_ = "Invalid attribute name of with clause.";
     return false;
   }
 
-  // 2. Get variable names
-  for (int i = 1; i < tokens.size(); i++) {
-    if (tokens[i].type == Tokenizer::TokenType::kEOF) break;
-    if (tokens[i].type == Tokenizer::TokenType::kComma) {
-      if (i + 1 >= tokens.size()) {
-        error_message_ = "Synonym expected after comma in declaration.";
-        return false;
-      }
-      continue;
-    }
-
-    string synonym = tokens[i].value;
-
-    // check for grammar
-    if (PqlValidator::ValidateIdent(synonym)) {
-      // add to declarations
-      if (!query_->AddDeclaration(entity, synonym)) {
-        error_message_ = "Duplicated declaration synonym.";
-        return false;
-      }
-    }
-    else {
-      error_message_ = "Declaration synonym has to be in IDENT format.";
+  if (current.value == "procName") {
+    *attr = PqlAttrName::kProcName;
+  }
+  else if (current.value == "varName") {
+    *attr = PqlAttrName::kVarName;
+  }
+  else if (current.value == "value") {
+    *attr = PqlAttrName::kValue;
+  }
+  else if (current.value == "stmt") {
+    current = tokens[++*current_index];
+    if (current.type != Tokenizer::TokenType::kHash) {
+      error_message_ = "Invalid attribute name of with clause.";
       return false;
     }
+    *attr = PqlAttrName::kStmtNo;
+  }
+  else {
+    error_message_ = "Invalid attribute name of with clause.";
+    return false;
   }
 
+  ++*current_index;
   return true;
 }
 

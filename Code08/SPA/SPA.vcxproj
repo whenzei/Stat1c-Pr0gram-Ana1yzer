@@ -23,6 +23,7 @@
     <ClCompile Include="..\source\pql_pattern.cpp" />
     <ClCompile Include="..\source\pql_suchthat.cpp" />
     <ClCompile Include="..\source\pql_validator.cpp" />
+    <ClCompile Include="..\source\pql_with.cpp" />
     <ClCompile Include="..\source\statement_data.cpp" />
     <ClCompile Include="..\source\util.cpp" />
     <ClCompile Include="..\source\validator.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />
+    <ClInclude Include="..\source\pql_with.h" />
     <ClInclude Include="..\source\statement_data.h" />
     <ClInclude Include="..\source\util.h" />
     <ClInclude Include="..\source\validator.h" />

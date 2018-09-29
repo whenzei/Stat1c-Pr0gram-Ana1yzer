@@ -16,6 +16,7 @@ using std::unordered_set;
 #include "pql_clause.h"
 #include "pql_suchthat.h"
 #include "pql_pattern.h"
+#include "pql_with.h"
 #include "pql_enum.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
@@ -159,12 +160,16 @@ class PqlQuery {
 private:
   /* a map that maps the name to the entity type */
   Declarations declarations_;
-  /* the variable name of the 'Select' statement */
+  /* collect of selection */
+  vector<string> selections_;
+  /* collection of clauses in the 'Select' statement */
+  vector<PqlClause*> clauses_;
+
+  /* LEGACY: TO BE DELETED */
   string var_name_;
-  /* collection of such that clauses in the 'Select' statement */
   vector<PqlSuchthat> suchthats_;
-  /* collection of pattern clauses in the 'Select' statement */
   vector<PqlPattern> patterns_;
+  /* LEGACY: TO BE DELETED */
 
 public:
   /* Constructor */
@@ -172,17 +177,23 @@ public:
 
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
-  void SetVarName(string);
-  void AddSuchthat(PqlSuchthat);
-  void AddPattern(PqlPattern);
+  void AddSelection(string);
+  void AddClause(PqlClause*);
 
   /* Getters */
   Declarations GetDeclarations();
   string GetVarName();
+  vector<PqlClause*> GetClauses();
+
+  static PqlDeclarationEntity DeclarationStringToType(string);
+
+  /* LEGACY: TO BE DELETED */
+  void SetVarName(string);
+  void AddSuchthat(PqlSuchthat);
+  void AddPattern(PqlPattern);
   vector<PqlSuchthat> GetSuchThats();
   vector<PqlPattern> GetPatterns();
-  vector<PqlClause> GetClauses();
-  static PqlDeclarationEntity DeclarationStringToType(string);
+  /* LEGACY: TO BE DELETED */
 };
 
 #endif  // !QUERY_H

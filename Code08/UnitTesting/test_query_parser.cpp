@@ -452,5 +452,63 @@ public:
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());
   };
+
+  TEST_METHOD(TestWith) {
+    string content = "assign a; Select a with a = 2";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetVarName() == "a");
+
+    PqlWith* withClause = (PqlWith*)query->GetClauses()[0];
+    Assert::IsTrue(withClause->GetLeft().first.first == "a");
+    Assert::IsTrue(withClause->GetLeft().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(withClause->GetLeft().second == PqlAttrName::kNone);
+    Assert::IsTrue(withClause->GetRight().first.first == "2");
+    Assert::IsTrue(withClause->GetRight().first.second == PqlDeclarationEntity::kInteger);
+    Assert::IsTrue(withClause->GetRight().second == PqlAttrName::kNone);
+  };
+
+  TEST_METHOD(TestWithWithLeftAttr) {
+    string content = "assign a; Select a with a.stmt# = \"abc\"";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetVarName() == "a");
+
+    PqlWith* withClause = (PqlWith*)query->GetClauses()[0];
+    Assert::IsTrue(withClause->GetLeft().first.first == "a");
+    Assert::IsTrue(withClause->GetLeft().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(withClause->GetLeft().second == PqlAttrName::kStmtNo);
+    Assert::IsTrue(withClause->GetRight().first.first == "abc");
+    Assert::IsTrue(withClause->GetRight().first.second == PqlDeclarationEntity::kIdent);
+    Assert::IsTrue(withClause->GetRight().second == PqlAttrName::kNone);
+  };
+
+  TEST_METHOD(TestWithWithRightAttr) {
+    string content = "assign a; Select a with a = \"abc\".value";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetVarName() == "a");
+
+    PqlWith* withClause = (PqlWith*)query->GetClauses()[0];
+    Assert::IsTrue(withClause->GetLeft().first.first == "a");
+    Assert::IsTrue(withClause->GetLeft().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(withClause->GetLeft().second == PqlAttrName::kNone);
+    Assert::IsTrue(withClause->GetRight().first.first == "abc");
+    Assert::IsTrue(withClause->GetRight().first.second == PqlDeclarationEntity::kIdent);
+    Assert::IsTrue(withClause->GetRight().second == PqlAttrName::kValue);
+  };
+
+  TEST_METHOD(TestWithInvalid) {
+    string content = "assign a; Select a with b.stmt# = 2";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  };
   };
 }
