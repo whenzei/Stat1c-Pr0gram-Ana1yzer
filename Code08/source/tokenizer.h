@@ -69,6 +69,8 @@ class Tokenizer {
     kRelational,
     kKeyword,
     kUnknown,
+    kLessThan,
+    kMoreThan,
     kEOF,
   };
 

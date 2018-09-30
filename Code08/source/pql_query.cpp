@@ -32,6 +32,8 @@ void PqlQuery::AddPattern(PqlPattern pattern) {
 
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
+vector<string> PqlQuery::GetSelections() { return selections_; }
+
 string PqlQuery::GetVarName() { return var_name_; }
 
 vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }

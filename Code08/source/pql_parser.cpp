@@ -56,7 +56,7 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
           &Tokenizer::TokenizeUnderscore, &Tokenizer::TokenizeOperators,
           &Tokenizer::TokenizeNames,      &Tokenizer::TokenizeDigits,
           &Tokenizer::TokenizePeriod,     &Tokenizer::TokenizeHash,
-          &Tokenizer::TokenizeEquals };
+          &Tokenizer::TokenizeRelationals };
       TokenList tokens = Tokenizer::Tokenize(statement, tokenizer_functions);
 
       if (DEBUG_FLAG) {
@@ -127,71 +127,116 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
 }
 
 bool PqlParser::ParseSelect(TokenList tokens) {
-  // 1. Set select variable name
+  // 1. Handle selection
+  int current_index = 1;
+  Token token = tokens[current_index];
   Declarations declarations = query_->GetDeclarations();
-  if (declarations.find(tokens[1].value) != declarations.end()) {
-    query_->SetVarName(tokens[1].value);
-  }
-  else {
-    error_message_ = "Select synonym is not declared.";
-    return false;
-  }
 
-  // 2. Check if there are such that/pattern/with clauses
-  if (tokens.size() > 2) {
-    int current_index = 2;
-    string previous_type;
-    while (current_index < tokens.size() &&
-      tokens[current_index].type != Tokenizer::TokenType::kEOF) {
-      if (tokens[current_index].value == "such") {
-        if (tokens[current_index + 1].value != "that") {
-          error_message_ = "Missing 'that' in such that clause.";
+  if (token.type == Tokenizer::TokenType::kName) {
+    // 1.1. Handle BOOLEAN
+    if (token.value == "BOOLEAN") {
+      // do nothing, empty vector denotes boolean selection
+    }
+    // 1.2. Handle single synonym
+    else if (declarations.find(token.value) != declarations.end()) {
+      query_->AddSelection(token.value);
+      /* LEGACY: TO BE DELETED */
+      query_->SetVarName(token.value);
+      /* LEGACY: TO BE DELETED */
+    }
+    else {
+      error_message_ = "Select synonym is not declared.";
+      return false;
+    }
+  }
+  // 1.3. Handle tuples
+  else if (token.type == Tokenizer::TokenType::kRelational && token.value == "<") {
+    token = tokens[++current_index];
+    bool has_next = true;
+    while(token.type != Tokenizer::TokenType::kRelational && token.value != ">") {
+      if (has_next) {
+        // expect a synonym
+        if (declarations.find(token.value) != declarations.end()) {
+          query_->AddSelection(token.value);
+        }
+        else {
+          error_message_ = "Select synonym is not declared.";
           return false;
         }
+        has_next = false;
       }
-      else if (tokens[current_index].value == "that") {
-        // 2.1. Handle such that clause
+      else {
+        // expect a comma
+        if (token.type != Tokenizer::TokenType::kComma) {
+          error_message_ = "Missing comma in select tuple.";
+          return false;
+        }
+        has_next = true;
+      }
+      token = tokens[++current_index];
+    }
+
+    // should not has next if tuple is closed
+    if (has_next) {
+      error_message_ = "Extra comma in select tuple.";
+      return false;
+    }
+  }
+
+  ++current_index;
+  // 2. Handle such that/pattern/with clauses
+  string previous_type;
+  while (current_index < tokens.size() &&
+    tokens[current_index].type != Tokenizer::TokenType::kEOF) {
+    if (tokens[current_index].value == "such") {
+      if (tokens[current_index + 1].value != "that") {
+        error_message_ = "Missing 'that' in such that clause.";
+        return false;
+      }
+    }
+    else if (tokens[current_index].value == "that") {
+      // 2.1. Handle such that clause
+      current_index++;
+      if (!ParseSuchthat(tokens, &current_index)) return false;
+      previous_type = "suchthat";
+    }
+    else if (tokens[current_index].value == "pattern") {
+      // 2.2. Handle pattern clause
+      current_index++;
+      if (!ParsePattern(tokens, &current_index)) return false;
+      previous_type = "pattern";
+    }
+    else if (tokens[current_index].value == "with") {
+      // 2.3. Handle with clause
+      current_index++;
+      if (!ParseWith(tokens, &current_index)) return false;
+      previous_type = "with";
+    }
+    else if (tokens[current_index].value == "and" && previous_type != "") {
+      // 2.4. Handle 'and'
+      if (previous_type == "suchthat") {
         current_index++;
         if (!ParseSuchthat(tokens, &current_index)) return false;
         previous_type = "suchthat";
       }
-      else if (tokens[current_index].value == "pattern") {
-        // 2.2. Handle pattern clause
+      else if (previous_type == "pattern") {
         current_index++;
         if (!ParsePattern(tokens, &current_index)) return false;
         previous_type = "pattern";
       }
-      else if (tokens[current_index].value == "with") {
-        // 2.3. Handle with clause
+      else if (previous_type == "with") {
         current_index++;
         if (!ParseWith(tokens, &current_index)) return false;
         previous_type = "with";
       }
-      else if (tokens[current_index].value == "and" && previous_type != "") {
-        // 2.4. Handle 'and'
-        if (previous_type == "suchthat") {
-          current_index++;
-          if (!ParseSuchthat(tokens, &current_index)) return false;
-          previous_type = "suchthat";
-        }
-        else if (previous_type == "pattern") {
-          current_index++;
-          if (!ParsePattern(tokens, &current_index)) return false;
-          previous_type = "pattern";
-        }
-        else if (previous_type == "with") {
-          current_index++;
-          if (!ParseWith(tokens, &current_index)) return false;
-          previous_type = "with";
-        }
-      }
-      else {
-        error_message_ = "Unknown clause in select statement.";
-        return false;
-      }
-      current_index++;
     }
+    else {
+      error_message_ = "Unknown clause in select statement.";
+      return false;
+    }
+    current_index++;
   }
+
 
   return true;
 }
@@ -662,7 +707,8 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   if (left_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(left) != declarations.end()) {
       left_type = declarations.at(left);
-    } else {
+    }
+    else {
       error_message_ = "Left parameter of with clause not declared.";
       return false;
     }
@@ -684,7 +730,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
   // 4. Handle equal
   current = tokens[*current_index];
-  if (current.type != Tokenizer::TokenType::kAssignment) {
+  if (current.type != Tokenizer::TokenType::kRelational || current.value != "=") {
     error_message_ = "Missing '=' in with clause.";
     return false;
   }

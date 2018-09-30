@@ -182,13 +182,14 @@ public:
 
   /* Getters */
   Declarations GetDeclarations();
-  string GetVarName();
+  vector<string> GetSelections();
   vector<PqlClause*> GetClauses();
 
   static PqlDeclarationEntity DeclarationStringToType(string);
 
   /* LEGACY: TO BE DELETED */
   void SetVarName(string);
+  string GetVarName();
   void AddSuchthat(PqlSuchthat);
   void AddPattern(PqlPattern);
   vector<PqlSuchthat> GetSuchThats();

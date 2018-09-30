@@ -219,8 +219,8 @@ Result Tokenizer::TokenizePeriod(string input, int current_index) {
   return TokenizeCharacter(kPeriod, '\.', input, current_index);
 }
 
-// Uses Tokenizer::TokenizeCharacter(...) with '"' as the supplied value to
-// tokenize double quotation marks, and returns the result as a Result struct
+// Uses Tokenizer::TokenizeCharacter(...) with '#' as the supplied value to
+// tokenize hash, and returns the result as a Result struct
 Result Tokenizer::TokenizeHash(string input, int current_index) {
   return TokenizeCharacter(kHash, '#', input, current_index);
 }
