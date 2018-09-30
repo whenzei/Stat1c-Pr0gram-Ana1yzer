@@ -24,6 +24,7 @@ using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
 using PqlPatternTable = unordered_map<PqlSuchthatType, EntitySet>;
+using Selection = pair<string, PqlAttrName>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -161,7 +162,7 @@ private:
   /* a map that maps the name to the entity type */
   Declarations declarations_;
   /* collect of selection */
-  vector<string> selections_;
+  vector<Selection> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
 
@@ -177,12 +178,12 @@ public:
 
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
-  void AddSelection(string);
+  void AddSelection(string, PqlAttrName);
   void AddClause(PqlClause*);
 
   /* Getters */
   Declarations GetDeclarations();
-  vector<string> GetSelections();
+  vector<Selection> GetSelections();
   vector<PqlClause*> GetClauses();
 
   static PqlDeclarationEntity DeclarationStringToType(string);

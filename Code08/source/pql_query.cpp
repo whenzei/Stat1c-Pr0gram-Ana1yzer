@@ -12,8 +12,8 @@ bool PqlQuery::AddDeclaration(PqlDeclarationEntity entity, string var_name) {
   return declarations_.insert(std::make_pair(var_name, entity)).second;
 }
 
-void PqlQuery::AddSelection(string selection) {
-  selections_.push_back(selection);
+void PqlQuery::AddSelection(string selection, PqlAttrName attr) {
+  selections_.push_back(std::make_pair(selection, attr));
 }
 
 void PqlQuery::AddClause(PqlClause* clause) {
@@ -32,7 +32,7 @@ void PqlQuery::AddPattern(PqlPattern pattern) {
 
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
-vector<string> PqlQuery::GetSelections() { return selections_; }
+vector<Selection> PqlQuery::GetSelections() { return selections_; }
 
 string PqlQuery::GetVarName() { return var_name_; }
 

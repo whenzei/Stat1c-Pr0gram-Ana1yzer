@@ -57,9 +57,12 @@ public:
     Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(query->GetDeclarations()["b"] == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(query->GetDeclarations()["c"] == PqlDeclarationEntity::kAssign);
-    Assert::IsTrue(query->GetSelections()[0] == "a");
-    Assert::IsTrue(query->GetSelections()[1] == "b");
-    Assert::IsTrue(query->GetSelections()[2] == "c");
+    Assert::IsTrue(query->GetSelections()[0].first == "a");
+    Assert::IsTrue(query->GetSelections()[0].second == PqlAttrName::kNone);
+    Assert::IsTrue(query->GetSelections()[1].first == "b");
+    Assert::IsTrue(query->GetSelections()[1].second == PqlAttrName::kNone);
+    Assert::IsTrue(query->GetSelections()[2].first == "c");
+    Assert::IsTrue(query->GetSelections()[2].second == PqlAttrName::kNone);
   }
 
   TEST_METHOD(TestSelectTupleWithClause) {
@@ -69,8 +72,10 @@ public:
     Assert::IsTrue(parser.Parse());
     Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(query->GetDeclarations()["b"] == PqlDeclarationEntity::kAssign);
-    Assert::IsTrue(query->GetSelections()[0] == "a");
-    Assert::IsTrue(query->GetSelections()[1] == "b");
+    Assert::IsTrue(query->GetSelections()[0].first == "a");
+    Assert::IsTrue(query->GetSelections()[0].second == PqlAttrName::kNone);
+    Assert::IsTrue(query->GetSelections()[1].first == "b");
+    Assert::IsTrue(query->GetSelections()[1].second == PqlAttrName::kNone);
 
     PqlSuchthat* suchthat = (PqlSuchthat*)query->GetClauses()[0];
     Assert::IsTrue(suchthat->GetType() == PqlSuchthatType::kFollows);
@@ -78,6 +83,16 @@ public:
     Assert::IsTrue(suchthat->GetParameters().first.second == PqlDeclarationEntity::kAssign);
     Assert::IsTrue(suchthat->GetParameters().second.first == "_");
     Assert::IsTrue(suchthat->GetParameters().second.second == PqlDeclarationEntity::kUnderscore);
+  }
+
+  TEST_METHOD(TestSelectWithAttr) {
+    string content = "assign a; Select a.stmt#";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetSelections()[0].first == "a");
+    Assert::IsTrue(query->GetSelections()[0].second == PqlAttrName::kStmtNo);
   }
 
   TEST_METHOD(TestInvalidSynonymFormat) {

@@ -129,20 +129,28 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
 bool PqlParser::ParseSelect(TokenList tokens) {
   // 1. Handle selection
   int current_index = 1;
-  Token token = tokens[current_index];
   Declarations declarations = query_->GetDeclarations();
 
-  if (token.type == Tokenizer::TokenType::kName) {
+  if (tokens[current_index].type == Tokenizer::TokenType::kName) {
     // 1.1. Handle BOOLEAN
-    if (token.value == "BOOLEAN") {
+    if (tokens[current_index].value == "BOOLEAN") {
       // do nothing, empty vector denotes boolean selection
     }
     // 1.2. Handle single synonym
-    else if (declarations.find(token.value) != declarations.end()) {
-      query_->AddSelection(token.value);
+    else if (declarations.find(tokens[current_index].value) != declarations.end()) {
       /* LEGACY: TO BE DELETED */
-      query_->SetVarName(token.value);
+      query_->SetVarName(tokens[current_index].value);
       /* LEGACY: TO BE DELETED */
+
+      // check for attribute
+      PqlAttrName attr = PqlAttrName::kNone;
+      string selection = tokens[current_index].value;
+      if (tokens[current_index+1].type == Tokenizer::TokenType::kPeriod) {
+        current_index += 2;
+        ParseAttribute(tokens, &current_index, &attr);
+        current_index--; // step back because ParseAttribute step forward internally
+      }
+      query_->AddSelection(selection, attr);
     }
     else {
       error_message_ = "Select synonym is not declared.";
@@ -150,14 +158,21 @@ bool PqlParser::ParseSelect(TokenList tokens) {
     }
   }
   // 1.3. Handle tuples
-  else if (token.type == Tokenizer::TokenType::kRelational && token.value == "<") {
-    token = tokens[++current_index];
+  else if (tokens[current_index].type == Tokenizer::TokenType::kRelational && tokens[current_index].value == "<") {
+    ++current_index;
     bool has_next = true;
-    while(token.type != Tokenizer::TokenType::kRelational && token.value != ">") {
+    while(tokens[current_index].type != Tokenizer::TokenType::kRelational && tokens[current_index].value != ">") {
       if (has_next) {
         // expect a synonym
-        if (declarations.find(token.value) != declarations.end()) {
-          query_->AddSelection(token.value);
+        if (declarations.find(tokens[current_index].value) != declarations.end()) {
+          // check for attribute
+          PqlAttrName attr = PqlAttrName::kNone;
+          if (tokens[current_index + 1].type == Tokenizer::TokenType::kPeriod) {
+            current_index += 2;
+            ParseAttribute(tokens, &current_index, &attr);
+            current_index--; // step back because ParseAttribute step forward internally
+          }
+          query_->AddSelection(tokens[current_index].value, attr);
         }
         else {
           error_message_ = "Select synonym is not declared.";
@@ -167,13 +182,13 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       }
       else {
         // expect a comma
-        if (token.type != Tokenizer::TokenType::kComma) {
+        if (tokens[current_index].type != Tokenizer::TokenType::kComma) {
           error_message_ = "Missing comma in select tuple.";
           return false;
         }
         has_next = true;
       }
-      token = tokens[++current_index];
+      ++current_index;
     }
 
     // should not has next if tuple is closed
