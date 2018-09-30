@@ -181,7 +181,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         }
         else if (previous_type == "with") {
           current_index++;
-          // if (!ParseWith(tokens, &current_index)) return false;
+          if (!ParseWith(tokens, &current_index)) return false;
           previous_type = "with";
         }
       }
@@ -459,8 +459,8 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   }
 
   // 8. Create assign pattern object
-  PqlPattern pattern =
-    PqlPattern(type_name, PqlPatternType::kAssign, first, first_type);
+  PqlPattern* pattern =
+    new PqlPattern(type_name, PqlPatternType::kAssign, first, first_type);
   PqlPatternExpressionType expression_type;
   if (underscore && expression.empty()) {
     expression_type = PqlPatternExpressionType::kUnderscore;
@@ -471,11 +471,11 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   else {
     expression_type = PqlPatternExpressionType::kExpression;
   }
-  pattern.SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
-  query_->AddClause(&pattern);
+  pattern->SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
+  query_->AddClause(pattern);
 
   /* LEGACY: TO BE DELETED */
-  query_->AddPattern(pattern);
+  query_->AddPattern(*pattern);
   /* LEGACY: TO BE DELETED */
 
   return true;
@@ -725,6 +725,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   // 8. Create with clause
   query_->AddClause(new PqlWith(left, left_type, left_attr, right, right_type, right_attr));
 
+  --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end
   return true;
 }
 
