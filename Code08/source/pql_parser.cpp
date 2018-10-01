@@ -4,7 +4,7 @@
 #include "pql_clause.h"
 #include "util.h"
 
-const bool DEBUG_FLAG = true;
+const bool DEBUG_FLAG = false;
 
 PqlParser::PqlParser(string query_text, PqlQuery* query) {
   query_text_ = query_text;

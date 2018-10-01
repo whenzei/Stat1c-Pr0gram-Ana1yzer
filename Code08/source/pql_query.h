@@ -120,6 +120,66 @@ const EntitySet modifies_p_second = {
 PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
+// Calls
+const EntitySet calls_first = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet calls_second = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+
+// CallsT
+const EntitySet calls_t_first = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet calls_t_second = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+
+// Next
+const EntitySet next_first = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+const EntitySet next_second = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+
+// NextT
+const EntitySet next_t_first = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+const EntitySet next_t_second = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+
+// Affects
+const EntitySet affects_first = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet affects_second = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore 
+};
+
+// AffectsT
+const EntitySet affects_t_first = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet affects_t_second = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+};
+
 // Group all the sets into a map for easy access
 const SuchthatTable suchthat_table = {
   {PqlSuchthatType::kFollows, std::make_pair(follows_first, follows_second)},
@@ -130,6 +190,12 @@ const SuchthatTable suchthat_table = {
   {PqlSuchthatType::kUsesP, std::make_pair(uses_p_first, uses_p_second)},
   {PqlSuchthatType::kModifiesS, std::make_pair(modifies_s_first, modifies_s_second)},
   {PqlSuchthatType::kModifiesP, std::make_pair(modifies_p_first, modifies_p_second)},
+  {PqlSuchthatType::kCalls, std::make_pair(calls_first, calls_second)},
+  {PqlSuchthatType::kCallsT, std::make_pair(calls_t_first, calls_t_second)},
+  {PqlSuchthatType::kNext, std::make_pair(next_first, next_second)},
+  {PqlSuchthatType::kNextT, std::make_pair(next_t_first, next_t_second)},
+  {PqlSuchthatType::kAffects, std::make_pair(affects_first, affects_second)},
+  {PqlSuchthatType::kAffectsT, std::make_pair(affects_t_first, affects_t_second)}
 };
 
 /*
