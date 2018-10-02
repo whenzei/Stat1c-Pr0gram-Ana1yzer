@@ -17,14 +17,13 @@ using std::unordered_set;
 #include "pql_suchthat.h"
 #include "pql_pattern.h"
 #include "pql_with.h"
-#include "pql_enum.h"
+#include "pql_global.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
 using PqlPatternTable = unordered_map<PqlSuchthatType, EntitySet>;
-using Selection = pair<string, PqlAttrName>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -228,7 +227,7 @@ private:
   /* a map that maps the name to the entity type */
   Declarations declarations_;
   /* collect of selection */
-  vector<Selection> selections_;
+  vector<Entity> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
 
@@ -244,12 +243,12 @@ public:
 
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
-  void AddSelection(string, PqlAttrName);
+  void AddSelection(string, PqlDeclarationEntity);
   void AddClause(PqlClause*);
 
   /* Getters */
   Declarations GetDeclarations();
-  vector<Selection> GetSelections();
+  vector<Entity> GetSelections();
   vector<PqlClause*> GetClauses();
 
   static PqlDeclarationEntity DeclarationStringToType(string);

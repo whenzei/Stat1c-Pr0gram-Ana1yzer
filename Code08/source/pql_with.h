@@ -8,18 +8,15 @@
 
 using std::pair;
 using std::string;
-using WithType = pair<string, PqlDeclarationEntity>;
 
 class PqlWith : public PqlClause {
 private:
-  pair<WithType, PqlAttrName> left_;
-  pair<WithType, PqlAttrName> right_;
+  Parameters parameters_;
 
 public:
-  PqlWith(string, PqlDeclarationEntity, PqlAttrName, string, PqlDeclarationEntity, PqlAttrName);
+  PqlWith(string, PqlDeclarationEntity, string, PqlDeclarationEntity);
 
-  pair<WithType, PqlAttrName> GetLeft();
-  pair<WithType, PqlAttrName> GetRight();
+  Parameters GetParameters();
   PqlClauseType GetClauseType();
 };
 

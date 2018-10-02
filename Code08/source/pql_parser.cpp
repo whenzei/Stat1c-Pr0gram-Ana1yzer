@@ -143,14 +143,14 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       /* LEGACY: TO BE DELETED */
 
       // check for attribute
-      PqlAttrName attr = PqlAttrName::kNone;
+      PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
       string selection = tokens[current_index].value;
       if (tokens[current_index+1].type == Tokenizer::TokenType::kPeriod) {
         current_index += 2;
-        ParseAttribute(tokens, &current_index, &attr);
+        ParseAttribute(tokens, &current_index, &type);
         current_index--; // step back because ParseAttribute step forward internally
       }
-      query_->AddSelection(selection, attr);
+      query_->AddSelection(selection, type);
     }
     else {
       error_message_ = "Select synonym is not declared.";
@@ -166,13 +166,13 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         // expect a synonym
         if (declarations.find(tokens[current_index].value) != declarations.end()) {
           // check for attribute
-          PqlAttrName attr = PqlAttrName::kNone;
+          PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
           if (tokens[current_index + 1].type == Tokenizer::TokenType::kPeriod) {
             current_index += 2;
-            ParseAttribute(tokens, &current_index, &attr);
+            ParseAttribute(tokens, &current_index, &type);
             current_index--; // step back because ParseAttribute step forward internally
           }
-          query_->AddSelection(tokens[current_index].value, attr);
+          query_->AddSelection(tokens[current_index].value, type);
         }
         else {
           error_message_ = "Select synonym is not declared.";
@@ -705,10 +705,8 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   Token current = tokens[*current_index];
   string left;
   PqlDeclarationEntity left_type;
-  PqlAttrName left_attr = PqlAttrName::kNone;
   string right;
   PqlDeclarationEntity right_type;
-  PqlAttrName right_attr = PqlAttrName::kNone;
 
   // 1. Get left
   ParseParameter(tokens, current_index, &left, &left_type, "with ");
@@ -740,7 +738,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
     current = tokens[++*current_index];
     // 3.2. Handle attribute
-    ParseAttribute(tokens, current_index, &left_attr);
+    ParseAttribute(tokens, current_index, &left_type);
   }
 
   // 4. Handle equal
@@ -780,11 +778,11 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
     current = tokens[++*current_index];
     // 7.2. Handle attribute
-    ParseAttribute(tokens, current_index, &right_attr);
+    ParseAttribute(tokens, current_index, &right_type);
   }
 
   // 8. Create with clause
-  query_->AddClause(new PqlWith(left, left_type, left_attr, right, right_type, right_attr));
+  query_->AddClause(new PqlWith(left, left_type, right, right_type));
 
   --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end
   return true;
@@ -840,35 +838,34 @@ bool PqlParser::ParseParameter(TokenList tokens, int* current_index,
   return true;
 }
 
-bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlAttrName* attr) {
+bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlDeclarationEntity* type) {
   Token current = tokens[*current_index];
   if (current.type != Tokenizer::TokenType::kName) {
     error_message_ = "Invalid attribute name of with clause.";
     return false;
   }
 
-  if (current.value == "procName") {
-    *attr = PqlAttrName::kProcName;
-  }
-  else if (current.value == "varName") {
-    *attr = PqlAttrName::kVarName;
-  }
-  else if (current.value == "value") {
-    *attr = PqlAttrName::kValue;
-  }
-  else if (current.value == "stmt") {
+  // 1. Get the attribute name
+  string attr = current.value;;
+  if (attr == "stmt") {
     current = tokens[++*current_index];
     if (current.type != Tokenizer::TokenType::kHash) {
       error_message_ = "Invalid attribute name of with clause.";
       return false;
     }
-    *attr = PqlAttrName::kStmtNo;
   }
-  else {
-    error_message_ = "Invalid attribute name of with clause.";
+
+  // 2. Validate attribute
+  if(!PqlValidator::ValidateAttribute(*type, attr)) {
+    error_message_ = "Invalid attribute in with clause.";
     return false;
   }
 
+  // 3. Handle procedure name
+  if (*type == PqlDeclarationEntity::kProcedure && attr == "procName") {
+      *type = PqlDeclarationEntity::kProcedureName;
+  }
+  
   ++*current_index;
   return true;
 }

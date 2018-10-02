@@ -170,9 +170,6 @@
     <ClInclude Include="..\source\pql_evaluator.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_enum.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\pql_result.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
@@ -207,6 +204,9 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_with.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_global.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>

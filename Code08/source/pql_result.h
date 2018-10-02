@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "pql_enum.h"
+#include "pql_global.h"
 
 using std::pair;
 using std::string;

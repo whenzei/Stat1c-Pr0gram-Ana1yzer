@@ -83,3 +83,29 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
 
   return true;
 }
+
+bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
+  switch(type) {
+    case PqlDeclarationEntity::kStmt:
+    case PqlDeclarationEntity::kRead:
+    case PqlDeclarationEntity::kPrint:
+    case PqlDeclarationEntity::kCall:
+    case PqlDeclarationEntity::kWhile:
+    case PqlDeclarationEntity::kIf:
+    case PqlDeclarationEntity::kAssign:
+    case PqlDeclarationEntity::kProgline:
+      if (attr == "stmt") return true;
+      break;
+    case PqlDeclarationEntity::kVariable:
+      if (attr == "varName") return true;
+      break;
+    case PqlDeclarationEntity::kConstant:
+      if (attr == "value") return true;
+      break;
+    case PqlDeclarationEntity::kProcedure:
+      if (attr == "stmt" || attr == "procName") return true;
+      break;
+  }
+
+  return false;
+}

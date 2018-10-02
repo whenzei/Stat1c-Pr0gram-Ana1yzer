@@ -50,7 +50,7 @@
     <ClInclude Include="..\source\pattern_table.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_clause.h" />
-    <ClInclude Include="..\source\pql_enum.h" />
+    <ClInclude Include="..\source\pql_global.h" />
     <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />

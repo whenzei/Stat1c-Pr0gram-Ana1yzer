@@ -1,7 +1,11 @@
 #pragma once
 
-#ifndef PQL_ENUM_H
-#define PQL_ENUM_H
+#ifndef PQL_GLOBAL_H
+#define PQL_GLOBAL_H
+
+#include <string>
+using std::pair;
+using std::string;
 
 /* The entity types for a PQL declaration */
 enum class PqlDeclarationEntity {
@@ -16,6 +20,7 @@ enum class PqlDeclarationEntity {
   kConstant,
   kProgline,
   kProcedure,
+  kProcedureName,
   kInteger,     // only used for validation, not an actual entity type
   kIdent,       // only used for validation, not an actual entity type
   kUnderscore,  // only used for validation, not an actual entity type
@@ -55,14 +60,6 @@ enum class PqlSuchthatType {
 /* The type for pattern clause */
 enum class PqlPatternType { kAssign, kWhile, kIf };
 
-enum class PqlAttrName {
-  kProcName,
-  kVarName,
-  kValue,
-  kStmtNo,
-  kNone
-};
-
 /* The type for the 2nd parameter of an assign pattern clause */
 enum class PqlPatternExpressionType {
   kUnderscore,
@@ -94,5 +91,9 @@ enum PqlResultTableConflict {
   kOneConflictRight,  // One conflict at the right of pair
   kTwoConflict        // Two conflict for the pair
 };
+
+/* Custom shorthand structures */
+using Entity = pair<string, PqlDeclarationEntity>;
+using Parameters = pair<Entity, Entity>;
 
 #endif

@@ -16,7 +16,7 @@ class StatementData;
 #include "modifies_table.h"
 #include "pattern_table.h"
 #include "parent_table.h"
-#include "pql_enum.h"
+#include "pql_global.h"
 #include "proc_list.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"

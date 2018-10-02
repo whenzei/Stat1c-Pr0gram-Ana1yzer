@@ -83,7 +83,7 @@ private:
   @string* the pointer to the variable that we want to store the value in
   @PqlAttrName* the pointer to the object we want to store the attribute type in
   */
-  bool ParseAttribute(TokenList, int*, PqlAttrName*);
+  bool ParseAttribute(TokenList, int*, PqlDeclarationEntity*);
 };
 
 #endif

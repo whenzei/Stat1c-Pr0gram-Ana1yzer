@@ -8,9 +8,7 @@
 using std::string;
 using std::pair;
 
-#include "pql_enum.h"
-
-using Parameters = pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>;
+#include "pql_global.h"
 
 /* Stores information of a such that clause in a PQL select statement */
 class PqlSuchthat : public PqlClause {
