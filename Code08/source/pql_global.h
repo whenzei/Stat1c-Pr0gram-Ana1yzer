@@ -1,7 +1,11 @@
 #pragma once
 
-#ifndef PQL_ENUM_H
-#define PQL_ENUM_H
+#ifndef PQL_GLOBAL_H
+#define PQL_GLOBAL_H
+
+#include <string>
+using std::pair;
+using std::string;
 
 /* The entity types for a PQL declaration */
 enum class PqlDeclarationEntity {
@@ -9,6 +13,7 @@ enum class PqlDeclarationEntity {
   kRead,
   kPrint,
   kCall,
+  kCallName,
   kWhile,
   kIf,
   kAssign,
@@ -22,6 +27,13 @@ enum class PqlDeclarationEntity {
   kSynonym,     // only used for validation, not an actual entity type
   kNone,
   kAll  // used for PKB to hold all entity types
+};
+
+/* The type of clause */
+enum class PqlClauseType {
+  kSuchthat,
+  kPattern,
+  kWith
 };
 
 /* The relationship types for a such that clause */
@@ -79,5 +91,9 @@ enum PqlResultTableConflict {
   kOneConflictRight,  // One conflict at the right of pair
   kTwoConflict        // Two conflict for the pair
 };
+
+/* Custom shorthand structures */
+using Synonym = pair<string, PqlDeclarationEntity>;
+using Parameters = pair<Synonym, Synonym>;
 
 #endif

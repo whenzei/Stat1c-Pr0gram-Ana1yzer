@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "pql_enum.h"
+#include "pql_global.h"
 #include "pql_result.h"
 
 using std::cout;

@@ -114,6 +114,9 @@
     <ClCompile Include="..\source\design_extractor.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pql_with.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -167,9 +170,6 @@
     <ClInclude Include="..\source\pql_evaluator.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_enum.h">
-      <Filter>Header Files\PQL</Filter>
-    </ClInclude>
     <ClInclude Include="..\source\pql_result.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
@@ -199,6 +199,15 @@
     </ClInclude>
     <ClInclude Include="..\source\design_extractor.h">
       <Filter>Header Files\Frontend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_clause.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_with.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_global.h">
+      <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

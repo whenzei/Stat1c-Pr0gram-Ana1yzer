@@ -13,9 +13,11 @@ using std::unordered_map;
 using std::pair;
 using std::unordered_set;
 
+#include "pql_clause.h"
 #include "pql_suchthat.h"
 #include "pql_pattern.h"
-#include "pql_enum.h"
+#include "pql_with.h"
+#include "pql_global.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
@@ -117,6 +119,66 @@ const EntitySet modifies_p_second = {
 PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
 };
 
+// Calls
+const EntitySet calls_first = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet calls_second = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+
+// CallsT
+const EntitySet calls_t_first = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+const EntitySet calls_t_second = {
+PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kIdent, PqlDeclarationEntity::kUnderscore
+};
+
+// Next
+const EntitySet next_first = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+const EntitySet next_second = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+
+// NextT
+const EntitySet next_t_first = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+const EntitySet next_t_second = {
+PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf,
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kInteger,
+PqlDeclarationEntity::kUnderscore
+};
+
+// Affects
+const EntitySet affects_first = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
+};
+const EntitySet affects_second = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
+};
+
+// AffectsT
+const EntitySet affects_t_first = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
+};
+const EntitySet affects_t_second = {
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
+};
+
 // Group all the sets into a map for easy access
 const SuchthatTable suchthat_table = {
   {PqlSuchthatType::kFollows, std::make_pair(follows_first, follows_second)},
@@ -127,6 +189,12 @@ const SuchthatTable suchthat_table = {
   {PqlSuchthatType::kUsesP, std::make_pair(uses_p_first, uses_p_second)},
   {PqlSuchthatType::kModifiesS, std::make_pair(modifies_s_first, modifies_s_second)},
   {PqlSuchthatType::kModifiesP, std::make_pair(modifies_p_first, modifies_p_second)},
+  {PqlSuchthatType::kCalls, std::make_pair(calls_first, calls_second)},
+  {PqlSuchthatType::kCallsT, std::make_pair(calls_t_first, calls_t_second)},
+  {PqlSuchthatType::kNext, std::make_pair(next_first, next_second)},
+  {PqlSuchthatType::kNextT, std::make_pair(next_t_first, next_t_second)},
+  {PqlSuchthatType::kAffects, std::make_pair(affects_first, affects_second)},
+  {PqlSuchthatType::kAffectsT, std::make_pair(affects_t_first, affects_t_second)}
 };
 
 /*
@@ -158,12 +226,16 @@ class PqlQuery {
 private:
   /* a map that maps the name to the entity type */
   Declarations declarations_;
-  /* the variable name of the 'Select' statement */
+  /* collect of selection */
+  vector<Synonym> selections_;
+  /* collection of clauses in the 'Select' statement */
+  vector<PqlClause*> clauses_;
+
+  /* LEGACY: TO BE DELETED */
   string var_name_;
-  /* collection of such that clauses in the 'Select' statement */
   vector<PqlSuchthat> suchthats_;
-  /* collection of pattern clauses in the 'Select' statement */
   vector<PqlPattern> patterns_;
+  /* LEGACY: TO BE DELETED */
 
 public:
   /* Constructor */
@@ -171,16 +243,24 @@ public:
 
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
-  void SetVarName(string);
-  void AddSuchthat(PqlSuchthat);
-  void AddPattern(PqlPattern);
+  void AddSelection(string, PqlDeclarationEntity);
+  void AddClause(PqlClause*);
 
   /* Getters */
   Declarations GetDeclarations();
+  vector<Synonym> GetSelections();
+  vector<PqlClause*> GetClauses();
+
+  static PqlDeclarationEntity DeclarationStringToType(string);
+
+  /* LEGACY: TO BE DELETED */
+  void SetVarName(string);
   string GetVarName();
+  void AddSuchthat(PqlSuchthat);
+  void AddPattern(PqlPattern);
   vector<PqlSuchthat> GetSuchThats();
   vector<PqlPattern> GetPatterns();
-  static PqlDeclarationEntity DeclarationStringToType(string);
+  /* LEGACY: TO BE DELETED */
 };
 
 #endif  // !QUERY_H

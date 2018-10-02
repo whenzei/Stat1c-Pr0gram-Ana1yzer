@@ -4,15 +4,14 @@
 #define PQL_SUCHTHAT_H
 
 #include <string>
+#include "pql_clause.h"
 using std::string;
 using std::pair;
 
-#include "pql_enum.h"
-
-using Parameters = pair<pair<string, PqlDeclarationEntity>, pair<string, PqlDeclarationEntity>>;
+#include "pql_global.h"
 
 /* Stores information of a such that clause in a PQL select statement */
-class PqlSuchthat {
+class PqlSuchthat : public PqlClause {
 private:
   /* The relationship type of the such that clause */
   PqlSuchthatType type_;
@@ -25,6 +24,8 @@ public:
   PqlSuchthatType GetType();
   Parameters GetParameters();
   static PqlSuchthatType StringToType(string);
+
+  PqlClauseType GetClauseType();
 };
 
 #endif

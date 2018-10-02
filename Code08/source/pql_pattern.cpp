@@ -7,10 +7,12 @@ PqlPattern::PqlPattern(string type_name, PqlPatternType type, string first, PqlD
 
 pair<string, PqlPatternType> PqlPattern::GetType() { return type_; }
 
-pair<string, PqlDeclarationEntity> PqlPattern::GetFirstParameter() { return first_parameter_; }
+Synonym PqlPattern::GetFirstParameter() { return first_parameter_; }
 
 Expression PqlPattern::GetAssignExpression() { return assign_expression_; }
 
 void PqlPattern::SetAssignExpression(PqlPatternExpressionType type, TokenList tokens) {
   assign_expression_ = std::make_pair(type, tokens);
 }
+
+PqlClauseType PqlPattern::GetClauseType() { return PqlClauseType::kPattern; }

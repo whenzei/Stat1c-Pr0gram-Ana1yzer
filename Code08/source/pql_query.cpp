@@ -12,6 +12,14 @@ bool PqlQuery::AddDeclaration(PqlDeclarationEntity entity, string var_name) {
   return declarations_.insert(std::make_pair(var_name, entity)).second;
 }
 
+void PqlQuery::AddSelection(string selection, PqlDeclarationEntity type) {
+  selections_.push_back(std::make_pair(selection, type));
+}
+
+void PqlQuery::AddClause(PqlClause* clause) {
+  clauses_.push_back(clause);
+}
+
 void PqlQuery::SetVarName(string var_name) { this->var_name_ = var_name; }
 
 void PqlQuery::AddSuchthat(PqlSuchthat suchthat) {
@@ -24,11 +32,15 @@ void PqlQuery::AddPattern(PqlPattern pattern) {
 
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
+vector<Synonym> PqlQuery::GetSelections() { return selections_; }
+
 string PqlQuery::GetVarName() { return var_name_; }
 
 vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }
 
 vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
+
+vector<PqlClause*> PqlQuery::GetClauses() { return clauses_; }
 
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {

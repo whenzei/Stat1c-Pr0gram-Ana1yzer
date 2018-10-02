@@ -7,7 +7,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "pql_enum.h"
+#include "pql_global.h"
 
 // StmtNum is defined as a string inside PKB, because query results have to be
 // in the format vector<string>. For consistency, all StmtNum inside PKB is string
