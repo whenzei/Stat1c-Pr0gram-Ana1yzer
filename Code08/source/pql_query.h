@@ -165,18 +165,18 @@ PqlDeclarationEntity::kUnderscore
 
 // Affects
 const EntitySet affects_first = {
-PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
 };
 const EntitySet affects_second = {
-PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore 
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
 };
 
 // AffectsT
 const EntitySet affects_t_first = {
-PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
 };
 const EntitySet affects_t_second = {
-PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore
+PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kInteger
 };
 
 // Group all the sets into a map for easy access
