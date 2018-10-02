@@ -89,7 +89,6 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
     case PqlDeclarationEntity::kStmt:
     case PqlDeclarationEntity::kRead:
     case PqlDeclarationEntity::kPrint:
-    case PqlDeclarationEntity::kCall:
     case PqlDeclarationEntity::kWhile:
     case PqlDeclarationEntity::kIf:
     case PqlDeclarationEntity::kAssign:
@@ -103,6 +102,9 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
       if (attr == "value") return true;
       break;
     case PqlDeclarationEntity::kProcedure:
+      if (attr == "procName") return true;
+      break;
+    case PqlDeclarationEntity::kCall:
       if (attr == "stmt" || attr == "procName") return true;
       break;
   }

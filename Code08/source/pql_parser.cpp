@@ -147,7 +147,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       string selection = tokens[current_index].value;
       if (tokens[current_index+1].type == Tokenizer::TokenType::kPeriod) {
         current_index += 2;
-        ParseAttribute(tokens, &current_index, &type);
+        if(!ParseAttribute(tokens, &current_index, &type)) return false;
         current_index--; // step back because ParseAttribute step forward internally
       }
       query_->AddSelection(selection, type);
@@ -169,7 +169,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
           PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
           if (tokens[current_index + 1].type == Tokenizer::TokenType::kPeriod) {
             current_index += 2;
-            ParseAttribute(tokens, &current_index, &type);
+            if (!ParseAttribute(tokens, &current_index, &type)) return false;
             current_index--; // step back because ParseAttribute step forward internally
           }
           query_->AddSelection(tokens[current_index].value, type);
@@ -738,7 +738,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
     current = tokens[++*current_index];
     // 3.2. Handle attribute
-    ParseAttribute(tokens, current_index, &left_type);
+    if(!ParseAttribute(tokens, current_index, &left_type)) return false;
   }
 
   // 4. Handle equal
@@ -778,7 +778,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
     current = tokens[++*current_index];
     // 7.2. Handle attribute
-    ParseAttribute(tokens, current_index, &right_type);
+    if(!ParseAttribute(tokens, current_index, &right_type)) return false;
   }
 
   // 8. Create with clause
@@ -862,8 +862,8 @@ bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlDeclarat
   }
 
   // 3. Handle procedure name
-  if (*type == PqlDeclarationEntity::kProcedure && attr == "procName") {
-      *type = PqlDeclarationEntity::kProcedureName;
+  if (*type == PqlDeclarationEntity::kCall && attr == "procName") {
+      *type = PqlDeclarationEntity::kCallName;
   }
   
   ++*current_index;

@@ -13,6 +13,7 @@ enum class PqlDeclarationEntity {
   kRead,
   kPrint,
   kCall,
+  kCallName,
   kWhile,
   kIf,
   kAssign,
@@ -20,7 +21,6 @@ enum class PqlDeclarationEntity {
   kConstant,
   kProgline,
   kProcedure,
-  kProcedureName,
   kInteger,     // only used for validation, not an actual entity type
   kIdent,       // only used for validation, not an actual entity type
   kUnderscore,  // only used for validation, not an actual entity type

@@ -579,19 +579,19 @@ public:
   };
 
   TEST_METHOD(TestWithWithRightAttr) {
-    string content = "assign a; procedure p; Select a with a = p.procName";
+    string content = "assign a; call c; Select a with a = c.procName";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsTrue(parser.Parse());
     Assert::IsTrue(query->GetDeclarations()["a"] == PqlDeclarationEntity::kAssign);
-    Assert::IsTrue(query->GetDeclarations()["p"] == PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(query->GetDeclarations()["c"] == PqlDeclarationEntity::kCall);
     Assert::IsTrue(query->GetVarName() == "a");
 
     PqlWith* with = (PqlWith*)query->GetClauses()[0];
     Assert::IsTrue(with->GetParameters().first.first == "a");
     Assert::IsTrue(with->GetParameters().first.second == PqlDeclarationEntity::kAssign);
-    Assert::IsTrue(with->GetParameters().second.first == "p");
-    Assert::IsTrue(with->GetParameters().second.second == PqlDeclarationEntity::kProcedureName);
+    Assert::IsTrue(with->GetParameters().second.first == "c");
+    Assert::IsTrue(with->GetParameters().second.second == PqlDeclarationEntity::kCallName);
   };
 
   TEST_METHOD(TestInvalidWith) {
