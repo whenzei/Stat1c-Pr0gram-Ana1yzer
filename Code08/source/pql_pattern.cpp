@@ -7,7 +7,7 @@ PqlPattern::PqlPattern(string type_name, PqlPatternType type, string first, PqlD
 
 pair<string, PqlPatternType> PqlPattern::GetType() { return type_; }
 
-Entity PqlPattern::GetFirstParameter() { return first_parameter_; }
+Synonym PqlPattern::GetFirstParameter() { return first_parameter_; }
 
 Expression PqlPattern::GetAssignExpression() { return assign_expression_; }
 

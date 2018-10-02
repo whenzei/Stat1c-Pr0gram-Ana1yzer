@@ -32,7 +32,7 @@ void PqlQuery::AddPattern(PqlPattern pattern) {
 
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
-vector<Entity> PqlQuery::GetSelections() { return selections_; }
+vector<Synonym> PqlQuery::GetSelections() { return selections_; }
 
 string PqlQuery::GetVarName() { return var_name_; }
 

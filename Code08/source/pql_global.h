@@ -93,7 +93,7 @@ enum PqlResultTableConflict {
 };
 
 /* Custom shorthand structures */
-using Entity = pair<string, PqlDeclarationEntity>;
-using Parameters = pair<Entity, Entity>;
+using Synonym = pair<string, PqlDeclarationEntity>;
+using Parameters = pair<Synonym, Synonym>;
 
 #endif

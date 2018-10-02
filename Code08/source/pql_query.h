@@ -227,7 +227,7 @@ private:
   /* a map that maps the name to the entity type */
   Declarations declarations_;
   /* collect of selection */
-  vector<Entity> selections_;
+  vector<Synonym> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
 
@@ -248,7 +248,7 @@ public:
 
   /* Getters */
   Declarations GetDeclarations();
-  vector<Entity> GetSelections();
+  vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
 
   static PqlDeclarationEntity DeclarationStringToType(string);

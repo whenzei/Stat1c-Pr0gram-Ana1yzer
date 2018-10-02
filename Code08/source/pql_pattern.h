@@ -15,14 +15,14 @@ using Expression = pair<PqlPatternExpressionType, TokenList>;
 class PqlPattern : public PqlClause {
 private:
   pair<string, PqlPatternType> type_; // assign | if | while
-  Entity first_parameter_;
+  Synonym first_parameter_;
   Expression assign_expression_; // 2nd parameter of assign pattern
 
 public:
   PqlPattern(string, PqlPatternType, string, PqlDeclarationEntity);
 
   pair<string, PqlPatternType> GetType();
-  Entity GetFirstParameter();
+  Synonym GetFirstParameter();
   Expression GetAssignExpression();
 
   void SetAssignExpression(PqlPatternExpressionType, TokenList);
