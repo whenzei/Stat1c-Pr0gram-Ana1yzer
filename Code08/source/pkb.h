@@ -13,9 +13,10 @@ class StatementData;
 
 #include "const_list.h"
 #include "follows_table.h"
+#include "graph.h"
 #include "modifies_table.h"
-#include "pattern_table.h"
 #include "parent_table.h"
+#include "pattern_table.h"
 #include "pql_global.h"
 #include "proc_list.h"
 #include "stmt_table.h"
@@ -23,9 +24,11 @@ class StatementData;
 #include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
+// statement_data.h must be at the end due to forward declaration
 #include "statement_data.h"
 
 using StmtNumInt = int;
+using CallGraph = Graph;
 
 class PKB {
   ProcList proc_list_;
@@ -39,6 +42,7 @@ class PKB {
   PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
+  CallGraph call_graph_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -57,9 +61,12 @@ class PKB {
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
 
-  // return a PqlDeclarationEntity enum to represent the statement type
+  // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @returns the call graph of the program
+  CallGraph GetCallGraph();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -68,7 +75,8 @@ class PKB {
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_data the statement data as encapsulated by WhileStmtData structure
+  // @param stmt_data the statement data as encapsulated by WhileStmtData
+  // structure
   void InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
@@ -278,13 +286,14 @@ class PKB {
 
   // @returns a list of a's that satisfy pattern a(var_name, exact_expr)
   // var_name can be an empty string (to represent underscore)
-  StmtNumList GetAssignWithExactPattern(VarName var_name,
-                                        TokenList exact_expr);
+  StmtNumList GetAssignWithExactPattern(VarName var_name, TokenList exact_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, _sub_expr_)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // _sub_expr_)
   StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
   // Parser calls this method to notify pkb end of parse.

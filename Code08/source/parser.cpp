@@ -74,15 +74,15 @@ void Parser::ParseProgram() {
 
 void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
-  ProcName proc_name = ReadNextToken().value;
-  pkb_->InsertProcName(proc_name);
+  curr_proc_name_ = ReadNextToken().value;
+  pkb_->InsertProcName(curr_proc_name_);
   // eat the open brace
   ReadNextToken();
 
   ParseData parse_data = ProcessStatementList(given_stmt_list_index);
 
-  PopulatePkbModifies(proc_name, parse_data.GetModifiedVariables());
-  PopulatePkbUses(proc_name, parse_data.GetUsedVariables());
+  PopulatePkbModifies(curr_proc_name_, parse_data.GetModifiedVariables());
+  PopulatePkbUses(curr_proc_name_, parse_data.GetUsedVariables());
 
   ReadNextToken();
 }
@@ -139,7 +139,9 @@ ParseData Parser::ProcessKeyword(int given_stmt_list_num) {
   } else if (IsCurrentKeywordType(ts::kWhile)) {
     return ProcessWhileBlock(given_stmt_list_num);
   } else if (IsCurrentKeywordType(ts::kCall)) {
-    // todo call handling
+    ProcessCall(given_stmt_list_num);
+    // do nothing for now, DE will populate Uses and Modifies;
+    return ParseData(VarNameSet(), VarNameSet());
   } else if (IsCurrentKeywordType(ts::kRead)) {
     VarName modified_var = ProcessRead(given_stmt_list_num);
     modified_vars.insert(modified_var);
@@ -175,6 +177,11 @@ VarName Parser::ProcessPrint(int given_stmt_list_num) {
   // eat semicolon
   ReadNextToken();
   return used_var;
+}
+
+void Parser::ProcessCall(int given_stmt_list_index) {
+  VarName called_proc_name = ReadNextToken().value;
+  pkb_->GetCallGraph().AddEdge(curr_proc_name_, called_proc_name);
 }
 
 ParseData Parser::ProcessAssignment(int given_stmt_list_num) {

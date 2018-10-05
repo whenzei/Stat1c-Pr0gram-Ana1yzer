@@ -21,6 +21,10 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
+CallGraph PKB::GetCallGraph() {
+  return call_graph_;
+}
+
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
     VarNameSet used_vars = stmt_data->GetUsedVariables();

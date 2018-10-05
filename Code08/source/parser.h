@@ -22,6 +22,7 @@ class Parser {
   int current_index_;
   int stmt_num_;
   int stmt_list_num_;
+  ProcName curr_proc_name_;
 
   bool IsAtEnd();
   Token ReadNextToken();
@@ -67,6 +68,8 @@ class Parser {
 
   // @returns the used variable name
   VarName ProcessPrint(int given_stmt_list_index);
+
+  void ProcessCall(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
