@@ -12,6 +12,12 @@ bool Graph::AddNode(const string &name) {
 }
 
 void Graph::AddEdge(const string &from, const string &to) {
+  if (!node_map_.count(from)) {
+    AddNode(from);
+  }
+  if (!node_map_.count(to)) {
+    AddNode(to);
+  }
   Node *from_node = node_map_.find(from)->second;
   Node *to_node = node_map_.find(to)->second;
   from_node->adj_.push_back(to_node);
