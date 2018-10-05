@@ -96,6 +96,10 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
+void PKB::InsertCFG(string proc_name, CFG cfg) {
+  cfg_table_.emplace(proc_name, cfg);
+}
+
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
 
 StmtNumList PKB::GetAllAssignStmt() {
@@ -254,6 +258,8 @@ StmtNumList PKB::GetUsingStmt(VarName var_name) {
 ProcNameList PKB::GetUsingProc(VarName var_name) {
   return uses_table_.GetUsingProc(var_name);
 }
+
+CFG PKB::GetCFG(string proc_name) { return cfg_table_.at(proc_name); }
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, var_name);
