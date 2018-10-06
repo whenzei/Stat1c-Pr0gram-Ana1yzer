@@ -114,8 +114,9 @@ class PKB {
   // child_stmt_num
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // Inserts a cfg into the CFGTable, with key value as the proc_name
-  void InsertCFG(string proc_name, CFG cfg);
+  // Inserts a new cfg into the CFGTable, with key value as the proc_name
+  // @returns pointer to inserted cfg
+  CFG* InsertCFG(string proc_name);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)

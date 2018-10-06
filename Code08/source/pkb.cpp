@@ -96,8 +96,9 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
-void PKB::InsertCFG(string proc_name, CFG cfg) {
-  cfg_table_.emplace(proc_name, cfg);
+CFG* PKB::InsertCFG(string proc_name) {
+  cfg_table_.emplace(proc_name, CFG());
+  return &cfg_table_.at(proc_name);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
