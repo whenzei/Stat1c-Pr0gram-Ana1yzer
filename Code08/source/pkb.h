@@ -14,8 +14,8 @@ class StatementData;
 #include "const_list.h"
 #include "follows_table.h"
 #include "modifies_table.h"
-#include "pattern_table.h"
 #include "parent_table.h"
+#include "pattern_table.h"
 #include "pql_global.h"
 #include "proc_list.h"
 #include "stmt_table.h"
@@ -71,7 +71,8 @@ class PKB {
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_data the statement data as encapsulated by WhileStmtData structure
+  // @param stmt_data the statement data as encapsulated by WhileStmtData
+  // structure
   void InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
@@ -285,13 +286,14 @@ class PKB {
 
   // @returns a list of a's that satisfy pattern a(var_name, exact_expr)
   // var_name can be an empty string (to represent underscore)
-  StmtNumList GetAssignWithExactPattern(VarName var_name,
-                                        TokenList exact_expr);
+  StmtNumList GetAssignWithExactPattern(VarName var_name, TokenList exact_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, _sub_expr_)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // _sub_expr_)
   StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
   // @returns the cfg belonging to a specified procedure
