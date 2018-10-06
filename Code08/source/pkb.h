@@ -148,7 +148,9 @@ class PKB {
   // @returns the list of stmt numbers
   StmtNumList GetAllCallStmt();
 
-  // Follows table public functions
+  /***********************
+  * Follows Table Functions *
+  ***********************/
 
   // @returns true if Follows*(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
@@ -182,6 +184,10 @@ class PKB {
 
   // @returns list of all pairs of <s1, s2> that satisfy Follows(s1, s2)
   StmtNumPairList GetAllFollowsPair();
+
+  /***********************
+  * Parent Table Functions *
+  ***********************/
 
   // @returns true if Parent(parent_stmt_num, child_stmt_num) holds
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
@@ -217,6 +223,10 @@ class PKB {
   // @returns list of all pairs of <s1, s2> that satisfy Parent*(s1, s2)
   StmtNumPairList GetAllParentTPair();
 
+  /***********************
+  * Modifies Table Functions *
+  ***********************/
+
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
@@ -250,6 +260,10 @@ class PKB {
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
   ProcVarPairList GetAllModifiesPairP();
+
+  /***********************
+  * Uses Table Functions *
+  ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
