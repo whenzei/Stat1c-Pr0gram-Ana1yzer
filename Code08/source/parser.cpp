@@ -73,7 +73,7 @@ void Parser::ParseProgram() {
 
   /****** Debug Call graph ******/
   // DFS call graph
-  vector<string> traverse = pkb_->GetCallGraph()->DFS("one");
+  vector<string> traverse = pkb_->GetCallGraph()->Toposort();
   for (auto name : traverse) {
     cout << name << endl;
   }

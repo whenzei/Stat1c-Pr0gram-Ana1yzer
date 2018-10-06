@@ -27,36 +27,54 @@ void Graph::AddEdge(const string &from, const string &to) {
   from_node->adj_.push_back(to_node);
 }
 
-void Graph::DFS(const string &name, VisitedMap &visited_map,
-                vector<string> &post_traverse) {
+int Graph::GetSize() { return size_; }
+
+
+void Graph::Toposort(const string &name, VisitedMap &visited_map,
+                     queue<string> &topoqueue) {
   if (size_ == 0) {
-    // Only single procedure
+    // only single procedure
     return;
   }
-  // Mark the current node as visited
+
+  // mark the current node as visited
   visited_map.at(name) = true;
 
-  // Recur for all the vertices adjacent to node
+  // recur for all the vertices adjacent to node
   Node *from_node = node_map_.find(name)->second;
   for (auto node : from_node->adj_) {
     if (!visited_map.at(node->name_)) {
-      DFS(node->name_, visited_map, post_traverse);
+      Toposort(node->name_, visited_map, topoqueue);
     }
   }
 
-  // append to post traverse vector
-  post_traverse.push_back(name);
+  // push to topoqueue;
+  topoqueue.push(name);
 }
 
-vector<string> Graph::DFS(const string &name) {
+vector<string> Graph::Toposort() {
+  queue<string> topoqueue;
+  vector<string> toposorted;
+  // mark all the vertices as not visited
   VisitedMap visited_map;
-  vector<string> post_traverse;
   for (auto it : node_map_) {
     visited_map.emplace(it.first, false);
   }
 
-  // Call the recursive helper function to populate traversal vector
-  DFS(name, visited_map, post_traverse);
+  // call the recursive helper function to store toposorted nodes
+  // starting from all nodes
+  for (auto it : node_map_) {
+    string node_name = it.first;
+    if (!visited_map.at(node_name)) {
+      Toposort(node_name, visited_map, topoqueue);
+    }
+  }
 
-  return post_traverse;
+  // add queue to vector in FIFO order
+  while (!topoqueue.empty()) {
+    toposorted.push_back(topoqueue.front());
+    topoqueue.pop();
+  }
+
+  return toposorted;
 }
