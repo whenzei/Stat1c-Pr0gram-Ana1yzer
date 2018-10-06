@@ -68,8 +68,8 @@ class PKB {
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
 
-  // @returns the call graph of the program
-  CallGraph GetCallGraph();
+  // @returns pointer to the call graph of the program
+  CallGraph* GetCallGraph();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable

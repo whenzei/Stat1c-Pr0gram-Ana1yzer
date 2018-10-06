@@ -21,8 +21,8 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
-CallGraph PKB::GetCallGraph() {
-  return call_graph_;
+CallGraph* PKB::GetCallGraph() {
+  return &call_graph_;
 }
 
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
