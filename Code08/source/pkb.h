@@ -287,6 +287,20 @@ class PKB {
   // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
+  // @returns a list of w's that satisfy pattern w(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetWhileWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <w, v> that satisfy pattern w(v, _)
+  StmtVarPairList GetAllWhilePatternPair();
+
+  // @returns a list of ifs' that satisfy pattern ifs(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetIfWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <ifs, v> that satisfy pattern ifs(v, _)
+  StmtVarPairList GetAllIfPatternPair();
+
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
