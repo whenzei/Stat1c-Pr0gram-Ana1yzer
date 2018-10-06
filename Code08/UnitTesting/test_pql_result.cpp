@@ -326,6 +326,35 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_resulty, result_table[1][2]);
   }
 
+  TEST_METHOD(TestMergeTableWithOneConflictLeftPairNoResult) {
+    PqlResult pql_result;
+
+    test_resultpair_list.push_back(std::make_pair("1", "a"));
+    test_resultpair_list.push_back(std::make_pair("2", "b"));
+    test_resultpair_list.push_back(std::make_pair("3", "c"));
+    test_resultpair_list.push_back(std::make_pair("4", "d"));
+    test_resultpair_list.push_back(std::make_pair("5", "e"));
+
+    pql_result.InitTable(test_resultpair_list, "a", "b");
+
+    test_mergepair_list.push_back(std::make_pair("8", "x"));
+    test_mergepair_list.push_back(std::make_pair("9", "y"));
+    test_mergepair_list.push_back(std::make_pair("9", "y"));
+    test_mergepair_list.push_back(std::make_pair("10", "l"));
+
+    // Conflict with column 0
+    pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
+                            "c");
+
+    // Should be an empty table
+    ResultTable result_table = pql_result.GetResultTable();
+
+    // Should have no row
+    Assert::IsTrue(result_table.empty());
+    Assert::IsTrue(pql_result.GetColumnHeader().empty());
+    Assert::IsTrue(pql_result.GetColumnCount() == 0);
+  }
+
   TEST_METHOD(TestMergeTableWithOneConflictRightPair) {
     PqlResult pql_result;
 
@@ -382,6 +411,35 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_resultc, result_table[1][1]);
     // Sec row last col should contain "p"
     Assert::AreEqual(expected_resultp, result_table[1][2]);
+  }
+
+  TEST_METHOD(TestMergeTableWithOneConflictRightPairNoResult) {
+    PqlResult pql_result;
+
+    test_resultpair_list.push_back(std::make_pair("1", "a"));
+    test_resultpair_list.push_back(std::make_pair("2", "b"));
+    test_resultpair_list.push_back(std::make_pair("3", "c"));
+    test_resultpair_list.push_back(std::make_pair("4", "d"));
+    test_resultpair_list.push_back(std::make_pair("5", "e"));
+
+    pql_result.InitTable(test_resultpair_list, "a", "b");
+
+    test_mergepair_list.push_back(std::make_pair("s", "y"));
+    test_mergepair_list.push_back(std::make_pair("p", "z"));
+    test_mergepair_list.push_back(std::make_pair("s", "y"));
+    test_mergepair_list.push_back(std::make_pair("p", "i"));
+
+    // Conflict with column 0
+    pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
+                            "b");
+
+    // Should be an empty table
+    ResultTable result_table = pql_result.GetResultTable();
+
+    // Should have no row
+    Assert::IsTrue(result_table.empty());
+    Assert::IsTrue(pql_result.GetColumnHeader().empty());
+    Assert::IsTrue(pql_result.GetColumnCount() == 0);
   }
 
   TEST_METHOD(TestMergeTableWithTwoConflict) {
@@ -522,6 +580,7 @@ TEST_CLASS(TestPqlResult) {
     // This final constraint 1 b does not match the table with 1 a
     test_mergepair_list3.push_back(std::make_pair("1", "b"));
     test_mergepair_list3.push_back(std::make_pair("2", "a"));
+    test_mergepair_list3.push_back(std::make_pair("1", "b"));
     test_mergepair_list3.push_back(std::make_pair("3", "c"));
 
     // Conflict with column 0, 1
