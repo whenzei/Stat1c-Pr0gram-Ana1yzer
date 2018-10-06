@@ -98,10 +98,11 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
     MergeMap merge_map = GetMergeMap();
     // Iterating through the row
     for (auto& row : result_table) {
-      // If the column value in table matches the value in result list
-      if (merge_map.find(row[conflict_left_pair]) != merge_map.end()) {
+      MergeMap::iterator merge_iter = merge_map.find(row[conflict_left_pair]);
+      // If this col value is found in merge map
+      if (merge_iter != merge_map.end()) {
         // Row has passed the comparison, Merging
-        for (auto& merge_item : merge_map[row[conflict_left_pair]]) {
+        for (auto& merge_item : merge_iter->second) {
           ResultRow new_row = row;
           new_row.push_back(merge_item);
           new_table.push_back(new_row);
@@ -116,15 +117,15 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
   // Right has conflict
   else if (conflict_type == kOneConflictRight) {
-    cout << "Conflict right " << endl;
     SetupMergeMap(result_pair_list, conflict_type);
     MergeMap merge_map = GetMergeMap();
     // Iterating through the row
     for (auto& row : result_table) {
-      // Iterating through the result list to be merged
-      if (merge_map.find(row[conflict_right_pair]) != merge_map.end()) {
+      MergeMap::iterator merge_iter = merge_map.find(row[conflict_right_pair]);
+      // If this col value is found in merge map
+      if (merge_iter != merge_map.end()) {
         // Row has passed the comparison, Merging
-        for (auto& merge_item : merge_map[row[conflict_right_pair]]) {
+        for (auto& merge_item : merge_iter->second) {
           ResultRow new_row = row;
           new_row.push_back(merge_item);
           new_table.push_back(new_row);
