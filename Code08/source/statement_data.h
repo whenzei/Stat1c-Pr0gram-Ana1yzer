@@ -70,13 +70,14 @@ class PrintStmtData : public StatementData {
 };
 
 class CallStmtData : public StatementData {
-  VarNameSet used_vars_;
-  VarNameSet modified_vars_;
+  ProcName caller_proc_name_;
+  ProcName callee_proc_name_;
+ public:
+  CallStmtData(int stmt_num, int stmt_list_index, ProcName caller_proc_name,
+               ProcName callee_proc_name);
 
-  public:
-    CallStmtData(int stmt_num, int stmt_list_index, VarNameSet used_vars, VarNameSet modified_vars);
-    VarNameSet GetUsedVars();
-    VarNameSet GetModifiedVars();
+  ProcName GetCallerProcName();
+  ProcName GetCalleeProcName();
 };
 
 #endif  // !SPA_STMT_DATA_H
