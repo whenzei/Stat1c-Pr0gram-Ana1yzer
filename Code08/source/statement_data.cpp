@@ -69,15 +69,16 @@ VarNameSet IfStmtData::GetUsedVariables() { return control_vars_; }
 
 ConstValueSet IfStmtData::GetUsedConstants() { return used_consts_; }
 
-VarNameSet CallStmtData::GetUsedVars() { return used_vars_; }
-
-VarNameSet CallStmtData::GetModifiedVars() { return modified_vars_;  }
-
 CallStmtData::CallStmtData(int stmt_num, int stmt_list_index, VarNameSet used_vars,
-    VarNameSet modified_vars) {
+  VarNameSet modified_vars) {
   stmt_num_ = std::to_string(stmt_num);
   stmt_num_int_ = stmt_num;
   stmt_list_index_ = stmt_list_index;
   used_vars_ = used_vars;
   modified_vars_ = modified_vars;
 }
+
+VarNameSet CallStmtData::GetUsedVars() { return used_vars_; }
+
+VarNameSet CallStmtData::GetModifiedVars() { return modified_vars_;  }
+

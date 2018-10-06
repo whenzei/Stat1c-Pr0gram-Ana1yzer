@@ -74,9 +74,9 @@ class CallStmtData : public StatementData {
   VarNameSet modified_vars_;
 
   public:
+    CallStmtData(int stmt_num, int stmt_list_index, VarNameSet used_vars, VarNameSet modified_vars);
     VarNameSet GetUsedVars();
     VarNameSet GetModifiedVars();
-    CallStmtData(int stmt_num, int stmt_list_index, VarNameSet used_vars, VarNameSet modified_vars);
 };
 
 #endif  // !SPA_STMT_DATA_H

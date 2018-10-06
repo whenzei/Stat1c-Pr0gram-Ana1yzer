@@ -9,6 +9,7 @@ class WhileStmtData;
 class ReadStmtData;
 class PrintStmtData;
 class IfStmtData;
+class CallStmtData;
 class StatementData;
 
 #include "call_table.h"
@@ -317,10 +318,15 @@ class PKB {
   * Call Table Functions *
   ***********************/
 
-   // Inserts a caller, callee pair relationship into the Call Table.
-   // @returns true if insertion is successful, false otherwise
-   // @params caller procedure name and callee procedure name
-  bool InsertCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  // Inserts an indirect caller, callee pair relationship into the Call Table.
+  // @returns true if insertion is successful, false otherwise
+  // @params caller procedure name and callee procedure name
+  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+
+  // Inserts a direct caller, callee pair relationship into the Call Table.
+  // @returns true if insertion is successful, false otherwise
+  // @params caller procedure name and callee procedure name
+  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
 
   // Inserts a calls relationship to the call table.
   // @params stmt num of statement

@@ -305,8 +305,12 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
 }
 
-bool PKB::InsertCallRelationship(ProcName caller_proc, ProcName callee_proc) {
-  return call_table_.InsertCallRelationship(caller_proc, callee_proc);
+bool PKB::InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
+}
+
+bool PKB::InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
 }
 
 void PKB::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {

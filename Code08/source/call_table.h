@@ -5,12 +5,14 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using std::make_pair;
 using std::pair;
 using std::string;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 using CallMap = unordered_map<string, vector<string>>;
@@ -19,6 +21,7 @@ using StmtNumList = vector<string>;
 using StmtNumProcPairList = vector<pair<string, string>>;
 using ProcName = string;
 using ProcNameList = vector<string>;
+using ProcNameSet = unordered_set<string>;
 using ProcNamePairList = vector<pair<string, string>>;
 
 class CallTable {
@@ -26,17 +29,29 @@ class CallTable {
   CallMap direct_call_table_; // stores <direct proc calling, proc called>
   CallMap callee_table_; // stores <proc called by, proc calling>
   CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
+  
   CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
-  ProcNameList caller_list_; // stores procs calling any other proc
+
+  ProcNameList direct_caller_list_; // stores proc directly calling any other proc
+  ProcNameList caller_list_;  // stores procs calling any other proc
+  ProcNameSet caller_set_; // stores procs calling any other proc
+  ProcNameList direct_callee_list_; // stores proc directly being called by any other proc
   ProcNameList callee_list_; // stores procs called by any other proc
+  ProcNameSet callee_set_; // stores procs called by any other proc
 
 public:
   // PROC-PROC RELATIONSHIP INSERT
-  // Inserts a caller, callee pair relationship into the Call Table.
+  // Inserts an INDIRECt caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+
+  // Inserts a DIRECT caller, callee pair relationship into the Call Table.
+  // @returns true if insertion is successful, false if relationship
+  // already exists or if insertion fails.
+  // @params caller procedure name and callee procedure name
+  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
 
   // STATEMENT-PROC RELATIONSHIP INSERT
   // Inserts a calls relationship to the call table.
@@ -74,11 +89,17 @@ public:
   // @params callee procedure name 
   ProcNameList GetCallerT(ProcName callee_proc);
 
-  // @returns all procedures calling some other proc (can be empty)
+  // @returns all procedures directly calling some other proc (can be empty)
   ProcNameList GetAllCaller();
 
-  // @returns all procedures being called by some other proc (can be empty)
+  // @returns all procedures calling some other proc (can be empty)
+  ProcNameList GetAllCallerT();
+
+  // @returns all procedures being diretly called by some other proc (can be empty)
   ProcNameList GetAllCallee();
+
+  // @returns all procedures being called by some other proc (can be empty)
+  ProcNameList GetAllCalleeT();
 
   // @returns a list of all <caller, direct callee> pairs
   ProcNamePairList GetAllCallPairs();
