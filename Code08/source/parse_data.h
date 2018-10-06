@@ -23,6 +23,9 @@ class ParseData {
             StmtNumInt last_stmt_num_1, StmtNumInt last_stmt_num_2);
   ParseData(StmtNumIntList stmt_num_list, VarNameSet used_vars,
             VarNameSet modified_vars);
+  ParseData(StmtNumIntList stmt_num_list, VarNameSet used_vars,
+            VarNameSet modified_vars, StmtNumInt last_stmt_num_1,
+            StmtNumInt last_stmt_num_2);
   ParseData(VarNameSet used_vars, VarNameSet modified_vars);
   ParseData(VarNameSet used_vars, VarNameSet modified_vars,
             StmtNumInt last_stmt_num_1, StmtNumInt last_stmt_num_2 = 0);

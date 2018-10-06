@@ -14,6 +14,18 @@ ParseData::ParseData(StmtNumIntList stmt_num_list, VarNameSet used_vars,
   modified_vars_ = modified_vars;
 }
 
+ParseData::ParseData(StmtNumIntList stmt_num_list, VarNameSet used_vars,
+                     VarNameSet modified_vars, StmtNumInt last_stmt_num_1,
+                     StmtNumInt last_stmt_num_2) {
+  last_stmt_num_1_ = last_stmt_num_1;
+  last_stmt_num_2_ = last_stmt_num_2;
+  stmt_num_list_ = stmt_num_list;
+  used_vars_ = used_vars;
+  modified_vars_ = modified_vars;
+
+
+}
+
 ParseData::ParseData(StmtNumInt stmt_num, VarNameSet used_vars,
                      VarNameSet modified_vars, StmtNumInt last_stmt_num_1,
                      StmtNumInt last_stmt_num_2) {

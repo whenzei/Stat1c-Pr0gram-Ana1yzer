@@ -89,7 +89,6 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
   vector<int> keys;
   for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
     keys.push_back(it->first);
-    cout << it->second.size() << "\n";
   }
   std::sort(keys.begin(), keys.end());
 
@@ -116,6 +115,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   StmtNumInt last_in_block_2 = 0;
   StmtNumInt prev_stmt_num = 0;
 
+  bool is_last_statement_if = false;
+
   do {
     ParseData stmt_info = ProcessStatement(given_stmt_list_num);
     StmtNumInt stmt_num = stmt_info.GetStmtNum();
@@ -123,26 +124,30 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     VarNameSet modified_vars_to_insert = stmt_info.GetModifiedVariables();
 
     //******* Updates cfg****************
-    if (last_in_block_1 != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(last_in_block_1);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(last_in_block_1, curr_adj_list);
+    if (prev_stmt_num != 0 && last_in_block_1 == 0 && last_in_block_2 == 0) {
+      StmtNumIntList* curr_adj_list = &(current_cfg_->at(prev_stmt_num));
+      (*curr_adj_list).push_back(stmt_num);
     }
 
+    if (last_in_block_1 != 0) {
+      StmtNumIntList* curr_adj_list = &(current_cfg_->at(last_in_block_1));
+      (*curr_adj_list).push_back(stmt_num);
+    }
     if (last_in_block_2 != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(last_in_block_2);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(last_in_block_2, curr_adj_list);
+      StmtNumIntList* curr_adj_list = &(current_cfg_->at(last_in_block_2));
+      (*curr_adj_list).push_back(stmt_num);
+
     }
 
     last_in_block_1 = stmt_info.GetLastStmtNumOne();
     last_in_block_2 = stmt_info.GetLastStmtNumTwo();
 
-    if (prev_stmt_num != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(prev_stmt_num);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(prev_stmt_num, curr_adj_list);
+    if (last_in_block_1 == 0 && last_in_block_2 == 0) {
+      is_last_statement_if = false;
+    } else {
+      is_last_statement_if = true;
     }
+
     prev_stmt_num = stmt_num;
     //************************************
 
@@ -156,8 +161,12 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   } while (!IsNextType(tt::kCloseBrace));
 
   PopulatePkbFollows(stmt_nums);
+  if (!is_last_statement_if) {
+    return ParseData(stmt_nums, used_vars, modified_vars);
+  } else {
+    return ParseData(stmt_nums, used_vars, modified_vars, last_in_block_1, last_in_block_2);
+  }
 
-  return ParseData(stmt_nums, used_vars, modified_vars);
 }
 
 ParseData Parser::ProcessStatement(int given_stmt_list_num) {
@@ -325,10 +334,10 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   StmtNumIntList else_stmt_nums = else_stmt_info.GetStmtNumList();
 
   // Handles cfg
-  StmtNumIntList curr_adj_list = current_cfg_->at(if_stmt_num);
-  curr_adj_list.push_back(then_stmt_nums.at(0));
-  curr_adj_list.push_back(else_stmt_nums.at(0));
-  current_cfg_->emplace(if_stmt_num, curr_adj_list);
+  StmtNumIntList* curr_adj_list = &(current_cfg_->at(if_stmt_num));
+  (*curr_adj_list).push_back(then_stmt_nums.at(0));
+  (*curr_adj_list).push_back(else_stmt_nums.at(0));
+
 
   StmtNumIntList child_stmt_nums(then_stmt_nums);
   child_stmt_nums.insert(child_stmt_nums.end(), else_stmt_nums.begin(),
@@ -356,7 +365,7 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   modified_vars.insert(else_modified_vars.begin(), else_modified_vars.end());
 
   PopulatePkbModifies(if_stmt_num, modified_vars);
-
+  
   // eat closing brace
   ReadNextToken();
 
@@ -368,8 +377,19 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
                                  used_set_conditionals.first,
                                  used_set_conditionals.second));
-  return ParseData(used_vars, modified_vars, then_stmt_nums.back(),
-                   else_stmt_nums.back());
+
+  //
+  StmtNumInt last_in_block_1 = then_stmt_info.GetLastStmtNumOne();
+  StmtNumInt last_in_block_2 = else_stmt_info.GetLastStmtNumTwo();
+
+ if (last_in_block_1 != 0 && last_in_block_2 != 0) {
+    return ParseData(used_vars, modified_vars, last_in_block_1, last_in_block_2);
+
+ } else {
+   return ParseData(used_vars, modified_vars, then_stmt_nums.back(),
+                    else_stmt_nums.back());
+ }
+
 }
 
 ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
@@ -401,6 +421,9 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   StmtNumIntList children_stmt_nums = children_stmt_info.GetStmtNumList();
   VarNameSet used_vars = children_stmt_info.GetUsedVariables();
   VarNameSet modified_vars = children_stmt_info.GetModifiedVariables();
+  StmtNumInt last_in_block_1 = children_stmt_info.GetLastStmtNumOne();
+  StmtNumInt last_in_block_2 = children_stmt_info.GetLastStmtNumTwo();
+
 
   // Update variables used in conditionals
   used_vars.insert(used_set_conditional.first.begin(),
@@ -410,10 +433,25 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   PopulatePkbUses(while_stmt_num, used_vars);
   PopulatePkbModifies(while_stmt_num, modified_vars);
 
-  StmtNumIntList curr_adj_list = current_cfg_->at(while_stmt_num);
-  curr_adj_list.push_back(children_stmt_nums.at(0));
-  current_cfg_->emplace(while_stmt_num, curr_adj_list);
+  StmtNumIntList* curr_adj_list = &(current_cfg_->at(while_stmt_num));
+  (*curr_adj_list).push_back(children_stmt_nums.at(0));
 
+  // When the the last statement in the while block is if
+  // Grab last statement of then and else block
+  if (last_in_block_1 != 0 && last_in_block_2 != 0) {
+    StmtNumIntList* last_child_stmt_adj_list_one =
+        &(current_cfg_->at(last_in_block_1));
+    (*last_child_stmt_adj_list_one).push_back(while_stmt_num);
+
+    StmtNumIntList* last_child_stmt_adj_list_two =
+        &(current_cfg_->at(last_in_block_2));
+    (*last_child_stmt_adj_list_two).push_back(while_stmt_num);
+  } else {
+    StmtNumIntList* last_child_stmt_adj_list =
+        &(current_cfg_->at(children_stmt_nums.back()));
+    (*last_child_stmt_adj_list).push_back(while_stmt_num);
+  }
+ 
   // eat close brace
   ReadNextToken();
 
@@ -426,7 +464,7 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
                                        used_set_conditional.first,
                                        used_set_conditional.second));
 
-  return ParseData(used_vars, modified_vars, children_stmt_nums.back());
+  return ParseData(used_vars, modified_vars);
 }
 
 pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {
