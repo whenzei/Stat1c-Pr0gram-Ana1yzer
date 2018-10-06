@@ -88,6 +88,12 @@ class PKB {
   // structure
   void InsertPrintStmt(PrintStmtData* stmt_data);
 
+  // Inserts the given call statement into the StmtTable, StmtTypeList and
+  // StmtListTable
+  // @param stmt_data the stmt data as encapsulated by the CallStmtData
+  // structure
+  void InsertCallStmt(CallStmtData* stmt_data);
+
   // Inserts a follows relationship between followee and follower
   void InsertFollows(StmtNum followee, StmtNum follower);
 

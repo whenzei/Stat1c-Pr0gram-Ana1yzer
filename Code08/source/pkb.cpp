@@ -67,6 +67,15 @@ void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   }
 }
 
+void PKB::InsertCallStmt(CallStmtData * stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kCall)) {
+    VarNameSet used_var = stmt_data->GetUsedVars();
+    VarNameSet modified_var = stmt_data->GetModifiedVars();
+    HandleInsertVariables(used_var);
+    HandleInsertVariables(modified_var);
+  }
+}
+
 void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
