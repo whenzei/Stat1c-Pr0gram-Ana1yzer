@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "pkb.h"
-#include "pql_global.h"
 #include "pql_evaluator.h"
+#include "pql_global.h"
 #include "pql_query.h"
 
 using std::cout;
@@ -27,28 +27,51 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetPqlResult(*pql_result);
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
-  SetMergeFlag(false);
   FinalResult final_results;
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
-  if (GetQuery().GetSuchThats().empty() && GetQuery().GetPatterns().empty()) {
-    final_results = GetFinalResultFromTable(GetQuery().GetVarName());
+  if (GetQuery().GetClauses().empty()) {
+    final_results = GetFinalResultFromTable();
   }
   // Else use GetSuchThatResult/GetPatternResult method
   else {
-    if (!GetQuery().GetSuchThats().empty()) {
-      PqlSuchthat suchthat = GetQuery().GetSuchThats().front();
-      GetSuchThatResult(suchthat);
-    }
-    if (!GetQuery().GetPatterns().empty()) {
-      PqlPattern pattern = GetQuery().GetPatterns().front();
-      GetPatternResult(pattern);
+    PqlSuchthat* suchthat;
+    PqlPattern* pattern;
+    PqlWith* with;
+
+    for (auto& clause_iter : GetQuery().GetClauses()) {
+      switch (clause_iter->GetClauseType()) {
+        case PqlClauseType::kSuchthat:
+          suchthat = (PqlSuchthat*)clause_iter;
+          GetSuchThatResult(*suchthat);
+          continue;
+        case PqlClauseType::kPattern:
+          pattern = (PqlPattern*)clause_iter;
+          GetPatternResult(*pattern);
+          continue;
+        case PqlClauseType::kWith:
+          with = (PqlWith*)clause_iter;
+          continue;
+      }
+      // If the clause is false already, no need to continue evaluating
+      if (!IsValidClause()) {
+        break;
+      }
     }
 
-    // No false clause
-    if (IsValidClause()) {
-      final_results = GetFinalResultFromTable(GetQuery().GetVarName());
+    // No false clause and it is not BOOLEAN
+    if (IsValidClause() && !GetQuery().GetSelections().empty()) {
+      final_results = GetFinalResultFromTable();
+    }
+
+    // If BOOLEAN
+    if (GetQuery().GetSelections().empty()) {
+      if (IsValidClause()) {
+        final_results.push_back("true");
+      } else {
+        final_results.push_back("false");
+      }
     }
   }
 
@@ -57,27 +80,29 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return final_results;
 }
 
-FinalResult PqlEvaluator::GetFinalResultFromTable(string select_var) {
+FinalResult PqlEvaluator::GetFinalResultFromTable() {
   list<string> final_result;
   ResultTable result_table = GetPqlResult().GetResultTable();
 
   ColumnHeader column_header = GetPqlResult().GetColumnHeader();
 
-  if (column_header.find(select_var) != column_header.end()) {
-    int column_index = column_header.find(select_var)->second;
+  Synonym select_syn = GetQuery().GetSelections()[0];
+
+  ColumnHeader::iterator col_iter = column_header.find(select_syn.first);
+
+  // Get results from result table
+  if (col_iter != column_header.end()) {
+    int column_index = col_iter->second;
     for (auto& row : result_table) {
       final_result.push_back(row[column_index]);
     }
   }
   // Selected variable not in result table
   else {
-    if (!IsMergeTableEmpty()) {
-      cout << "Select all (GetFinalResultFromTable)" << endl;
-      SetSelectType(CheckSelectDeclarationType(select_var));
-      QueryResultList get_all_result = GetSelectAllResult(GetSelectType());
-      copy(get_all_result.begin(), get_all_result.end(),
-           back_inserter(final_result));
-    }
+    cout << "Select all (GetFinalResultFromTable)" << endl;
+    QueryResultList get_all_result = GetSelectAllResult(select_syn.second);
+    copy(get_all_result.begin(), get_all_result.end(),
+         back_inserter(final_result));
   }
 
   return final_result;
@@ -169,6 +194,7 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
       // list
+      cout << "Select all call statement." << endl;
       break;
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into results
@@ -1009,9 +1035,7 @@ void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
 
   // If after merging result, result table is empty
   if (pql_result.GetResultTable().empty()) {
-    SetMergeFlag(true);
-  } else {
-    SetMergeFlag(false);
+    SetClauseFlag(false);
   }
   SetPqlResult(pql_result);
 }
@@ -1054,9 +1078,7 @@ void PqlEvaluator::StoreClauseResultInTable(
 
   // If after merging result, result table is empty
   if (pql_result.GetResultTable().empty()) {
-    SetMergeFlag(true);
-  } else {
-    SetMergeFlag(false);
+    SetClauseFlag(false);
   }
   SetPqlResult(pql_result);
 }
@@ -1238,33 +1260,13 @@ SuchthatParamType PqlEvaluator::CheckSuchthatParamType(
   }  // end (int/ident, ?)
 }
 
-PqlDeclarationEntity PqlEvaluator::CheckSelectDeclarationType(
-    string select_var_name) {
-  unordered_map<string, PqlDeclarationEntity> declarations =
-      GetQuery().GetDeclarations();
-
-  return declarations.find(select_var_name)->second;
-}
-
 /* Getters and Setters */
-
-void PqlEvaluator::SetMergeFlag(bool merge_flag) {
-  this->merge_flag_ = merge_flag;
-}
-
-bool PqlEvaluator::IsMergeTableEmpty() { return merge_flag_; }
 
 void PqlEvaluator::SetClauseFlag(bool clause_flag) {
   this->clause_flag_ = clause_flag;
 }
 
 bool PqlEvaluator::IsValidClause() { return clause_flag_; }
-
-void PqlEvaluator::SetSelectType(PqlDeclarationEntity select_type) {
-  this->select_type_ = select_type;
-}
-
-PqlDeclarationEntity PqlEvaluator::GetSelectType() { return select_type_; }
 
 void PqlEvaluator::SetPKB(PKB pkb) { this->pkb_ = pkb; }
 

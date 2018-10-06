@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "pkb.h"
-#include "pql_global.h"
 #include "pql_evaluator.h"
+#include "pql_global.h"
 #include "pql_query.h"
 #include "pql_result.h"
 
@@ -25,10 +25,8 @@ using QueryResultPairList = vector<pair<string, string>>;
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
  private:
-  PqlDeclarationEntity select_type_;  // the entity type of the select-variable
-  PKB pkb_;                           // pkb database
-  bool clause_flag_;                  // to determine if clauses are true/false
-  bool merge_flag_;       // to determine if result table is empty after a merge
+  PKB pkb_;               // pkb database
+  bool clause_flag_;      // to determine if clauses are true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
 
@@ -38,18 +36,14 @@ class PqlEvaluator {
 
   /* Setter */
   void SetQuery(PqlQuery);
-  void SetSelectType(PqlDeclarationEntity);
   void SetPKB(PKB);
   void SetClauseFlag(bool);
-  void SetMergeFlag(bool);
   void SetPqlResult(PqlResult);
 
   /* Getter */
   PqlQuery GetQuery();
-  PqlDeclarationEntity GetSelectType();
   PKB GetPKB();
   bool IsValidClause();
-  bool IsMergeTableEmpty();
   PqlResult GetPqlResult();
 
   /**
@@ -63,11 +57,10 @@ class PqlEvaluator {
 
   /**
    * Get the final result based on the var name that user is 'selecting'
-   * @param select-variable name
    * @returns a list<string> if there is result,
    * or an empty list otherwise
    */
-  FinalResult GetFinalResultFromTable(string select_var);
+  FinalResult GetFinalResultFromTable();
 
   /**
    * Return a list of all the result of a certain type
@@ -145,13 +138,6 @@ class PqlEvaluator {
    * @param modifies clause in the Query and arrangement of clause arguments
    */
   void EvaluateModifiesP(PqlSuchthat suchthat, SuchthatParamType arrangement);
-
-  /**
-   * Determine the declaration type of the select variable
-   * @param select-variable name
-   * @returns entity type of the select-variable
-   */
-  PqlDeclarationEntity CheckSelectDeclarationType(string select_var_name);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
