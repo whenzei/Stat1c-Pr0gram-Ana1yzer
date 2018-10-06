@@ -19,6 +19,7 @@ class Parser {
   PKB* pkb_;
   TokenList tokens_;
   Token current_token_;
+  CFG* current_cfg_;
   int current_index_;
   int stmt_num_;
   int stmt_list_num_;

@@ -100,6 +100,11 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
+CFG* PKB::InsertCFG(string proc_name) {
+  cfg_table_.emplace(proc_name, CFG());
+  return &cfg_table_.at(proc_name);
+}
+
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
 
 StmtNumList PKB::GetAllAssignStmt() {
@@ -140,7 +145,9 @@ StmtNumList PKB::GetFollowedBy(StmtNum stmt_num) {
   return follows_table_.GetFollowedBy(stmt_num);
 }
 
-StmtNumList PKB::GetAllFollowedBy() { return follows_table_.GetAllFollowedBy(); }
+StmtNumList PKB::GetAllFollowedBy() {
+  return follows_table_.GetAllFollowedBy();
+}
 
 bool PKB::HasFollowsRelationship() {
   return follows_table_.HasFollowsRelationship();
@@ -259,6 +266,8 @@ ProcNameList PKB::GetUsingProc(VarName var_name) {
   return uses_table_.GetUsingProc(var_name);
 }
 
+CFG PKB::GetCFG(string proc_name) { return cfg_table_.at(proc_name); }
+
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, var_name);
 }
@@ -299,7 +308,7 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
 }
 
 void PKB::NotifyParseEnd() {
-  DesignExtractor de =  DesignExtractor(this);
+  DesignExtractor de = DesignExtractor(this);
   de.UpdatePkb();
 }
 
