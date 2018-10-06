@@ -111,8 +111,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   VarNameSet modified_vars;
   VarNameSet used_vars;
 
-  StmtNumInt last_in_block_1 = 0;
-  StmtNumInt last_in_block_2 = 0;
+  StmtNumIntList nested_last_stmts_1;
+  StmtNumIntList nested_last_stmts_2;
   StmtNumInt prev_stmt_num = 0;
 
   bool is_last_statement_if = false;
@@ -124,25 +124,30 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     VarNameSet modified_vars_to_insert = stmt_info.GetModifiedVariables();
 
     //******* Updates cfg****************
-    if (prev_stmt_num != 0 && last_in_block_1 == 0 && last_in_block_2 == 0) {
+    if (prev_stmt_num != 0 && nested_last_stmts_1.size() == 0 &&
+        nested_last_stmts_2.size() == 0) {
       StmtNumIntList* curr_adj_list = &(current_cfg_->at(prev_stmt_num));
       (*curr_adj_list).push_back(stmt_num);
     }
 
-    if (last_in_block_1 != 0) {
-      StmtNumIntList* curr_adj_list = &(current_cfg_->at(last_in_block_1));
-      (*curr_adj_list).push_back(stmt_num);
-    }
-    if (last_in_block_2 != 0) {
-      StmtNumIntList* curr_adj_list = &(current_cfg_->at(last_in_block_2));
-      (*curr_adj_list).push_back(stmt_num);
-
+    if (nested_last_stmts_1.size() != 0) {
+      for (auto& nested_stmt : nested_last_stmts_1) {
+        StmtNumIntList* curr_adj_list = &(current_cfg_->at(nested_stmt));
+        (*curr_adj_list).push_back(stmt_num);
+      }
     }
 
-    last_in_block_1 = stmt_info.GetLastStmtNumOne();
-    last_in_block_2 = stmt_info.GetLastStmtNumTwo();
+    if (nested_last_stmts_2.size() != 0) {
+      for (auto& nested_stmt : nested_last_stmts_2) {
+        StmtNumIntList* curr_adj_list = &(current_cfg_->at(nested_stmt));
+        (*curr_adj_list).push_back(stmt_num);
+      }
+    }
 
-    if (last_in_block_1 == 0 && last_in_block_2 == 0) {
+    nested_last_stmts_1 = stmt_info.GetNestedLastStmtsOne();
+    nested_last_stmts_2 = stmt_info.GetNestedLastStmtsTwo();
+
+    if (nested_last_stmts_1.size() == 0 && nested_last_stmts_2.size() == 0) {
       is_last_statement_if = false;
     } else {
       is_last_statement_if = true;
@@ -164,9 +169,9 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   if (!is_last_statement_if) {
     return ParseData(stmt_nums, used_vars, modified_vars);
   } else {
-    return ParseData(stmt_nums, used_vars, modified_vars, last_in_block_1, last_in_block_2);
+    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
+                     nested_last_stmts_2);
   }
-
 }
 
 ParseData Parser::ProcessStatement(int given_stmt_list_num) {
@@ -183,10 +188,15 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
     ParseData keyword_stmt_info = ProcessKeyword(given_stmt_list_num);
     used_vars = keyword_stmt_info.GetUsedVariables();
     modified_vars = keyword_stmt_info.GetModifiedVariables();
-    int last_stmt_num_1 = keyword_stmt_info.GetLastStmtNumOne();
-    int last_stmt_num_2 = keyword_stmt_info.GetLastStmtNumTwo();
-    return ParseData(curr_stmt_num, used_vars, modified_vars, last_stmt_num_1,
-                     last_stmt_num_2);
+
+    StmtNumIntList nested_last_stmts_1 =
+        keyword_stmt_info.GetNestedLastStmtsOne();
+    StmtNumIntList nested_last_stmts_2 =
+        keyword_stmt_info.GetNestedLastStmtsTwo();
+
+    return ParseData(curr_stmt_num, used_vars, modified_vars,
+                     nested_last_stmts_1, nested_last_stmts_2);
+
   } else {
     ParseData assignment_stmt_info = ProcessAssignment(given_stmt_list_num);
     used_vars = assignment_stmt_info.GetUsedVariables();
@@ -338,7 +348,6 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   (*curr_adj_list).push_back(then_stmt_nums.at(0));
   (*curr_adj_list).push_back(else_stmt_nums.at(0));
 
-
   StmtNumIntList child_stmt_nums(then_stmt_nums);
   child_stmt_nums.insert(child_stmt_nums.end(), else_stmt_nums.begin(),
                          else_stmt_nums.end());
@@ -365,7 +374,7 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   modified_vars.insert(else_modified_vars.begin(), else_modified_vars.end());
 
   PopulatePkbModifies(if_stmt_num, modified_vars);
-  
+
   // eat closing brace
   ReadNextToken();
 
@@ -378,18 +387,43 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
                                  used_set_conditionals.first,
                                  used_set_conditionals.second));
 
-  //
-  StmtNumInt last_in_block_1 = then_stmt_info.GetLastStmtNumOne();
-  StmtNumInt last_in_block_2 = else_stmt_info.GetLastStmtNumTwo();
+  // Find last stmts
+  StmtNumIntList then_nested_last_stmts_1 =
+      then_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList then_nested_last_stmts_2 =
+      then_stmt_info.GetNestedLastStmtsTwo();
+  StmtNumIntList else_nested_last_stmts_1 =
+      else_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList else_nested_last_stmts_2 =
+      else_stmt_info.GetNestedLastStmtsTwo();
 
- if (last_in_block_1 != 0 && last_in_block_2 != 0) {
-    return ParseData(used_vars, modified_vars, last_in_block_1, last_in_block_2);
+  if (then_nested_last_stmts_1.size() == 0 &&
+      then_nested_last_stmts_2.size() == 0 &&
+      else_nested_last_stmts_1.size() == 0 &&
+      else_nested_last_stmts_2.size() == 0) {
+    StmtNumIntList then_nested_last_stmts;
+    StmtNumIntList else_nested_last_stmts;
 
- } else {
-   return ParseData(used_vars, modified_vars, then_stmt_nums.back(),
-                    else_stmt_nums.back());
- }
+    then_nested_last_stmts.push_back(then_stmt_nums.back());
+    else_nested_last_stmts.push_back(else_stmt_nums.back());
 
+    return ParseData(used_vars, modified_vars, then_nested_last_stmts,
+                     else_nested_last_stmts);
+
+  } else {
+    StmtNumIntList then_nested_last_stmts(then_nested_last_stmts_1);
+    StmtNumIntList else_nested_last_stmts(else_nested_last_stmts_1);
+
+    then_nested_last_stmts.insert(then_nested_last_stmts.end(),
+                                  then_nested_last_stmts_2.begin(),
+                                  then_nested_last_stmts_2.end());
+    else_nested_last_stmts.insert(else_nested_last_stmts.end(),
+                                  else_nested_last_stmts_2.begin(),
+                                  else_nested_last_stmts_2.end());
+
+    return ParseData(used_vars, modified_vars, then_nested_last_stmts,
+                     else_nested_last_stmts);
+  }
 }
 
 ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
@@ -421,9 +455,10 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   StmtNumIntList children_stmt_nums = children_stmt_info.GetStmtNumList();
   VarNameSet used_vars = children_stmt_info.GetUsedVariables();
   VarNameSet modified_vars = children_stmt_info.GetModifiedVariables();
-  StmtNumInt last_in_block_1 = children_stmt_info.GetLastStmtNumOne();
-  StmtNumInt last_in_block_2 = children_stmt_info.GetLastStmtNumTwo();
-
+  StmtNumIntList nested_last_stmts_1 =
+      children_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList nested_last_stmts_2 =
+      children_stmt_info.GetNestedLastStmtsTwo();
 
   // Update variables used in conditionals
   used_vars.insert(used_set_conditional.first.begin(),
@@ -438,20 +473,24 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
 
   // When the the last statement in the while block is if
   // Grab last statement of then and else block
-  if (last_in_block_1 != 0 && last_in_block_2 != 0) {
-    StmtNumIntList* last_child_stmt_adj_list_one =
-        &(current_cfg_->at(last_in_block_1));
-    (*last_child_stmt_adj_list_one).push_back(while_stmt_num);
+  if (nested_last_stmts_1.size() > 0 && nested_last_stmts_2.size() > 0) {
+    for (auto& stmt_num : nested_last_stmts_1) {
+      StmtNumIntList* last_child_stmt_adj_list_one =
+          &(current_cfg_->at(stmt_num));
+      (*last_child_stmt_adj_list_one).push_back(while_stmt_num);
+    }
 
-    StmtNumIntList* last_child_stmt_adj_list_two =
-        &(current_cfg_->at(last_in_block_2));
-    (*last_child_stmt_adj_list_two).push_back(while_stmt_num);
+    for (auto& stmt_num : nested_last_stmts_2) {
+      StmtNumIntList* last_child_stmt_adj_list_two =
+          &(current_cfg_->at(stmt_num));
+      (*last_child_stmt_adj_list_two).push_back(while_stmt_num);
+    }
   } else {
     StmtNumIntList* last_child_stmt_adj_list =
         &(current_cfg_->at(children_stmt_nums.back()));
     (*last_child_stmt_adj_list).push_back(while_stmt_num);
   }
- 
+
   // eat close brace
   ReadNextToken();
 
