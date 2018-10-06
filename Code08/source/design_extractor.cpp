@@ -27,19 +27,21 @@ void DesignExtractor::UpdateCallUsesAndModifies() {
     VarNameList used_vars = pkb_->GetUsedVarP(proc_name);
     VarNameList modified_vars = pkb_->GetModifiedVarP(proc_name);
     // get all call statement numbers that calls the proc_name
-    //StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_name);
-    StmtNumList calling_stmts = StmtNumList();
+    StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_name);
     for (auto stmt : calling_stmts) {
-      // get the procedure that has this call statement
-      //ProcName proc_of_call = pkb_->GetProcedureWithStmtNum(stmt);
-      ProcName proc_of_call = ProcName();
+      // get the procedures that has this call statement
+      ProcNameList caller_procs = pkb_->GetCaller(proc_name);
       for (auto used_var : used_vars) {
         pkb_->InsertUsesS(stmt, used_var);
-        pkb_->InsertUsesP(proc_of_call, used_var);
+        for (auto caller : caller_procs) {
+          pkb_->InsertUsesP(caller, used_var);
+        }
       }
       for (auto modified_var : modified_vars) {
         pkb_->InsertModifiesS(stmt, modified_var);
-        pkb_->InsertModifiesP(proc_of_call, modified_var);
+        for (auto caller : caller_procs) {
+          pkb_->InsertModifiesP(caller, modified_var);
+        }
       }
     }
   }
