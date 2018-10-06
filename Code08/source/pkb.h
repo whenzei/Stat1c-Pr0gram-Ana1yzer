@@ -74,6 +74,11 @@ class PKB {
   // @returns pointer to the call graph of the program
   CallGraph* GetCallGraph();
 
+  // inserts an edge from the node referring to given curr_proc_name to the node
+  // referring to given called_proc_name in the call graph
+  void InsertEdgeInCallGraph(ProcName curr_proc_name,
+                             ProcName called_proc_name);
+
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param AssignStmtData the encapsulation of statement data for PKB use
@@ -165,8 +170,8 @@ class PKB {
   StmtNumList GetAllCallStmt();
 
   /***********************
-  * Follows Table Functions *
-  ***********************/
+   * Follows Table Functions *
+   ***********************/
 
   // @returns true if Follows*(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
@@ -202,8 +207,8 @@ class PKB {
   StmtNumPairList GetAllFollowsPair();
 
   /***********************
-  * Parent Table Functions *
-  ***********************/
+   * Parent Table Functions *
+   ***********************/
 
   // @returns true if Parent(parent_stmt_num, child_stmt_num) holds
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
@@ -240,8 +245,8 @@ class PKB {
   StmtNumPairList GetAllParentTPair();
 
   /***********************
-  * Modifies Table Functions *
-  ***********************/
+   * Modifies Table Functions *
+   ***********************/
 
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
@@ -278,8 +283,8 @@ class PKB {
   ProcVarPairList GetAllModifiesPairP();
 
   /***********************
-  * Uses Table Functions *
-  ***********************/
+   * Uses Table Functions *
+   ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
@@ -333,13 +338,14 @@ class PKB {
   // @returns the cfg belonging to a specified procedure
   CFG GetCFG(string proc_name);
   /***********************
-  * Call Table Functions *
-  ***********************/
+   * Call Table Functions *
+   ***********************/
 
   // Inserts an indirect caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcName caller_proc,
+                                      ProcName callee_proc);
 
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise

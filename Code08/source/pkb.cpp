@@ -23,6 +23,10 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
 
 CallGraph* PKB::GetCallGraph() { return &call_graph_; }
 
+void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name, ProcName called_proc_name) {
+  call_graph_.AddEdge(curr_proc_name, called_proc_name);
+}
+
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
     VarNameSet used_vars = stmt_data->GetUsedVariables();

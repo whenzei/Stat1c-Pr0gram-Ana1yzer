@@ -237,7 +237,7 @@ ParseData Parser::ProcessPrint(int given_stmt_list_num) {
 
 ParseData Parser::ProcessCall(int given_stmt_list_index) {
   VarName called_proc_name = ReadNextToken().value;
-  pkb_->GetCallGraph()->AddEdge(curr_proc_name_, called_proc_name);
+  pkb_->InsertEdgeInCallGraph(curr_proc_name_, called_proc_name);
   pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
                                      curr_proc_name_, called_proc_name));
 
