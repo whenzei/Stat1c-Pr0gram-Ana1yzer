@@ -11,6 +11,7 @@ class PrintStmtData;
 class IfStmtData;
 class StatementData;
 
+#include "call_table.h"
 #include "const_list.h"
 #include "follows_table.h"
 #include "modifies_table.h"
@@ -39,6 +40,7 @@ class PKB {
   PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
+  CallTable call_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -141,6 +143,10 @@ class PKB {
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
+
+  // get stmt numbers for all call stmts inside the stmt type list
+  // @returns the list of stmt numbers
+  StmtNumList GetAllCallStmt();
 
   // Follows table public functions
 
@@ -292,6 +298,72 @@ class PKB {
 
   // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
+
+  /***********************
+  * Call Table Functions *
+  ***********************/
+
+   // Inserts a caller, callee pair relationship into the Call Table.
+   // @returns true if insertion is successful, false otherwise
+   // @params caller procedure name and callee procedure name
+  bool InsertCallRelationship(ProcName caller_proc, ProcName callee_proc);
+
+  // Inserts a calls relationship to the call table.
+  // @params stmt num of statement
+  // @params proc name of the procedure *being called*
+  void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
+
+  // Finds and returns a list of stmt numbers calling the given proc.
+  // @params proc name of the procedure being called
+  // @returns a list of stmt numbers (can be empty)
+  StmtNumList GetCallingStmts(ProcName callee_proc);
+
+  // Finds and returns a list of pairs of all stmt numbers
+  // and procedures called by that stmt number.
+  // @returns a list of <stmt_num, proc> pairs
+  StmtNumProcPairList GetAllCallingStmtPairs();
+
+  // Finds and returns the direct callee for given procedure.
+  // @returns a list containing one direct callee (can be empty)
+  // @params caller procedure name
+  ProcNameList GetCallee(ProcName caller_proc);
+
+  // Finds and returns all callees for given procedure.
+  // @returns a list containing all callees for given proc (can be empty)
+  // @params caller procedure name 
+  ProcNameList GetCalleeT(ProcName caller_proc);
+
+  // Finds and returns the direct caller for given procedure.
+  // @returns a list containing one direct caller (can be empty)
+  // @params callee procedure name
+  ProcNameList GetCaller(ProcName callee_proc);
+
+  // Finds and returns all callers for given procedure.
+  // @returns a list containing all callers for given proc (can be empty)
+  // @params callee procedure name 
+  ProcNameList GetCallerT(ProcName callee_proc);
+
+  // @returns all procedures calling some other proc (can be empty)
+  ProcNameList GetAllCaller();
+
+  // @returns all procedures being called by some other proc (can be empty)
+  ProcNameList GetAllCallee();
+
+  // @returns a list of all <caller, direct callee> pairs
+  ProcNamePairList GetAllCallPairs();
+
+  // @returns a list of all <caller, callee> pairs
+  ProcNamePairList GetAllCallTPairs();
+
+  // @returns true if Call(caller, callee) is true
+  bool IsCall(ProcName caller_proc, ProcName callee_proc);
+
+  // @returns true if Call*(caller, callee) is true
+  bool IsCallT(ProcName caller_proc, ProcName callee_proc);
+
+  // @returns true if Call Table has any calls relationships
+  // false if otherwise
+  bool HasCallsRelationship();
 
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
