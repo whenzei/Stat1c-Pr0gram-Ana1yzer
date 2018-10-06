@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\call_table.cpp" />
     <ClCompile Include="..\source\design_extractor.cpp" />
     <ClCompile Include="..\source\expression_helper.cpp" />
     <ClCompile Include="..\source\follows_table.cpp" />
@@ -42,6 +43,7 @@
     <ClCompile Include="..\source\pql_result.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\call_table.h" />
     <ClInclude Include="..\source\design_extractor.h" />
     <ClInclude Include="..\source\expression_helper.h" />
     <ClInclude Include="..\source\follows_table.h" />
