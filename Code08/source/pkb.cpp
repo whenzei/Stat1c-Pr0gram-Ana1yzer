@@ -21,9 +21,7 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
-CallGraph* PKB::GetCallGraph() {
-  return &call_graph_;
-}
+CallGraph* PKB::GetCallGraph() { return &call_graph_; }
 
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
@@ -71,7 +69,7 @@ void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   }
 }
 
-void PKB::InsertCallStmt(CallStmtData * stmt_data) {
+void PKB::InsertCallStmt(CallStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kCall)) {
     VarNameSet used_var = stmt_data->GetUsedVars();
     VarNameSet modified_var = stmt_data->GetModifiedVars();
@@ -128,7 +126,7 @@ StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt();  }
+StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
 
 bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
@@ -318,11 +316,13 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
 }
 
-bool PKB::InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
+                                         ProcName callee_proc) {
   return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
 }
 
-bool PKB::InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+bool PKB::InsertDirectCallRelationship(ProcName caller_proc,
+                                       ProcName callee_proc) {
   return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
 }
 
@@ -354,13 +354,9 @@ ProcNameList PKB::GetCallerT(ProcName callee_proc) {
   return call_table_.GetCallerT(callee_proc);
 }
 
-ProcNameList PKB::GetAllCaller() {
-  return call_table_.GetAllCaller();
-}
+ProcNameList PKB::GetAllCaller() { return call_table_.GetAllCaller(); }
 
-ProcNameList PKB::GetAllCallee() {
-  return call_table_.GetAllCallee();
-}
+ProcNameList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
 
 ProcNamePairList PKB::GetAllCallPairs() {
   return call_table_.GetAllCallPairs();
@@ -378,9 +374,7 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
   return call_table_.IsCallT(caller_proc, callee_proc);
 }
 
-bool PKB::HasCallsRelationship() {
-  return call_table_.HasCallsRelationship();
-}
+bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
