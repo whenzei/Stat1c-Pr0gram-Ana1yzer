@@ -17,6 +17,8 @@ class ParseData {
   VarName modified_var_;
 
  public:
+  // Default constructor, all variables are initialized to empty
+  ParseData();
   ParseData(StmtNumInt stmt_num, VarNameSet used_vars,
             VarNameSet modified_vars);
   ParseData(StmtNumInt stmt_num, VarNameSet used_vars, VarNameSet modified_vars,

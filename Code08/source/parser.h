@@ -64,13 +64,14 @@ class Parser {
   // Modified variable names
   ParseData ProcessWhileBlock(int given_stmt_list_index);
 
-  // @returns the modified variable name
-  VarName ProcessRead(int given_stmt_list_index);
+  // @returns parse data with the modified variable name
+  ParseData ProcessRead(int given_stmt_list_index);
 
-  // @returns the used variable name
-  VarName ProcessPrint(int given_stmt_list_index);
+  // @returns parse data with the used variable name
+  ParseData ProcessPrint(int given_stmt_list_index);
 
-  void ProcessCall(int given_stmt_list_index);
+  // @returns empty parse data, since DE will populate uses and modifies later
+  ParseData ProcessCall(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 

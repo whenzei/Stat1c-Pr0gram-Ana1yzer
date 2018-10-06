@@ -194,31 +194,24 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
 }
 
 ParseData Parser::ProcessKeyword(int given_stmt_list_num) {
-  VarNameSet used_vars;
-  VarNameSet modified_vars;
-
-  if (IsCurrentKeywordType(ts::kIf)) {
-    return ProcessIfBlock(given_stmt_list_num);
-  } else if (IsCurrentKeywordType(ts::kWhile)) {
-    return ProcessWhileBlock(given_stmt_list_num);
-  } else if (IsCurrentKeywordType(ts::kCall)) {
-    ProcessCall(given_stmt_list_num);
-    // do nothing for now, DE will populate Uses and Modifies;
-    return ParseData(VarNameSet(), VarNameSet());
-  } else if (IsCurrentKeywordType(ts::kRead)) {
-    VarName modified_var = ProcessRead(given_stmt_list_num);
-    modified_vars.insert(modified_var);
-    return ParseData(used_vars, modified_vars);
-  } else if (IsCurrentKeywordType(ts::kPrint)) {
-    VarName used_var = ProcessPrint(given_stmt_list_num);
-    used_vars.insert(used_var);
-    return ParseData(used_vars, modified_vars);
+  switch (current_token_.subtype) {
+    case ts::kIf:
+      return ProcessIfBlock(given_stmt_list_num);
+    case ts::kCall:
+      // Modifies and Used not processed, DE will populate later
+      return ProcessCall(given_stmt_list_num);
+    case ts::kWhile:
+      return ProcessWhileBlock(given_stmt_list_num);
+    case ts::kRead:
+      return ProcessRead(given_stmt_list_num);
+    case ts::kPrint:
+      return ProcessPrint(given_stmt_list_num);
   }
 
   exit(-1);
 }
 
-VarName Parser::ProcessRead(int given_stmt_list_num) {
+ParseData Parser::ProcessRead(int given_stmt_list_num) {
   VarName modified_var = ReadNextToken().value;
   pkb_->InsertReadStmt(
       &ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
@@ -227,10 +220,10 @@ VarName Parser::ProcessRead(int given_stmt_list_num) {
 
   // eat semicolon
   ReadNextToken();
-  return modified_var;
+  return ParseData(VarNameSet(), VarNameSet{modified_var});
 }
 
-VarName Parser::ProcessPrint(int given_stmt_list_num) {
+ParseData Parser::ProcessPrint(int given_stmt_list_num) {
   VarName used_var = ReadNextToken().value;
   pkb_->InsertPrintStmt(
       &PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
@@ -239,13 +232,17 @@ VarName Parser::ProcessPrint(int given_stmt_list_num) {
 
   // eat semicolon
   ReadNextToken();
-  return used_var;
+  return ParseData(VarNameSet{used_var}, VarNameSet());
 }
 
-void Parser::ProcessCall(int given_stmt_list_index) {
+ParseData Parser::ProcessCall(int given_stmt_list_index) {
   VarName called_proc_name = ReadNextToken().value;
   pkb_->GetCallGraph()->AddEdge(curr_proc_name_, called_proc_name);
-  // todo: insert CallStmt with the stmt_num into the PKB
+  pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
+                                     curr_proc_name_, called_proc_name));
+
+  // empty parse data
+  return ParseData();
 }
 
 ParseData Parser::ProcessAssignment(int given_stmt_list_num) {

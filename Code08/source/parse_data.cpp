@@ -1,5 +1,12 @@
 #include "parse_data.h"
 
+ParseData::ParseData() {
+  stmt_num_list_ = StmtNumIntList();
+  used_vars_ = VarNameSet();
+  modified_vars_ = VarNameSet();
+  modified_var_ = VarName();
+}
+
 ParseData::ParseData(StmtNumInt stmt_num, VarNameSet used_vars,
                      VarNameSet modified_vars) {
   stmt_num_ = stmt_num;
