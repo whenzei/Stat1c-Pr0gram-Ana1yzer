@@ -69,10 +69,11 @@ void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
 
 void PKB::InsertCallStmt(CallStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kCall)) {
-    VarNameSet used_var = stmt_data->GetUsedVars();
-    VarNameSet modified_var = stmt_data->GetModifiedVars();
-    HandleInsertVariables(used_var);
-    HandleInsertVariables(modified_var);
+    ProcName caller_proc_name = stmt_data->GetCallerProcName();
+    ProcName callee_proc_name = stmt_data->GetCalleeProcName();
+    StmtNum stmt_num = stmt_data->GetStmtNum();
+    InsertDirectCallRelationship(caller_proc_name, callee_proc_name);
+    InsertCalls(stmt_num, callee_proc_name);
   }
 }
 
