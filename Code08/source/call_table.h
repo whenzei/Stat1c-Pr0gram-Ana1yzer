@@ -14,6 +14,9 @@ using std::unordered_map;
 using std::vector;
 
 using CallMap = unordered_map<string, vector<string>>;
+using StmtNum = string;
+using StmtNumList = vector<string>;
+using StmtNumProcPairList = vector<pair<string, string>>;
 using ProcName = string;
 using ProcNameList = vector<string>;
 using ProcNamePairList = vector<pair<string, string>>;
@@ -23,15 +26,33 @@ class CallTable {
   CallMap direct_call_table_; // stores <direct proc calling, proc called>
   CallMap callee_table_; // stores <proc called by, proc calling>
   CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
+  CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
   ProcNameList caller_list_; // stores procs calling any other proc
   ProcNameList callee_list_; // stores procs called by any other proc
 
 public:
-  // Inserts a caller, callee pair into the Call Table.
+  // PROC-PROC RELATIONSHIP INSERT
+  // Inserts a caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertCalls(ProcName caller_proc, ProcName callee_proc);
+  bool InsertCallRelationship(ProcName caller_proc, ProcName callee_proc);
+
+  // STATEMENT-PROC RELATIONSHIP INSERT
+  // Inserts a calls relationship to the call table.
+  // @params stmt num of statement
+  // @params proc name of the procedure *being called*
+  void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
+
+  // Finds and returns a list of stmt numbers calling the given proc.
+  // @params proc name of the procedure being called
+  // @returns a list of stmt numbers (can be empty)
+  StmtNumList GetCallingStmts(ProcName callee_proc);
+
+  // Finds and returns a list of pairs of all stmt numbers
+  // and procedures called by that stmt number.
+  // @returns a list of <stmt_num, proc> pairs
+  StmtNumProcPairList GetAllCallingStmtPairs();
 
   // Finds and returns the direct callee for given procedure.
   // @returns a list containing one direct callee (can be empty)

@@ -2,7 +2,7 @@
 
 #include "call_table.h"
   
-  bool CallTable::InsertCalls(ProcName caller_proc, ProcName callee_proc) {
+  bool CallTable::InsertCallRelationship(ProcName caller_proc, ProcName callee_proc) {
     if (IsCallT(caller_proc, callee_proc)) {
       return false;
     }
@@ -11,6 +11,28 @@
     }
     call_table_[caller_proc].push_back(callee_proc);
     return true;
+  }
+
+  void CallTable::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {
+    stmt_num_proc_table_[callee_proc].push_back(stmt_num);
+  }
+
+  StmtNumList CallTable::GetCallingStmts(ProcName callee_proc) {
+    StmtNumList calling_stmts;
+    if (stmt_num_proc_table_.find(callee_proc) != stmt_num_proc_table_.end()) {
+      calling_stmts = stmt_num_proc_table_[callee_proc];
+    }
+    return calling_stmts;
+  }
+
+  StmtNumProcPairList CallTable::GetAllCallingStmtPairs(){
+    StmtNumProcPairList stmt_proc_pair_list;
+    for (auto entry : stmt_num_proc_table_) {
+      for (StmtNum stmt_num : entry.second) {
+        stmt_proc_pair_list.push_back(make_pair(stmt_num, entry.first));
+      }
+    }
+    return stmt_proc_pair_list;
   }
 
   ProcNameList CallTable::GetCallee(ProcName caller_proc) {
