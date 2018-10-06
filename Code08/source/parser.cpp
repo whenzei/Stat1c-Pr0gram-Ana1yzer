@@ -163,8 +163,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
 ParseData Parser::ProcessStatement(int given_stmt_list_num) {
   int curr_stmt_num = ++stmt_num_;
 
-  StmtNumIntList adjaceny_list = StmtNumIntList();
-  current_cfg_->emplace(curr_stmt_num, adjaceny_list);
+  StmtNumIntList adj_list = StmtNumIntList();
+  current_cfg_->emplace(curr_stmt_num, adj_list);
 
   VarNameSet used_vars;
   VarNameSet modified_vars;
