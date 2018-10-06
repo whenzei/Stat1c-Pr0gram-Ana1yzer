@@ -241,6 +241,8 @@ ParseData Parser::ProcessCall(int given_stmt_list_index) {
   pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
                                      curr_proc_name_, called_proc_name));
 
+  // eat semicolon
+  ReadNextToken();
   // empty parse data
   return ParseData();
 }
