@@ -70,6 +70,13 @@ void Parser::ParseProgram() {
   do {
     ProcessProcedure(stmt_list_num_);
   } while (!IsAtEnd());
+
+  /****** Debug Call graph ******/
+  // DFS call graph
+  vector<string> traverse = pkb_->GetCallGraph()->DFS("one");
+  for (auto name : traverse) {
+    cout << name << endl;
+  }
 }
 
 void Parser::ProcessProcedure(int given_stmt_list_index) {
@@ -237,7 +244,8 @@ VarName Parser::ProcessPrint(int given_stmt_list_num) {
 
 void Parser::ProcessCall(int given_stmt_list_index) {
   VarName called_proc_name = ReadNextToken().value;
-  pkb_->GetCallGraph().AddEdge(curr_proc_name_, called_proc_name);
+  pkb_->GetCallGraph()->AddEdge(curr_proc_name_, called_proc_name);
+  // todo: insert CallStmt with the stmt_num into the PKB
 }
 
 ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
