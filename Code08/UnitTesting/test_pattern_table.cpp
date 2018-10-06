@@ -226,5 +226,77 @@ TEST_CLASS(TestPatternTable) {
     Assert::AreEqual(kStmtNum3, result4.back().first);
     Assert::AreEqual(kVarName2, result4.back().second);
   }
+
+  TEST_METHOD(TestGetWhileWithPattern) { 
+	PatternTable pattern_table;
+    pattern_table.InsertWhilePattern(kStmtNum1, kVarName1);
+    pattern_table.InsertWhilePattern(kStmtNum2, kVarName2);
+    pattern_table.InsertWhilePattern(kStmtNum3, kVarName1);
+    StmtNumList result1 = pattern_table.GetWhileWithPattern(kVarName1);
+    Assert::IsTrue(result1.size() == 2);
+    Assert::AreEqual(kStmtNum1, result1.front());
+    Assert::AreEqual(kStmtNum3, result1.back());
+    StmtNumList result2 = pattern_table.GetWhileWithPattern(kVarName2);
+    Assert::IsTrue(result2.size() == 1);
+    Assert::AreEqual(kStmtNum2, result2.front());
+  }
+
+  TEST_METHOD(TestGetAllWhilePatternPair) {
+    PatternTable pattern_table;
+    pattern_table.InsertWhilePattern(kStmtNum1, kVarName1);
+    pattern_table.InsertWhilePattern(kStmtNum1, kVarName3);
+    pattern_table.InsertWhilePattern(kStmtNum2, kVarName2);
+    pattern_table.InsertWhilePattern(kStmtNum3, kVarName1);
+    StmtVarPairList result = pattern_table.GetAllWhilePatternPair();
+    Assert::IsTrue(result.size() == 4);
+    StmtVarPairList::iterator iter = result.begin();
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum3, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName3, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum2, (*iter).first);
+    Assert::AreEqual(kVarName2, (*iter).second);
+  }
+
+  TEST_METHOD(TestGetIfWithPattern) {
+    PatternTable pattern_table;
+    pattern_table.InsertIfPattern(kStmtNum1, kVarName1);
+    pattern_table.InsertIfPattern(kStmtNum2, kVarName2);
+    pattern_table.InsertIfPattern(kStmtNum3, kVarName1);
+    StmtNumList result1 = pattern_table.GetIfWithPattern(kVarName1);
+    Assert::IsTrue(result1.size() == 2);
+    Assert::AreEqual(kStmtNum1, result1.front());
+    Assert::AreEqual(kStmtNum3, result1.back());
+    StmtNumList result2 = pattern_table.GetIfWithPattern(kVarName2);
+    Assert::IsTrue(result2.size() == 1);
+    Assert::AreEqual(kStmtNum2, result2.front());
+  }
+
+  TEST_METHOD(TestGetAllIfPatternPair) {
+    PatternTable pattern_table;
+    pattern_table.InsertIfPattern(kStmtNum1, kVarName1);
+    pattern_table.InsertIfPattern(kStmtNum1, kVarName3);
+    pattern_table.InsertIfPattern(kStmtNum2, kVarName2);
+    pattern_table.InsertIfPattern(kStmtNum3, kVarName1);
+    StmtVarPairList result = pattern_table.GetAllIfPatternPair();
+    Assert::IsTrue(result.size() == 4);
+    StmtVarPairList::iterator iter = result.begin();
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum3, (*iter).first);
+    Assert::AreEqual(kVarName1, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum1, (*iter).first);
+    Assert::AreEqual(kVarName3, (*iter).second);
+    iter++;
+    Assert::AreEqual(kStmtNum2, (*iter).first);
+    Assert::AreEqual(kVarName2, (*iter).second);
+  }
 };
 }  // namespace PKBTests
