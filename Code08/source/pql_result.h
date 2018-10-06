@@ -14,6 +14,7 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
+using MergeMap = unordered_map<string, vector<string>>;
 using ResultTable = vector<vector<string>>;
 using ResultRow = vector<string>;
 using QueryResultList = vector<string>;
@@ -29,6 +30,7 @@ class PqlResult {
   /* the table which contains all the results from user query*/
   ResultTable result_table_;
   int column_count_;
+  MergeMap merge_map_;
 
  public:
   /* Constructor */
@@ -40,16 +42,22 @@ class PqlResult {
 
   void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
 
-  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int, string, string);
+  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int,
+                    string, string);
+
+  void SetupMergeMap(QueryResultPairList, PqlResultTableConflict);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);
   void ClearColumnHeader();
   void SetResultTable(ResultTable);
   void SetColumnCount(int);
+  void AddMergeMap(string key, string value);
+  void ClearMergeMap();
 
   /* Getters */
   ColumnHeader GetColumnHeader();
+  MergeMap GetMergeMap();
   ResultTable GetResultTable();
   int GetColumnCount();
 };

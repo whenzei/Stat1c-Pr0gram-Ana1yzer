@@ -93,16 +93,17 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
   // Left has conflict
   else if (conflict_type == kOneConflictLeft) {
+    cout << "Conflict left " << endl;
+    SetupMergeMap(result_pair_list, conflict_type);
+    MergeMap merge_map = GetMergeMap();
     // Iterating through the row
     for (auto& row : result_table) {
-      // Iterating through the result list to be merged
-      for (auto& result_column_pair : result_pair_list) {
-        // If the column value in table matches the value in result list
-        if (row[conflict_left_pair].compare(result_column_pair.first) == 0) {
-          // Row has passed the comparison
-          // Merging
+      // If the column value in table matches the value in result list
+      if (merge_map.find(row[conflict_left_pair]) != merge_map.end()) {
+        // Row has passed the comparison, Merging
+        for (auto& merge_item : merge_map[row[conflict_left_pair]]) {
           ResultRow new_row = row;
-          new_row.push_back(result_column_pair.second);
+          new_row.push_back(merge_item);
           new_table.push_back(new_row);
         }
       }
@@ -115,16 +116,17 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
   // Right has conflict
   else if (conflict_type == kOneConflictRight) {
+    cout << "Conflict right " << endl;
+    SetupMergeMap(result_pair_list, conflict_type);
+    MergeMap merge_map = GetMergeMap();
     // Iterating through the row
     for (auto& row : result_table) {
       // Iterating through the result list to be merged
-      for (auto& result_column_pair : result_pair_list) {
-        // If the column value in table matches the value in result list
-        if (row[conflict_right_pair].compare(result_column_pair.second) == 0) {
-          // Row has passed the comparison
-          // Merging
+      if (merge_map.find(row[conflict_right_pair]) != merge_map.end()) {
+        // Row has passed the comparison, Merging
+        for (auto& merge_item : merge_map[row[conflict_right_pair]]) {
           ResultRow new_row = row;
-          new_row.push_back(result_column_pair.first);
+          new_row.push_back(merge_item);
           new_table.push_back(new_row);
         }
       }
@@ -193,6 +195,24 @@ void PqlResult::InitTable(QueryResultPairList result_pair_list,
   SetColumnCount(++col_num);
 }
 
+void PqlResult::SetupMergeMap(QueryResultPairList result_pair_list,
+                              PqlResultTableConflict conflict_type) {
+  ClearMergeMap();
+
+  switch (conflict_type) {
+    case kOneConflictLeft:
+      for (auto& iter : result_pair_list) {
+        AddMergeMap(iter.first, iter.second);
+      }
+      return;
+    case kOneConflictRight:
+      for (auto& iter : result_pair_list) {
+        AddMergeMap(iter.second, iter.first);
+      }
+      return;
+  }
+}
+
 /* Getter and Setter */
 
 void PqlResult::ClearColumnHeader() { this->column_header_.clear(); }
@@ -209,8 +229,28 @@ void PqlResult::SetColumnCount(int column_count) {
   this->column_count_ = column_count;
 }
 
+void PqlResult::AddMergeMap(string key, string value) {
+  MergeMap::iterator iter = merge_map_.find(key);
+
+  if (iter != merge_map_.end()) {
+    // cout << "Extra item (" << key << "," << value << ")" << endl;
+    // cout << "Extra Size " << iter->second.size() << endl;
+    iter->second.push_back(value);
+  } else {
+    // cout << "Unique item (" << key << "," << value << ")" << endl;
+    // Create new list
+    vector<string> merge_map_list;
+    merge_map_list.push_back(value);
+    this->merge_map_.insert(std::make_pair(key, merge_map_list));
+  }
+}
+
+void PqlResult::ClearMergeMap() { this->merge_map_.clear(); }
+
 ColumnHeader PqlResult::GetColumnHeader() { return column_header_; }
 
 ResultTable PqlResult::GetResultTable() { return result_table_; }
 
 int PqlResult::GetColumnCount() { return column_count_; }
+
+MergeMap PqlResult::GetMergeMap() { return merge_map_; }
