@@ -89,5 +89,8 @@
     <ClCompile Include="test_follows.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_call_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

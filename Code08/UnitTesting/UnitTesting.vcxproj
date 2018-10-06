@@ -164,6 +164,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="test_call_table.cpp" />
     <ClCompile Include="test_expression_helper.cpp" />
     <ClCompile Include="test_follows.cpp" />
     <ClCompile Include="test_query_parser.cpp" />

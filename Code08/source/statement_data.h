@@ -69,4 +69,14 @@ class PrintStmtData : public StatementData {
   VarName GetUsedVariable();
 };
 
+class CallStmtData : public StatementData {
+  VarNameSet used_vars_;
+  VarNameSet modified_vars_;
+
+  public:
+    CallStmtData(int stmt_num, int stmt_list_index, VarNameSet used_vars, VarNameSet modified_vars);
+    VarNameSet GetUsedVars();
+    VarNameSet GetModifiedVars();
+};
+
 #endif  // !SPA_STMT_DATA_H

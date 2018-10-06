@@ -169,6 +169,18 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum2, result.back());
   }
 
+  TEST_METHOD(TestGetAllCallStmt) {
+    PKB pkb;
+    pkb.InsertCallStmt(
+      &CallStmtData(kStmtNumInt1, kStmtListIndex1, kVarNameSet1, kVarNameSet2));
+    pkb.InsertCallStmt(
+      &CallStmtData(kStmtNumInt2, kStmtListIndex1, kVarNameSet2, kVarNameSet3));
+    StmtNumList result = pkb.GetAllCallStmt();
+    Assert::IsTrue(result.size() == 2);
+    Assert::AreEqual(kStmtNum1, result.front());
+    Assert::AreEqual(kStmtNum2, result.back());
+  }
+
   TEST_METHOD(TestGetAllStmt) {
     PKB pkb;
     pkb.InsertAssignStmt(&AssignStmtData(kStmtNumInt1, kStmtListIndex1,

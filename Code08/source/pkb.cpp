@@ -71,6 +71,15 @@ void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   }
 }
 
+void PKB::InsertCallStmt(CallStmtData * stmt_data) {
+  if (HandleInsertStatement(stmt_data, StmtType::kCall)) {
+    VarNameSet used_var = stmt_data->GetUsedVars();
+    VarNameSet modified_var = stmt_data->GetModifiedVars();
+    HandleInsertVariables(used_var);
+    HandleInsertVariables(modified_var);
+  }
+}
+
 void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
@@ -118,6 +127,8 @@ StmtNumList PKB::GetAllIfStmt() { return stmt_type_list_.GetAllIfStmt(); }
 StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
+
+StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt();  }
 
 bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
@@ -305,6 +316,70 @@ StmtVarPairList PKB::GetAllAssignPatternPair(TokenList sub_expr) {
 
 StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
+}
+
+bool PKB::InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
+}
+
+bool PKB::InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
+}
+
+void PKB::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {
+  call_table_.InsertCalls(stmt_num, callee_proc);
+}
+
+StmtNumList PKB::GetCallingStmts(ProcName callee_proc) {
+  return call_table_.GetCallingStmts(callee_proc);
+}
+
+StmtNumProcPairList PKB::GetAllCallingStmtPairs() {
+  return call_table_.GetAllCallingStmtPairs();
+}
+
+ProcNameList PKB::GetCallee(ProcName caller_proc) {
+  return call_table_.GetCallee(caller_proc);
+}
+
+ProcNameList PKB::GetCalleeT(ProcName caller_proc) {
+  return call_table_.GetCalleeT(caller_proc);
+}
+
+ProcNameList PKB::GetCaller(ProcName callee_proc) {
+  return call_table_.GetCaller(callee_proc);
+}
+
+ProcNameList PKB::GetCallerT(ProcName callee_proc) {
+  return call_table_.GetCallerT(callee_proc);
+}
+
+ProcNameList PKB::GetAllCaller() {
+  return call_table_.GetAllCaller();
+}
+
+ProcNameList PKB::GetAllCallee() {
+  return call_table_.GetAllCallee();
+}
+
+ProcNamePairList PKB::GetAllCallPairs() {
+  return call_table_.GetAllCallPairs();
+}
+
+ProcNamePairList PKB::GetAllCallTPairs() {
+  return call_table_.GetAllCallTPairs();
+}
+
+bool PKB::IsCall(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.IsCall(caller_proc, callee_proc);
+}
+
+bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
+  return call_table_.IsCallT(caller_proc, callee_proc);
+}
+
+bool PKB::HasCallsRelationship() {
+  return call_table_.HasCallsRelationship();
 }
 
 void PKB::NotifyParseEnd() {
