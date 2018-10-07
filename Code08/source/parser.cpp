@@ -164,7 +164,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
 
   PopulatePkbFollows(stmt_nums);
   if (!is_last_statement_if) {
-    return ParseData(stmt_nums, used_vars, modified_vars);
+    nested_last_stmts_1.push_back(prev_stmt_num);
+    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1, nested_last_stmts_2);
   } else {
     return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
                      nested_last_stmts_2);
