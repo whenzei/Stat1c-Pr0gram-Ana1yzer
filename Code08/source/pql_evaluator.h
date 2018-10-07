@@ -56,11 +56,12 @@ class PqlEvaluator {
   FinalResult GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
-   * Get the final result based on the var name that user is 'selecting'
-   * @returns a list<string> if there is result,
+   * Get the results from table
+   * @param the select synonym
+   * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  FinalResult GetFinalResultFromTable();
+  QueryResultList GetResultFromTable(Synonym);
 
   /**
    * Return a list of all the result of a certain type

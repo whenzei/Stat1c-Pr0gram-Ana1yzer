@@ -29,29 +29,30 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetClauseFlag(true);
   FinalResult final_results;
 
+  PqlQuery user_query = GetQuery();
+
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
-  if (GetQuery().GetClauses().empty()) {
-    final_results = GetFinalResultFromTable();
+  if (user_query.GetClauses().empty()) {
+    // Temp code, will implement tuple processing later
+    QueryResultList get_all_result =
+        GetSelectAllResult(user_query.GetSelections()[0].second);
+    copy(get_all_result.begin(), get_all_result.end(),
+         back_inserter(final_results));
   }
   // Else use GetSuchThatResult/GetPatternResult method
   else {
-    PqlSuchthat* suchthat;
-    PqlPattern* pattern;
-    PqlWith* with;
-
-    for (auto& clause_iter : GetQuery().GetClauses()) {
+    for (auto& clause_iter : user_query.GetClauses()) {
       switch (clause_iter->GetClauseType()) {
         case PqlClauseType::kSuchthat:
-          suchthat = (PqlSuchthat*)clause_iter;
-          GetSuchThatResult(*suchthat);
+          GetSuchThatResult(*(PqlSuchthat*)clause_iter);
           continue;
         case PqlClauseType::kPattern:
-          pattern = (PqlPattern*)clause_iter;
-          GetPatternResult(*pattern);
+          GetPatternResult(*(PqlPattern*)clause_iter);
           continue;
         case PqlClauseType::kWith:
-          with = (PqlWith*)clause_iter;
+          //(PqlWith*)clause_iter;
+          // TODO with
           continue;
       }
       // If the clause is false already, no need to continue evaluating
@@ -61,12 +62,17 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     }
 
     // No false clause and it is not BOOLEAN
-    if (IsValidClause() && !GetQuery().GetSelections().empty()) {
-      final_results = GetFinalResultFromTable();
+    if (IsValidClause() && !user_query.GetSelections().empty()) {
+      // Temp code, will implement tuple processing later
+      Synonym select_syn = GetQuery().GetSelections()[0];
+
+      QueryResultList other_clause_result = GetResultFromTable(select_syn);
+      copy(other_clause_result.begin(), other_clause_result.end(),
+           back_inserter(final_results));
     }
 
     // If BOOLEAN
-    if (GetQuery().GetSelections().empty()) {
+    if (user_query.GetSelections().empty()) {
       if (IsValidClause()) {
         final_results.push_back("true");
       } else {
@@ -80,13 +86,11 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return final_results;
 }
 
-FinalResult PqlEvaluator::GetFinalResultFromTable() {
-  list<string> final_result;
+QueryResultList PqlEvaluator::GetResultFromTable(Synonym select_syn) {
+  QueryResultList table_result;
   ResultTable result_table = GetPqlResult().GetResultTable();
 
   ColumnHeader column_header = GetPqlResult().GetColumnHeader();
-
-  Synonym select_syn = GetQuery().GetSelections()[0];
 
   ColumnHeader::iterator col_iter = column_header.find(select_syn.first);
 
@@ -94,18 +98,16 @@ FinalResult PqlEvaluator::GetFinalResultFromTable() {
   if (col_iter != column_header.end()) {
     int column_index = col_iter->second;
     for (auto& row : result_table) {
-      final_result.push_back(row[column_index]);
+      table_result.push_back(row[column_index]);
     }
   }
-  // Selected variable not in result table
+  // Select synonym not in result table
   else {
-    cout << "Select all (GetFinalResultFromTable)" << endl;
-    QueryResultList get_all_result = GetSelectAllResult(select_syn.second);
-    copy(get_all_result.begin(), get_all_result.end(),
-         back_inserter(final_result));
+    cout << "Select all in (GetFinalResultFromTable)" << endl;
+    table_result = GetSelectAllResult(select_syn.second);
   }
 
-  return final_result;
+  return table_result;
 }
 
 void PqlEvaluator::GetPatternResult(PqlPattern pattern) {
@@ -193,7 +195,7 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
       return pkb.GetAllPrintStmt();
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
-      // list
+      // list TODO call
       cout << "Select all call statement." << endl;
       break;
     case PqlDeclarationEntity::kWhile:
