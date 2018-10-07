@@ -6,18 +6,20 @@
 #include <queue>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using std::map;
 using std::queue;
 using std::string;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 using VisitedMap = unordered_map<string, bool>;
 
 struct Node {
-  vector<Node*> adj_;
+  unordered_set<Node*> neighbours_;
   string name_;
 
   // constructor
@@ -45,6 +47,10 @@ class Graph {
   // they are created and inserted into the node map before the edge is added
   void AddEdge(const string& from, const string& to);
 
+  // @returns set of all names of neighbours of node referred by given node name
+  unordered_set<string> GetNeighbourNames(const string& name);
+
+  // @returns size of graph
   int GetSize();
 
   // DFS with toposort

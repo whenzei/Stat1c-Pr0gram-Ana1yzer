@@ -24,11 +24,21 @@ void Graph::AddEdge(const string &from, const string &to) {
   }
   Node *from_node = node_map_.find(from)->second;
   Node *to_node = node_map_.find(to)->second;
-  from_node->adj_.push_back(to_node);
+  from_node->neighbours_.insert(to_node);
+}
+
+unordered_set<string> Graph::GetNeighbourNames(const string &name) {
+  unordered_set<string> result;
+  if (node_map_.count(name)) {
+    unordered_set<Node *> node_neighbours = node_map_.at(name)->neighbours_;
+    for (const auto node : node_neighbours) {
+      result.insert(node->name_);
+    }
+  }
+  return result;
 }
 
 int Graph::GetSize() { return size_; }
-
 
 void Graph::Toposort(const string &name, VisitedMap &visited_map,
                      queue<string> &topoqueue) {
@@ -42,7 +52,7 @@ void Graph::Toposort(const string &name, VisitedMap &visited_map,
 
   // recur for all the vertices adjacent to node
   Node *from_node = node_map_.find(name)->second;
-  for (auto node : from_node->adj_) {
+  for (auto node : from_node->neighbours_) {
     if (!visited_map.at(node->name_)) {
       Toposort(node->name_, visited_map, topoqueue);
     }
