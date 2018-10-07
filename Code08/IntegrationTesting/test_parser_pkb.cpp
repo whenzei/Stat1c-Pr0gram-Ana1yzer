@@ -720,7 +720,7 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   //*******************************
 }
 
-TEST_METHOD(TestInsertCalls) {
+TEST_METHOD(TestProcessCalls) {
   PKB test_pkb = PKB();
   Parser parser = Parser(&test_pkb);
   string program =

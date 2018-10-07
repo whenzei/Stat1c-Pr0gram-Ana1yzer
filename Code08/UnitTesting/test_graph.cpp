@@ -1,5 +1,5 @@
-#include "CppUnitTest.h"
 #include "stdafx.h"
+#include "CppUnitTest.h"
 #include "graph.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -11,6 +11,8 @@ TEST_CLASS(TestGraph) {
   const string kProcName3 = "three";
   const string kProcName4 = "four";
   const string kProcName5 = "five";
+  const string kProcName6 = "six";
+  const string kProcName7 = "seven";
 
  public:
   TEST_METHOD(TestAddNode) {
@@ -86,14 +88,18 @@ TEST_CLASS(TestGraph) {
     vector<string> actual_result = graph.Toposort();
     Assert::IsTrue(expected_result == actual_result);
 
+    // Add a disconnected component
+    /*
+      1 -> 2 -> 3 -> 5     6 -> 7
+           |    ^
+           >--> 4
+    */
+    graph.AddEdge(kProcName6, kProcName7);
 
-    // 1 -> 2 -> 3
-    graph = Graph();
-    graph.AddEdge(kProcName1, kProcName2);
-    graph.AddEdge(kProcName2, kProcName3);
-
-    expected_result = vector<string>{
-        kProcName3, kProcName2, kProcName1};
+    // additional 7->6 at the end
+    expected_result =
+        vector<string>{kProcName5, kProcName3, kProcName4, kProcName2,
+                       kProcName1, kProcName7, kProcName6};
     actual_result = graph.Toposort();
     Assert::IsTrue(expected_result == actual_result);
   }
