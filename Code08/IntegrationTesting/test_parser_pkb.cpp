@@ -10,7 +10,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using tt = Tokenizer::TokenType;
 
-namespace PKBPQLTests {
+namespace ParserPKBTests {
 TEST_CLASS(TestParserPkb){
 
 public :
@@ -718,6 +718,181 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //*******************************
+}
+TEST_METHOD(TestCfgIfWhileStatements) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "procedure one {\n"
+      "a = b;\n"               // 1
+      "if (x < y) then {\n"    // 2
+        "print x;"             // 3
+        "read t;"              // 4
+        "while (a == 1) {\n"   // 5
+          "if = 2;\n"          // 6
+          "z = a +1;\n"        // 7
+        "}"
+      "} else {"
+        "print z;"             // 8
+      "} "
+      "while (j > f) {"        // 9
+         "s = s * l;"          // 10
+         "asd = asd / 2;"      // 11
+         "if (a < 100) then {" // 12
+            "x = 100;"         // 13
+         "} else {"     
+            "s = 500;"         // 14
+         "}"     
+      "}"
+      "a = 1;"                // 15
+      "}";
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  vector<StmtNumIntList> list_of_adj_list;
+  list_of_adj_list.push_back(StmtNumIntList());
+
+  list_of_adj_list.push_back(StmtNumIntList({2}));       // stmt1 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({3, 8}));    // stmt2 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({4}));        // stmt3 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({5}));       // stmt4 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({6, 9}));    // stmt5 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({7}));       // stmt6 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({5}));       // stmt7 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({9}));       // stmt8 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({10, 15}));  // stmt9 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt10 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({12}));      // stmt11 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({13, 14}));  // stmt12 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({9}));      // stmt13 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({9}));      // stmt14 adj_list
+  list_of_adj_list.push_back(StmtNumIntList());          // stmt15 adj_list
+
+  CFG test_cfg = test_pkb.GetCFG("one");
+
+  for (size_t i = 1; i < list_of_adj_list.size(); i++) {
+    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList true_adj_list = list_of_adj_list.at(i);
+
+    Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
+    for (size_t j = 0; j < test_adj_list.size(); j++) {
+      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+    }
+  }
+}
+TEST_METHOD(TestCfgIfInIfStatements) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "procedure one {\n"
+        "a = b;\n"                // 1
+        "if (x < y) then {\n"          // 2
+          "if (a == 1) then {\n"  // 3
+            "if = 2;\n"           // 4
+            "z = a +1;\n"         // 5
+          "} else {"              
+              "a = a + 1;"        // 6
+            "}"
+            "x = x+ 1;"           // 7
+         "} else {\n"
+            "t = abc;\n"          // 8
+            "if (a == b) then {\n"     // 9
+              "w = 1 + 2;\n"      // 10
+              "a = b + 1;\n"      // 11
+             "} else {\n"         
+                "a = 1;"          //12
+             "}\n"
+        "}\n"
+        "x = 1 + y;\n"            //13
+      "}";
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  vector<StmtNumIntList> list_of_adj_list;
+  list_of_adj_list.push_back(StmtNumIntList());
+
+  list_of_adj_list.push_back(StmtNumIntList({2})); //stmt1 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({3, 8})); //stmt2 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({4, 6})); //stmt3 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({5})); //stmt4 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({7})); //stmt5 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({7})); //stmt6 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({13})); //stmt7 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({9})); //stmt8 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({10, 12})); //stmt9 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11})); //stmt10 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({13})); //stmt11 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({13})); //stmt12 adj_list
+  list_of_adj_list.push_back(StmtNumIntList()); //stmt13 adj_list
+
+
+  CFG test_cfg = test_pkb.GetCFG("one"); 
+
+  for (int i = 1; i < list_of_adj_list.size(); i++) {
+    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList true_adj_list = list_of_adj_list.at(i);
+
+    Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
+    for (size_t j = 0; j < test_adj_list.size(); j++) {
+      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+    }
+  }
+ }
+TEST_METHOD(TestCfgIfInIfInIfStatements) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "procedure one {\n"
+      "a = b;\n"                  // 1
+      "if (x < y) then {\n"       // 2
+          "a = 1;"                // 3
+      "} else {\n"
+         "if (a == 1) then {\n"   // 4
+            "if = 2;\n"           // 5
+            "z = a +1;\n"         // 6
+         "} else {"
+            "a = a + 1;"          // 7
+            "if (t == 1) then {"  // 8
+                "print x;"        // 9
+            "} else {"
+                "a = z + x;"      // 10
+            "}"
+         "}"
+      "}\n"
+      "x = 1 + y;\n"              // 11
+      "}";
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  vector<StmtNumIntList> list_of_adj_list;
+  list_of_adj_list.push_back(StmtNumIntList());
+
+  list_of_adj_list.push_back(StmtNumIntList({2}));       // stmt1 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({3, 4}));    // stmt2 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt3 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({5, 7}));    // stmt4 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({6}));       // stmt5 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt6 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({8}));       // stmt7 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({9, 10}));   // stmt8 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt9 adj_list
+  list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt10 adj_list
+  list_of_adj_list.push_back(StmtNumIntList());      // stmt11 adj_list
+
+  CFG test_cfg = test_pkb.GetCFG("one");
+
+  for (int i = 1; i < list_of_adj_list.size(); i++) {
+    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList true_adj_list = list_of_adj_list.at(i);
+
+    Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
+    for (size_t j = 0; j < test_adj_list.size(); j++) {
+      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+    }
+  }
 }
 }
 ;
