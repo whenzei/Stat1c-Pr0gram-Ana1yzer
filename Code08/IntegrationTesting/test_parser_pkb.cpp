@@ -767,12 +767,11 @@ TEST_METHOD(TestCfgIfWhileStatements) {
   list_of_adj_list.push_back(StmtNumIntList({13, 14}));  // stmt12 adj_list
   list_of_adj_list.push_back(StmtNumIntList({9}));      // stmt13 adj_list
   list_of_adj_list.push_back(StmtNumIntList({9}));      // stmt14 adj_list
-  list_of_adj_list.push_back(StmtNumIntList());          // stmt15 adj_list
 
-  CFG test_cfg = test_pkb.GetCFG("one");
+  CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (size_t i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
@@ -825,13 +824,12 @@ TEST_METHOD(TestCfgIfInIfStatements) {
   list_of_adj_list.push_back(StmtNumIntList({11})); //stmt10 adj_list
   list_of_adj_list.push_back(StmtNumIntList({13})); //stmt11 adj_list
   list_of_adj_list.push_back(StmtNumIntList({13})); //stmt12 adj_list
-  list_of_adj_list.push_back(StmtNumIntList()); //stmt13 adj_list
 
 
-  CFG test_cfg = test_pkb.GetCFG("one"); 
+  CFG* test_cfg = test_pkb.GetCFG("one"); 
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
@@ -880,12 +878,11 @@ TEST_METHOD(TestCfgIfInIfInIfStatements) {
   list_of_adj_list.push_back(StmtNumIntList({9, 10}));   // stmt8 adj_list
   list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt9 adj_list
   list_of_adj_list.push_back(StmtNumIntList({11}));      // stmt10 adj_list
-  list_of_adj_list.push_back(StmtNumIntList());      // stmt11 adj_list
 
-  CFG test_cfg = test_pkb.GetCFG("one");
+  CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = test_cfg.at(i);
+    StmtNumIntList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
