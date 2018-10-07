@@ -7,7 +7,8 @@ using TokenType = Tokenizer::TokenType;
 
 namespace PKBTests {
 TEST_CLASS(TestPKB) {
-  const ProcName kProcName = "abc";
+  const ProcName kProcName1 = "one";
+  const ProcName kProcName2 = "two";
   const StmtNumInt kStmtNumInt1 = 1;
   const StmtNumInt kStmtNumInt2 = 2;
   const StmtNumInt kStmtNumInt3 = 3;
@@ -51,9 +52,12 @@ TEST_CLASS(TestPKB) {
 
   TEST_METHOD(TestGetAllProcName) {
     PKB pkb;
-    pkb.InsertProcName(kProcName);
-    Assert::IsTrue(pkb.GetAllProcName().size() == 1);
-    Assert::AreEqual(kProcName, pkb.GetAllProcName().front());
+    pkb.InsertProcName(kProcName1);
+    pkb.InsertProcName(kProcName2);
+    ProcNameList proc_names = pkb.GetAllProcName();
+    Assert::IsTrue(proc_names.size() == 2);
+    Assert::AreEqual(proc_names[0], kProcName1);
+    Assert::AreEqual(proc_names[1], kProcName2);
   }
 
   TEST_METHOD(TestGetAllVarName) {
@@ -99,11 +103,13 @@ TEST_CLASS(TestPKB) {
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex5, kVarName1));
     pkb.InsertPrintStmt(
         &PrintStmtData(kStmtNumInt5, kStmtListIndex5, kVarName1));
+    pkb.InsertCallStmt(&CallStmtData(kStmtNumInt6, kStmtListIndex5, kProcName1, kProcName2));
     Assert::IsTrue(PqlDeclarationEntity::kAssign == pkb.GetStmtType(kStmtNum1));
     Assert::IsTrue(PqlDeclarationEntity::kWhile == pkb.GetStmtType(kStmtNum2));
     Assert::IsTrue(PqlDeclarationEntity::kIf == pkb.GetStmtType(kStmtNum3));
     Assert::IsTrue(PqlDeclarationEntity::kRead == pkb.GetStmtType(kStmtNum4));
     Assert::IsTrue(PqlDeclarationEntity::kPrint == pkb.GetStmtType(kStmtNum5));
+    Assert::IsTrue(PqlDeclarationEntity::kCall == pkb.GetStmtType(kStmtNum6));
   }
 
   TEST_METHOD(TestGetAllAssignStmt) {
