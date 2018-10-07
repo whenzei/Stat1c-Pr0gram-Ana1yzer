@@ -14,6 +14,7 @@ class StatementData;
 #include "const_list.h"
 #include "follows_table.h"
 #include "modifies_table.h"
+#include "next_table.h"
 #include "parent_table.h"
 #include "pattern_table.h"
 #include "pql_global.h"
@@ -26,8 +27,6 @@ class StatementData;
 #include "statement_data.h"
 
 using StmtNumInt = int;
-using CFG = unordered_map<int, vector<int>>;
-using CFGTable = unordered_map<string, CFG>;
 
 class PKB {
   ProcList proc_list_;
@@ -41,7 +40,7 @@ class PKB {
   PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
-  CFGTable cfg_table_;
+  NextTable next_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -115,9 +114,8 @@ class PKB {
   // child_stmt_num
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // Inserts a new cfg into the CFGTable, with key value as the proc_name
-  // @returns pointer to inserted cfg
-  CFG* InsertCFG(string proc_name);
+  // Inserts a next relationship between previous_stmt and next_stmt
+  void InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -297,7 +295,7 @@ class PKB {
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
   // @returns the cfg belonging to a specified procedure
-  CFG GetCFG(string proc_name);
+  CFG* GetCFG(ProcName proc_name);
 
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction

@@ -74,16 +74,16 @@ void Parser::ParseProgram() {
 
 void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
-  ProcName proc_name = ReadNextToken().value;
-  pkb_->InsertProcName(proc_name);
-  current_cfg_ = pkb_->InsertCFG(proc_name);
+  current_proc_name_ = ReadNextToken().value;
+  pkb_->InsertProcName(current_proc_name_);
+  current_cfg_ = pkb_->GetCFG(current_proc_name_);
   // eat the open brace
   ReadNextToken();
 
   ParseData parse_data = ProcessStatementList(given_stmt_list_index);
 
-  PopulatePkbModifies(proc_name, parse_data.GetModifiedVariables());
-  PopulatePkbUses(proc_name, parse_data.GetUsedVariables());
+  PopulatePkbModifies(current_proc_name_, parse_data.GetModifiedVariables());
+  PopulatePkbUses(current_proc_name_, parse_data.GetUsedVariables());
 
   //******* Debug CFG ************
   vector<int> keys;
@@ -126,21 +126,18 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     //******* Updates cfg****************
     if (prev_stmt_num != 0 && nested_last_stmts_1.size() == 0 &&
         nested_last_stmts_2.size() == 0) {
-      StmtNumIntList* curr_adj_list = &(current_cfg_->at(prev_stmt_num));
-      (*curr_adj_list).push_back(stmt_num);
+      pkb_->InsertNext(current_proc_name_, prev_stmt_num, stmt_num);
     }
 
     if (nested_last_stmts_1.size() != 0) {
       for (auto& nested_stmt : nested_last_stmts_1) {
-        StmtNumIntList* curr_adj_list = &(current_cfg_->at(nested_stmt));
-        (*curr_adj_list).push_back(stmt_num);
+        pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
       }
     }
 
     if (nested_last_stmts_2.size() != 0) {
       for (auto& nested_stmt : nested_last_stmts_2) {
-        StmtNumIntList* curr_adj_list = &(current_cfg_->at(nested_stmt));
-        (*curr_adj_list).push_back(stmt_num);
+        pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
       }
     }
 
@@ -176,9 +173,6 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
 
 ParseData Parser::ProcessStatement(int given_stmt_list_num) {
   int curr_stmt_num = ++stmt_num_;
-
-  StmtNumIntList adj_list = StmtNumIntList();
-  current_cfg_->emplace(curr_stmt_num, adj_list);
 
   VarNameSet used_vars;
   VarNameSet modified_vars;
@@ -344,9 +338,8 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   StmtNumIntList else_stmt_nums = else_stmt_info.GetStmtNumList();
 
   // Handles cfg
-  StmtNumIntList* curr_adj_list = &(current_cfg_->at(if_stmt_num));
-  (*curr_adj_list).push_back(then_stmt_nums.at(0));
-  (*curr_adj_list).push_back(else_stmt_nums.at(0));
+  pkb_->InsertNext(current_proc_name_, if_stmt_num, then_stmt_nums.at(0));
+  pkb_->InsertNext(current_proc_name_, if_stmt_num, else_stmt_nums.at(0));
 
   StmtNumIntList child_stmt_nums(then_stmt_nums);
   child_stmt_nums.insert(child_stmt_nums.end(), else_stmt_nums.begin(),
@@ -468,27 +461,22 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   PopulatePkbUses(while_stmt_num, used_vars);
   PopulatePkbModifies(while_stmt_num, modified_vars);
 
-  StmtNumIntList* curr_adj_list = &(current_cfg_->at(while_stmt_num));
-  (*curr_adj_list).push_back(children_stmt_nums.at(0));
+  pkb_->InsertNext(current_proc_name_, while_stmt_num,
+                   children_stmt_nums.at(0));
 
   // When the the last statement in the while block is if
   // Grab last statement of then and else block
   if (nested_last_stmts_1.size() > 0 && nested_last_stmts_2.size() > 0) {
     for (auto& stmt_num : nested_last_stmts_1) {
-      StmtNumIntList* last_child_stmt_adj_list_one =
-          &(current_cfg_->at(stmt_num));
-      (*last_child_stmt_adj_list_one).push_back(while_stmt_num);
+      pkb_->InsertNext(current_proc_name_, stmt_num, while_stmt_num);
     }
 
     for (auto& stmt_num : nested_last_stmts_2) {
-      StmtNumIntList* last_child_stmt_adj_list_two =
-          &(current_cfg_->at(stmt_num));
-      (*last_child_stmt_adj_list_two).push_back(while_stmt_num);
+      pkb_->InsertNext(current_proc_name_, stmt_num, while_stmt_num);
     }
   } else {
-    StmtNumIntList* last_child_stmt_adj_list =
-        &(current_cfg_->at(children_stmt_nums.back()));
-    (*last_child_stmt_adj_list).push_back(while_stmt_num);
+    pkb_->InsertNext(current_proc_name_, children_stmt_nums.back(),
+                     while_stmt_num);
   }
 
   // eat close brace
