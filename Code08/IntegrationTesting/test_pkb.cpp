@@ -176,15 +176,9 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetAllCallStmt) {
     PKB pkb;
     pkb.InsertCallStmt(
-<<<<<<< Code08/IntegrationTesting/test_pkb.cpp
         &CallStmtData(kStmtNumInt1, kStmtListIndex1, "one", "two"));
     pkb.InsertCallStmt(
         &CallStmtData(kStmtNumInt2, kStmtListIndex1, "one", "three"));
-=======
-      &CallStmtData(kStmtNumInt1, kStmtListIndex1, "one", "two"));
-    pkb.InsertCallStmt(
-      &CallStmtData(kStmtNumInt2, kStmtListIndex1, "one", "three"));
->>>>>>> Code08/IntegrationTesting/test_pkb.cpp
     StmtNumList result = pkb.GetAllCallStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
