@@ -49,7 +49,6 @@ TEST_CLASS(TestPKB) {
   const TokenList kTokenList3 = {kToken32};
 
  public:
-
   TEST_METHOD(TestGetAllProcName) {
     PKB pkb;
     pkb.InsertProcName(kProcName1);
@@ -103,7 +102,8 @@ TEST_CLASS(TestPKB) {
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt4, kStmtListIndex5, kVarName1));
     pkb.InsertPrintStmt(
         &PrintStmtData(kStmtNumInt5, kStmtListIndex5, kVarName1));
-    pkb.InsertCallStmt(&CallStmtData(kStmtNumInt6, kStmtListIndex5, kProcName1, kProcName2));
+    pkb.InsertCallStmt(
+        &CallStmtData(kStmtNumInt6, kStmtListIndex5, kProcName1, kProcName2));
     Assert::IsTrue(PqlDeclarationEntity::kAssign == pkb.GetStmtType(kStmtNum1));
     Assert::IsTrue(PqlDeclarationEntity::kWhile == pkb.GetStmtType(kStmtNum2));
     Assert::IsTrue(PqlDeclarationEntity::kIf == pkb.GetStmtType(kStmtNum3));
@@ -151,7 +151,6 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum2, result.back());
   }
 
-
   TEST_METHOD(TestGetAllReadStmt) {
     PKB pkb;
     pkb.InsertReadStmt(&ReadStmtData(kStmtNumInt1, kStmtListIndex1, kVarName1));
@@ -161,7 +160,6 @@ TEST_CLASS(TestPKB) {
     Assert::AreEqual(kStmtNum1, result.front());
     Assert::AreEqual(kStmtNum2, result.back());
   }
-
 
   TEST_METHOD(TestGetAllPrintStmt) {
     PKB pkb;
@@ -178,9 +176,9 @@ TEST_CLASS(TestPKB) {
   TEST_METHOD(TestGetAllCallStmt) {
     PKB pkb;
     pkb.InsertCallStmt(
-      &CallStmtData(kStmtNumInt1, kStmtListIndex1, "one", "two"));
+        &CallStmtData(kStmtNumInt1, kStmtListIndex1, "one", "two"));
     pkb.InsertCallStmt(
-      &CallStmtData(kStmtNumInt2, kStmtListIndex1, "one", "three"));
+        &CallStmtData(kStmtNumInt2, kStmtListIndex1, "one", "three"));
     StmtNumList result = pkb.GetAllCallStmt();
     Assert::IsTrue(result.size() == 2);
     Assert::AreEqual(kStmtNum1, result.front());
@@ -348,6 +346,16 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(result3.empty());
     StmtVarPairList result4 = pkb.GetAllAssignExactPatternPair(kTokenList);
     Assert::IsTrue(result4.empty());
+  }
+
+  TEST_METHOD(TestCallGraph) {
+    PKB pkb;
+    pkb.InsertEdgeInCallGraph(kProcName1, kProcName2);
+    Assert::IsTrue(pkb.GetCallGraph()->GetSize() == 2);
+
+    ProcNameList actual_sorted_calls = pkb.GetToposortedCalls();
+    ProcNameList expected_calls = ProcNameList{kProcName2, kProcName1};
+    Assert::IsTrue(actual_sorted_calls == expected_calls);
   }
 };
 }  // namespace PKBTests

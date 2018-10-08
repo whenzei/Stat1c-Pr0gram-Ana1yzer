@@ -27,6 +27,10 @@ void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name, ProcName called_proc_na
   call_graph_.AddEdge(curr_proc_name, called_proc_name);
 }
 
+ProcNameList PKB::GetToposortedCalls() {
+  return call_graph_.Toposort();
+}
+
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
     VarNameSet used_vars = stmt_data->GetUsedVariables();

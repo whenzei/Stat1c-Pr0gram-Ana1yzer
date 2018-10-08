@@ -754,7 +754,7 @@ TEST_METHOD(TestProcessCalls) {
   Assert::IsTrue(callees.size() == 4);
   Assert::IsTrue(callees == expected_callees);
 
-  StmtNumList proc_order = test_pkb.GetCallGraph()->Toposort();
+  StmtNumList proc_order = test_pkb.GetToposortedCalls();
   StmtNumList expected_order = StmtNumList{ "five", "three", "four", "two", "one" };
   Assert::IsTrue(proc_order == expected_order);
 }

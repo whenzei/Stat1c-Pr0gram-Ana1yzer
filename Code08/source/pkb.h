@@ -79,6 +79,9 @@ class PKB {
   void InsertEdgeInCallGraph(ProcName curr_proc_name,
                              ProcName called_proc_name);
 
+  // @returns toposorted order of procedure calls in a ProcNameList
+  ProcNameList GetToposortedCalls();
+
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
   // @param AssignStmtData the encapsulation of statement data for PKB use

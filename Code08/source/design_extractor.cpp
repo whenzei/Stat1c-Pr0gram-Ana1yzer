@@ -21,7 +21,7 @@ void DesignExtractor::UpdateParentT() {
 }
 
 void DesignExtractor::UpdateCallUsesAndModifies() {
-  vector<string> toposorted_calls = pkb_->GetCallGraph()->Toposort();
+  vector<string> toposorted_calls = pkb_->GetToposortedCalls();
   for (auto proc_name : toposorted_calls) {
     // get all used and modified vars by procedure name
     VarNameList used_vars = pkb_->GetUsedVarP(proc_name);
