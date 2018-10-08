@@ -48,6 +48,9 @@ class StmtTypeList {
 
   // Get the list of all print statements
   StmtNumList GetAllPrintStmt();
+
+  // Get the list of all call statements
+  StmtNumList GetAllCallStmt();
 };
 
 #endif !SPA_STMT_TYPE_LIST_H

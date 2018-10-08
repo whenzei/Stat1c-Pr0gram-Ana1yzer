@@ -10,6 +10,7 @@ StmtTypeList::StmtTypeList() {
   stmt_type_map_.emplace(PqlDeclarationEntity::kIf, StmtNumList());
   stmt_type_map_.emplace(PqlDeclarationEntity::kRead, StmtNumList());
   stmt_type_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kCall, StmtNumList());
 }
 
 void StmtTypeList::InsertStmt(StmtNum stmt_num, PqlDeclarationEntity type) {
@@ -39,4 +40,8 @@ StmtNumList StmtTypeList::GetAllReadStmt() {
 
 StmtNumList StmtTypeList::GetAllPrintStmt() {
   return stmt_type_map_.at(PqlDeclarationEntity::kPrint);
+}
+
+StmtNumList StmtTypeList::GetAllCallStmt() {
+  return stmt_type_map_.at(PqlDeclarationEntity::kCall);
 }
