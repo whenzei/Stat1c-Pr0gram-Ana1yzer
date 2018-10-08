@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\design_extractor.cpp" />
     <ClCompile Include="..\source\expression_helper.cpp" />
     <ClCompile Include="..\source\follows_table.cpp" />
+    <ClCompile Include="..\source\graph.cpp" />
     <ClCompile Include="..\source\modifies_table.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\parse_data.cpp" />
@@ -46,6 +47,7 @@
     <ClInclude Include="..\source\design_extractor.h" />
     <ClInclude Include="..\source\expression_helper.h" />
     <ClInclude Include="..\source\follows_table.h" />
+    <ClInclude Include="..\source\graph.h" />
     <ClInclude Include="..\source\modifies_table.h" />
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\parse_data.h" />

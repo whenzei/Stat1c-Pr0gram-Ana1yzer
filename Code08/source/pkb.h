@@ -15,9 +15,10 @@ class StatementData;
 #include "call_table.h"
 #include "const_list.h"
 #include "follows_table.h"
+#include "graph.h"
 #include "modifies_table.h"
-#include "pattern_table.h"
 #include "parent_table.h"
+#include "pattern_table.h"
 #include "pql_global.h"
 #include "proc_list.h"
 #include "stmt_table.h"
@@ -25,9 +26,13 @@ class StatementData;
 #include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
+// statement_data.h must be at the end due to forward declaration
 #include "statement_data.h"
 
 using StmtNumInt = int;
+using CallGraph = Graph;
+using CFG = unordered_map<int, vector<int>>;
+using CFGTable = unordered_map<string, CFG>;
 
 class PKB {
   ProcList proc_list_;
@@ -41,6 +46,8 @@ class PKB {
   PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
+  CallGraph call_graph_;
+  CFGTable cfg_table_;
   CallTable call_table_;
 
  public:
@@ -60,9 +67,20 @@ class PKB {
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
 
-  // return a PqlDeclarationEntity enum to represent the statement type
+  // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @returns pointer to the call graph of the program
+  CallGraph* GetCallGraph();
+
+  // inserts an edge from the node referring to given curr_proc_name to the node
+  // referring to given called_proc_name in the call graph
+  void InsertEdgeInCallGraph(ProcName curr_proc_name,
+                             ProcName called_proc_name);
+
+  // @returns toposorted order of procedure calls in a ProcNameList
+  ProcNameList GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -71,7 +89,8 @@ class PKB {
 
   // inserts the given while statement into the StmtTable, StmtTypeList and
   // StmtListTable
-  // @param stmt_data the statement data as encapsulated by WhileStmtData structure
+  // @param stmt_data the statement data as encapsulated by WhileStmtData
+  // structure
   void InsertWhileStmt(WhileStmtData*);
 
   // inserts the given if statement into the StmtTable, StmtTypeList and
@@ -120,6 +139,10 @@ class PKB {
   // child_stmt_num
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
+  // Inserts a new cfg into the CFGTable, with key value as the proc_name
+  // @returns pointer to inserted cfg
+  CFG* InsertCFG(string proc_name);
+
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
@@ -150,8 +173,8 @@ class PKB {
   StmtNumList GetAllCallStmt();
 
   /***********************
-  * Follows Table Functions *
-  ***********************/
+   * Follows Table Functions *
+   ***********************/
 
   // @returns true if Follows*(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
@@ -187,8 +210,8 @@ class PKB {
   StmtNumPairList GetAllFollowsPair();
 
   /***********************
-  * Parent Table Functions *
-  ***********************/
+   * Parent Table Functions *
+   ***********************/
 
   // @returns true if Parent(parent_stmt_num, child_stmt_num) holds
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
@@ -225,8 +248,8 @@ class PKB {
   StmtNumPairList GetAllParentTPair();
 
   /***********************
-  * Modifies Table Functions *
-  ***********************/
+   * Modifies Table Functions *
+   ***********************/
 
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
@@ -263,8 +286,8 @@ class PKB {
   ProcVarPairList GetAllModifiesPairP();
 
   /***********************
-  * Uses Table Functions *
-  ***********************/
+   * Uses Table Functions *
+   ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
@@ -305,23 +328,27 @@ class PKB {
 
   // @returns a list of a's that satisfy pattern a(var_name, exact_expr)
   // var_name can be an empty string (to represent underscore)
-  StmtNumList GetAssignWithExactPattern(VarName var_name,
-                                        TokenList exact_expr);
+  StmtNumList GetAssignWithExactPattern(VarName var_name, TokenList exact_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, _sub_expr_)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // _sub_expr_)
   StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
 
-  // @returns a list of all pairs of <a, v> that satisfy pattern a(v, exact_expr)
+  // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
+  // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
+  // @returns the cfg belonging to a specified procedure
+  CFG GetCFG(string proc_name);
   /***********************
-  * Call Table Functions *
-  ***********************/
+   * Call Table Functions *
+   ***********************/
 
   // Inserts an indirect caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcName caller_proc,
+                                      ProcName callee_proc);
 
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
@@ -350,7 +377,7 @@ class PKB {
 
   // Finds and returns all callees for given procedure.
   // @returns a list containing all callees for given proc (can be empty)
-  // @params caller procedure name 
+  // @params caller procedure name
   ProcNameList GetCalleeT(ProcName caller_proc);
 
   // Finds and returns the direct caller for given procedure.
@@ -360,7 +387,7 @@ class PKB {
 
   // Finds and returns all callers for given procedure.
   // @returns a list containing all callers for given proc (can be empty)
-  // @params callee procedure name 
+  // @params callee procedure name
   ProcNameList GetCallerT(ProcName callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)

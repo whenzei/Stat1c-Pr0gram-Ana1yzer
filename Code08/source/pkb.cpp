@@ -21,6 +21,16 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
+CallGraph* PKB::GetCallGraph() { return &call_graph_; }
+
+void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name, ProcName called_proc_name) {
+  call_graph_.AddEdge(curr_proc_name, called_proc_name);
+}
+
+ProcNameList PKB::GetToposortedCalls() {
+  return call_graph_.Toposort();
+}
+
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
     VarNameSet used_vars = stmt_data->GetUsedVariables();
@@ -106,6 +116,11 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
+CFG* PKB::InsertCFG(string proc_name) {
+  cfg_table_.emplace(proc_name, CFG());
+  return &cfg_table_.at(proc_name);
+}
+
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
 
 StmtNumList PKB::GetAllAssignStmt() {
@@ -148,7 +163,9 @@ StmtNumList PKB::GetFollowedBy(StmtNum stmt_num) {
   return follows_table_.GetFollowedBy(stmt_num);
 }
 
-StmtNumList PKB::GetAllFollowedBy() { return follows_table_.GetAllFollowedBy(); }
+StmtNumList PKB::GetAllFollowedBy() {
+  return follows_table_.GetAllFollowedBy();
+}
 
 bool PKB::HasFollowsRelationship() {
   return follows_table_.HasFollowsRelationship();
@@ -267,6 +284,8 @@ ProcNameList PKB::GetUsingProc(VarName var_name) {
   return uses_table_.GetUsingProc(var_name);
 }
 
+CFG PKB::GetCFG(string proc_name) { return cfg_table_.at(proc_name); }
+
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, var_name);
 }
@@ -367,7 +386,7 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
 void PKB::NotifyParseEnd() {
-  DesignExtractor de =  DesignExtractor(this);
+  DesignExtractor de = DesignExtractor(this);
   de.UpdatePkb();
 }
 

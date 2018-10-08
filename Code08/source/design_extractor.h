@@ -10,6 +10,7 @@ class DesignExtractor {
   PKB* pkb_;
 
   void UpdateParentT();
+  void UpdateCallUsesAndModifies();
 
   //******** Helper Methods **************
 

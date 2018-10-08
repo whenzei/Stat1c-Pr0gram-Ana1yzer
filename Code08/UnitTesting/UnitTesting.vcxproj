@@ -167,6 +167,7 @@
     <ClCompile Include="test_call_table.cpp" />
     <ClCompile Include="test_expression_helper.cpp" />
     <ClCompile Include="test_follows.cpp" />
+    <ClCompile Include="test_graph.cpp" />
     <ClCompile Include="test_query_parser.cpp" />
     <ClCompile Include="test_query_validator.cpp" />
     <ClCompile Include="test_tokenizer.cpp" />
