@@ -124,18 +124,18 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     VarNameSet modified_vars_to_insert = stmt_info.GetModifiedVariables();
 
     //******* Updates cfg****************
-    if (prev_stmt_num != 0 && nested_last_stmts_1.size() == 0 &&
-        nested_last_stmts_2.size() == 0) {
+    if (prev_stmt_num != 0 && nested_last_stmts_1.empty() &&
+        nested_last_stmts_2.empty()) {
       pkb_->InsertNext(current_proc_name_, prev_stmt_num, stmt_num);
     }
 
-    if (nested_last_stmts_1.size() != 0) {
+    if (!nested_last_stmts_1.empty()) {
       for (auto& nested_stmt : nested_last_stmts_1) {
         pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
       }
     }
 
-    if (nested_last_stmts_2.size() != 0) {
+    if (!nested_last_stmts_2.empty()) {
       for (auto& nested_stmt : nested_last_stmts_2) {
         pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
       }
@@ -144,11 +144,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     nested_last_stmts_1 = stmt_info.GetNestedLastStmtsOne();
     nested_last_stmts_2 = stmt_info.GetNestedLastStmtsTwo();
 
-    if (nested_last_stmts_1.size() == 0 && nested_last_stmts_2.size() == 0) {
-      is_last_statement_if = false;
-    } else {
-      is_last_statement_if = true;
-    }
+    is_last_statement_if =
+        !nested_last_stmts_1.empty() || !nested_last_stmts_2.empty();
 
     prev_stmt_num = stmt_num;
     //************************************
