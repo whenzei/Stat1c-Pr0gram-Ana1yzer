@@ -85,21 +85,23 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
   PopulatePkbModifies(current_proc_name_, parse_data.GetModifiedVariables());
   PopulatePkbUses(current_proc_name_, parse_data.GetUsedVariables());
 
-  //******* Debug CFG ************
-  vector<int> keys;
-  for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
-    keys.push_back(it->first);
-  }
-  std::sort(keys.begin(), keys.end());
-
-  for (auto& key : keys) {
-    StmtNumIntList adj_list = current_cfg_->at(key);
-    string str;
-    for (auto& node : adj_list) {
-      str.append(std::to_string(node));
-      str.append(" ");
+  if (DEBUG_FLAG) {
+    //******* Debug CFG ************
+    vector<int> keys;
+    for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
+      keys.push_back(it->first);
     }
-    cout << std::to_string(key) << " --> " << str << "\n";
+    std::sort(keys.begin(), keys.end());
+
+    for (auto& key : keys) {
+      StmtNumIntList adj_list = current_cfg_->at(key);
+      string str;
+      for (auto& node : adj_list) {
+        str.append(std::to_string(node));
+        str.append(" ");
+      }
+      cout << std::to_string(key) << " --> " << str << "\n";
+    }
   }
   //*******************************
 
@@ -162,7 +164,8 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   PopulatePkbFollows(stmt_nums);
   if (!is_last_statement_if) {
     nested_last_stmts_1.push_back(prev_stmt_num);
-    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1, nested_last_stmts_2);
+    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
+                     nested_last_stmts_2);
   } else {
     return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
                      nested_last_stmts_2);
