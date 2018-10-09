@@ -771,12 +771,12 @@ TEST_METHOD(TestCfgIfWhileStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (size_t i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = (*test_cfg).at(i);
+    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
-      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+      Assert::AreEqual(test_adj_list.at(j), std::to_string(true_adj_list.at(j)));
     }
   }
 }
@@ -829,12 +829,12 @@ TEST_METHOD(TestCfgIfInIfStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one"); 
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = (*test_cfg).at(i);
+    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
-      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+      Assert::AreEqual(test_adj_list.at(j), std::to_string(true_adj_list.at(j)));
     }
   }
  }
@@ -882,12 +882,12 @@ TEST_METHOD(TestCfgIfInIfInIfStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumIntList test_adj_list = (*test_cfg).at(i);
+    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
-      Assert::AreEqual(test_adj_list.at(j), true_adj_list.at(j));
+      Assert::AreEqual(test_adj_list.at(j), std::to_string(true_adj_list.at(j)));
     }
   }
 }

@@ -87,20 +87,20 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
 
   if (DEBUG_FLAG) {
     //******* Debug CFG ************
-    vector<int> keys;
+    vector<string> keys;
     for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
       keys.push_back(it->first);
     }
     std::sort(keys.begin(), keys.end());
 
     for (auto& key : keys) {
-      StmtNumIntList adj_list = current_cfg_->at(key);
+      StmtNumList adj_list = current_cfg_->at(key);
       string str;
       for (auto& node : adj_list) {
-        str.append(std::to_string(node));
+        str.append(node);
         str.append(" ");
       }
-      cout << std::to_string(key) << " --> " << str << "\n";
+      cout << key << " --> " << str << "\n";
     }
   }
   //*******************************
