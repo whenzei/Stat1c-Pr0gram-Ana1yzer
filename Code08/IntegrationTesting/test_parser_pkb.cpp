@@ -10,7 +10,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using tt = Tokenizer::TokenType;
 
-namespace PKBPQLTests {
+namespace ParserPKBTests {
 TEST_CLASS(TestParserPkb){
 
 public :
@@ -718,6 +718,45 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //*******************************
+}
+
+TEST_METHOD(TestProcessCalls) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+    "procedure one {\n"
+    "call two;}\n"      // 1
+    "procedure two {\n"
+    "call three;"       // 2
+    "call four;}\n"     // 3
+    "procedure three {\n"
+    "call five;}\n"     // 4
+    "procedure four {\n"
+    "call three;}\n"    // 5
+    "procedure five {\n"         
+    "thing = what;}";    // 6
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  PKB true_pkb = PKB();
+  StmtNumList expected_stmts = StmtNumList{ "1", "2", "3", "4", "5" };
+  StmtNumList call_stmts = test_pkb.GetAllCallStmt();
+  Assert::IsTrue(call_stmts.size() == 5);
+  Assert::IsTrue(call_stmts == expected_stmts);
+  ProcNameList callers = test_pkb.GetAllCaller();
+  ProcNameList expected_callers = ProcNameList{ "one", "two", "three", "four" };
+  Assert::IsTrue(callers.size() == 4);
+  Assert::IsTrue(callers == expected_callers);
+
+  ProcNameList callees = test_pkb.GetAllCallee();
+  ProcNameList expected_callees = ProcNameList{ "two", "three", "four", "five" };
+  Assert::IsTrue(callees.size() == 4);
+  Assert::IsTrue(callees == expected_callees);
+
+  StmtNumList proc_order = test_pkb.GetToposortedCalls();
+  StmtNumList expected_order = StmtNumList{ "five", "three", "four", "two", "one" };
+  Assert::IsTrue(proc_order == expected_order);
 }
 }
 ;

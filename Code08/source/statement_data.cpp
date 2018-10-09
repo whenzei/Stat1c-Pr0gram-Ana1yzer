@@ -68,3 +68,21 @@ IfStmtData::IfStmtData(int stmt_num, int stmt_list_index,
 VarNameSet IfStmtData::GetUsedVariables() { return control_vars_; }
 
 ConstValueSet IfStmtData::GetUsedConstants() { return used_consts_; }
+
+CallStmtData::CallStmtData(int stmt_num, int stmt_list_index,
+                           ProcName caller_proc_name,
+                           ProcName callee_proc_name) {
+  stmt_num_ = std::to_string(stmt_num);
+  stmt_num_int_ = stmt_num;
+  stmt_list_index_ = stmt_list_index;
+  caller_proc_name_ = caller_proc_name;
+  callee_proc_name_ = callee_proc_name;
+}
+
+ProcName CallStmtData::GetCallerProcName() {
+  return caller_proc_name_;
+}
+
+ProcName CallStmtData::GetCalleeProcName() {
+  return callee_proc_name_;
+}

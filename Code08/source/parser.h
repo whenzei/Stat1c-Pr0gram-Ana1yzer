@@ -19,9 +19,11 @@ class Parser {
   PKB* pkb_;
   TokenList tokens_;
   Token current_token_;
+  CFG* current_cfg_;
   int current_index_;
   int stmt_num_;
   int stmt_list_num_;
+  ProcName curr_proc_name_;
 
   bool IsAtEnd();
   Token ReadNextToken();
@@ -62,11 +64,14 @@ class Parser {
   // Modified variable names
   ParseData ProcessWhileBlock(int given_stmt_list_index);
 
-  // @returns the modified variable name
-  VarName ProcessRead(int given_stmt_list_index);
+  // @returns parse data with the modified variable name
+  ParseData ProcessRead(int given_stmt_list_index);
 
-  // @returns the used variable name
-  VarName ProcessPrint(int given_stmt_list_index);
+  // @returns parse data with the used variable name
+  ParseData ProcessPrint(int given_stmt_list_index);
+
+  // @returns empty parse data, since DE will populate uses and modifies later
+  ParseData ProcessCall(int given_stmt_list_index);
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
