@@ -50,6 +50,9 @@
     <ClCompile Include="test_modifies_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_next_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="test_proc_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
