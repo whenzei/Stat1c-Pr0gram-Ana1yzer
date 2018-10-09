@@ -338,6 +338,20 @@ class PKB {
   // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
+  // @returns a list of w's that satisfy pattern w(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetWhileWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <w, v> that satisfy pattern w(v, _)
+  StmtVarPairList GetAllWhilePatternPair();
+
+  // @returns a list of ifs' that satisfy pattern ifs(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetIfWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <ifs, v> that satisfy pattern ifs(v, _)
+  StmtVarPairList GetAllIfPatternPair();
+
   // @returns the cfg belonging to a specified procedure
   CFG GetCFG(string proc_name);
   /***********************

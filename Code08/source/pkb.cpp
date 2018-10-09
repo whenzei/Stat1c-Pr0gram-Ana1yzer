@@ -50,6 +50,7 @@ void PKB::InsertWhileStmt(WhileStmtData* stmt_data) {
 
     HandleInsertVariables(used_vars);
     HandleInsertConstants(used_consts);
+    HandleInsertPattern(StmtType::kWhile, stmt_data);
   }
 }
 
@@ -60,6 +61,7 @@ void PKB::InsertIfStmt(IfStmtData* stmt_data) {
 
     HandleInsertVariables(used_vars);
     HandleInsertConstants(used_consts);
+    HandleInsertPattern(StmtType::kIf, stmt_data);
   }
 }
 
@@ -325,6 +327,26 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
 }
 
+StmtNumList PKB::GetWhileWithPattern(VarName var_name) {
+  if (var_name.compare("") == 0) {
+    return GetAllWhileStmt();
+  } else {
+    return pattern_table_.GetWhileWithPattern(var_name);
+  }
+}
+
+StmtVarPairList PKB::GetAllWhilePatternPair() { return pattern_table_.GetAllWhilePatternPair(); }
+
+StmtNumList PKB::GetIfWithPattern(VarName var_name) {
+  if (var_name.compare("") == 0) {
+    return GetAllIfStmt();
+  } else {
+    return pattern_table_.GetIfWithPattern(var_name);
+  }
+}
+
+StmtVarPairList PKB::GetAllIfPatternPair() { return pattern_table_.GetAllIfPatternPair(); }
+
 bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
                                          ProcName callee_proc) {
   return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
@@ -444,12 +466,20 @@ void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
     }
     case StmtType::kWhile: {
       WhileStmtData* while_stmt_data = (WhileStmtData*)stmt_data;
-      // TODO: insert while pattern
+      StmtNum stmt_num = while_stmt_data->GetStmtNum();
+      VarNameSet control_variables = while_stmt_data->GetUsedVariables();
+      for (auto& control_variable : control_variables) {
+        pattern_table_.InsertWhilePattern(stmt_num, control_variable);
+	  }
       break;
     }
     case StmtType::kIf: {
       IfStmtData* if_stmt_data = (IfStmtData*)stmt_data;
-      // TODO: insert if pattern
+      StmtNum stmt_num = if_stmt_data->GetStmtNum();
+      VarNameSet control_variables = if_stmt_data->GetUsedVariables();
+      for (auto& control_variable : control_variables) {
+        pattern_table_.InsertWhilePattern(stmt_num, control_variable);
+      }
       break;
     }
   }

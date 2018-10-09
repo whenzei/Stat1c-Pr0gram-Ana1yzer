@@ -16,19 +16,19 @@ using StmtNumList = vector<string>;
 using VarName = string;
 using Expr = string;
 using StmtVarPairList = vector<pair<string, string>>;
-using AssignVarStmtMap = unordered_map<string, vector<string>>;
-using AssignStmtVarMap = unordered_map<string, string>;
-using AssignExactExprMap = unordered_map<string, vector<string>>;
-using AssignSubExprMap = unordered_map<string, vector<string>>;
+using VarStmtMap = unordered_map<string, vector<string>>;
+using StmtVarMap = unordered_map<string, string>;
+using ExprStmtMap = unordered_map<string, vector<string>>;
 
 // The pattern table class for the PKB component
 // Used to store assign statement patterns
-// TODO: add while and if patterns
 class PatternTable {
-  AssignVarStmtMap assign_var_stmt_map_;
-  AssignStmtVarMap assign_stmt_var_map_;
-  AssignExactExprMap assign_exact_expr_map_;
-  AssignSubExprMap assign_sub_expr_map_;
+  VarStmtMap assign_var_stmt_map_;
+  StmtVarMap assign_stmt_var_map_;
+  ExprStmtMap assign_exact_expr_map_;
+  ExprStmtMap assign_sub_expr_map_;
+  VarStmtMap while_var_stmt_map_;
+  VarStmtMap if_var_stmt_map_;
   
  public:
   // add the stmt_num and var_name to assign_var_stmt_map_ and
@@ -37,6 +37,12 @@ class PatternTable {
   // add the exact epression to assign_exact_expr_map_
   void InsertAssignPattern(StmtNum stmt_num, VarName var_name,
                            TokenList token_list);
+
+  // add the stmt_num and var_name to while_var_stmt_map_ 
+  void InsertWhilePattern(StmtNum stmt_num, VarName var_name);
+
+  // add the stmt_num and var_name to if_var_stmt_map_
+  void InsertIfPattern(StmtNum stmt_num, VarName var_name);
 
   // @returns a list of assign statements with var_name as the left hand side
   // variable
@@ -66,6 +72,22 @@ class PatternTable {
   // @returns a list of all pairs of assign statements and their corresponding
   // lfs var_name that have the given expression on the right hand side
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr_tokenlist);
+
+  // @returns a list of while statements that have var_name as a control
+  // variable
+  StmtNumList GetWhileWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of while statements and their control
+  // variables
+  StmtVarPairList GetAllWhilePatternPair();
+
+  // @returns a list of if statements that have var_name as a control
+  // variable
+  StmtNumList GetIfWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of if statements and their control
+  // variables
+  StmtVarPairList GetAllIfPatternPair();
 
 private:
   Expr ToString(TokenList token_list);

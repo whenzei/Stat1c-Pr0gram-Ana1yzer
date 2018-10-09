@@ -43,8 +43,16 @@ void PatternTable::InsertAssignPattern(StmtNum stmt_num, VarName var_name,
   }
 }
 
+void PatternTable::InsertWhilePattern(StmtNum stmt_num, VarName var_name) {
+  while_var_stmt_map_[var_name].push_back(stmt_num);
+}
+
+void PatternTable::InsertIfPattern(StmtNum stmt_num, VarName var_name) {
+  if_var_stmt_map_[var_name].push_back(stmt_num);
+}
+
 StmtNumList PatternTable::GetAssignWithLfsVar(VarName var_name) {
-  AssignVarStmtMap::iterator iter = assign_var_stmt_map_.find(var_name);
+  VarStmtMap::iterator iter = assign_var_stmt_map_.find(var_name);
   if (iter != assign_var_stmt_map_.end()) {
     return (*iter).second;
   } else {
@@ -54,7 +62,7 @@ StmtNumList PatternTable::GetAssignWithLfsVar(VarName var_name) {
 
 StmtNumList PatternTable::GetAssignWithSubExpr(TokenList sub_expr_tokenlist) {
   Expr sub_expr = ToString(sub_expr_tokenlist);
-  AssignSubExprMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
+  ExprStmtMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
   if (iter != assign_sub_expr_map_.end()) {
     return (*iter).second;
   } else {
@@ -64,7 +72,7 @@ StmtNumList PatternTable::GetAssignWithSubExpr(TokenList sub_expr_tokenlist) {
 
 StmtNumList PatternTable::GetAssignWithExactExpr(TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
-  AssignExactExprMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
+  ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   if (iter != assign_exact_expr_map_.end()) {
     return (*iter).second;
   } else {
@@ -75,7 +83,7 @@ StmtNumList PatternTable::GetAssignWithExactExpr(TokenList exact_expr_tokenlist)
 StmtNumList PatternTable::GetAssignWithPattern(VarName var_name,
                                                TokenList sub_expr_tokenlist) {
   Expr sub_expr = ToString(sub_expr_tokenlist);
-  AssignSubExprMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
+  ExprStmtMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
   StmtNumList result;
   if (iter != assign_sub_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
@@ -91,7 +99,7 @@ StmtNumList PatternTable::GetAssignWithPattern(VarName var_name,
 StmtNumList PatternTable::GetAssignWithExactPattern(VarName var_name,
                                                     TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
-  AssignExactExprMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
+  ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   StmtNumList result;
   if (iter != assign_exact_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
@@ -106,7 +114,7 @@ StmtNumList PatternTable::GetAssignWithExactPattern(VarName var_name,
 
 StmtVarPairList PatternTable::GetAllAssignPatternPair(TokenList sub_expr_tokenlist) {
   Expr sub_expr = ToString(sub_expr_tokenlist);
-  AssignSubExprMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
+  ExprStmtMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
   StmtVarPairList result;
   if (iter != assign_sub_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
@@ -119,12 +127,50 @@ StmtVarPairList PatternTable::GetAllAssignPatternPair(TokenList sub_expr_tokenli
 
 StmtVarPairList PatternTable::GetAllAssignExactPatternPair(TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
-  AssignExactExprMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
+  ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   StmtVarPairList result;
   if (iter != assign_exact_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
     for (StmtNum& stmt_num : intermediate_result) {
       result.push_back(make_pair(stmt_num, assign_stmt_var_map_[stmt_num]));
+    }
+  }
+  return result;
+}
+
+StmtNumList PatternTable::GetWhileWithPattern(VarName var_name) {
+  VarStmtMap::iterator iter = while_var_stmt_map_.find(var_name);
+  if (iter != while_var_stmt_map_.end()) {
+    return (*iter).second;
+  } else {
+    return StmtNumList();
+  }
+}
+
+StmtVarPairList PatternTable::GetAllWhilePatternPair() {
+  StmtVarPairList result;
+  for (auto entry : while_var_stmt_map_) {
+    for (StmtNum& stmt_num : entry.second) {
+      result.push_back(make_pair(stmt_num, entry.first));
+	}
+  }
+  return result;
+}
+
+StmtNumList PatternTable::GetIfWithPattern(VarName var_name) {
+  VarStmtMap::iterator iter = if_var_stmt_map_.find(var_name);
+  if (iter != if_var_stmt_map_.end()) {
+    return (*iter).second;
+  } else {
+    return StmtNumList();
+  }
+}
+
+StmtVarPairList PatternTable::GetAllIfPatternPair() {
+  StmtVarPairList result;
+  for (auto entry : if_var_stmt_map_) {
+    for (StmtNum& stmt_num : entry.second) {
+      result.push_back(make_pair(stmt_num, entry.first));
     }
   }
   return result;
