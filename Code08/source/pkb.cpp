@@ -301,6 +301,32 @@ StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
 }
 
+bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
+  return next_table_.IsNext(previous_stmt, next_stmt);
+}
+
+bool PKB::IsNext(StmtNum stmt_num) { return next_table_.IsNext(stmt_num); }
+
+bool PKB::IsPrevious(StmtNum stmt_num) {
+  return next_table_.IsPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetNext(StmtNum stmt_num) {
+  return next_table_.GetNext(stmt_num);
+}
+
+StmtNumList PKB::GetPrevious(StmtNum stmt_num) {
+  return next_table_.GetPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetAllNext() { return next_table_.GetAllNext(); }
+
+StmtNumList PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
+
+StmtNumPairList PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
+
+bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
+
 CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
 void PKB::NotifyParseEnd() {

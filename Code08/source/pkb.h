@@ -294,6 +294,33 @@ class PKB {
   // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
 
+  // @returns true if Next(previous_stmt, next_stmt) holds
+  bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
+
+  // @returns true if Next(_, stmt_num) holds
+  bool IsNext(StmtNum stmt_num);
+
+  // @returns true if Next(stmt_num, _) holds
+  bool IsPrevious(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(stmt_num, n)
+  StmtNumList GetNext(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(n, stmt_num)
+  StmtNumList GetPrevious(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(_, n)
+  StmtNumList GetAllNext();
+
+  // @returns a list of all n's that satisfy Next(n, _)
+  StmtNumList GetAllPrevious();
+
+  // @returns a list of all pairs of <n1, n2> that satisfy Next(n1, n2)
+  StmtNumPairList GetAllNextPairs();
+
+  // @returns true if Next(_, _) holds
+  bool HasNextRelationship();
+
   // @returns the cfg belonging to a specified procedure
   CFG* GetCFG(ProcName proc_name);
 
