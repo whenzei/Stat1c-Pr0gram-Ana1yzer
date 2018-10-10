@@ -7,6 +7,7 @@ using std::make_pair;
 
 void PKB::InsertProcName(ProcName proc_name) {
   proc_list_.InsertProcName(proc_name);
+  next_table_.InsertCFG(proc_name);
 }
 
 ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
@@ -118,9 +119,8 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
-CFG* PKB::InsertCFG(string proc_name) {
-  cfg_table_.emplace(proc_name, CFG());
-  return &cfg_table_.at(proc_name);
+void PKB::InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt) {
+  next_table_.InsertNext(proc_name, previous_stmt, next_stmt);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -286,8 +286,6 @@ ProcNameList PKB::GetUsingProc(VarName var_name) {
   return uses_table_.GetUsingProc(var_name);
 }
 
-CFG PKB::GetCFG(string proc_name) { return cfg_table_.at(proc_name); }
-
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, var_name);
 }
@@ -406,6 +404,34 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
 }
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
+
+bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
+  return next_table_.IsNext(previous_stmt, next_stmt);
+}
+
+bool PKB::IsNext(StmtNum stmt_num) { return next_table_.IsNext(stmt_num); }
+
+bool PKB::IsPrevious(StmtNum stmt_num) {
+  return next_table_.IsPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetNext(StmtNum stmt_num) {
+  return next_table_.GetNext(stmt_num);
+}
+
+StmtNumList PKB::GetPrevious(StmtNum stmt_num) {
+  return next_table_.GetPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetAllNext() { return next_table_.GetAllNext(); }
+
+StmtNumList PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
+
+StmtNumPairList PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
+
+bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
+
+CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
