@@ -93,6 +93,18 @@ class PqlEvaluator {
   void EvaluateAssignPattern(PqlPattern pattern);
 
   /**
+   * Evaluate while pattern and store result in PqlResult table
+   * @param pattern clause in the Query
+   */
+  void EvaluateWhilePattern(PqlPattern pattern);
+
+  /**
+   * Evaluate if pattern and store result in PqlResult table
+   * @param pattern clause in the Query
+   */
+  void EvaluateIfPattern(PqlPattern pattern);
+
+  /**
    * Evaluate follows clause and store result in PqlResult table
    * @param follows clause in the Query and arrangement of clause arguments
    */

@@ -118,8 +118,10 @@ void PqlEvaluator::GetPatternResult(PqlPattern pattern) {
       EvaluateAssignPattern(pattern);
       break;
     case PqlPatternType::kWhile:
+      EvaluateWhilePattern(pattern);
       break;
     case PqlPatternType::kIf:
+      EvaluateIfPattern(pattern);
       break;
   }
 }
@@ -197,7 +199,7 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
       // Get all call stmt from PKB and store into results
       // list TODO call
       cout << "Select all call statement." << endl;
-      break;
+      return pkb.GetAllCallStmt();
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into results
       // list
@@ -222,6 +224,97 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
 
   // Return empty result if nothing is found
   return results;
+}
+
+void PqlEvaluator::EvaluateWhilePattern(PqlPattern pattern) {
+  PKB pkb = GetPKB();
+  // Getting parameter of pattern
+  string pattern_var_name = pattern.GetType().first;
+  pair<string, PqlDeclarationEntity> first_parameter =
+      pattern.GetFirstParameter();
+  string left_name = first_parameter.first;
+  PqlDeclarationEntity left_type = first_parameter.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating While Pattern." << endl;
+
+  switch (left_type) {
+    case PqlDeclarationEntity::kUnderscore:
+      result_list = pkb.GetWhileWithPattern("");
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern " << endl;
+      } else {
+        StoreClauseResultInTable(result_list, pattern_var_name);
+        cout << " Size: " << result_list.size() << endl;
+      }
+      return;
+    case PqlDeclarationEntity::kIdent:
+      result_list = pkb.GetWhileWithPattern(left_name);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern for variable" << left_name << endl;
+      } else {
+        StoreClauseResultInTable(result_list, pattern_var_name);
+        cout << " Size: " << result_list.size() << endl;
+      }
+      return;
+    case PqlDeclarationEntity::kVariable:
+      result_pair_list = pkb.GetAllWhilePatternPair();
+      if (result_pair_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern for synonym " << left_name << endl;
+      } else {
+        StoreClauseResultInTable(result_pair_list, pattern_var_name, left_name);
+        cout << " Size: " << result_pair_list.size() << endl;
+      }
+      return;
+  }
+}
+
+void PqlEvaluator::EvaluateIfPattern(PqlPattern pattern) {
+  PKB pkb = GetPKB();
+  // Getting parameter of pattern
+  string pattern_var_name = pattern.GetType().first;
+  pair<string, PqlDeclarationEntity> first_parameter =
+      pattern.GetFirstParameter();
+  string left_name = first_parameter.first;
+  PqlDeclarationEntity left_type = first_parameter.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating If Pattern." << endl;
+
+  switch (left_type) {
+    case PqlDeclarationEntity::kUnderscore:
+      result_list = pkb.GetIfWithPattern("");
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern " << endl;
+      } else {
+        StoreClauseResultInTable(result_list, pattern_var_name);
+      }
+      return;
+    case PqlDeclarationEntity::kIdent:
+      result_list = pkb.GetIfWithPattern(left_name);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern for variable" << left_name << endl;
+      } else {
+        StoreClauseResultInTable(result_list, pattern_var_name);
+      }
+      return;
+    case PqlDeclarationEntity::kVariable:
+      result_pair_list = pkb.GetAllIfPatternPair();
+      if (result_pair_list.empty()) {
+        SetClauseFlag(false);
+        cout << " No such pattern for synonym " << left_name << endl;
+      } else {
+        StoreClauseResultInTable(result_pair_list, pattern_var_name, left_name);
+      }
+      return;
+  }
 }
 
 void PqlEvaluator::EvaluateAssignPattern(PqlPattern pattern) {

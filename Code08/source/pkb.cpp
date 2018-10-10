@@ -478,7 +478,7 @@ void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
       StmtNum stmt_num = if_stmt_data->GetStmtNum();
       VarNameSet control_variables = if_stmt_data->GetUsedVariables();
       for (auto& control_variable : control_variables) {
-        pattern_table_.InsertWhilePattern(stmt_num, control_variable);
+        pattern_table_.InsertIfPattern(stmt_num, control_variable);
       }
       break;
     }
