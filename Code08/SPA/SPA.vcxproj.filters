@@ -31,6 +31,12 @@
     <Filter Include="Header Files\PQL">
       <UniqueIdentifier>{d9d7088e-933f-4ef1-8223-92c7035650ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\General">
+      <UniqueIdentifier>{702ae767-9417-4201-afff-832df6e52d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\General">
+      <UniqueIdentifier>{33ed759a-af97-4fe2-b449-211d2897be54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\parser.cpp">
@@ -119,6 +125,12 @@
     </ClCompile>
     <ClCompile Include="..\source\pql_with.cpp">
       <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\graph.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\call_table.cpp">
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +226,12 @@
     </ClInclude>
     <ClInclude Include="..\source\pql_global.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\graph.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\call_table.h">
+      <Filter>Header Files\PKB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

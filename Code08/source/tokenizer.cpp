@@ -216,7 +216,7 @@ Result Tokenizer::TokenizeQuotation(string input, int current_index) {
 // Uses Tokenizer::TokenizeCharacter(...) with '.' as the supplied value to
 // tokenize period, and returns the result as a Result struct
 Result Tokenizer::TokenizePeriod(string input, int current_index) {
-  return TokenizeCharacter(kPeriod, '\.', input, current_index);
+  return TokenizeCharacter(kPeriod, '.', input, current_index);
 }
 
 // Uses Tokenizer::TokenizeCharacter(...) with '#' as the supplied value to

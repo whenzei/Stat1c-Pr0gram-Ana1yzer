@@ -9,10 +9,13 @@ class WhileStmtData;
 class ReadStmtData;
 class PrintStmtData;
 class IfStmtData;
+class CallStmtData;
 class StatementData;
 
+#include "call_table.h"
 #include "const_list.h"
 #include "follows_table.h"
+#include "graph.h"
 #include "modifies_table.h"
 #include "next_table.h"
 #include "parent_table.h"
@@ -24,9 +27,11 @@ class StatementData;
 #include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
+// statement_data.h must be at the end due to forward declaration
 #include "statement_data.h"
 
 using StmtNumInt = int;
+using CallGraph = Graph;
 
 class PKB {
   ProcList proc_list_;
@@ -41,6 +46,8 @@ class PKB {
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
   NextTable next_table_;
+  CallGraph call_graph_;
+  CallTable call_table_;
 
  public:
   // inserts the given procedure name into the procedure list
@@ -59,9 +66,20 @@ class PKB {
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
 
-  // return a PqlDeclarationEntity enum to represent the statement type
+  // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @returns pointer to the call graph of the program
+  CallGraph* GetCallGraph();
+
+  // inserts an edge from the node referring to given curr_proc_name to the node
+  // referring to given called_proc_name in the call graph
+  void InsertEdgeInCallGraph(ProcName curr_proc_name,
+                             ProcName called_proc_name);
+
+  // @returns toposorted order of procedure calls in a ProcNameList
+  ProcNameList GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -90,6 +108,12 @@ class PKB {
   // @param stmt_data the statement data as encapsulated by PrintStmtData
   // structure
   void InsertPrintStmt(PrintStmtData* stmt_data);
+
+  // Inserts the given call statement into the StmtTable, StmtTypeList and
+  // StmtListTable
+  // @param stmt_data the stmt data as encapsulated by the CallStmtData
+  // structure
+  void InsertCallStmt(CallStmtData* stmt_data);
 
   // Inserts a follows relationship between followee and follower
   void InsertFollows(StmtNum followee, StmtNum follower);
@@ -142,7 +166,13 @@ class PKB {
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
 
-  // Follows table public functions
+  // get stmt numbers for all call stmts inside the stmt type list
+  // @returns the list of stmt numbers
+  StmtNumList GetAllCallStmt();
+
+  /***********************
+   * Follows Table Functions *
+   ***********************/
 
   // @returns true if Follows*(followee, follower) holds
   bool IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
@@ -176,6 +206,10 @@ class PKB {
 
   // @returns list of all pairs of <s1, s2> that satisfy Follows(s1, s2)
   StmtNumPairList GetAllFollowsPair();
+
+  /***********************
+   * Parent Table Functions *
+   ***********************/
 
   // @returns true if Parent(parent_stmt_num, child_stmt_num) holds
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
@@ -211,6 +245,10 @@ class PKB {
   // @returns list of all pairs of <s1, s2> that satisfy Parent*(s1, s2)
   StmtNumPairList GetAllParentTPair();
 
+  /***********************
+   * Modifies Table Functions *
+   ***********************/
+
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
@@ -244,6 +282,10 @@ class PKB {
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
   ProcVarPairList GetAllModifiesPairP();
+
+  /***********************
+   * Uses Table Functions *
+   ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
   VarNameList GetUsedVarS(StmtNum stmt_num);
@@ -293,6 +335,92 @@ class PKB {
   // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
   // exact_expr)
   StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
+
+  // @returns a list of w's that satisfy pattern w(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetWhileWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <w, v> that satisfy pattern w(v, _)
+  StmtVarPairList GetAllWhilePatternPair();
+
+  // @returns a list of ifs' that satisfy pattern ifs(var_name, _)
+  // var_name can be an empty string to represent underscore
+  StmtNumList GetIfWithPattern(VarName var_name);
+
+  // @returns a list of all pairs of <ifs, v> that satisfy pattern ifs(v, _)
+  StmtVarPairList GetAllIfPatternPair();
+
+  /***********************
+   * Call Table Functions *
+   ***********************/
+
+  // Inserts an indirect caller, callee pair relationship into the Call Table.
+  // @returns true if insertion is successful, false otherwise
+  // @params caller procedure name and callee procedure name
+  bool InsertIndirectCallRelationship(ProcName caller_proc,
+                                      ProcName callee_proc);
+
+  // Inserts a direct caller, callee pair relationship into the Call Table.
+  // @returns true if insertion is successful, false otherwise
+  // @params caller procedure name and callee procedure name
+  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+
+  // Inserts a calls relationship to the call table.
+  // @params stmt num of statement
+  // @params proc name of the procedure *being called*
+  void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
+
+  // Finds and returns a list of stmt numbers calling the given proc.
+  // @params proc name of the procedure being called
+  // @returns a list of stmt numbers (can be empty)
+  StmtNumList GetCallingStmts(ProcName callee_proc);
+
+  // Finds and returns a list of pairs of all stmt numbers
+  // and procedures called by that stmt number.
+  // @returns a list of <stmt_num, proc> pairs
+  StmtNumProcPairList GetAllCallingStmtPairs();
+
+  // Finds and returns the direct callee for given procedure.
+  // @returns a list containing one direct callee (can be empty)
+  // @params caller procedure name
+  ProcNameList GetCallee(ProcName caller_proc);
+
+  // Finds and returns all callees for given procedure.
+  // @returns a list containing all callees for given proc (can be empty)
+  // @params caller procedure name
+  ProcNameList GetCalleeT(ProcName caller_proc);
+
+  // Finds and returns the direct caller for given procedure.
+  // @returns a list containing one direct caller (can be empty)
+  // @params callee procedure name
+  ProcNameList GetCaller(ProcName callee_proc);
+
+  // Finds and returns all callers for given procedure.
+  // @returns a list containing all callers for given proc (can be empty)
+  // @params callee procedure name
+  ProcNameList GetCallerT(ProcName callee_proc);
+
+  // @returns all procedures calling some other proc (can be empty)
+  ProcNameList GetAllCaller();
+
+  // @returns all procedures being called by some other proc (can be empty)
+  ProcNameList GetAllCallee();
+
+  // @returns a list of all <caller, direct callee> pairs
+  ProcNamePairList GetAllCallPairs();
+
+  // @returns a list of all <caller, callee> pairs
+  ProcNamePairList GetAllCallTPairs();
+
+  // @returns true if Call(caller, callee) is true
+  bool IsCall(ProcName caller_proc, ProcName callee_proc);
+
+  // @returns true if Call*(caller, callee) is true
+  bool IsCallT(ProcName caller_proc, ProcName callee_proc);
+
+  // @returns true if Call Table has any calls relationships
+  // false if otherwise
+  bool HasCallsRelationship();
 
   // @returns true if Next(previous_stmt, next_stmt) holds
   bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
