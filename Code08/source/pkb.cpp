@@ -139,6 +139,14 @@ StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
 StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
 
+bool PKB::IsVarName(VarName var_name) { return var_list_.IsVarName(var_name); }
+
+bool PKB::IsStmtNum(StmtNum stmt_num) { return stmt_table_.IsStmtNum(stmt_num); }
+
+bool PKB::IsProcName(ProcName proc_name) { return proc_list_.IsProcName(proc_name); }
+
+bool PKB::IsConstValue(ConstValue const_value) { return const_list_.IsConstValue(const_value); }
+
 bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
 }

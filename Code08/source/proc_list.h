@@ -29,6 +29,9 @@ class ProcList {
 
   // @returns the list of all procedure names (can be empty)
   ProcNameList GetAllProcName();
+
+  // @return true if proc_name exists in the proc list
+  bool IsProcName(ProcName proc_name);
 };
 
 #endif  // !SPA_PROC_LIST_H

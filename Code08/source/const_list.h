@@ -28,6 +28,10 @@ class ConstList {
   // Convert const_value from int to string (because output needs to be in the
   // format vector<string>) and insert into the ConstList
   void InsertConstValue(ConstValue const_value);
+
+  // Checks and returns whether the given value is a value in the const table.
+  // @return true if const_value is in the const list
+  bool IsConstValue(ConstValue const_value);
 };
 
 #endif !SPA_CONST_LIST_H

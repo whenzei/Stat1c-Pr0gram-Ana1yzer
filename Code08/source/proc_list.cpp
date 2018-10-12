@@ -9,3 +9,7 @@ void ProcList::InsertProcName(ProcName proc_name) {
 }
 
 ProcNameList ProcList::GetAllProcName() { return proc_name_list_; }
+
+bool ProcList::IsProcName(ProcName proc_name) {
+  return proc_name_set_.find(proc_name) != proc_name_set_.end();
+}

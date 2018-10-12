@@ -19,5 +19,14 @@ TEST_CLASS(TestVarList) {
     Assert::AreEqual(kSampleVar1, result_list.front());
     Assert::AreEqual(kSampleVar2, result_list.back());
   }
+
+  TEST_METHOD(TestIsVarName) {
+    VarList var_list;
+    var_list.InsertVarName(kSampleVar1);
+    bool result = var_list.IsVarName(kSampleVar1);
+    Assert::IsTrue(result);
+    result = var_list.IsVarName(kSampleVar2);
+    Assert::IsFalse(result);
+  }
 };
 }

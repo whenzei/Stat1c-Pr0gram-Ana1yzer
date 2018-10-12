@@ -30,5 +30,14 @@ TEST_CLASS(TestConstList) {
     Assert::AreEqual(kConstString2, *iter);
     Assert::AreEqual(kConstString3, const_list_result.back());
   }
+
+  TEST_METHOD(TestIsConstValue) {
+    ConstList const_list;
+    const_list.InsertConstValue(kConstValue1);
+    bool result = const_list.IsConstValue(kConstValue1);
+    Assert::IsTrue(result);
+    result = const_list.IsConstValue(kConstValue2);
+    Assert::IsFalse(result);
+  }
 };
 }  // namespace UnitTesting

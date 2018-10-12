@@ -27,5 +27,14 @@ TEST_CLASS(TestProcList) {
     Assert::AreEqual(kProcName2, *iter);
     Assert::AreEqual(kProcName3, proc_list_result.back());
   }
+
+  TEST_METHOD(TestIsProcName) {
+    ProcList proc_list;
+    proc_list.InsertProcName(kProcName1);
+    bool result = proc_list.IsProcName(kProcName1);
+    Assert::IsTrue(result);
+    result = proc_list.IsProcName(kProcName2);
+    Assert::IsFalse(result);
+  }
 };
 }  // namespace UnitTesting

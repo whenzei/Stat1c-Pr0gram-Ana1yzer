@@ -29,6 +29,9 @@ class VarList {
 
   // Inserts var_name into VarList
   void InsertVarName(VarName var_name);
+
+  // @return true if var_name is in the var list
+  bool IsVarName(VarName var_name);
 };
 
 #endif !SPA_VAR_LIST_H

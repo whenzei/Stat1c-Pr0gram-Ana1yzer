@@ -27,3 +27,7 @@ StmtType StmtTable::GetStmtType(StmtNum stmt_num) {
     return StmtType();
   }
 }
+
+bool StmtTable::IsStmtNum(StmtNum stmt_num) {
+  return stmt_map_.find(stmt_num) != stmt_map_.end();
+}

@@ -171,6 +171,21 @@ class PKB {
   StmtNumList GetAllCallStmt();
 
   /***********************
+ * Is-A Functions *
+ ***********************/
+  // @returns true if var_name is a variable in the variable list
+  bool IsVarName(VarName var_name);
+
+  // @returns true if stmt_num is a statement in the statement list
+  bool IsStmtNum(StmtNum stmt_num);
+
+  // @returns true if proc_name is a procedure in the procedure list
+  bool IsProcName(ProcName proc_name);
+
+  // @returns true if const_value is a constant in the constant list
+  bool IsConstValue(ConstValue const_value);
+
+  /***********************
    * Follows Table Functions *
    ***********************/
 
