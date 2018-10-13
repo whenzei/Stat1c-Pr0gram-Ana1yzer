@@ -5,6 +5,7 @@
 void VarList::InsertVarName(VarName var_name) {
   if (var_name_set_.insert(var_name).second) {
     var_name_list_.push_back(var_name);
+    var_name_twin_list_.push_back(make_pair(var_name, var_name));
   }
 }
 
@@ -14,4 +15,8 @@ VarNameList VarList::GetAllVarName() {
 
 bool VarList::IsVarName(VarName var_name) {
   return var_name_set_.find(var_name) != var_name_set_.end(); 
+}
+
+VarNamePairList VarList::GetAllVarNameTwin() {
+  return var_name_twin_list_;
 }
