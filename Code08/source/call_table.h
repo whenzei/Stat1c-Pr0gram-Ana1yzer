@@ -32,11 +32,10 @@ class CallTable {
   
   CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
 
-  ProcNameList direct_caller_list_; // stores proc directly calling any other proc
   ProcNameList caller_list_;  // stores procs calling any other proc
   ProcNameSet caller_set_; // stores procs calling any other proc
-  ProcNameList direct_callee_list_; // stores proc directly being called by any other proc
   ProcNameList callee_list_; // stores procs called by any other proc
+  ProcNamePairList callee_twin_list_; // stores procs called by any other proc (in pairs)
   ProcNameSet callee_set_; // stores procs called by any other proc
 
 public:
@@ -89,17 +88,14 @@ public:
   // @params callee procedure name 
   ProcNameList GetCallerT(ProcName callee_proc);
 
-  // @returns all procedures directly calling some other proc (can be empty)
+  // @returns all procedures calling some other proc (can be empty)
   ProcNameList GetAllCaller();
 
-  // @returns all procedures calling some other proc (can be empty)
-  ProcNameList GetAllCallerT();
-
-  // @returns all procedures being diretly called by some other proc (can be empty)
+  // @returns all procedures being called by some other proc (can be empty)
   ProcNameList GetAllCallee();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcNameList GetAllCalleeT();
+  ProcNamePairList GetAllCalleeTwin();
 
   // @returns a list of all <caller, direct callee> pairs
   ProcNamePairList GetAllCallPairs();
