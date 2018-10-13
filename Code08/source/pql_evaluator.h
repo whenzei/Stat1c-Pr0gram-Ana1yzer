@@ -236,20 +236,6 @@ class PqlEvaluator {
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
 
   /**
-   * Get all the result from left of a pair and return it as a list
-   * @param the vector<string> of pairs
-   * @returns vector<string> of result in the left of the pair
-   */
-  QueryResultList GetAllLeftOfPair(QueryResultPairList filtered_list);
-
-  /**
-   * Get all the result from right of a pair and return it as a list
-   * @param the vector<string> of pairs
-   * @returns vector<string> of result in the right of the pair
-   */
-  QueryResultList GetAllRightOfPair(QueryResultPairList filtered_list);
-
-  /**
    * Stores the list of results into the PqlResult table
    * @param the vector<string> of results and synonym-variable name
    */

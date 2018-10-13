@@ -326,31 +326,19 @@ void PqlEvaluator::EvaluateWithTwoSynonym(Synonym left_param,
     result_left = GetSelectAllResult(left_type);
     result_right = GetSelectAllResult(right_type);
 
-    int left_size = result_left.size();
-    int right_size = result_right.size();
-
     // Check size to ensure fastest filter
-    if (left_size < right_size) {
+    if (result_left.size() < result_right.size()) {
       filtered_result = FilterWithResult(result_left, right_type);
-
-      if (filtered_result.empty()) {
-        SetClauseFlag(false);
-      } else {
-        // Store both synonym in result table
-        StoreClauseResultInTable(filtered_result, left_name);
-        StoreClauseResultInTable(filtered_result, right_name);
-      }
-
     } else {
       filtered_result = FilterWithResult(result_right, left_type);
+    }
 
-      if (filtered_result.empty()) {
-        SetClauseFlag(false);
-      } else {
-        // Store both synonym in result table
-        StoreClauseResultInTable(filtered_result, left_name);
-        StoreClauseResultInTable(filtered_result, right_name);
-      }
+    if (filtered_result.empty()) {
+      SetClauseFlag(false);
+    } else {
+      // Store both synonym in result table
+      StoreClauseResultInTable(filtered_result, left_name);
+      StoreClauseResultInTable(filtered_result, right_name);
     }
   }
 }
@@ -431,8 +419,7 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kCallName:
       cout << "Is call procname?" << endl;
-      // TODODODODOOD
-      if (pkb.IsCallStmt(comparison_val)) {
+      if (pkb.IsCalledProc(comparison_val)) {
         result_list.push_back(comparison_val);
         StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -1495,8 +1482,7 @@ QueryResultList PqlEvaluator::FilterWithResult(
     case PqlDeclarationEntity::kCallName:
       cout << "Filter CallName" << endl;
       for (auto& iter : unfiltered_result) {
-        // TODOOOOODODODODOO
-        if (pkb.IsAssignStmt(iter)) {
+        if (pkb.IsCalledProc(iter)) {
           filtered_result.push_back(iter);
         }
       }
@@ -1635,24 +1621,6 @@ QueryResultPairList PqlEvaluator::FilterPairResult(
   }
 
   return filtered_result;
-}
-
-QueryResultList PqlEvaluator::GetAllLeftOfPair(
-    QueryResultPairList filtered_list) {
-  QueryResultList results;
-  for (auto& iter : filtered_list) {
-    results.push_back(iter.first);
-  }
-  return results;
-}
-
-QueryResultList PqlEvaluator::GetAllRightOfPair(
-    QueryResultPairList filtered_list) {
-  QueryResultList results;
-  for (auto& iter : filtered_list) {
-    results.push_back(iter.second);
-  }
-  return results;
 }
 
 WithParamType PqlEvaluator::CheckWithParamType(Parameters with_param) {
