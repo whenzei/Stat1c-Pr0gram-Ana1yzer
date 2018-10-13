@@ -51,8 +51,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           GetPatternResult(*(PqlPattern*)clause_iter);
           continue;
         case PqlClauseType::kWith:
-          //(PqlWith*)clause_iter;
-          // TODO with
+          GetWithResult(*(PqlWith*)clause_iter);
           continue;
       }
       // If the clause is false already, no need to continue evaluating
@@ -123,6 +122,35 @@ void PqlEvaluator::GetPatternResult(PqlPattern pattern) {
     case PqlPatternType::kIf:
       EvaluateIfPattern(pattern);
       break;
+  }
+}
+
+void PqlEvaluator::GetWithResult(PqlWith with) {
+  WithParamType arrangement = CheckWithParamType(with.GetParameters());
+  PKB pkb = GetPKB();
+  Parameters with_param = with.GetParameters();
+  Synonym left_param = with_param.first;
+  Synonym right_param = with_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  switch (arrangement) {
+    case kWithNoSynonym:
+      // If not equal
+      if (left_name.compare(right_name) != 0) {
+        SetClauseFlag(false);
+      }
+      return;
+    case kWithOneSynonymLeft:
+      return;
+    case kWithOneSynonymRight:
+      return;
+    case kWithTwoSynonym:
+      return;
   }
 }
 
@@ -1293,6 +1321,39 @@ QueryResultList PqlEvaluator::GetAllRightOfPair(
     results.push_back(iter.second);
   }
   return results;
+}
+
+WithParamType PqlEvaluator::CheckWithParamType(Parameters with_param) {
+  pair<string, PqlDeclarationEntity> left_param = with_param.first;
+  pair<string, PqlDeclarationEntity> right_param = with_param.second;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+
+  // Syn = ?
+  if (left_type != PqlDeclarationEntity::kInteger &&
+      left_type != PqlDeclarationEntity::kIdent) {
+    // Syn = Syn
+    if (right_type != PqlDeclarationEntity::kInteger &&
+        right_type != PqlDeclarationEntity::kIdent) {
+      return kWithTwoSynonym;
+    }
+    // Syn = int/ident
+    else {
+      return kWithOneSynonymLeft;
+    }
+  }
+  // int/ident = ?
+  else {
+    // int/ident = Syn
+    if (right_type != PqlDeclarationEntity::kInteger &&
+        right_type != PqlDeclarationEntity::kIdent) {
+      return kWithOneSynonymRight;
+    }
+    // int/ident = int/ident
+    else {
+      return kWithNoSynonym;
+    }
+  }
 }
 
 SuchthatParamType PqlEvaluator::CheckSuchthatParamType(

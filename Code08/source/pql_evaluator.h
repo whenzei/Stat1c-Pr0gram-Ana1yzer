@@ -87,6 +87,14 @@ class PqlEvaluator {
   void GetPatternResult(PqlPattern pattern);
 
   /**
+   * The main method for all with-type queries
+   * Method will determine which type of with clause is to be evaluated, it
+   * will also determine the arrangement of clause arguments
+   * @param with clause in the Query
+   */
+  void GetWithResult(PqlWith with);
+
+  /**
    * Evaluate assign pattern and store result in PqlResult table
    * @param pattern clause in the Query
    */
@@ -159,6 +167,14 @@ class PqlEvaluator {
    * @returns arangement of arguments in the form of SuchthatParamType enum
    */
   SuchthatParamType CheckSuchthatParamType(Parameters such_that_param);
+
+  /**
+   * Determine the number of synonym in the with param (e.g with
+   * a.stmt# = b.stmt# => 2 synonyms)
+   * @param parameter/arguments of the with clause
+   * @returns arangement of arguments in the form of WithParamType enum
+   */
+  WithParamType CheckWithParamType(Parameters with_param);
 
   /**
    * Filter the pkb list based on the declaration entity type

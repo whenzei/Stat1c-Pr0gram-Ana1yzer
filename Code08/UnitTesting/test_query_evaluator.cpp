@@ -26,6 +26,41 @@ TEST_CLASS(TestQueryEvaluator) {
   PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
   PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
 
+  TEST_METHOD(TestCheckWithParamTypeTwoSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "b",
+                                  PqlDeclarationEntity::kRead);
+    WithParamType result;
+    WithParamType expected_result = kWithTwoSynonym;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(TestCheckWithParamTypeNoSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("1", PqlDeclarationEntity::kInteger, "2",
+                                  PqlDeclarationEntity::kInteger);
+    WithParamType result;
+    WithParamType expected_result = kWithNoSynonym;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(TestCheckWithParamTypeOneSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "2",
+                                  PqlDeclarationEntity::kInteger);
+    WithParamType result;
+    WithParamType expected_result = kWithOneSynonymLeft;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
   TEST_METHOD(TestCheckSuchthatParamTypeUnderscoreBoth) {
     PqlEvaluator qe;
     PqlSuchthat such_that_clause = PqlSuchthat(
