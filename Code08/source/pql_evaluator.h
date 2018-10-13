@@ -72,6 +72,14 @@ class PqlEvaluator {
   QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
 
   /**
+   * Return a list of all the result in pairs of a certain type
+   * @param declaration entity type
+   * @returns a vector<pair<string>> if there is result,
+   * or an empty list otherwise
+   */
+  QueryResultPairList GetSelectAllTwinResult(PqlDeclarationEntity select_type);
+
+  /**
    * The main method for all suchthat-type queries
    * Method will determine which type of such that clause is to be evaluated, it
    * will also determine the arrangement of clause arguments
@@ -93,6 +101,18 @@ class PqlEvaluator {
    * @param with clause in the Query
    */
   void GetWithResult(PqlWith with);
+
+  /**
+   * Evaluate with clause (1 synonym) and store result in PqlResult table
+   * @param the synonym in with clause and the value for comparison
+   */
+  void EvaluateWithOneSynonym(Synonym with_syn, string comparison_val);
+
+  /**
+   * Evaluate with clause (2 synonym) and store result in PqlResult table
+   * @param the synonyms in with clause
+   */
+  void EvaluateWithTwoSynonym(Synonym left_param, Synonym right_param);
 
   /**
    * Evaluate assign pattern and store result in PqlResult table
@@ -175,6 +195,15 @@ class PqlEvaluator {
    * @returns arangement of arguments in the form of WithParamType enum
    */
   WithParamType CheckWithParamType(Parameters with_param);
+
+  /**
+   * Filter the result list based on the declaration entity type
+   * @param unfiltered list and declaration entity type (e.g assign)
+   * @returns vector<string> list that only contains result of a certain entity
+   * type
+   */
+  QueryResultList FilterWithResult(QueryResultList unfiltered_result,
+                                   PqlDeclarationEntity entity_type);
 
   /**
    * Filter the pkb list based on the declaration entity type
