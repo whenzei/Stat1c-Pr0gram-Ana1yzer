@@ -177,6 +177,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         if (declarations.find(tokens[current_index].value) != declarations.end()) {
           // check for attribute
           PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
+          string selection = tokens[current_index].value;
           if (tokens[current_index + 1].type == Tokenizer::TokenType::kPeriod) {
             if (type == PqlDeclarationEntity::kProgline) {
               error_message_ = "Progline can not have attribute name in selection clause.";
@@ -186,7 +187,13 @@ bool PqlParser::ParseSelect(TokenList tokens) {
             if (!ParseAttribute(tokens, &current_index, &type)) return false;
             current_index--; // step back because ParseAttribute step forward internally
           }
-          query_->AddSelection(tokens[current_index].value, type);
+          // append extra 'p' for call.procName
+          if (type == PqlDeclarationEntity::kCallName) {
+            do {
+              selection += "p";
+            } while (declarations.find(selection) != declarations.end());
+          }
+          query_->AddSelection(selection, type);
         }
         else {
           error_message_ = "Select synonym is not declared.";
