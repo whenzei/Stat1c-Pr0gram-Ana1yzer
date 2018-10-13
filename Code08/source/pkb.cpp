@@ -12,10 +12,20 @@ void PKB::InsertProcName(ProcName proc_name) {
 
 ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
 
+ProcNamePairList PKB::GetAllProcNameTwin() {
+  return proc_list_.GetAllProcNameTwin();
+}
+
 VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+
+VarNamePairList PKB::GetAllVarNameTwin() { return var_list_.GetAllVarNameTwin(); }
 
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
+}
+
+ConstValuePairList PKB::GetAllConstValueTwin() {
+  return const_list_.GetAllConstValueTwin();
 }
 
 StmtType PKB::GetStmtType(StmtNum stmt_num) {
@@ -125,19 +135,45 @@ void PKB::InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt ne
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
 
+StmtNumPairList PKB::GetAllStmtTwin() { return stmt_type_list_.GetAllStmtTwin(); }
+
 StmtNumList PKB::GetAllAssignStmt() {
   return stmt_type_list_.GetAllAssignStmt();
 }
 
+StmtNumPairList PKB::GetAllAssignStmtTwin() {
+  return stmt_type_list_.GetAllAssignStmtTwin();
+}
+
 StmtNumList PKB::GetAllWhileStmt() { return stmt_type_list_.GetAllWhileStmt(); }
+
+StmtNumPairList PKB::GetAllWhileStmtTwin() {
+  return stmt_type_list_.GetAllWhileStmtTwin();
+}
 
 StmtNumList PKB::GetAllIfStmt() { return stmt_type_list_.GetAllIfStmt(); }
 
+StmtNumPairList PKB::GetAllIfStmtTwin() {
+  return stmt_type_list_.GetAllIfStmtTwin();
+}
+
 StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
+
+StmtNumPairList PKB::GetAllReadStmtTwin() {
+  return stmt_type_list_.GetAllReadStmtTwin();
+}
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
+StmtNumPairList PKB::GetAllPrintStmtTwin() {
+  return stmt_type_list_.GetAllPrintStmtTwin();
+}
+
 StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
+
+StmtNumPairList PKB::GetAllCallStmtTwin() {
+  return stmt_type_list_.GetAllCallStmtTwin();
+}
 
 bool PKB::IsVarName(VarName var_name) { return var_list_.IsVarName(var_name); }
 
@@ -145,7 +181,33 @@ bool PKB::IsStmtNum(StmtNum stmt_num) { return stmt_table_.IsStmtNum(stmt_num); 
 
 bool PKB::IsProcName(ProcName proc_name) { return proc_list_.IsProcName(proc_name); }
 
-bool PKB::IsConstValue(ConstValue const_value) { return const_list_.IsConstValue(const_value); }
+bool PKB::IsConstValue(ConstValue const_value) {
+  return const_list_.IsConstValue(const_value);
+}
+
+bool PKB::IsAssignStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kAssign;
+}
+
+bool PKB::IsWhileStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kWhile;
+}
+
+bool PKB::IsIfStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kIf;
+}
+
+bool PKB::IsReadStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kRead;
+}
+
+bool PKB::IsPrintStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kPrint;
+}
+
+bool PKB::IsCallStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kCall;
+}
 
 bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
@@ -394,6 +456,8 @@ ProcNameList PKB::GetCallerT(ProcName callee_proc) {
 ProcNameList PKB::GetAllCaller() { return call_table_.GetAllCaller(); }
 
 ProcNameList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
+
+ProcNamePairList PKB::GetAllCalleeTwin() { return call_table_.GetAllCalleeTwin(); }
 
 ProcNamePairList PKB::GetAllCallPairs() {
   return call_table_.GetAllCallPairs();
