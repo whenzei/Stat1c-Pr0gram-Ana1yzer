@@ -24,11 +24,26 @@ TEST_CLASS(TestConstList) {
 	// duplicate
     const_list.InsertConstValue(kConstValue1);
     ConstValueList const_list_result = const_list.GetAllConstValue();
+    Assert::IsTrue(const_list_result.size() == 3);
     Assert::AreEqual(kConstString1, const_list_result.front());
     ConstValueList::iterator iter = const_list_result.begin();
     iter++;
     Assert::AreEqual(kConstString2, *iter);
     Assert::AreEqual(kConstString3, const_list_result.back());
+  }
+
+  TEST_METHOD(TestGetAllConstValueTwin) {
+    ConstList const_list;
+    const_list.InsertConstValue(kConstValue1);
+    const_list.InsertConstValue(kConstValue2);
+    // duplicate
+    const_list.InsertConstValue(kConstValue1);
+    ConstValuePairList const_list_result = const_list.GetAllConstValueTwin();
+    Assert::IsTrue(const_list_result.size() == 2);
+    Assert::AreEqual(kConstString1, const_list_result.front().first);
+    Assert::AreEqual(kConstString1, const_list_result.front().second);
+    Assert::AreEqual(kConstString2, const_list_result.back().first);
+    Assert::AreEqual(kConstString2, const_list_result.back().second);
   }
 };
 }  // namespace UnitTesting
