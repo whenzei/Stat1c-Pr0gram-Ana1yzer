@@ -135,6 +135,10 @@
     return false; 
   }
 
+  bool CallTable::IsCalledProc(ProcName callee_proc) {
+    return callee_set_.find(callee_proc) != callee_set_.end();
+  }
+
   bool CallTable::HasCallsRelationship() {
     return !direct_call_table_.empty();
   }
