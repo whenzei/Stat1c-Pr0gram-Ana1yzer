@@ -11,7 +11,7 @@ class DesignExtractor {
 
   void UpdateParentT();
   void UpdateCallUsesAndModifies();
-
+  void UpdateCallT();
   //******** Helper Methods **************
 
   // Search for child of current stmt_num recursively
@@ -19,6 +19,12 @@ class DesignExtractor {
   //
   // Used in UpdateParentT()
   void DescentForChild(StmtNum true_parent, StmtNum curr_stmt);
+
+  // Search for callee of current proc recursively
+  // and updates PKB calls* relation
+  //
+  // Used in UpdateCallT()
+  void DescentForCallee(ProcName true_caller, ProcName curr_callee);
 
   //**************************************
  public:
