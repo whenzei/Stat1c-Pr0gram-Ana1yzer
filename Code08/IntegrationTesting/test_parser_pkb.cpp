@@ -13,67 +13,67 @@ using tt = Tokenizer::TokenType;
 namespace ParserPKBTests {
 TEST_CLASS(TestParserPkb){
 
-public :
+  public :
 
-// Include both Follows and Follows* tests
-TEST_METHOD(TestFollowsOfStatementsOnly){
+      // Include both Follows and Follows* tests
+      TEST_METHOD(TestFollowsOfStatementsOnly){
 
-  PKB test_pkb = PKB();
-  Parser parser = Parser(&test_pkb);
-  string program = "procedure one {\n a = b;\n c = d;\n e = f;\n }";
-  TokenList tokenized_program = Tokenizer::Tokenize(program);
+          PKB test_pkb = PKB();
+Parser parser = Parser(&test_pkb);
+string program = "procedure one {\n a = b;\n c = d;\n e = f;\n }";
+TokenList tokenized_program = Tokenizer::Tokenize(program);
 
-  parser.Parse(tokenized_program);
+parser.Parse(tokenized_program);
 
-  PKB true_pkb = PKB();
-  true_pkb.InsertFollows("1", "2");
-  true_pkb.InsertFollows("1", "3");
-  true_pkb.InsertFollows("2", "3");
+PKB true_pkb = PKB();
+true_pkb.InsertFollows("1", "2");
+true_pkb.InsertFollows("1", "3");
+true_pkb.InsertFollows("2", "3");
 
-  //*********************************
+//*********************************
 
-  StmtNumList stmt_nums_test_get_all_followed_by = test_pkb.GetAllFollowedBy();
-  StmtNumList stmt_nums_true_get_all_followed_by = true_pkb.GetAllFollowedBy();
+StmtNumList stmt_nums_test_get_all_followed_by = test_pkb.GetAllFollowedBy();
+StmtNumList stmt_nums_true_get_all_followed_by = true_pkb.GetAllFollowedBy();
 
-  StmtNumList::iterator iter_1 = stmt_nums_test_get_all_followed_by.begin();
-  StmtNumList::iterator iter_2 = stmt_nums_true_get_all_followed_by.begin();
+StmtNumList::iterator iter_1 = stmt_nums_test_get_all_followed_by.begin();
+StmtNumList::iterator iter_2 = stmt_nums_true_get_all_followed_by.begin();
 
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+Assert::AreEqual(*iter_1++, *iter_2++);
+Assert::AreEqual(*iter_1, *iter_2);
 
-  //***********************************
+//***********************************
 
-  StmtNumList stmt_nums_test_get_all_follows = test_pkb.GetAllFollows();
-  StmtNumList stmt_nums_true_get_all_follows = true_pkb.GetAllFollows();
+StmtNumList stmt_nums_test_get_all_follows = test_pkb.GetAllFollows();
+StmtNumList stmt_nums_true_get_all_follows = true_pkb.GetAllFollows();
 
-  iter_1 = stmt_nums_test_get_all_follows.begin();
-  iter_2 = stmt_nums_true_get_all_follows.begin();
+iter_1 = stmt_nums_test_get_all_follows.begin();
+iter_2 = stmt_nums_true_get_all_follows.begin();
 
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+Assert::AreEqual(*iter_1++, *iter_2++);
+Assert::AreEqual(*iter_1, *iter_2);
 
-  //*************************************
+//*************************************
 
-  StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows("2");
-  StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows("2");
+StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows("2");
+StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows("2");
 
-  iter_1 = stmt_num_test_get_follows.begin();
-  iter_2 = stmt_num_true_get_follows.begin();
+iter_1 = stmt_num_test_get_follows.begin();
+iter_2 = stmt_num_true_get_follows.begin();
 
-  // Should only be statement number 3
-  Assert::AreEqual(*iter_1, *iter_2);
+// Should only be statement number 3
+Assert::AreEqual(*iter_1, *iter_2);
 
-  //*************************************
+//*************************************
 
-  StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT("1");
-  StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT("1");
+StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT("1");
+StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT("1");
 
-  iter_1 = stmt_num_test_get_follows_t.begin();
-  iter_2 = stmt_num_true_get_follows_t.begin();
+iter_1 = stmt_num_test_get_follows_t.begin();
+iter_2 = stmt_num_true_get_follows_t.begin();
 
-  // Should have 2 statements
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+// Should have 2 statements
+Assert::AreEqual(*iter_1++, *iter_2++);
+Assert::AreEqual(*iter_1, *iter_2);
 
 }  // namespace ParserPKBTests
 
@@ -934,6 +934,76 @@ TEST_METHOD(TestProcessCalls) {
   StmtNumList expected_order =
       StmtNumList{"five", "three", "four", "two", "one"};
   Assert::IsTrue(proc_order == expected_order);
+}
+TEST_METHOD(TestCallsTWithOneCallPerProc) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "procedure one {\n"
+      "call two;}\n"  // 1
+      "procedure two {\n"
+      "call four;}\n"  // 2
+      "procedure three {\n"
+      "call five;}\n"  // 3
+      "procedure four {\n"
+      "call three;}\n"  // 4
+      "procedure five {\n"
+      "thing = what;}";  // 5
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  // Test direct and indirect callees of procedure "one"
+  ProcNameList callees_1 = test_pkb.GetCalleeT("one");
+  ProcNameList expected_callees_1 = ProcNameList{"two", "four", "three", "five"};
+  Assert::IsTrue(callees_1.size() == 4);
+  Assert::IsTrue(callees_1 == expected_callees_1);
+
+  // Test direct and indirect callers of procedure "five"
+  ProcNameList callees_2 = test_pkb.GetCallerT("five");
+  ProcNameList expected_callees_2 = ProcNameList{"three","one", "two", "four"};
+  Assert::IsTrue(callees_2.size() == 4);
+  Assert::IsTrue(callees_2 == expected_callees_2);
+}
+TEST_METHOD(TestCallsTWithMultipleCallPerProc) {
+  PKB test_pkb = PKB();
+  Parser parser = Parser(&test_pkb);
+  string program =
+      "procedure one {\n"
+      "call two;\n"
+      "call three;}\n"  
+      "procedure two {\n"
+      "call four;}\n"
+      "procedure three {\n"
+      "call five;}\n"
+      "procedure four {\n"
+      "call three;}\n"
+      "procedure five {\n"
+      "call me;\n"
+      "call you;}\n" 
+      "procedure me {\n"
+      "print j;}\n"
+      "procedure you {\n"
+      "print x;}\n" 
+      "procedure them {"
+      "call you;\n}";
+
+  TokenList tokenized_program = Tokenizer::Tokenize(program);
+  parser.Parse(tokenized_program);
+
+  // Test direct and indirect callees of procedure "one"
+  ProcNameList callees_1 = test_pkb.GetCalleeT("one");
+  ProcNameList expected_callees_1 =
+      ProcNameList{"two", "three", "four", "five", "me", "you"};
+  Assert::IsTrue(callees_1.size() == 6);
+  Assert::IsTrue(callees_1 == expected_callees_1);
+
+  // Test direct and indirect callers of procedure "you"
+  ProcNameList callees_2 = test_pkb.GetCallerT("you");
+  ProcNameList expected_callees_2 =
+      ProcNameList{"five", "them", "one", "two", "three", "four"};
+  Assert::IsTrue(callees_2.size() == 6);
+  Assert::IsTrue(callees_2 == expected_callees_2);
 }
 }
 ;
