@@ -26,12 +26,11 @@
     call_table_[caller_proc].push_back(callee_proc);
     callee_table_[callee_proc].push_back(caller_proc);
     if (caller_set_.insert(caller_proc).second) {
-      direct_caller_list_.push_back(caller_proc);
       caller_list_.push_back(caller_proc);
     }
     if (callee_set_.insert(callee_proc).second) {
-      direct_callee_list_.push_back(callee_proc);
       callee_list_.push_back(callee_proc);
+      callee_twin_list_.push_back(make_pair(callee_proc, callee_proc));
     }
     return true;
   }
@@ -91,20 +90,13 @@
   }
 
   ProcNameList CallTable::GetAllCaller() {
-    return direct_caller_list_;
-  }
-
-  ProcNameList CallTable::GetAllCallerT() {
     return caller_list_;
   }
 
   ProcNameList CallTable::GetAllCallee() {
-    return direct_callee_list_;
-  }
+    return callee_list_; }
 
-  ProcNameList CallTable::GetAllCalleeT() {
-    return callee_list_;
-  }
+  ProcNamePairList CallTable::GetAllCalleeTwin() { return callee_twin_list_; }
 
   ProcNamePairList CallTable::GetAllCallPairs() {
     ProcNamePairList call_pair_list;

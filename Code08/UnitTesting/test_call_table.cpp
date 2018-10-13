@@ -130,22 +130,6 @@ namespace PKBTests {
       Assert::AreEqual(kProcName3, *iter);
     }
 
-    TEST_METHOD(TestGetAllCallerT) {
-      CallTable call_table;
-      call_table.InsertDirectCallRelationship(kProcName1, kProcName2);
-      call_table.InsertDirectCallRelationship(kProcName2, kProcName3);
-      call_table.InsertDirectCallRelationship(kProcName3, kProcName4);
-      ProcNameList caller_list;
-      caller_list = call_table.GetAllCallerT();
-      Assert::IsTrue(caller_list.size() == 3);
-      ProcNameList::iterator iter = caller_list.begin();
-      Assert::AreEqual(kProcName1, *iter);
-      iter++;
-      Assert::AreEqual(kProcName2, *iter);
-      iter++;
-      Assert::AreEqual(kProcName3, *iter);
-    }
-
     TEST_METHOD(TestGetAllCallee) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcName1, kProcName2);
@@ -162,23 +146,23 @@ namespace PKBTests {
       Assert::AreEqual(kProcName4, *iter);
     }
 
-    TEST_METHOD(TestGetAllCalleeT) {
+	TEST_METHOD(TestGetAllCalleeTwin) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcName1, kProcName2);
       call_table.InsertDirectCallRelationship(kProcName2, kProcName3);
       call_table.InsertDirectCallRelationship(kProcName3, kProcName4);
-      call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
-      call_table.InsertIndirectCallRelationship(kProcName1, kProcName4);
-      call_table.InsertIndirectCallRelationship(kProcName2, kProcName4);
-      ProcNameList callee_list;
-      callee_list = call_table.GetAllCalleeT();
+      ProcNamePairList callee_list;
+      callee_list = call_table.GetAllCalleeTwin();
       Assert::IsTrue(callee_list.size() == 3);
-      ProcNameList::iterator iter = callee_list.begin();
-      Assert::AreEqual(kProcName2, *iter);
+      ProcNamePairList::iterator iter = callee_list.begin();
+      Assert::AreEqual(kProcName2, (*iter).first);
+      Assert::AreEqual(kProcName2, (*iter).second);
       iter++;
-      Assert::AreEqual(kProcName3, *iter);
+      Assert::AreEqual(kProcName3, (*iter).first);
+      Assert::AreEqual(kProcName3, (*iter).second);
       iter++;
-      Assert::AreEqual(kProcName4, *iter);
+      Assert::AreEqual(kProcName4, (*iter).first);
+      Assert::AreEqual(kProcName4, (*iter).second);
     }
 
     TEST_METHOD(TestGetCallPairs) {

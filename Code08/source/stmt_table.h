@@ -40,6 +40,9 @@ class StmtTable {
 
   // @return the type of a given statement
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @return true if stmt_num is in the stmt table
+  bool IsStmtNum(StmtNum stmt_num);
 };
 
 #endif !SPA_STMT_TABLE_H

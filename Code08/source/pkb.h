@@ -58,13 +58,22 @@ class PKB {
   // @returns the list of procedure names (can be empty)
   ProcNameList GetAllProcName();
 
+  // @returns the list of <p, p> (same p repeated twice)
+  ProcNamePairList GetAllProcNameTwin();
+
   // get all variable names stored inside variable list
   // @returns the list of variable names (can be empty)
   VarNameList GetAllVarName();
 
+  // @returns the list of <v, v> (same v repeated twice)
+  VarNamePairList GetAllVarNameTwin();
+
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
+
+  // @returns the list of <c, c> (same c repeated twice)
+  ConstValuePairList GetAllConstValueTwin();
 
   // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
@@ -145,30 +154,84 @@ class PKB {
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
 
+  // @returns the list of <s, s> (same s repeated twice)
+  StmtNumPairList GetAllStmtTwin();
+
   // get statement numbers for all assign statements stored inside stmt type
   // list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllAssignStmt();
 
+  // @returns the list of <a, a> (same a repeated twice)
+  StmtNumPairList GetAllAssignStmtTwin();
+
   // get statement numbers for all while statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllWhileStmt();
+
+  // @returns the list of <w, w> (same w repeated twice)
+  StmtNumPairList GetAllWhileStmtTwin();
 
   // get statement numbers for all if statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllIfStmt();
 
+  // @returns the list of <ifs, ifs> (same ifs repeated twice)
+  StmtNumPairList GetAllIfStmtTwin();
+
   // get statement numbers for all read statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllReadStmt();
+
+  // @returns the list of <r, r> (same r repeated twice)
+  StmtNumPairList GetAllReadStmtTwin();
 
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
 
+  // @returns the list of <pr, pr> (same pr repeated twice)
+  StmtNumPairList GetAllPrintStmtTwin();
+
   // get stmt numbers for all call stmts inside the stmt type list
   // @returns the list of stmt numbers
   StmtNumList GetAllCallStmt();
+
+  // @returns the list of <call, call> (same call repeated twice)
+  StmtNumPairList GetAllCallStmtTwin();
+
+  /***********************
+ * Is-A Functions *
+ ***********************/
+  // @returns true if var_name is a variable in the variable list
+  bool IsVarName(VarName var_name);
+
+  // @returns true if stmt_num is a statement in the statement list
+  bool IsStmtNum(StmtNum stmt_num);
+
+  // @returns true if proc_name is a procedure in the procedure list
+  bool IsProcName(ProcName proc_name);
+
+  // @returns true if const_value is a constant in the constant list
+  bool IsConstValue(ConstValue const_value);
+
+  // @returns true if the given stmt_num is an assign statement
+  bool IsAssignStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a while statement
+  bool IsWhileStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is an if statement
+  bool IsIfStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a read statement
+  bool IsReadStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a print statement
+  bool IsPrintStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a call statement
+  bool IsCallStmt(StmtNum stmt_num);
 
   /***********************
    * Follows Table Functions *
@@ -405,6 +468,9 @@ class PKB {
 
   // @returns all procedures being called by some other proc (can be empty)
   ProcNameList GetAllCallee();
+
+  // @returns all procedures being called by some other proc (in pairs)
+  ProcNamePairList GetAllCalleeTwin();
 
   // @returns a list of all <caller, direct callee> pairs
   ProcNamePairList GetAllCallPairs();
