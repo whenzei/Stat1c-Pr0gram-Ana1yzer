@@ -17,6 +17,7 @@ class StatementData;
 #include "follows_table.h"
 #include "graph.h"
 #include "modifies_table.h"
+#include "next_table.h"
 #include "parent_table.h"
 #include "pattern_table.h"
 #include "pql_global.h"
@@ -31,8 +32,6 @@ class StatementData;
 
 using StmtNumInt = int;
 using CallGraph = Graph;
-using CFG = unordered_map<int, vector<int>>;
-using CFGTable = unordered_map<string, CFG>;
 
 class PKB {
   ProcList proc_list_;
@@ -46,8 +45,8 @@ class PKB {
   PatternTable pattern_table_;
   ModifiesTable modifies_table_;
   UsesTable uses_table_;
+  NextTable next_table_;
   CallGraph call_graph_;
-  CFGTable cfg_table_;
   CallTable call_table_;
 
  public:
@@ -59,13 +58,22 @@ class PKB {
   // @returns the list of procedure names (can be empty)
   ProcNameList GetAllProcName();
 
+  // @returns the list of <p, p> (same p repeated twice)
+  ProcNamePairList GetAllProcNameTwin();
+
   // get all variable names stored inside variable list
   // @returns the list of variable names (can be empty)
   VarNameList GetAllVarName();
 
+  // @returns the list of <v, v> (same v repeated twice)
+  VarNamePairList GetAllVarNameTwin();
+
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
   ConstValueList GetAllConstValue();
+
+  // @returns the list of <c, c> (same c repeated twice)
+  ConstValuePairList GetAllConstValueTwin();
 
   // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
@@ -139,38 +147,91 @@ class PKB {
   // child_stmt_num
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // Inserts a new cfg into the CFGTable, with key value as the proc_name
-  // @returns pointer to inserted cfg
-  CFG* InsertCFG(string proc_name);
+  // Inserts a next relationship between previous_stmt and next_stmt
+  void InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllStmt();
+
+  // @returns the list of <s, s> (same s repeated twice)
+  StmtNumPairList GetAllStmtTwin();
 
   // get statement numbers for all assign statements stored inside stmt type
   // list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllAssignStmt();
 
+  // @returns the list of <a, a> (same a repeated twice)
+  StmtNumPairList GetAllAssignStmtTwin();
+
   // get statement numbers for all while statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllWhileStmt();
+
+  // @returns the list of <w, w> (same w repeated twice)
+  StmtNumPairList GetAllWhileStmtTwin();
 
   // get statement numbers for all if statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllIfStmt();
 
+  // @returns the list of <ifs, ifs> (same ifs repeated twice)
+  StmtNumPairList GetAllIfStmtTwin();
+
   // get statement numbers for all read statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllReadStmt();
+
+  // @returns the list of <r, r> (same r repeated twice)
+  StmtNumPairList GetAllReadStmtTwin();
 
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
   StmtNumList GetAllPrintStmt();
 
+  // @returns the list of <pr, pr> (same pr repeated twice)
+  StmtNumPairList GetAllPrintStmtTwin();
+
   // get stmt numbers for all call stmts inside the stmt type list
   // @returns the list of stmt numbers
   StmtNumList GetAllCallStmt();
+
+  // @returns the list of <call, call> (same call repeated twice)
+  StmtNumPairList GetAllCallStmtTwin();
+
+  /***********************
+ * Is-A Functions *
+ ***********************/
+  // @returns true if var_name is a variable in the variable list
+  bool IsVarName(VarName var_name);
+
+  // @returns true if stmt_num is a statement in the statement list
+  bool IsStmtNum(StmtNum stmt_num);
+
+  // @returns true if proc_name is a procedure in the procedure list
+  bool IsProcName(ProcName proc_name);
+
+  // @returns true if const_value is a constant in the constant list
+  bool IsConstValue(ConstValue const_value);
+
+  // @returns true if the given stmt_num is an assign statement
+  bool IsAssignStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a while statement
+  bool IsWhileStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is an if statement
+  bool IsIfStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a read statement
+  bool IsReadStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a print statement
+  bool IsPrintStmt(StmtNum stmt_num);
+
+  // @returns true if the given stmt_num is a call statement
+  bool IsCallStmt(StmtNum stmt_num);
 
   /***********************
    * Follows Table Functions *
@@ -352,8 +413,6 @@ class PKB {
   // @returns a list of all pairs of <ifs, v> that satisfy pattern ifs(v, _)
   StmtVarPairList GetAllIfPatternPair();
 
-  // @returns the cfg belonging to a specified procedure
-  CFG GetCFG(string proc_name);
   /***********************
    * Call Table Functions *
    ***********************/
@@ -410,6 +469,9 @@ class PKB {
   // @returns all procedures being called by some other proc (can be empty)
   ProcNameList GetAllCallee();
 
+  // @returns all procedures being called by some other proc (in pairs)
+  ProcNamePairList GetAllCalleeTwin();
+
   // @returns a list of all <caller, direct callee> pairs
   ProcNamePairList GetAllCallPairs();
 
@@ -425,6 +487,36 @@ class PKB {
   // @returns true if Call Table has any calls relationships
   // false if otherwise
   bool HasCallsRelationship();
+
+  // @returns true if Next(previous_stmt, next_stmt) holds
+  bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
+
+  // @returns true if Next(_, stmt_num) holds
+  bool IsNext(StmtNum stmt_num);
+
+  // @returns true if Next(stmt_num, _) holds
+  bool IsPrevious(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(stmt_num, n)
+  StmtNumList GetNext(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(n, stmt_num)
+  StmtNumList GetPrevious(StmtNum stmt_num);
+
+  // @returns a list of all n's that satisfy Next(_, n)
+  StmtNumList GetAllNext();
+
+  // @returns a list of all n's that satisfy Next(n, _)
+  StmtNumList GetAllPrevious();
+
+  // @returns a list of all pairs of <n1, n2> that satisfy Next(n1, n2)
+  StmtNumPairList GetAllNextPairs();
+
+  // @returns true if Next(_, _) holds
+  bool HasNextRelationship();
+
+  // @returns the cfg belonging to a specified procedure
+  CFG* GetCFG(ProcName proc_name);
 
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction

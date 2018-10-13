@@ -7,14 +7,25 @@ using std::make_pair;
 
 void PKB::InsertProcName(ProcName proc_name) {
   proc_list_.InsertProcName(proc_name);
+  next_table_.InsertCFG(proc_name);
 }
 
 ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
 
+ProcNamePairList PKB::GetAllProcNameTwin() {
+  return proc_list_.GetAllProcNameTwin();
+}
+
 VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+
+VarNamePairList PKB::GetAllVarNameTwin() { return var_list_.GetAllVarNameTwin(); }
 
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
+}
+
+ConstValuePairList PKB::GetAllConstValueTwin() {
+  return const_list_.GetAllConstValueTwin();
 }
 
 StmtType PKB::GetStmtType(StmtNum stmt_num) {
@@ -118,26 +129,85 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
-CFG* PKB::InsertCFG(string proc_name) {
-  cfg_table_.emplace(proc_name, CFG());
-  return &cfg_table_.at(proc_name);
+void PKB::InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt) {
+  next_table_.InsertNext(proc_name, previous_stmt, next_stmt);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
+
+StmtNumPairList PKB::GetAllStmtTwin() { return stmt_type_list_.GetAllStmtTwin(); }
 
 StmtNumList PKB::GetAllAssignStmt() {
   return stmt_type_list_.GetAllAssignStmt();
 }
 
+StmtNumPairList PKB::GetAllAssignStmtTwin() {
+  return stmt_type_list_.GetAllAssignStmtTwin();
+}
+
 StmtNumList PKB::GetAllWhileStmt() { return stmt_type_list_.GetAllWhileStmt(); }
+
+StmtNumPairList PKB::GetAllWhileStmtTwin() {
+  return stmt_type_list_.GetAllWhileStmtTwin();
+}
 
 StmtNumList PKB::GetAllIfStmt() { return stmt_type_list_.GetAllIfStmt(); }
 
+StmtNumPairList PKB::GetAllIfStmtTwin() {
+  return stmt_type_list_.GetAllIfStmtTwin();
+}
+
 StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
+
+StmtNumPairList PKB::GetAllReadStmtTwin() {
+  return stmt_type_list_.GetAllReadStmtTwin();
+}
 
 StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
+StmtNumPairList PKB::GetAllPrintStmtTwin() {
+  return stmt_type_list_.GetAllPrintStmtTwin();
+}
+
 StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
+
+StmtNumPairList PKB::GetAllCallStmtTwin() {
+  return stmt_type_list_.GetAllCallStmtTwin();
+}
+
+bool PKB::IsVarName(VarName var_name) { return var_list_.IsVarName(var_name); }
+
+bool PKB::IsStmtNum(StmtNum stmt_num) { return stmt_table_.IsStmtNum(stmt_num); }
+
+bool PKB::IsProcName(ProcName proc_name) { return proc_list_.IsProcName(proc_name); }
+
+bool PKB::IsConstValue(ConstValue const_value) {
+  return const_list_.IsConstValue(const_value);
+}
+
+bool PKB::IsAssignStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kAssign;
+}
+
+bool PKB::IsWhileStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kWhile;
+}
+
+bool PKB::IsIfStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kIf;
+}
+
+bool PKB::IsReadStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kRead;
+}
+
+bool PKB::IsPrintStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kPrint;
+}
+
+bool PKB::IsCallStmt(StmtNum stmt_num) {
+  return GetStmtType(stmt_num) == StmtType::kCall;
+}
 
 bool PKB::IsFollowsT(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
   return follows_table_.IsFollowsT(followee_stmt_num, follower_stmt_num);
@@ -286,8 +356,6 @@ ProcNameList PKB::GetUsingProc(VarName var_name) {
   return uses_table_.GetUsingProc(var_name);
 }
 
-CFG PKB::GetCFG(string proc_name) { return cfg_table_.at(proc_name); }
-
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, var_name);
 }
@@ -389,6 +457,8 @@ ProcNameList PKB::GetAllCaller() { return call_table_.GetAllCaller(); }
 
 ProcNameList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
 
+ProcNamePairList PKB::GetAllCalleeTwin() { return call_table_.GetAllCalleeTwin(); }
+
 ProcNamePairList PKB::GetAllCallPairs() {
   return call_table_.GetAllCallPairs();
 }
@@ -406,6 +476,34 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
 }
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
+
+bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
+  return next_table_.IsNext(previous_stmt, next_stmt);
+}
+
+bool PKB::IsNext(StmtNum stmt_num) { return next_table_.IsNext(stmt_num); }
+
+bool PKB::IsPrevious(StmtNum stmt_num) {
+  return next_table_.IsPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetNext(StmtNum stmt_num) {
+  return next_table_.GetNext(stmt_num);
+}
+
+StmtNumList PKB::GetPrevious(StmtNum stmt_num) {
+  return next_table_.GetPrevious(stmt_num);
+}
+
+StmtNumList PKB::GetAllNext() { return next_table_.GetAllNext(); }
+
+StmtNumList PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
+
+StmtNumPairList PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
+
+bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
+
+CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);

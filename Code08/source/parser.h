@@ -20,10 +20,10 @@ class Parser {
   TokenList tokens_;
   Token current_token_;
   CFG* current_cfg_;
+  ProcName current_proc_name_;
   int current_index_;
   int stmt_num_;
   int stmt_list_num_;
-  ProcName curr_proc_name_;
 
   bool IsAtEnd();
   Token ReadNextToken();

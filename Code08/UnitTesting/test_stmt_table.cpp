@@ -80,5 +80,14 @@ TEST_CLASS(TestStmtTable) {
     StmtType result3 = stmt_table.GetStmtType(kStmtNum3);
     Assert::IsTrue(PqlDeclarationEntity::kAssign == result3);
   }
+
+  TEST_METHOD(TestIsStmtNum) {
+    StmtTable stmt_table;
+    stmt_table.InsertStmt(kStmtNum1, PqlDeclarationEntity::kIf, kStmtListIndex1);
+    bool result = stmt_table.IsStmtNum(kStmtNum1);
+    Assert::IsTrue(result);
+    result = stmt_table.IsStmtNum(kStmtNum2);
+    Assert::IsFalse(result);
+  }
 };
 }  // namespace PKBTests

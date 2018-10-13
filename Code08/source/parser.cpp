@@ -81,33 +81,34 @@ void Parser::ParseProgram() {
 
 void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
-  curr_proc_name_ = ReadNextToken().value;
-  pkb_->InsertProcName(curr_proc_name_);
-  current_cfg_ = pkb_->InsertCFG(curr_proc_name_);
+  current_proc_name_ = ReadNextToken().value;
+  pkb_->InsertProcName(current_proc_name_);
+  current_cfg_ = pkb_->GetCFG(current_proc_name_);
   // eat the open brace
   ReadNextToken();
 
   ParseData parse_data = ProcessStatementList(given_stmt_list_index);
 
-  PopulatePkbModifies(curr_proc_name_, parse_data.GetModifiedVariables());
-  PopulatePkbUses(curr_proc_name_, parse_data.GetUsedVariables());
+  PopulatePkbModifies(current_proc_name_, parse_data.GetModifiedVariables());
+  PopulatePkbUses(current_proc_name_, parse_data.GetUsedVariables());
 
-  //******* Debug CFG ************
-  vector<int> keys;
-  for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
-    keys.push_back(it->first);
-    cout << it->second.size() << "\n";
-  }
-  std::sort(keys.begin(), keys.end());
-
-  for (auto& key : keys) {
-    StmtNumIntList adj_list = current_cfg_->at(key);
-    string str;
-    for (auto& node : adj_list) {
-      str.append(std::to_string(node));
-      str.append(" ");
+  if (DEBUG_FLAG) {
+    //******* Debug CFG ************
+    vector<string> keys;
+    for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
+      keys.push_back(it->first);
     }
-    cout << std::to_string(key) << " --> " << str << "\n";
+    std::sort(keys.begin(), keys.end());
+
+    for (auto& key : keys) {
+      StmtNumList adj_list = current_cfg_->at(key);
+      string str;
+      for (auto& node : adj_list) {
+        str.append(node);
+        str.append(" ");
+      }
+      cout << key << " --> " << str << "\n";
+    }
   }
   //*******************************
 
@@ -119,9 +120,11 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   VarNameSet modified_vars;
   VarNameSet used_vars;
 
-  StmtNumInt last_in_block_1 = 0;
-  StmtNumInt last_in_block_2 = 0;
+  StmtNumIntList nested_last_stmts_1;
+  StmtNumIntList nested_last_stmts_2;
   StmtNumInt prev_stmt_num = 0;
+
+  bool is_last_statement_if = false;
 
   do {
     ParseData stmt_info = ProcessStatement(given_stmt_list_num);
@@ -130,26 +133,29 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
     VarNameSet modified_vars_to_insert = stmt_info.GetModifiedVariables();
 
     //******* Updates cfg****************
-    if (last_in_block_1 != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(last_in_block_1);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(last_in_block_1, curr_adj_list);
+    if (prev_stmt_num != 0 && nested_last_stmts_1.empty() &&
+        nested_last_stmts_2.empty()) {
+      pkb_->InsertNext(current_proc_name_, prev_stmt_num, stmt_num);
     }
 
-    if (last_in_block_2 != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(last_in_block_2);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(last_in_block_2, curr_adj_list);
+    if (!nested_last_stmts_1.empty()) {
+      for (auto& nested_stmt : nested_last_stmts_1) {
+        pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
+      }
     }
 
-    last_in_block_1 = stmt_info.GetLastStmtNumOne();
-    last_in_block_2 = stmt_info.GetLastStmtNumTwo();
-
-    if (prev_stmt_num != 0) {
-      StmtNumIntList curr_adj_list = current_cfg_->at(prev_stmt_num);
-      curr_adj_list.push_back(stmt_num);
-      current_cfg_->emplace(prev_stmt_num, curr_adj_list);
+    if (!nested_last_stmts_2.empty()) {
+      for (auto& nested_stmt : nested_last_stmts_2) {
+        pkb_->InsertNext(current_proc_name_, nested_stmt, stmt_num);
+      }
     }
+
+    nested_last_stmts_1 = stmt_info.GetNestedLastStmtsOne();
+    nested_last_stmts_2 = stmt_info.GetNestedLastStmtsTwo();
+
+    is_last_statement_if =
+        !nested_last_stmts_1.empty() || !nested_last_stmts_2.empty();
+
     prev_stmt_num = stmt_num;
     //************************************
 
@@ -163,15 +169,18 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   } while (!IsNextType(tt::kCloseBrace));
 
   PopulatePkbFollows(stmt_nums);
-
-  return ParseData(stmt_nums, used_vars, modified_vars);
+  if (!is_last_statement_if) {
+    nested_last_stmts_1.push_back(prev_stmt_num);
+    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
+                     nested_last_stmts_2);
+  } else {
+    return ParseData(stmt_nums, used_vars, modified_vars, nested_last_stmts_1,
+                     nested_last_stmts_2);
+  }
 }
 
 ParseData Parser::ProcessStatement(int given_stmt_list_num) {
   int curr_stmt_num = ++stmt_num_;
-
-  StmtNumIntList adj_list = StmtNumIntList();
-  current_cfg_->emplace(curr_stmt_num, adj_list);
 
   VarNameSet used_vars;
   VarNameSet modified_vars;
@@ -181,10 +190,15 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
     ParseData keyword_stmt_info = ProcessKeyword(given_stmt_list_num);
     used_vars = keyword_stmt_info.GetUsedVariables();
     modified_vars = keyword_stmt_info.GetModifiedVariables();
-    int last_stmt_num_1 = keyword_stmt_info.GetLastStmtNumOne();
-    int last_stmt_num_2 = keyword_stmt_info.GetLastStmtNumTwo();
-    return ParseData(curr_stmt_num, used_vars, modified_vars, last_stmt_num_1,
-                     last_stmt_num_2);
+
+    StmtNumIntList nested_last_stmts_1 =
+        keyword_stmt_info.GetNestedLastStmtsOne();
+    StmtNumIntList nested_last_stmts_2 =
+        keyword_stmt_info.GetNestedLastStmtsTwo();
+
+    return ParseData(curr_stmt_num, used_vars, modified_vars,
+                     nested_last_stmts_1, nested_last_stmts_2);
+
   } else {
     ParseData assignment_stmt_info = ProcessAssignment(given_stmt_list_num);
     used_vars = assignment_stmt_info.GetUsedVariables();
@@ -237,9 +251,9 @@ ParseData Parser::ProcessPrint(int given_stmt_list_num) {
 
 ParseData Parser::ProcessCall(int given_stmt_list_index) {
   VarName called_proc_name = ReadNextToken().value;
-  pkb_->InsertEdgeInCallGraph(curr_proc_name_, called_proc_name);
+  pkb_->InsertEdgeInCallGraph(current_proc_name_, called_proc_name);
   pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
-                                     curr_proc_name_, called_proc_name));
+                                     current_proc_name_, called_proc_name));
 
   // eat semicolon
   ReadNextToken();
@@ -339,10 +353,8 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   StmtNumIntList else_stmt_nums = else_stmt_info.GetStmtNumList();
 
   // Handles cfg
-  StmtNumIntList curr_adj_list = current_cfg_->at(if_stmt_num);
-  curr_adj_list.push_back(then_stmt_nums.at(0));
-  curr_adj_list.push_back(else_stmt_nums.at(0));
-  current_cfg_->emplace(if_stmt_num, curr_adj_list);
+  pkb_->InsertNext(current_proc_name_, if_stmt_num, then_stmt_nums.at(0));
+  pkb_->InsertNext(current_proc_name_, if_stmt_num, else_stmt_nums.at(0));
 
   StmtNumIntList child_stmt_nums(then_stmt_nums);
   child_stmt_nums.insert(child_stmt_nums.end(), else_stmt_nums.begin(),
@@ -382,8 +394,44 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
                                  used_set_conditionals.first,
                                  used_set_conditionals.second));
-  return ParseData(used_vars, modified_vars, then_stmt_nums.back(),
-                   else_stmt_nums.back());
+
+  // Find last stmts
+  StmtNumIntList then_nested_last_stmts_1 =
+      then_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList then_nested_last_stmts_2 =
+      then_stmt_info.GetNestedLastStmtsTwo();
+  StmtNumIntList else_nested_last_stmts_1 =
+      else_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList else_nested_last_stmts_2 =
+      else_stmt_info.GetNestedLastStmtsTwo();
+
+  if (then_nested_last_stmts_1.size() == 0 &&
+      then_nested_last_stmts_2.size() == 0 &&
+      else_nested_last_stmts_1.size() == 0 &&
+      else_nested_last_stmts_2.size() == 0) {
+    StmtNumIntList then_nested_last_stmts;
+    StmtNumIntList else_nested_last_stmts;
+
+    then_nested_last_stmts.push_back(then_stmt_nums.back());
+    else_nested_last_stmts.push_back(else_stmt_nums.back());
+
+    return ParseData(used_vars, modified_vars, then_nested_last_stmts,
+                     else_nested_last_stmts);
+
+  } else {
+    StmtNumIntList then_nested_last_stmts(then_nested_last_stmts_1);
+    StmtNumIntList else_nested_last_stmts(else_nested_last_stmts_1);
+
+    then_nested_last_stmts.insert(then_nested_last_stmts.end(),
+                                  then_nested_last_stmts_2.begin(),
+                                  then_nested_last_stmts_2.end());
+    else_nested_last_stmts.insert(else_nested_last_stmts.end(),
+                                  else_nested_last_stmts_2.begin(),
+                                  else_nested_last_stmts_2.end());
+
+    return ParseData(used_vars, modified_vars, then_nested_last_stmts,
+                     else_nested_last_stmts);
+  }
 }
 
 ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
@@ -415,6 +463,10 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   StmtNumIntList children_stmt_nums = children_stmt_info.GetStmtNumList();
   VarNameSet used_vars = children_stmt_info.GetUsedVariables();
   VarNameSet modified_vars = children_stmt_info.GetModifiedVariables();
+  StmtNumIntList nested_last_stmts_1 =
+      children_stmt_info.GetNestedLastStmtsOne();
+  StmtNumIntList nested_last_stmts_2 =
+      children_stmt_info.GetNestedLastStmtsTwo();
 
   // Update variables used in conditionals
   used_vars.insert(used_set_conditional.first.begin(),
@@ -424,9 +476,23 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   PopulatePkbUses(while_stmt_num, used_vars);
   PopulatePkbModifies(while_stmt_num, modified_vars);
 
-  StmtNumIntList curr_adj_list = current_cfg_->at(while_stmt_num);
-  curr_adj_list.push_back(children_stmt_nums.at(0));
-  current_cfg_->emplace(while_stmt_num, curr_adj_list);
+  pkb_->InsertNext(current_proc_name_, while_stmt_num,
+                   children_stmt_nums.at(0));
+
+  // When the the last statement in the while block is if
+  // Grab last statement of then and else block
+  if (nested_last_stmts_1.size() > 0 && nested_last_stmts_2.size() > 0) {
+    for (auto& stmt_num : nested_last_stmts_1) {
+      pkb_->InsertNext(current_proc_name_, stmt_num, while_stmt_num);
+    }
+
+    for (auto& stmt_num : nested_last_stmts_2) {
+      pkb_->InsertNext(current_proc_name_, stmt_num, while_stmt_num);
+    }
+  } else {
+    pkb_->InsertNext(current_proc_name_, children_stmt_nums.back(),
+                     while_stmt_num);
+  }
 
   // eat close brace
   ReadNextToken();
@@ -440,7 +506,7 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
                                        used_set_conditional.first,
                                        used_set_conditional.second));
 
-  return ParseData(used_vars, modified_vars, children_stmt_nums.back());
+  return ParseData(used_vars, modified_vars);
 }
 
 pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {

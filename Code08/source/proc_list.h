@@ -7,12 +7,14 @@
 #include <unordered_set>
 #include <vector>
 
+using std::pair;
 using std::string;
 using std::unordered_set;
 using std::vector;
 
 using ProcName = string;
 using ProcNameList = vector<string>;
+using ProcNamePairList = vector<pair<string, string>>;
 using ProcNameSet = unordered_set<string>;
 
 // The procedure list class for the PKB component
@@ -20,6 +22,7 @@ using ProcNameSet = unordered_set<string>;
 class ProcList {
   
  ProcNameList proc_name_list_;
+ ProcNamePairList proc_name_twin_list_;
  ProcNameSet proc_name_set_;
 
  public:
@@ -29,6 +32,12 @@ class ProcList {
 
   // @returns the list of all procedure names (can be empty)
   ProcNameList GetAllProcName();
+
+  // @return true if proc_name exists in the proc list
+  bool IsProcName(ProcName proc_name);
+
+  // @returns the list of all procedure names in pairs (in each pair, the same procedure name is repeated)
+  ProcNamePairList GetAllProcNameTwin();
 };
 
 #endif  // !SPA_PROC_LIST_H
