@@ -258,6 +258,18 @@ namespace PKBTests {
       Assert::IsTrue(result);
     }
 
+    TEST_METHOD(TestIsCalledProc) {
+      CallTable call_table;
+      call_table.InsertDirectCallRelationship(kProcName1, kProcName2);
+      int result = call_table.IsCalledProc(kProcName2);
+      Assert::IsTrue(result);
+      result = call_table.IsCalledProc(kProcName1);
+      Assert::IsFalse(result);
+      call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
+      result = call_table.IsCalledProc(kProcName3);
+      Assert::IsTrue(result);
+    }
+
     TEST_METHOD(HasCallsRelationship) {
       CallTable call_table;
       int result = call_table.HasCallsRelationship();
