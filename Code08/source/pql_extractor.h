@@ -12,6 +12,11 @@ class PqlExtractor {
  private:
   PKB pkb_;
 
+  // Helper method
+  //@params start is the StmtNum that should be in the LHS of all pairs
+  //        res_list is passed by reference 
+  void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
+
  public:
   PqlExtractor(PKB pkb);
 
@@ -31,12 +36,6 @@ class PqlExtractor {
 
   // @returns a list of all n's that satisfy Next*(n, stmt_num)
   StmtNumList GetPreviousT(StmtNum stmt_num);
-
-  // @returns a list of all n's that satisfy Next*(_, n)
-  StmtNumList GetAllNextT();
-
-  // @returns a list of all n's that satisfy Next*(n, _)
-  StmtNumList GetAllPreviousT();
 
   // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
   StmtNumPairList GetAllNextTPairs();
