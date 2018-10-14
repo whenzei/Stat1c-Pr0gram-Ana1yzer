@@ -181,7 +181,7 @@ Select w such that Parent*(w, a) pattern a(_,_"Romeo - 1"_)
 37 - FOLLOWS digit-digit
 read r;
 Select r such that Follows(5, 22)
-1, 31, 38, 60, 63
+1, 31, 36, 38, 60, 63
 5000
 38 - FOLLOWS digit-syn [if]
 if ifs;
@@ -336,7 +336,7 @@ Select s such that Modifies (s, "sum")
 68 - MODIFIES syn-wildcard [stmt]
 read re; stmt s;
 Select re such that Modifies (s, _)
-1, 31, 38, 60, 63
+1, 31, 36, 38, 60, 63
 5000
 69 - MODIFIES syn-syn [stmt]
 stmt s; variable v;
@@ -376,7 +376,7 @@ Select w such that Modifies(w, _)
 76 - MODIFIES syn-wildcard [read]
 read r;
 Select r such that Modifies(r, _)
-1, 31, 38, 60, 63
+1, 31, 36, 38, 60, 63
 5000
 77 - MODIFIES right-pattern-syn [assign]
 assign a; variable v;
@@ -486,7 +486,7 @@ a, beta, tmp, I, k, j1k, chArlie, x, left, right, b, c, Romeo, delta, l, width, 
 98 - USES-S syn-syn [stmt][select left]
 stmt s; variable v;
 Select s such that Uses(s, v)
-3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 22, 23, 24, 27, 29, 30, 32, 33, 34, 35, 37, 39, 40, 44, 46, 47, 48, 49, 50, 51, 52, 55, 56, 57, 58, 59, 61, 64
+3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 22, 23, 24, 26, 27, 29, 30, 32, 33, 34, 35, 37, 39, 40, 44, 46, 47, 48, 49, 50, 51, 52, 55, 56, 57, 58, 59, 61, 64
 5000
 99 - USES-S syn-ident [while]
 while w;
@@ -511,7 +511,7 @@ Select pn such that Uses (pn, "delta")
 103 - USES-S syn-ident [stmt]
 stmt s;
 Select s such that Uses (s, "x")
-4, 5, 10, 11, 12, 13, 17, 18, 20, 23, 24, 30, 32, 33, 40, 46, 47, 57, 58, 61
+4, 5, 10, 11, 12, 13, 17, 18, 20, 23, 24, 26, 30, 32, 33, 40, 46, 47, 57, 58, 61
 5000
 104 - USES-S syn-wild [while]
 while w;
@@ -536,7 +536,7 @@ Select pn such that Uses(pn, _)
 108 - USES-S syn-wild [stmt]
 stmt s;
 Select s such that Uses(s, _)
-3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 22, 23, 24, 27, 29, 30, 32, 33, 34, 35, 37, 39, 40, 44, 46, 47, 48, 49, 50, 51, 52, 55, 56, 57, 58, 59, 61, 64
+3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 22, 23, 24, 26, 27, 29, 30, 32, 33, 34, 35, 37, 39, 40, 44, 46, 47, 48, 49, 50, 51, 52, 55, 56, 57, 58, 59, 61, 64
 5000
 109 - USES-S digit-syn
 variable v;
@@ -546,7 +546,7 @@ left, right, b, c, Romeo, delta, width, l, y, sum, f, x, count, apple, pear, a, 
 110 - USES-S digit-ident
 read r;
 Select r such that Uses(16, "width")
-1, 31, 38, 60, 63
+1, 31, 36, 38, 60, 63
 5000
 111 - USES-S + P no overlap
 while w; assign a; variable v1, v2;
@@ -696,7 +696,7 @@ Select a pattern a("f", _)
 140 - PATTERN ident-wild [select other] [eval-true]
 assign a; read r;
 Select r pattern a("oSCar", _)
-1, 31, 38, 60, 63
+1, 31, 36, 38, 60, 63
 5000
 141 - PATTERN ident-wild [select other] [eval-false]
 assign a; read r;
