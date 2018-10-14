@@ -58,7 +58,7 @@
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="..\source\next_table.cpp">
-    <Filter>Source Files\PKB</Filter>
+      <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="..\source\pkb.cpp">
       <Filter>Source Files\PKB</Filter>
@@ -232,6 +232,12 @@
     </ClInclude>
     <ClInclude Include="..\source\call_table.h">
       <Filter>Header Files\PKB</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\semantic_exception.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\syntactic_exception.h">
+      <Filter>Header Files\General</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
