@@ -31,14 +31,22 @@ void DesignExtractor::UpdateCallUsesAndModifies() {
     for (auto stmt : calling_stmts) {
       // get the procedures that has this call statement
       ProcNameList caller_procs = pkb_->GetCaller(proc_name);
+      // get all ParentT of call statement
+      StmtNumList parent_stmts = pkb_->GetParentT(stmt);
       for (auto used_var : used_vars) {
         pkb_->InsertUsesS(stmt, used_var);
+        for (auto parent : parent_stmts) {
+          pkb_->InsertUsesS(parent, used_var);
+        }
         for (auto caller : caller_procs) {
           pkb_->InsertUsesP(caller, used_var);
         }
       }
       for (auto modified_var : modified_vars) {
         pkb_->InsertModifiesS(stmt, modified_var);
+        for (auto parent : parent_stmts) {
+          pkb_->InsertUsesS(parent, modified_var);
+        }
         for (auto caller : caller_procs) {
           pkb_->InsertModifiesP(caller, modified_var);
         }
