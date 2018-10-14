@@ -98,6 +98,25 @@ public :
     Assert::IsTrue(test_result_3 == expected_result_3);
 
   }
+  TEST_METHOD(GetAllNextTPairs) {
+    PKB dummy_pkb = GetDummyPKBThree();
+    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+
+    StmtNumPairList test_result_1 = extractor.GetAllNextTPairs();
+    StmtNumPairList expected_result_1 = StmtNumPairList{
+        make_pair("1", "2"),  make_pair("1", "3"),   make_pair("1", "5"),
+        make_pair("1", "4"),   make_pair("2", "5"),  make_pair("3", "4"),
+        make_pair("3", "5"),
+        make_pair("4", "5"),  make_pair("9", "10"),  make_pair("9", "6"),
+        make_pair("9", "11"), make_pair("9", "7"),   make_pair("9", "12"),
+        make_pair("9", "8"),  make_pair("10", "6"),  make_pair("10", "11"),
+        make_pair("10", "7"), make_pair("10", "12"), make_pair("10", "8"),
+        make_pair("11", "7"), make_pair("11", "12"), make_pair("11", "8"),
+        make_pair("7", "8")};
+
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+  }
 
   private:
     PKB GetDummyPKBOne() {
@@ -143,6 +162,38 @@ public :
      dummy_pkb.InsertNext("one", 7, 8);
      dummy_pkb.InsertNext("one", 10, 11);
      dummy_pkb.InsertNext("one", 11, 6);
+
+     return dummy_pkb;
+    }
+    PKB GetDummyPKBThree() {
+    /*
+      proc one
+
+       1 ->   2 ->  5 
+        \_         /^     
+          3  ->   4 
+                 
+
+      proc two
+
+        9 -> 10 -> 11 -> 12
+              \_    \_
+                6     7 -> 8
+     */
+
+     PKB dummy_pkb;
+     dummy_pkb.InsertNext("one", 1, 2);
+     dummy_pkb.InsertNext("one", 1, 3);
+     dummy_pkb.InsertNext("one", 2, 5);
+     dummy_pkb.InsertNext("one", 3, 4);
+     dummy_pkb.InsertNext("one", 4, 5);
+     dummy_pkb.InsertNext("two", 9, 10);
+     dummy_pkb.InsertNext("two", 10, 6);
+     dummy_pkb.InsertNext("two", 10, 11);
+     dummy_pkb.InsertNext("two", 11, 7);
+     dummy_pkb.InsertNext("two", 11, 12);
+     dummy_pkb.InsertNext("two", 7, 8);
+
 
      return dummy_pkb;
     }
