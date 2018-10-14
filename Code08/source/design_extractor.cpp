@@ -6,7 +6,7 @@ DesignExtractor::DesignExtractor(PKB* pkb) { pkb_ = pkb; }
 
 void DesignExtractor::UpdatePkb() {
   UpdateParentT();
-  UpdateCallUsesAndModifies();
+  UpdateUsesAndModifiesWithCallGraph();
 }
 
 void DesignExtractor::UpdateParentT() {
@@ -20,33 +20,37 @@ void DesignExtractor::UpdateParentT() {
   }
 }
 
-void DesignExtractor::UpdateCallUsesAndModifies() {
+void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
   vector<string> toposorted_calls = pkb_->GetToposortedCalls();
   for (auto proc_name : toposorted_calls) {
-    // get all used and modified vars by procedure name
-    VarNameList used_vars = pkb_->GetUsedVarP(proc_name);
-    VarNameList modified_vars = pkb_->GetModifiedVarP(proc_name);
     // get all call statement numbers that calls the proc_name
     StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_name);
-    for (auto stmt : calling_stmts) {
+    for (auto call_stmt : calling_stmts) {
       // get the procedures that has this call statement
       ProcNameList caller_procs = pkb_->GetCaller(proc_name);
       // get all ParentT of call statement
-      StmtNumList parent_stmts = pkb_->GetParentT(stmt);
-      for (auto used_var : used_vars) {
-        pkb_->InsertUsesS(stmt, used_var);
+      StmtNumList parent_stmts = pkb_->GetParentT(call_stmt);
+
+      // update uses for call statement AND its Parent(T)
+      for (auto used_var : pkb_->GetUsedVarP(proc_name)) {
+        pkb_->InsertUsesS(call_stmt, used_var);
         for (auto parent : parent_stmts) {
           pkb_->InsertUsesS(parent, used_var);
         }
+
+        // update the procedure that contains this call statement
         for (auto caller : caller_procs) {
           pkb_->InsertUsesP(caller, used_var);
         }
       }
-      for (auto modified_var : modified_vars) {
-        pkb_->InsertModifiesS(stmt, modified_var);
+
+      // update modifies for call statement AND its Parent(T)
+      for (auto modified_var : pkb_->GetModifiedVarP(proc_name)) {
+        pkb_->InsertModifiesS(call_stmt, modified_var);
         for (auto parent : parent_stmts) {
           pkb_->InsertUsesS(parent, modified_var);
         }
+        // update the procedure that contains this call statement
         for (auto caller : caller_procs) {
           pkb_->InsertModifiesP(caller, modified_var);
         }
