@@ -233,10 +233,10 @@
     <ClInclude Include="..\source\call_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\semantic_exception.h">
+    <ClInclude Include="..\source\semantic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\syntactic_exception.h">
+    <ClInclude Include="..\source\syntactic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
   </ItemGroup>
