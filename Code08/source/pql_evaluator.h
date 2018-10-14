@@ -181,6 +181,42 @@ class PqlEvaluator {
   void EvaluateModifiesP(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
+   * Evaluate Call clause and store result in PqlResult table
+   * @param Call clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateCalls(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Call* clause and store result in PqlResult table
+   * @param Call* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateCallsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+   /**
+   * Evaluate Next clause and store result in PqlResult table
+   * @param Next clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateNext(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+    /**
+   * Evaluate Next* clause and store result in PqlResult table
+   * @param Next* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateNextT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+   /**
+   * Evaluate Affects clause and store result in PqlResult table
+   * @param Next clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateAffects(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Affects* clause and store result in PqlResult table
+   * @param Next* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateAffectsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
    * Determine the number of synonym in the such that param (e.g such that
    * Follows(a,b) => 2 synonyms)
    * @param parameter/arguments of the such that clause
