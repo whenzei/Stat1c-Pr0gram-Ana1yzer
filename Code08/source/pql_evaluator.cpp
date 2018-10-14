@@ -7,6 +7,7 @@
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
 
@@ -702,7 +703,7 @@ void PqlEvaluator::EvaluateCalls(PqlSuchthat suchthat,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Calls." << endl;
+  cout << "Evaluating Calls" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
@@ -791,7 +792,7 @@ void PqlEvaluator::EvaluateCallsT(PqlSuchthat suchthat,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Calls*." << endl;
+  cout << "Evaluating Calls*" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
@@ -880,7 +881,7 @@ void PqlEvaluator::EvaluateNext(PqlSuchthat suchthat,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Next." << endl;
+  cout << "Evaluating Next" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
@@ -908,43 +909,44 @@ void PqlEvaluator::EvaluateNext(PqlSuchthat suchthat,
       }
       return;
     case kOneSynonymLeft:
-      result_list = pkb.GetPrevious(right_name);
+      result_list = FilterResult(pkb.GetPrevious(right_name), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not executed after any progline" << endl;
+        cout << right_name << " is not executed after any left type" << endl;
       } else {
         StoreClauseResultInTable(result_list, left_name);
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = pkb.GetAllPrevious();
+      result_list = FilterResult(pkb.GetAllPrevious(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "progline is not executed before anything" << endl;
+        cout << "left type is not executed before anything" << endl;
       } else {
         StoreClauseResultInTable(result_list, left_name);
       }
       return;
     case kOneSynonymRight:
-      result_list = pkb.GetNext(left_name);
+      result_list = FilterResult(pkb.GetNext(left_name), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not executed before any progline" << endl;
+        cout << left_name << " is not executed before any right type" << endl;
       } else {
         StoreClauseResultInTable(result_list, right_name);
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = pkb.GetAllNext();
+      result_list = FilterResult(pkb.GetAllNext(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " progline is not executed after anything" << endl;
+        cout << " right type is not executed before anything" << endl;
       } else {
         StoreClauseResultInTable(result_list, right_name);
       }
       return;
     case kTwoSynonym:
-      result_pair_list = pkb.GetAllNextPairs();
+      result_pair_list = FilterPairResult(kFilterBoth, pkb.GetAllNextPairs(),
+                                          left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Next(left,right)" << endl;
@@ -956,7 +958,100 @@ void PqlEvaluator::EvaluateNext(PqlSuchthat suchthat,
 }
 
 void PqlEvaluator::EvaluateNextT(PqlSuchthat suchthat,
-                                 SuchthatParamType arrangement) {}
+                                 SuchthatParamType arrangement) {
+  PKB pkb = GetPKB();
+  PqlExtractor pqle = PqlExtractor(pkb);
+  // Getting parameter of such that
+  Parameters such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating Next*" << endl;
+
+  switch (arrangement) {
+    case kNoSynonym:
+      if (!pqle.IsNextT(left_name, right_name)) {
+        SetClauseFlag(false);
+        cout << left_name << " not indirectly executed after" << right_name
+             << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreLeft:
+      if (pqle.GetPreviousT(right_name).empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not indirectly executed after anything "
+             << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreRight:
+      if (pqle.GetNextT(left_name).empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not indirectly executed before anything "
+             << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreBoth:
+      if (!pkb.HasNextRelationship()) {
+        SetClauseFlag(false);
+        cout << " no next relationship found " << endl;
+      }
+      return;
+    case kOneSynonymLeft:
+      result_list = FilterResult(pqle.GetPreviousT(right_name), left_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not indirectly executed after any left type"
+             << endl;
+      } else {
+        StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymLeftUnderscoreRight:
+      result_list = FilterResult(pkb.GetAllPrevious(), left_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << "left type is not indirectly executed before anything" << endl;
+      } else {
+        StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymRight:
+      result_list = FilterResult(pqle.GetNextT(left_name), right_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not indirectly executed before any right type"
+             << endl;
+      } else {
+        StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kOneSynonymRightUnderscoreLeft:
+      result_list = FilterResult(pkb.GetAllNext(), right_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " right type is not indirectly executed after anything" << endl;
+      } else {
+        StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kTwoSynonym:
+      result_pair_list = FilterPairResult(kFilterBoth, pqle.GetAllNextTPairs(),
+                                          left_type, right_type);
+      if (result_pair_list.empty()) {
+        SetClauseFlag(false);
+        cout << " no pair of Next*(left,right)" << endl;
+      } else {
+        StoreClauseResultInTable(result_pair_list, left_name, right_name);
+      }
+      return;
+  }
+}
 
 void PqlEvaluator::EvaluateAffects(PqlSuchthat suchthat,
                                    SuchthatParamType arrangement) {}
