@@ -475,6 +475,10 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
   return call_table_.IsCallT(caller_proc, callee_proc);
 }
 
+bool PKB::IsCalledProc(ProcName callee_proc) {
+  return call_table_.IsCalledProc(callee_proc);
+}
+
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
 bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {

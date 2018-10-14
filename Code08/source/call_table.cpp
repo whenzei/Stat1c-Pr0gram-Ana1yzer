@@ -60,7 +60,7 @@
   ProcNameList CallTable::GetCallee(ProcName caller_proc) {
     ProcNameList callee_list;
     if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
-      callee_list.push_back(direct_call_table_[caller_proc].front());
+      callee_list = direct_call_table_[caller_proc];
     }
     return callee_list;
   }
@@ -133,6 +133,10 @@
       return (find(callee_list.begin(), callee_list.end(), callee_proc) != callee_list.end());
     }
     return false; 
+  }
+
+  bool CallTable::IsCalledProc(ProcName callee_proc) {
+    return callee_set_.find(callee_proc) != callee_set_.end();
   }
 
   bool CallTable::HasCallsRelationship() {

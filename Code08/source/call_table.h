@@ -109,6 +109,9 @@ public:
   // @returns true if Call*(caller, callee) is true
   bool IsCallT(ProcName caller_proc, ProcName callee_proc);
 
+  // @returns true if callee_proc is called by any other procedure
+  bool IsCalledProc(ProcName callee_proc);
+
   // @returns true if Call Table has any calls relationships
   // false if otherwise
   bool HasCallsRelationship();
