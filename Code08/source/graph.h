@@ -2,6 +2,7 @@
 
 #ifndef SPA_GRAPH_H
 #define SPA_GRAPH_H
+
 #include <map>
 #include <queue>
 #include <string>
@@ -27,6 +28,7 @@ struct Node {
 };
 
 using NodeMap = map<string, Node*>;
+using NodeSet = unordered_set<Node*>;
 
 class Graph {
   NodeMap node_map_;
@@ -34,6 +36,8 @@ class Graph {
 
   void Toposort(const string& name, VisitedMap& visited_map,
                 queue<string>& topoqueue);
+
+  bool HasCycle(const string& name, NodeSet& adj, VisitedMap& visited_map);
 
  public:
   Graph();
@@ -56,6 +60,10 @@ class Graph {
   // DFS with toposort
   // @returns vector of procedures in reverse topological order
   vector<string> Toposort();
+
+  // Check for cycles in the graph
+  // @returns true if cycle exists, false otherwise
+  bool HasCycle();
 };
 
 #endif  // !SPA_GRAPH_H

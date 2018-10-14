@@ -1,6 +1,7 @@
 #pragma once
 
 #include "design_extractor.h"
+#include "semantic_exception.h"
 
 DesignExtractor::DesignExtractor(PKB* pkb) { pkb_ = pkb; }
 
@@ -8,6 +9,12 @@ void DesignExtractor::UpdatePkb() {
   UpdateParentT();
   UpdateCallUsesAndModifies();
   UpdateCallT();
+}
+
+void DesignExtractor::CheckCyclicCalls() {
+  if (pkb_->GetCallGraph()->HasCycle()) {
+    throw SemanticErrorExemption("Cyclic call statements found, terminating.");
+  }
 }
 
 void DesignExtractor::UpdateParentT() {
