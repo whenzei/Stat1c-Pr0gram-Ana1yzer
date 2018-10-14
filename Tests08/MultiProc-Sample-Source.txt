@@ -61,7 +61,7 @@ procedure third {
       x = apple;                          \\ 34
     } else {
       x = pear;                           \\ 35
-      call fifth;                         \\ 36
+      read x;                             \\ 36
     }
   }
   pear = pear + 6;                        \\ 37
