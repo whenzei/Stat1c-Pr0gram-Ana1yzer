@@ -7,6 +7,7 @@ DesignExtractor::DesignExtractor(PKB* pkb) { pkb_ = pkb; }
 void DesignExtractor::UpdatePkb() {
   UpdateParentT();
   UpdateUsesAndModifiesWithCallGraph();
+  UpdateCallT();
 }
 
 void DesignExtractor::UpdateParentT() {
@@ -59,10 +60,29 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
   }
 }
 
+void DesignExtractor::UpdateCallT() {
+  ProcNameList procs = pkb_->GetAllCaller();
+  for (auto& proc : procs) {
+    ProcNameList callee_procs = pkb_->GetCallee(proc);
+    for (auto& direct_callee : callee_procs) {
+      DescentForCallee(proc, direct_callee);
+    }
+  }
+}
+
 void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
   StmtNumList child_stmts = pkb_->GetChild(curr_stmt);
   for (auto& child : child_stmts) {
     pkb_->InsertParentT(true_parent, child);
     DescentForChild(true_parent, child);
+  }
+}
+
+void DesignExtractor::DescentForCallee(ProcName true_caller,
+  ProcName curr_callee) {
+  ProcNameList callees = pkb_->GetCallee(curr_callee);
+  for (auto& callee : callees) {
+    pkb_->InsertIndirectCallRelationship(true_caller, callee);
+    DescentForCallee(true_caller, callee);
   }
 }
