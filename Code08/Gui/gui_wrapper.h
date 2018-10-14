@@ -9,7 +9,7 @@
 
 class GUIWrapper {
   PKB pkb_;
-  bool parse_success_;
+  bool exception_caught_;
 
  public:
   // default constructor

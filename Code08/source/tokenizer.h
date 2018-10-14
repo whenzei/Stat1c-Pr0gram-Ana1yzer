@@ -73,11 +73,15 @@ class Tokenizer {
   };
 
   // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
-  // to tokenize the supplied input, returning a list of tokens
+  // to tokenize the supplied input
+  // @throws SyntacticErrorException if unknown character encountered
+  // @returns vector of tokens
   static TokenList Tokenize(string input);
 
   // Take in an array of tokenizer functions such as SkipWhiteSpace or
-  // TokenizeDigits to tokenize the supplied input, returning a list of tokens
+  // TokenizeDigits to tokenize the supplied input
+  // @throws SyntacticErrorException if unknown character encountered
+  // @returns vector of tokens
   static TokenList Tokenize(string, TokenizerFunc[]);
 
   // Debug function, returns the contents of the token as a string

@@ -9,6 +9,7 @@
 #include "parser.h"
 #include "pkb.h"
 #include "statement_data.h"
+#include "syntactic_error_exception.h"
 #include "tokenizer.h"
 #include "util.h"
 #include "validator.h"
@@ -42,6 +43,7 @@ bool Parser::Parse(string filepath) {
   // validate tokens for syntax errors
   Validator validator = Validator(tokens_);
   if (!validator.ValidateProgram()) {
+    cout << "Validation failed" << endl;
     return false;
   }
 
@@ -222,7 +224,7 @@ ParseData Parser::ProcessKeyword(int given_stmt_list_num) {
       return ProcessPrint(given_stmt_list_num);
   }
 
-  exit(-1);
+  throw SyntacticErrorException("Unknown keyword detected.");
 }
 
 ParseData Parser::ProcessRead(int given_stmt_list_num) {

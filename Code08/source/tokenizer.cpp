@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "syntactic_error_exception.h"
 #include "tokenizer.h"
 
 using ts = Tokenizer::TokenSubtype;
@@ -13,10 +14,10 @@ const std::unordered_map<string, Tokenizer::TokenSubtype> kKeywordsToEnum = {
     {"call", ts::kCall},           {"read", ts::kRead}};
 
 static const string kTokenTypeNames[] = {
-    "nothing",    "digit",     "name",      "word",       "openbrace",
-    "closebrace", "semicolon", "comma",     "underscore", "quotation",
-    "assignment", "operator",  "openparen", "closeparen", "period", 
-    "hash",       "conditional", "relational", "keyword", "unknown",
+    "nothing",    "digit",       "name",       "word",       "openbrace",
+    "closebrace", "semicolon",   "comma",      "underscore", "quotation",
+    "assignment", "operator",    "openparen",  "closeparen", "period",
+    "hash",       "conditional", "relational", "keyword",    "unknown",
     "EOF"};
 
 static const string kTokenSubtypeNames[] = {
@@ -26,6 +27,8 @@ const int kNumberOfFunctions = 11;
 
 // Uses various tokenizer functions such as SkipWhiteSpace or TokenizeDigits
 // to tokenize the supplied input, returning a list of Tokens
+// @throws SyntacticErrorException if unknown character encountered
+// @returns vector of tokens
 TokenList Tokenizer::Tokenize(string input) {
   TokenizerFunc tokenizer_functions[kNumberOfFunctions] = {
       &SkipComments,        &SkipWhitespace,      &TokenizeDigits,
@@ -37,6 +40,8 @@ TokenList Tokenizer::Tokenize(string input) {
 
 // Take in an array of tokenizer functions such as SkipWhiteSpace or
 // TokenizeDigits to tokenize the supplied input, returning a list of tokens
+// @throws SyntacticErrorException if unknown character encountered
+// @returns vector of tokens
 TokenList Tokenizer::Tokenize(string input,
                               TokenizerFunc tokenizer_functions[]) {
   size_t current_index = 0, vector_len = input.size();
@@ -62,10 +67,10 @@ TokenList Tokenizer::Tokenize(string input,
       }
     }
 
-    // unknown token, since none of the tokenizers can recognize it
-    // TODO: decide if we throw an exception here
+    // unknown token, since none of the tokenizers can recognize it. Throw
+    // exception
     if (!is_done) {
-      tokens.push_back(Token({kUnknown, string(1, input[current_index++])}));
+      throw SyntacticErrorException("Unknown token encountered. Terminating.");
     }
   }
 
@@ -147,10 +152,7 @@ Result Tokenizer::TokenizeNames(string input, int current_index) {
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize words (can be
 // alphanumeric or symbols), and returns the result as a Result struct
 Result Tokenizer::TokenizeWords(string input, int current_index) {
-  Result result =
-      TokenizePattern(kWord, regex{R"(\w+)"}, input, current_index);
-
-  return result;
+  return TokenizePattern(kWord, regex{R"(\w+)"}, input, current_index);
 }
 
 // Uses Tokenizer::TokenizePattern(...) with regex to tokenize both opening and
