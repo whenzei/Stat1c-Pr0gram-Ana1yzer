@@ -22,6 +22,7 @@
     <ClCompile Include="..\source\parse_data.cpp" />
     <ClCompile Include="..\source\pattern_table.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
+    <ClCompile Include="..\source\pql_extractor.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
     <ClCompile Include="..\source\pql_pattern.cpp" />
     <ClCompile Include="..\source\pql_suchthat.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="..\source\pattern_table.h" />
     <ClInclude Include="..\source\pkb.h" />
     <ClInclude Include="..\source\pql_clause.h" />
+    <ClInclude Include="..\source\pql_extractor.h" />
     <ClInclude Include="..\source\pql_global.h" />
     <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
