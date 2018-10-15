@@ -146,9 +146,17 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
       string selection = tokens[current_index].value;
       if (tokens[current_index+1].type == Tokenizer::TokenType::kPeriod) {
+        if (type == PqlDeclarationEntity::kProgline) {
+          error_message_ = "Progline can not have attribute name in selection clause.";
+          return false;
+        }
         current_index += 2;
         if(!ParseAttribute(tokens, &current_index, &type)) return false;
         current_index--; // step back because ParseAttribute step forward internally
+      }
+      // append extra 'p' for call.procName
+      if (type == PqlDeclarationEntity::kCallName) {
+        selection = "0" + selection;
       }
       query_->AddSelection(selection, type);
     }
@@ -167,12 +175,21 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         if (declarations.find(tokens[current_index].value) != declarations.end()) {
           // check for attribute
           PqlDeclarationEntity type = declarations.at(tokens[current_index].value);
+          string selection = tokens[current_index].value;
           if (tokens[current_index + 1].type == Tokenizer::TokenType::kPeriod) {
+            if (type == PqlDeclarationEntity::kProgline) {
+              error_message_ = "Progline can not have attribute name in selection clause.";
+              return false;
+            }
             current_index += 2;
             if (!ParseAttribute(tokens, &current_index, &type)) return false;
             current_index--; // step back because ParseAttribute step forward internally
           }
-          query_->AddSelection(tokens[current_index].value, type);
+          // append '0' infront for call.procName
+          if (type == PqlDeclarationEntity::kCallName) {
+            selection = "0" + selection;
+          }
+          query_->AddSelection(selection, type);
         }
         else {
           error_message_ = "Select synonym is not declared.";
@@ -196,6 +213,10 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       error_message_ = "Extra comma in select tuple.";
       return false;
     }
+  }
+  else {
+    error_message_ = "Invalid selection";
+    return false;
   }
 
   ++current_index;
@@ -564,10 +585,13 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
+      if(first_type != PqlDeclarationEntity::kVariable) {
+        error_message_ = "First parameter of while pattern clause is invalid.";
+        return false;
+      }
     }
     else {
-      error_message_ =
-        "First parameter of while pattern clause is not declared.";
+      error_message_ = "First parameter of while pattern clause is not declared.";
       return false;
     }
   }
@@ -635,6 +659,10 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
+      if (first_type != PqlDeclarationEntity::kVariable) {
+        error_message_ = "First parameter of while pattern clause is invalid.";
+        return false;
+      }
     }
     else {
       error_message_ = "First parameter of if pattern clause is not declared.";
@@ -729,16 +757,27 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
   // 3. Handle period
   current = tokens[*current_index];
-  if (current.type == Tokenizer::TokenType::kPeriod) {
-    // 3.1 Check if its a synonym
-    if (left_type == PqlDeclarationEntity::kIdent || left_type == PqlDeclarationEntity::kInteger) {
-      error_message_ = "Left parameter of with clause can not have attribute.";
+  if (left_type == PqlDeclarationEntity::kIdent || left_type == PqlDeclarationEntity::kInteger || left_type == PqlDeclarationEntity::kProgline) {
+    if (current.type == Tokenizer::TokenType::kPeriod) {
+      error_message_ = "IDENT, INTEGER and progline can not have attribute name.";
       return false;
     }
+  }
+  else {
+    if (current.type == Tokenizer::TokenType::kPeriod) {
+      current = tokens[++*current_index];
+      // 3.1. Handle attribute
+      if(!ParseAttribute(tokens, current_index, &left_type)) return false;
 
-    current = tokens[++*current_index];
-    // 3.2. Handle attribute
-    if(!ParseAttribute(tokens, current_index, &left_type)) return false;
+      // append extra 'p' for call.procName
+      if (left_type == PqlDeclarationEntity::kCallName) {
+        left = "0" + left;
+      }
+    }
+    else {
+      error_message_ = "Missing attribute name in with clause.";
+      return false;
+    }
   }
 
   // 4. Handle equal
@@ -752,7 +791,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   current = tokens[++*current_index];
   ParseParameter(tokens, current_index, &right, &right_type, "with ");
   if (right_type == PqlDeclarationEntity::kUnderscore) {
-    error_message_ = "Invalid left parameter of with clause.";
+    error_message_ = "Invalid right parameter of with clause.";
     return false;
   }
 
@@ -769,19 +808,40 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
   // 7. Handle period
   current = tokens[*current_index];
-  if (current.type == Tokenizer::TokenType::kPeriod) {
-    // 7.1. Check if its a synonym
-    if (right_type == PqlDeclarationEntity::kIdent || right_type == PqlDeclarationEntity::kInteger) {
-      error_message_ = "Right parameter of with clause can not have attribute.";
+  if (right_type == PqlDeclarationEntity::kIdent || right_type == PqlDeclarationEntity::kInteger || right_type == PqlDeclarationEntity::kProgline) {
+    if (current.type == Tokenizer::TokenType::kPeriod) {
+      error_message_ = "IDENT, INTEGER and progline can not have attribute name.";
       return false;
     }
+  }
+  else {
+    if (current.type == Tokenizer::TokenType::kPeriod) {
+      current = tokens[++*current_index];
+      // 7.1. Handle attribute
+      if (!ParseAttribute(tokens, current_index, &right_type)) return false;
 
-    current = tokens[++*current_index];
-    // 7.2. Handle attribute
-    if(!ParseAttribute(tokens, current_index, &right_type)) return false;
+      // append extra 'p' for call.procName
+      if (right_type == PqlDeclarationEntity::kCallName) {
+        right = "0" + right;
+      }
+    }
+    else {
+      error_message_ = "Missing attribute name in with clause.";
+      return false;
+    }
   }
 
-  // 8. Create with clause
+  // 8. Check that left and right is compatible
+  EntitySet set = with_table.at(left_type);
+  if (set.find(right_type) == set.end()) {
+    error_message_ = "Left parameter incompatible with right parameter in wtih clause.";
+    return false;
+  }
+
+  // 9. If left and right is the same then ignore the clause
+  if (left == right && left_type == right_type) return true;
+
+  // 10. Create with clause
   query_->AddClause(new PqlWith(left, left_type, right, right_type));
 
   --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end
@@ -846,7 +906,7 @@ bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlDeclarat
   }
 
   // 1. Get the attribute name
-  string attr = current.value;;
+  string attr = current.value;
   if (attr == "stmt") {
     current = tokens[++*current_index];
     if (current.type != Tokenizer::TokenType::kHash) {

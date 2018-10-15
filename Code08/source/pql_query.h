@@ -23,7 +23,7 @@ using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
-using PqlPatternTable = unordered_map<PqlSuchthatType, EntitySet>;
+using WithTable = unordered_map<PqlDeclarationEntity, EntitySet>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -216,6 +216,37 @@ PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclaration
 // If
 const EntitySet pattern_if = {
 PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kConstant, PqlDeclarationEntity::kUnderscore, PqlDeclarationEntity::kIdent
+};
+
+/*
+SELECT WITH CLAUSE
+The first parameters can only be compatible to a certain type in the second parameter
+For example, a1.stmt# = c.value is valid
+*/
+
+const EntitySet number = {
+PqlDeclarationEntity::kProgline, PqlDeclarationEntity::kStmt, PqlDeclarationEntity::kRead, PqlDeclarationEntity::kPrint,
+PqlDeclarationEntity::kWhile, PqlDeclarationEntity::kIf, PqlDeclarationEntity::kAssign, PqlDeclarationEntity::kConstant,
+PqlDeclarationEntity::kCall, PqlDeclarationEntity::kInteger
+};
+
+const EntitySet name = {
+PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kProcedure, PqlDeclarationEntity::kCallName, PqlDeclarationEntity::kIdent
+};
+
+const WithTable with_table = {
+{PqlDeclarationEntity::kProgline, number},
+{PqlDeclarationEntity::kStmt, number},
+{PqlDeclarationEntity::kRead, number},
+{PqlDeclarationEntity::kPrint, number},
+{PqlDeclarationEntity::kWhile, number},
+{PqlDeclarationEntity::kIf, number},
+{PqlDeclarationEntity::kAssign, number},
+{PqlDeclarationEntity::kCall, number},
+{PqlDeclarationEntity::kConstant, number},
+{PqlDeclarationEntity::kVariable, name},
+{PqlDeclarationEntity::kCallName, name},
+{PqlDeclarationEntity::kProcedure, name}
 };
 
 /*
