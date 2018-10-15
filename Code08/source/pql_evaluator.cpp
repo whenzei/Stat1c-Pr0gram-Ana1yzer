@@ -29,6 +29,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
+  vector<QueryResultList> tuple_results;
 
   PqlQuery user_query = GetQuery();
 
@@ -36,10 +37,16 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // GetSelectAllResult method
   if (user_query.GetClauses().empty()) {
     // Temp code, will implement tuple processing later
-    QueryResultList get_all_result =
-        GetSelectAllResult(user_query.GetSelections()[0].second);
-    copy(get_all_result.begin(), get_all_result.end(),
-         back_inserter(final_results));
+    if (user_query.GetSelections().size() > 1) {
+      for (auto& select_syn : user_query.GetSelections()) {
+        tuple_results.push_back(GetSelectAllResult(select_syn.second));
+      }
+    } else {
+      QueryResultList get_all_result =
+          GetSelectAllResult(user_query.GetSelections().front().second);
+      copy(get_all_result.begin(), get_all_result.end(),
+           back_inserter(final_results));
+    }
   }
   // Else use GetSuchThatResult/GetPatternResult method
   else {
@@ -64,20 +71,35 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     // No false clause and it is not BOOLEAN
     if (IsValidClause() && !user_query.GetSelections().empty()) {
       // Temp code, will implement tuple processing later
-      Synonym select_syn = GetQuery().GetSelections()[0];
-
-      QueryResultList other_clause_result = GetResultFromTable(select_syn);
-      copy(other_clause_result.begin(), other_clause_result.end(),
-           back_inserter(final_results));
-    }
-
-    // If BOOLEAN
-    if (user_query.GetSelections().empty()) {
-      if (IsValidClause()) {
-        final_results.push_back("true");
+      if (user_query.GetSelections().size() > 1) {
+        for (auto& select_syn : user_query.GetSelections()) {
+          tuple_results.push_back(GetResultFromTable(select_syn));
+        }
       } else {
-        final_results.push_back("false");
+        Synonym select_syn = GetQuery().GetSelections().front();
+
+        QueryResultList other_clause_result = GetResultFromTable(select_syn);
+        copy(other_clause_result.begin(), other_clause_result.end(),
+             back_inserter(final_results));
       }
+    }
+  }
+
+  cout << "Tuple size: " << tuple_results.size() << endl;
+
+  // Do tuple processing
+  if (!tuple_results.empty()) {
+    string temp;
+    TupleCrossProduct(final_results, temp, tuple_results.begin(),
+                      tuple_results.end());
+  }
+
+  // If BOOLEAN
+  if (user_query.GetSelections().empty()) {
+    if (IsValidClause()) {
+      final_results.push_back("true");
+    } else {
+      final_results.push_back("false");
     }
   }
 
@@ -1806,6 +1828,28 @@ void PqlEvaluator::StoreClauseResultInTable(
   SetPqlResult(pql_result);
 }
 
+void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
+                                     string& temp_result,
+                                     vector<QueryResultList>::iterator curr,
+                                     vector<QueryResultList>::iterator end) {
+  if (curr == end) {
+    // terminal condition of the recursion. We no longer have
+    // any input vectors to manipulate. Add the current result (temp_result)
+    // to the final set of results (final_result).
+    final_result.push_back(Trim(temp_result));
+    return;
+  }
+
+  const QueryResultList& currstr = *curr;
+  for (QueryResultList::const_iterator it = currstr.begin();
+       it != currstr.end(); it++) {
+    string temp_prev = temp_result;
+    temp_result += *it + " ";
+    TupleCrossProduct(final_result, temp_result, curr + 1, end);
+    temp_result = temp_prev;
+  }
+}
+
 QueryResultList PqlEvaluator::FilterWithResult(
     QueryResultList unfiltered_result, PqlDeclarationEntity entity_type) {
   QueryResultList filtered_result;
@@ -2104,6 +2148,16 @@ SuchthatParamType PqlEvaluator::CheckSuchthatParamType(
     }
   }  // end (int/ident, ?)
 }
+
+string PqlEvaluator::Trim(const string& str) {
+  size_t first = str.find_first_not_of(' ');
+  if (string::npos == first) {
+    return str;
+  }
+  size_t last = str.find_last_not_of(' ');
+  return str.substr(first, (last - first + 1));
+}
+
 
 /* Getters and Setters */
 

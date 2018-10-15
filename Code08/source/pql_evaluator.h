@@ -192,19 +192,19 @@ class PqlEvaluator {
    */
   void EvaluateCallsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
-   /**
+  /**
    * Evaluate Next clause and store result in PqlResult table
    * @param Next clause in the Query and arrangement of clause arguments
    */
   void EvaluateNext(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
-    /**
+  /**
    * Evaluate Next* clause and store result in PqlResult table
    * @param Next* clause in the Query and arrangement of clause arguments
    */
   void EvaluateNextT(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
-   /**
+  /**
    * Evaluate Affects clause and store result in PqlResult table
    * @param Next clause in the Query and arrangement of clause arguments
    */
@@ -215,6 +215,14 @@ class PqlEvaluator {
    * @param Next* clause in the Query and arrangement of clause arguments
    */
   void EvaluateAffectsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Take in the list of results and do a cross product for tuple
+   * @param List of results of each select clause
+   */
+  void TupleCrossProduct(FinalResult& final_result, string& temp_result,
+                                vector<QueryResultList>::iterator curr,
+                                vector<QueryResultList>::iterator end);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
@@ -282,6 +290,10 @@ class PqlEvaluator {
    * @param the vector<string> of pairs and the pair's synonym-variable name
    */
   void StoreClauseResultInTable(QueryResultPairList, string, string);
+
+  /* Helper function to trim a string */
+  string Trim(const string&);
+
 };
 
 #endif  // !QUERY_EVALUATOR_H

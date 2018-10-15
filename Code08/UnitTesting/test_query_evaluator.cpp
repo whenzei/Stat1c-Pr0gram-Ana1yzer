@@ -26,6 +26,35 @@ TEST_CLASS(TestQueryEvaluator) {
   PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
   PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
 
+  TEST_METHOD(TestTupleCrossProduct) {
+    PqlEvaluator qe;
+    vector<QueryResultList> test_items = {{"1", "2"}, {"4", "5"}};
+    FinalResult fr;
+    string temp;
+    qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
+
+    string expected1 = "1 4";
+    string expected4 = "2 5";
+
+    Assert::IsTrue(fr.size() == 4);
+
+    Assert::AreEqual(expected1, fr.front());
+    Assert::AreEqual(expected4, fr.back());
+  }
+
+  TEST_METHOD(TestTrim) {
+    string smt = "abc ";
+    string empty = "";
+    PqlEvaluator qe;
+    string expected = "abc";
+    string result = qe.Trim(smt);
+    Assert::AreEqual(expected, result);
+
+    string expected2 = "";
+    string result2 = qe.Trim(empty);
+    Assert::AreEqual(expected2, result2);
+  }
+
   TEST_METHOD(TestCheckWithParamTypeTwoSyn) {
     PqlEvaluator qe;
     PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "b",
