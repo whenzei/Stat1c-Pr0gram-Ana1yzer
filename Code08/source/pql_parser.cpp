@@ -156,9 +156,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       }
       // append extra 'p' for call.procName
       if (type == PqlDeclarationEntity::kCallName) {
-        do {
-          selection += "p";
-        } while (declarations.find(selection) != declarations.end());
+        selection = "0" + selection;
       }
       query_->AddSelection(selection, type);
     }
@@ -187,11 +185,9 @@ bool PqlParser::ParseSelect(TokenList tokens) {
             if (!ParseAttribute(tokens, &current_index, &type)) return false;
             current_index--; // step back because ParseAttribute step forward internally
           }
-          // append extra 'p' for call.procName
+          // append '0' infront for call.procName
           if (type == PqlDeclarationEntity::kCallName) {
-            do {
-              selection += "p";
-            } while (declarations.find(selection) != declarations.end());
+            selection = "0" + selection;
           }
           query_->AddSelection(selection, type);
         }
@@ -217,6 +213,10 @@ bool PqlParser::ParseSelect(TokenList tokens) {
       error_message_ = "Extra comma in select tuple.";
       return false;
     }
+  }
+  else {
+    error_message_ = "Invalid selection";
+    return false;
   }
 
   ++current_index;
@@ -764,9 +764,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
       // append extra 'p' for call.procName
       if (left_type == PqlDeclarationEntity::kCallName) {
-        do {
-          left += "p";
-        } while (declarations.find(left) != declarations.end());
+        left = "0" + left;
       }
     }
     else {
@@ -817,9 +815,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
       // append extra 'p' for call.procName
       if (right_type == PqlDeclarationEntity::kCallName) {
-        do {
-          right += "p";
-        } while (declarations.find(left) != declarations.end());
+        right = "0" + right;
       }
     }
     else {
