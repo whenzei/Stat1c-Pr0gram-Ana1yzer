@@ -64,8 +64,9 @@ namespace PKBTests {
       Assert::AreEqual(kProcName2, direct_callee_list.front());
       call_table.InsertDirectCallRelationship(kProcName1, kProcName3);
       direct_callee_list = call_table.GetCallee(kProcName1);
-      // Direct callee should still be kProcName2
+      Assert::IsTrue(direct_callee_list.size() == 2);
       Assert::AreEqual(kProcName2, direct_callee_list.front());
+      Assert::AreEqual(kProcName3, direct_callee_list.back());
     }
 
     TEST_METHOD(TestGetCalleeT) {
@@ -95,8 +96,9 @@ namespace PKBTests {
       Assert::AreEqual(kProcName1, direct_caller_list.front());
       call_table.InsertDirectCallRelationship(kProcName3, kProcName2);
       direct_caller_list = call_table.GetCaller(kProcName2);
-      // Direct callee should still be kProcName1
+      Assert::IsTrue(direct_caller_list.size() == 2);
       Assert::AreEqual(kProcName1, direct_caller_list.front());
+      Assert::AreEqual(kProcName3, direct_caller_list.back());
     }
 
     TEST_METHOD(TestGetCallerT) {
