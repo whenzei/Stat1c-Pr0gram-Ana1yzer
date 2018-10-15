@@ -92,7 +92,6 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
     case PqlDeclarationEntity::kWhile:
     case PqlDeclarationEntity::kIf:
     case PqlDeclarationEntity::kAssign:
-    case PqlDeclarationEntity::kProgline:
       if (attr == "stmt") return true;
       break;
     case PqlDeclarationEntity::kVariable:
