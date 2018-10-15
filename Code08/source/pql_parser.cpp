@@ -585,10 +585,13 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
+      if(first_type != PqlDeclarationEntity::kVariable) {
+        error_message_ = "First parameter of while pattern clause is invalid.";
+        return false;
+      }
     }
     else {
-      error_message_ =
-        "First parameter of while pattern clause is not declared.";
+      error_message_ = "First parameter of while pattern clause is not declared.";
       return false;
     }
   }
@@ -656,6 +659,10 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   if (first_type == PqlDeclarationEntity::kSynonym) {
     if (declarations.find(first) != declarations.end()) {
       first_type = declarations.at(first);
+      if (first_type != PqlDeclarationEntity::kVariable) {
+        error_message_ = "First parameter of while pattern clause is invalid.";
+        return false;
+      }
     }
     else {
       error_message_ = "First parameter of if pattern clause is not declared.";
