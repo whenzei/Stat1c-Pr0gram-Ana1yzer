@@ -1840,9 +1840,9 @@ void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
     return;
   }
 
-  const QueryResultList& currstr = *curr;
-  for (QueryResultList::const_iterator it = currstr.begin();
-       it != currstr.end(); it++) {
+  const QueryResultList& curr_list = *curr;
+  for (QueryResultList::const_iterator it = curr_list.begin();
+       it != curr_list.end(); it++) {
     string temp_prev = temp_result;
     temp_result += *it + " ";
     TupleCrossProduct(final_result, temp_result, curr + 1, end);

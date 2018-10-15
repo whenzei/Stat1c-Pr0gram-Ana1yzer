@@ -33,13 +33,29 @@ TEST_CLASS(TestQueryEvaluator) {
     string temp;
     qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
 
-    string expected1 = "1 4";
-    string expected4 = "2 5";
+    string expectedstart = "1 4";
+    string expectedend = "2 5";
 
     Assert::IsTrue(fr.size() == 4);
 
-    Assert::AreEqual(expected1, fr.front());
-    Assert::AreEqual(expected4, fr.back());
+    Assert::AreEqual(expectedstart, fr.front());
+    Assert::AreEqual(expectedend, fr.back());
+  }
+
+  TEST_METHOD(TestTupleCrossProduct2) {
+    PqlEvaluator qe;
+    vector<QueryResultList> test_items = {{"1", "2", "3"}, {"4", "5"}, {"7", "8", "9", "10"}};
+    FinalResult fr;
+    string temp;
+    qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
+
+    string expectedstart = "1 4 7";
+    string expectedend = "3 5 10";
+
+    Assert::IsTrue(fr.size() == 24);
+
+    Assert::AreEqual(expectedstart, fr.front());
+    Assert::AreEqual(expectedend, fr.back());
   }
 
   TEST_METHOD(TestTrim) {
