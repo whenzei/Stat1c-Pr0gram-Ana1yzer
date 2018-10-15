@@ -902,145 +902,121 @@ Select s such that Uses(s, "_")
 call c; variable v;
 Select v such that Uses(c, v)
 x, sum, apple, pear, y, sum, f, count, z, m
-
 5000
 186 - USES-S syn-syn [call][select left]
 call c; variable v;
 Select c such that Uses(c, v)
 4, 17, 26, 46, 57, 61
-
 5000
 187 - USES-S syn-ident [call]
 call c;
 Select c such that Uses(c, "apple")
 4, 17, 26, 46, 57, 61
-
 5000
 188 - USES-S syn-wildcard [call]
 call c;
 Select c such that Uses(c, _)
 4, 17, 26, 46, 57, 61
-
 5000
 189 - MODIFIES-S syn-syn [call][select right]
 call c; variable v;
 Select v such that Modifies(c, v)
 x, pear, y, sum, z, f, count, m, a
-
 5000
 190 - MODIFIES-S syn-syn [call][select left]
 call c; variable v;
 Select c such that Modifies(c, v)
 4, 17, 26, 46, 57, 61
-
 5000
 191 - MODIFIES-S syn-ident [call]
 call c;
 Select c such that Modifies(c, "apple")
 4, 17, 26, 46, 57, 61
-
 5000
 192 - MODIFIES-S syn-wildcard [call]
 call c;
 Select c such that Modifies(c, _)
 4, 17, 26, 46, 57, 61
-
 5000
 193 - CALLS syn-syn [procedure, procedure]
 procedure p1, p2;
 Select p1 such that Calls(p1, p2)
 first, second, fourth, fifth
-
 5000
 194 - CALLS syn-ident [procedure]
 procedure p;
 Select p such that Calls(p, "second")
 first
-
 5000
 195 - CALLS syn-wildcard [procedure]
 procedure p;
 Select p such that Calls(p, _)
 first, second, fourth, fifth
-
 5000
 196 - CALLS ident-ident
 procedure p;
 Select p such that Calls("first", "second")
 first, second, third, fourth, fifth, separate
-
 5000
 197 - CALLS ident-ident
 procedure p;
 Select p such that Calls("first", _)
 first, second, third, fourth, fifth, separate
-
 5000
 198 - CALLS wildcard-syn [procedure]
 procedure p;
 Select p such that Calls(_, p)
 second, third, fourth, fifth
-
 5000
 199 - CALLS wildcard-wildcard
 procedure p;
 Select p such that Calls(_, _)
 first, second, third, fourth, fifth, separate
-
 5000
 200 - CALLS wildcard-ident
 procedure p;
 Select p such that Calls(_, "second")
 first, second, third, fourth, fifth, separate
-
 5000
 201 - CALLS* syn-syn [procedure, procedure]
 procedure p1, p2;
 Select p1 such that Calls*(p1, p2)
 first, second, fourth, fifth
-
 5000
 202 - CALLS* syn-ident [procedure]
 procedure p;
 Select p such that Calls*(p, "third")
 first, second, fourth, fifth
-
 5000
 203 - CALLS* syn-wildcard [procedure]
 procedure p;
 Select p such that Calls*(p, _)
 first, second, fourth, fifth
-
 5000
 204 - CALLS* ident-ident
 procedure p;
 Select p such that Calls*("first", "second")
 first, second, third, fourth, fifth, separate
-
 5000
 205 - CALLS* ident-ident
 procedure p;
 Select p such that Calls*("first", _)
 first, second, third, fourth, fifth, separate
-
 5000
 206 - CALLS* wildcard-syn [procedure]
 procedure p;
 Select p such that Calls*(_, p)
 second, third, fourth, fifth
-
 5000
 207 - CALLS* wildcard-wildcard
 procedure p;
 Select p such that Calls*(_, _)
 first, second, third, fourth, fifth, separate
-
 5000
 208 - CALLS* wildcard-ident
 procedure p;
 Select p such that Calls*(_, "second")
 first, second, third, fourth, fifth, separate
-
 5000
 209 - NEXT digit-digit
 read r;
@@ -1121,7 +1097,6 @@ a, apple, c, count, oSCar, b, f, m, pear, Romeo, sum, x, y, z
 assign a; variable v;
 Select v such that Next(a, 3) pattern a (v,_)
 b
-
 5000
 225 - NEXT* digit-digit
 read r;
@@ -1202,53 +1177,44 @@ a, apple, c, count, oSCar, b, f, m, pear, Romeo, sum, x, y, z
 assign a; variable v;
 Select v such that Next*(a, 4) pattern a (v,_)
 b, c
-
 5000
 241 - WITH syn-digit [assign]
 assign a; stmt s;
 Select BOOLEAN with a.stmt# = 2
 true
-
 5000
 242 - WITH syn-ident [call]
 call c;
 Select BOOLEAN with c.procName = "first"
 false
-
 5000
 243 - PATTERN if syn [variable]
 variable v; if ifs;
 Select v pattern ifs(v, _, _)
 a, left, x sum
-
 5000
 244 - PATTERN if wildcard
 if ifs;
 Select ifs pattern ifs(_, _, _)
 5, 12, 23, 33, 52
-
 5000
 245 - PATTERN if ident
 if ifs;
 Select ifs pattern ifs("sum", _, _)
 52
-
 5000
 246 - PATTERN while syn [variable]
 variable v; while w;
 Select v pattern w(v, _)
 beta, tmp, x, left, b, c, apple, count
-
 5000
 247 - PATTERN while wildcard
 while w;
 Select w pattern w(_, _)
 6, 8, 10, 13, 18, 30, 47
-
 5000
 248 - PATTERN while ident
 while w;
 Select w pattern w("count", _)
 47
-
 5000
