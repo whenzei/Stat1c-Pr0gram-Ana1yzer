@@ -6,9 +6,8 @@ using std::to_string;
 
 void ConstList::InsertConstValue(ConstValue const_value_int) {
   if (const_value_set_.insert(const_value_int).second) {
-    string const_value = to_string(const_value_int);
-    const_value_list_.push_back(const_value);
-    const_value_twin_list_.push_back(make_pair(const_value, const_value));
+    const_value_list_.push_back(const_value_int);
+    const_value_twin_list_.push_back(std::make_pair(const_value_int, const_value_int));
   } 
 }
 
