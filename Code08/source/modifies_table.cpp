@@ -37,7 +37,7 @@ bool ModifiesTable::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
 }
 
 bool ModifiesTable::IsModifiedByP(ProcName proc_name, VarName var_name) {
-  ModifiesMap::iterator iter = modifies_p_map_.find(proc_name);
+  ModifiesProcMap::iterator iter = modifies_p_map_.find(proc_name);
   if (iter != modifies_p_map_.end()) {
     VarNameList var_name_list = (*iter).second;
     return find(var_name_list.begin(), var_name_list.end(), var_name) !=
@@ -57,7 +57,7 @@ VarNameList ModifiesTable::GetModifiedVarS(StmtNum stmt_num) {
 }
 
 VarNameList ModifiesTable::GetModifiedVarP(ProcName proc_name) {
-  ModifiesMap::iterator iter = modifies_p_map_.find(proc_name);
+  ModifiesProcMap::iterator iter = modifies_p_map_.find(proc_name);
   if (iter != modifies_p_map_.end()) {
     return (*iter).second;
   } else {
@@ -70,7 +70,7 @@ StmtNumList ModifiesTable::GetModifyingStmt(VarName var_name) {
   if (iter != modified_by_s_map_.end()) {
     return (*iter).second;
   } else {
-    return VarNameList();
+    return StmtNumList();
   }
 }
 
@@ -79,7 +79,7 @@ StmtNumList ModifiesTable::GetAllModifyingStmt() {
 }
 
 ProcNameList ModifiesTable::GetModifyingProc(VarName var_name) {
-  ModifiedByMap::iterator iter = modified_by_p_map_.find(var_name);
+  ModifiedByProcMap::iterator iter = modified_by_p_map_.find(var_name);
   if (iter != modified_by_p_map_.end()) {
     return (*iter).second;
   } else {

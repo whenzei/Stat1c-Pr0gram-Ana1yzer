@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+using std::make_pair;
 using std::pair;
 using std::string;
 using std::to_string;
@@ -16,12 +17,12 @@ using std::unordered_set;
 using std::vector;
 
 using StmtNumInt = int;
-using StmtNum = string;
+using StmtNum = int;
 using ProcName = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
-using StmtNumPairList = vector<pair<string, string>>;
-using CFG = unordered_map<string, vector<string>>;
+using StmtNumList = vector<int>;
+using StmtNumSet = unordered_set<int>;
+using StmtNumPairList = vector<pair<int, int>>;
+using CFG = unordered_map<int, vector<int>>;
 using CFGTable = unordered_map<string, pair<CFG, CFG>>;
 
 // The next table class for the PKB component

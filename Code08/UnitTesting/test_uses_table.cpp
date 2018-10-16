@@ -6,10 +6,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace PKBTests {
 TEST_CLASS(TestUsesTable) {
-  const StmtNum kSampleStmtIdx1 = "1";
-  const StmtNum kSampleStmtIdx2 = "4";
-  const StmtNum kSampleStmtIdx3 = "102";
-  const StmtNum kSampleStmtIdx4 = "27";
+  const StmtNum kSampleStmtIdx1 = 1;
+  const StmtNum kSampleStmtIdx2 = 4;
+  const StmtNum kSampleStmtIdx3 = 102;
+  const StmtNum kSampleStmtIdx4 = 27;
   const VarName kSampleVarName1 = "j";
   const VarName kSampleVarName2 = "iter";
   const ProcName kSampleProcName1 = "simple";

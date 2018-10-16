@@ -15,17 +15,19 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
+using StmtNum = int;
+using StmtNumList = vector<int>;
+using StmtNumSet = unordered_set<int>;
 using VarName = string;
 using VarNameList = vector<string>;
 using ProcName = string;
 using ProcNameList = vector<string>;
 using ProcNameSet = unordered_set<string>;
-using UsesMap = unordered_map<string, vector<string>>;
-using UsedByMap = unordered_map<string, vector<string>>;
-using StmtVarPairList = vector<pair<string, string>>;
+using UsesMap = unordered_map<int, vector<string>>;
+using UsesProcMap = unordered_map<string, vector<string>>;
+using UsedByMap = unordered_map<string, vector<int>>;
+using UsedByProcMap = unordered_map<string, vector<string>>;
+using StmtVarPairList = vector<pair<int, string>>;
 using ProcVarPairList = vector<pair<string, string>>;
 
 // The uses table class for the PKB component
@@ -38,8 +40,8 @@ class UsesTable {
   ProcNameSet using_proc_set_;
   UsesMap uses_s_map_;
   UsedByMap used_by_s_map_;
-  UsesMap uses_p_map_;
-  UsedByMap used_by_p_map_;
+  UsesProcMap uses_p_map_;
+  UsedByProcMap used_by_p_map_;
 
  public:
   // Inserts a uses relationship between stmt_num and var_name in the

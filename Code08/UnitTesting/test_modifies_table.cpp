@@ -7,8 +7,8 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PKBTests {
 
 TEST_CLASS(TestModifiesTable) {
-  const StmtNum kStmtNum1 = "1";
-  const StmtNum kStmtNum2 = "3";
+  const StmtNum kStmtNum1 = 1;
+  const StmtNum kStmtNum2 = 3;
   const VarName kVarName1 = "a";
   const VarName kVarName2 = "b";
   const ProcName kProcName1 = "simple";

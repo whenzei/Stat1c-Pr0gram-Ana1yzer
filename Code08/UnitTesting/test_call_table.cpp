@@ -10,9 +10,9 @@ namespace PKBTests {
     const ProcName kProcName2 = "getAllUsers";
     const ProcName kProcName3 = "toByteArray";
     const ProcName kProcName4 = "POP";
-    const StmtNum kStmtNum1 = "1";
-    const StmtNum kStmtNum2 = "4";
-    const StmtNum kStmtNum3 = "893";
+    const StmtNum kStmtNum1 = 1;
+    const StmtNum kStmtNum2 = 4;
+    const StmtNum kStmtNum3 = 893;
 
     TEST_METHOD(TestInsertDirectCallRelationship) {
       CallTable call_table;
@@ -175,9 +175,9 @@ namespace PKBTests {
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName4);
       call_table.InsertIndirectCallRelationship(kProcName2, kProcName4);
-      StmtNumProcPairList pair_list = call_table.GetAllCallPairs();
+      ProcNamePairList pair_list = call_table.GetAllCallPairs();
       Assert::IsTrue(pair_list.size() == 3);
-      StmtNumProcPairList::iterator iter = pair_list.begin();
+      ProcNamePairList::iterator iter = pair_list.begin();
       Assert::AreEqual(kProcName1, (*iter).first);
       Assert::AreEqual(kProcName2, (*iter).second);
       iter++;
@@ -196,9 +196,9 @@ namespace PKBTests {
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName4);
       call_table.InsertIndirectCallRelationship(kProcName2, kProcName4);
-      StmtNumProcPairList pair_list = call_table.GetAllCallTPairs();
+      ProcNamePairList pair_list = call_table.GetAllCallTPairs();
       Assert::IsTrue(pair_list.size() == 6);
-      StmtNumProcPairList::iterator iter = pair_list.begin();
+      ProcNamePairList::iterator iter = pair_list.begin();
       Assert::AreEqual(kProcName1, (*iter).first);
       Assert::AreEqual(kProcName2, (*iter).second);
       iter++;

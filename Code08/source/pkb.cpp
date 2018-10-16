@@ -262,7 +262,7 @@ bool PKB::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
 StmtNumList PKB::GetParent(StmtNum stmt_num) {
   StmtNumList direct_parent_stmtnum_list;
   StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmt_num);
-  if (direct_parent_stmtnum.compare("") != 0) {
+  if (direct_parent_stmtnum != 0) {
     direct_parent_stmtnum_list.push_back(direct_parent_stmtnum);
   }
   return direct_parent_stmtnum_list;

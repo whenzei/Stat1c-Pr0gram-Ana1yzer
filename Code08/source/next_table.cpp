@@ -6,10 +6,11 @@ void NextTable::InsertCFG(ProcName proc_name) {
   cfg_table_.emplace(proc_name, make_pair(CFG(), CFG()));
 }
 
+// TODO: Change StmtNumInts to ints and delete unnecessary lines
 void NextTable::InsertNext(ProcName proc_name, StmtNumInt previous_stmt_int,
                            StmtNumInt next_stmt_int) {
-  StmtNum previous_stmt = to_string(previous_stmt_int);
-  StmtNum next_stmt = to_string(next_stmt_int);
+  StmtNum previous_stmt = previous_stmt_int;
+  StmtNum next_stmt = next_stmt_int;
   combined_cfg_[previous_stmt].push_back(next_stmt);
   combined_reverse_cfg_[next_stmt].push_back(previous_stmt);
   CFG* proc_cfg_ = &cfg_table_[proc_name].first;

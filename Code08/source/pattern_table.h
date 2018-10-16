@@ -11,14 +11,14 @@ using std::pair;
 using std::string;
 using std::unordered_map;
 
-using StmtNum = string;
-using StmtNumList = vector<string>;
+using StmtNum = int;
+using StmtNumList = vector<int>;
 using VarName = string;
 using Expr = string;
-using StmtVarPairList = vector<pair<string, string>>;
-using VarStmtMap = unordered_map<string, vector<string>>;
-using StmtVarMap = unordered_map<string, string>;
-using ExprStmtMap = unordered_map<string, vector<string>>;
+using StmtVarPairList = vector<pair<int, string>>;
+using VarStmtMap = unordered_map<string, vector<int>>;
+using StmtVarMap = unordered_map<int, string>;
+using ExprStmtMap = unordered_map<string, vector<int>>;
 
 // The pattern table class for the PKB component
 // Used to store assign statement patterns

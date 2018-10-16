@@ -23,9 +23,9 @@ StmtTypeList::StmtTypeList() {
 void StmtTypeList::InsertStmt(StmtNum stmt_num, PqlDeclarationEntity type) {
   stmt_type_map_.at(type).push_back(stmt_num);
   stmt_type_map_.at(PqlDeclarationEntity::kAll).push_back(stmt_num);
-  stmt_type_twin_map_.at(type).push_back(make_pair(stmt_num, stmt_num));
+  stmt_type_twin_map_.at(type).push_back(std::make_pair(stmt_num, stmt_num));
   stmt_type_twin_map_.at(PqlDeclarationEntity::kAll)
-      .push_back(make_pair(stmt_num, stmt_num));
+      .push_back(std::make_pair(stmt_num, stmt_num));
 }
 
 StmtNumList StmtTypeList::GetAllStmt() {

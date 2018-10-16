@@ -16,9 +16,10 @@ using std::unordered_set;
 using std::vector;
 
 using CallMap = unordered_map<string, vector<string>>;
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumProcPairList = vector<pair<string, string>>;
+using CallMapInt = unordered_map<string, vector<int>>;
+using StmtNum = int;
+using StmtNumList = vector<int>;
+using StmtNumProcPairList = vector<pair<int, string>>;
 using ProcName = string;
 using ProcNameList = vector<string>;
 using ProcNameSet = unordered_set<string>;
@@ -30,7 +31,8 @@ class CallTable {
   CallMap callee_table_; // stores <proc called by, proc calling>
   CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
   
-  CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
+  // TODO: Change the type back to CallMap once proc-int mappings are done.
+  CallMapInt stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
 
   ProcNameList caller_list_;  // stores procs calling any other proc
   ProcNameSet caller_set_; // stores procs calling any other proc

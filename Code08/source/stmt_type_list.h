@@ -17,11 +17,11 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumPairList = vector<pair<string, string>>;
-using StmtTypeMap = unordered_map<PqlDeclarationEntity, vector<string>>;
-using StmtTypePairMap = unordered_map<PqlDeclarationEntity, vector<pair<string, string>>>;
+using StmtNum = int;
+using StmtNumList = vector<int>;
+using StmtNumPairList = vector<pair<int, int>>;
+using StmtTypeMap = unordered_map<PqlDeclarationEntity, vector<int>>;
+using StmtTypePairMap = unordered_map<PqlDeclarationEntity, vector<pair<int, int>>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g.
