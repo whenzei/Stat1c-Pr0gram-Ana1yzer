@@ -8,12 +8,12 @@ using TokenType = Tokenizer::TokenType;
 namespace PKBTests {
 
 TEST_CLASS(TestPatternTable) {
-  const StmtNum kStmtNum1 = "1";
-  const StmtNum kStmtNum2 = "3";
-  const StmtNum kStmtNum3 = "5";
-  const VarName kVarName1 = "a";
-  const VarName kVarName2 = "b";
-  const VarName kVarName3 = "c";
+  const StmtNum kStmtNum1 = 1;
+  const StmtNum kStmtNum2 = 3;
+  const StmtNum kStmtNum3 = 5;
+  const VarName kVarName1 = a;
+  const VarName kVarName2 = b;
+  const VarName kVarName3 = c;
   const Token kToken32 = {TokenType::kDigit, "32"};
   const Token kTokenA = {TokenType::kName, "a"};
   const Token kTokenPlus = {TokenType::kOperator, "+"};
