@@ -51,5 +51,33 @@ TEST_CLASS(TestProcList) {
     Assert::AreEqual(kProcName2, proc_list_result.back().first);
     Assert::AreEqual(kProcName2, proc_list_result.back().second);
   }
+
+  TEST_METHOD(TestGetIndexForProc) {
+    ProcList proc_list;
+    proc_list.InsertProcName(kProcName1);
+    proc_list.InsertProcName(kProcName2);
+    int proc_index1 = proc_list.GetIndexForProc(kProcName1);
+    Assert::AreEqual(1,proc_index1);
+    int proc_index2 = proc_list.GetIndexForProc(kProcName2);
+    Assert::AreEqual(2, proc_index2);
+    // Duplicate. Shouldn't affect index
+    proc_list.InsertProcName(kProcName2);
+    proc_index2 = proc_list.GetIndexForProc(kProcName2);
+    Assert::AreEqual(2, proc_index2);
+  }
+
+  TEST_METHOD(TestGetProcForIndex) {
+    ProcList proc_list;
+    proc_list.InsertProcName(kProcName1);
+    proc_list.InsertProcName(kProcName2);
+    ProcName proc1 = proc_list.GetProcForIndex(1);
+    Assert::AreEqual(proc1, kProcName1);
+    ProcName proc2 = proc_list.GetProcForIndex(2);
+    Assert::AreEqual(proc2, kProcName2);
+    // Duplicate. Shouldn't affect index
+    proc_list.InsertProcName(kProcName2);
+    proc2 = proc_list.GetProcForIndex(2);
+    Assert::AreEqual(proc2, kProcName2);
+  }
 };
 }  // namespace UnitTesting
