@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "pkb.h"
-#include "pql_global.h"
 #include "pql_evaluator.h"
+#include "pql_global.h"
 #include "pql_query.h"
 
 #include <list>
@@ -26,6 +26,86 @@ TEST_CLASS(TestQueryEvaluator) {
   PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
   PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
 
+  TEST_METHOD(TestTupleCrossProduct) {
+    PqlEvaluator qe;
+    vector<QueryResultList> test_items = {{"1", "2"}, {"4", "5"}};
+    FinalResult fr;
+    string temp;
+    qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
+
+    string expectedstart = "1 4";
+    string expectedend = "2 5";
+
+    Assert::IsTrue(fr.size() == 4);
+
+    Assert::AreEqual(expectedstart, fr.front());
+    Assert::AreEqual(expectedend, fr.back());
+  }
+
+  TEST_METHOD(TestTupleCrossProduct2) {
+    PqlEvaluator qe;
+    vector<QueryResultList> test_items = {{"1", "2", "3"}, {"4", "5"}, {"7", "8", "9", "10"}};
+    FinalResult fr;
+    string temp;
+    qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
+
+    string expectedstart = "1 4 7";
+    string expectedend = "3 5 10";
+
+    Assert::IsTrue(fr.size() == 24);
+
+    Assert::AreEqual(expectedstart, fr.front());
+    Assert::AreEqual(expectedend, fr.back());
+  }
+
+  TEST_METHOD(TestTrim) {
+    string smt = "abc ";
+    string empty = "";
+    PqlEvaluator qe;
+    string expected = "abc";
+    string result = qe.Trim(smt);
+    Assert::AreEqual(expected, result);
+
+    string expected2 = "";
+    string result2 = qe.Trim(empty);
+    Assert::AreEqual(expected2, result2);
+  }
+
+  TEST_METHOD(TestCheckWithParamTypeTwoSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "b",
+                                  PqlDeclarationEntity::kRead);
+    WithParamType result;
+    WithParamType expected_result = kWithTwoSynonym;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(TestCheckWithParamTypeNoSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("1", PqlDeclarationEntity::kInteger, "2",
+                                  PqlDeclarationEntity::kInteger);
+    WithParamType result;
+    WithParamType expected_result = kWithNoSynonym;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
+
+  TEST_METHOD(TestCheckWithParamTypeOneSyn) {
+    PqlEvaluator qe;
+    PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "2",
+                                  PqlDeclarationEntity::kInteger);
+    WithParamType result;
+    WithParamType expected_result = kWithOneSynonymLeft;
+
+    result = qe.CheckWithParamType(with_clause.GetParameters());
+
+    Assert::IsTrue(expected_result == result);
+  }
   TEST_METHOD(TestCheckSuchthatParamTypeUnderscoreBoth) {
     PqlEvaluator qe;
     PqlSuchthat such_that_clause = PqlSuchthat(
@@ -114,182 +194,6 @@ TEST_CLASS(TestQueryEvaluator) {
     result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
-  }
-
-  TEST_METHOD(TestSelectAllAssign) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertAssignStmt(
-        &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("a");
-    q->AddDeclaration(keyword_assign, "a");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "1";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-  TEST_METHOD(TestSelectAllProc) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertProcName("testprocedure");
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("p");
-    q->AddDeclaration(keyword_assign, "a");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "testprocedure";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-  TEST_METHOD(TestSelectAllConst) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertAssignStmt(
-        &AssignStmtData(1, 0, "x", VarNameSet(), {8}, TokenList()));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("c");
-    q->AddDeclaration(keyword_constant, "c");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "8";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-  TEST_METHOD(TestSelectAllStmt) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertAssignStmt(
-        &AssignStmtData(1, 0, "x", VarNameSet(), ConstValueSet(), TokenList()));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("s");
-    q->AddDeclaration(keyword_stmt, "s");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "1";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-
-  TEST_METHOD(TestSelectAllIf) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertIfStmt(
-        &IfStmtData(2, 0, VarNameSet(), ConstValueSet()));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("if");
-    q->AddDeclaration(keyword_if, "if");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "2";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-
-  TEST_METHOD(TestSelectAllWhile) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertWhileStmt(
-        &WhileStmtData(3, 0, VarNameSet(), ConstValueSet()));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("while");
-    q->AddDeclaration(keyword_while, "while");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "3";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-  TEST_METHOD(TestSelectAllRead) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertReadStmt(&ReadStmtData(5, 0, "x"));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("read");
-    q->AddDeclaration(keyword_read, "read");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "5";
-
-    Assert::AreEqual(expected_result, first_result);
-  }
-  TEST_METHOD(TestSelectAllPrint) {
-    // TODO: Your test code here
-    PqlEvaluator qe;
-    PKB pkb;
-
-    pkb.InsertPrintStmt(&PrintStmtData(6, 0, "x"));
-
-    PqlQuery* q = new PqlQuery();
-    q->SetVarName("print");
-    q->AddDeclaration(keyword_print, "print");
-    q->AddDeclaration(keyword_variable, "v");
-    q->AddDeclaration(keyword_procedure, "p");
-
-    FinalResult resultlist = qe.GetResultFromQuery(q, pkb);
-
-    string first_result = resultlist.front();
-
-    string expected_result = "6";
-
-    Assert::AreEqual(expected_result, first_result);
   }
 };
 }  // namespace PQLTests

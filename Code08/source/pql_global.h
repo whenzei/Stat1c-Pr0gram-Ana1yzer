@@ -30,11 +30,7 @@ enum class PqlDeclarationEntity {
 };
 
 /* The type of clause */
-enum class PqlClauseType {
-  kSuchthat,
-  kPattern,
-  kWith
-};
+enum class PqlClauseType { kSuchthat, kPattern, kWith };
 
 /* The relationship types for a such that clause */
 enum class PqlSuchthatType {
@@ -78,6 +74,14 @@ enum SuchthatParamType {
   kOneSynonymRight,                // e.g (1, a)
   kOneSynonymRightUnderscoreLeft,  // e.g (_, a)
   kTwoSynonym,                     // e.g (a, b)
+};
+
+/* The arrangement types for a with clause */
+enum WithParamType {
+  kWithNoSynonym = 0,    // e.g with 1 = 2
+  kWithOneSynonymLeft,   // e.g with a.stmt# = 1
+  kWithOneSynonymRight,  // e.g with 2 = a.stmt#
+  kWithTwoSynonym,       // e.g a.stmt# = b.stmt#
 };
 
 /* The filter type for the result */

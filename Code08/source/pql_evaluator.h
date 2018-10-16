@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "pkb.h"
-#include "pql_global.h"
 #include "pql_evaluator.h"
+#include "pql_global.h"
 #include "pql_query.h"
 #include "pql_result.h"
 
@@ -25,10 +25,8 @@ using QueryResultPairList = vector<pair<string, string>>;
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
  private:
-  PqlDeclarationEntity select_type_;  // the entity type of the select-variable
-  PKB pkb_;                           // pkb database
-  bool clause_flag_;                  // to determine if clauses are true/false
-  bool merge_flag_;       // to determine if result table is empty after a merge
+  PKB pkb_;               // pkb database
+  bool clause_flag_;      // to determine if clauses are true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
 
@@ -38,18 +36,14 @@ class PqlEvaluator {
 
   /* Setter */
   void SetQuery(PqlQuery);
-  void SetSelectType(PqlDeclarationEntity);
   void SetPKB(PKB);
   void SetClauseFlag(bool);
-  void SetMergeFlag(bool);
   void SetPqlResult(PqlResult);
 
   /* Getter */
   PqlQuery GetQuery();
-  PqlDeclarationEntity GetSelectType();
   PKB GetPKB();
   bool IsValidClause();
-  bool IsMergeTableEmpty();
   PqlResult GetPqlResult();
 
   /**
@@ -62,12 +56,12 @@ class PqlEvaluator {
   FinalResult GetResultFromQuery(PqlQuery* query, PKB pkb);
 
   /**
-   * Get the final result based on the var name that user is 'selecting'
-   * @param select-variable name
-   * @returns a list<string> if there is result,
+   * Get the results from table
+   * @param the select synonym
+   * @returns a list of string if there is result,
    * or an empty list otherwise
    */
-  FinalResult GetFinalResultFromTable(string select_var);
+  QueryResultList GetResultFromTable(Synonym);
 
   /**
    * Return a list of all the result of a certain type
@@ -76,6 +70,14 @@ class PqlEvaluator {
    * or an empty list otherwise
    */
   QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
+
+  /**
+   * Return a list of all the result in pairs of a certain type
+   * @param declaration entity type
+   * @returns a vector<pair<string>> if there is result,
+   * or an empty list otherwise
+   */
+  QueryResultPairList GetSelectAllTwinResult(PqlDeclarationEntity select_type);
 
   /**
    * The main method for all suchthat-type queries
@@ -93,10 +95,42 @@ class PqlEvaluator {
   void GetPatternResult(PqlPattern pattern);
 
   /**
+   * The main method for all with-type queries
+   * Method will determine which type of with clause is to be evaluated, it
+   * will also determine the arrangement of clause arguments
+   * @param with clause in the Query
+   */
+  void GetWithResult(PqlWith with);
+
+  /**
+   * Evaluate with clause (1 synonym) and store result in PqlResult table
+   * @param the synonym in with clause and the value for comparison
+   */
+  void EvaluateWithOneSynonym(Synonym with_syn, string comparison_val);
+
+  /**
+   * Evaluate with clause (2 synonym) and store result in PqlResult table
+   * @param the synonyms in with clause
+   */
+  void EvaluateWithTwoSynonym(Synonym left_param, Synonym right_param);
+
+  /**
    * Evaluate assign pattern and store result in PqlResult table
    * @param pattern clause in the Query
    */
   void EvaluateAssignPattern(PqlPattern pattern);
+
+  /**
+   * Evaluate while pattern and store result in PqlResult table
+   * @param pattern clause in the Query
+   */
+  void EvaluateWhilePattern(PqlPattern pattern);
+
+  /**
+   * Evaluate if pattern and store result in PqlResult table
+   * @param pattern clause in the Query
+   */
+  void EvaluateIfPattern(PqlPattern pattern);
 
   /**
    * Evaluate follows clause and store result in PqlResult table
@@ -147,11 +181,48 @@ class PqlEvaluator {
   void EvaluateModifiesP(PqlSuchthat suchthat, SuchthatParamType arrangement);
 
   /**
-   * Determine the declaration type of the select variable
-   * @param select-variable name
-   * @returns entity type of the select-variable
+   * Evaluate Call clause and store result in PqlResult table
+   * @param Call clause in the Query and arrangement of clause arguments
    */
-  PqlDeclarationEntity CheckSelectDeclarationType(string select_var_name);
+  void EvaluateCalls(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Call* clause and store result in PqlResult table
+   * @param Call* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateCallsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Next clause and store result in PqlResult table
+   * @param Next clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateNext(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Next* clause and store result in PqlResult table
+   * @param Next* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateNextT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Affects clause and store result in PqlResult table
+   * @param Next clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateAffects(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Affects* clause and store result in PqlResult table
+   * @param Next* clause in the Query and arrangement of clause arguments
+   */
+  void EvaluateAffectsT(PqlSuchthat suchthat, SuchthatParamType arrangement);
+
+  /**
+   * Take in the list of results and do a cross product for tuple
+   * @param List of results of each select clause
+   */
+  void TupleCrossProduct(FinalResult& final_result, string& temp_result,
+                                vector<QueryResultList>::iterator curr,
+                                vector<QueryResultList>::iterator end);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
@@ -160,6 +231,23 @@ class PqlEvaluator {
    * @returns arangement of arguments in the form of SuchthatParamType enum
    */
   SuchthatParamType CheckSuchthatParamType(Parameters such_that_param);
+
+  /**
+   * Determine the number of synonym in the with param (e.g with
+   * a.stmt# = b.stmt# => 2 synonyms)
+   * @param parameter/arguments of the with clause
+   * @returns arangement of arguments in the form of WithParamType enum
+   */
+  WithParamType CheckWithParamType(Parameters with_param);
+
+  /**
+   * Filter the result list based on the declaration entity type
+   * @param unfiltered list and declaration entity type (e.g assign)
+   * @returns vector<string> list that only contains result of a certain entity
+   * type
+   */
+  QueryResultList FilterWithResult(QueryResultList unfiltered_result,
+                                   PqlDeclarationEntity entity_type);
 
   /**
    * Filter the pkb list based on the declaration entity type
@@ -192,20 +280,6 @@ class PqlEvaluator {
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
 
   /**
-   * Get all the result from left of a pair and return it as a list
-   * @param the vector<string> of pairs
-   * @returns vector<string> of result in the left of the pair
-   */
-  QueryResultList GetAllLeftOfPair(QueryResultPairList filtered_list);
-
-  /**
-   * Get all the result from right of a pair and return it as a list
-   * @param the vector<string> of pairs
-   * @returns vector<string> of result in the right of the pair
-   */
-  QueryResultList GetAllRightOfPair(QueryResultPairList filtered_list);
-
-  /**
    * Stores the list of results into the PqlResult table
    * @param the vector<string> of results and synonym-variable name
    */
@@ -216,6 +290,10 @@ class PqlEvaluator {
    * @param the vector<string> of pairs and the pair's synonym-variable name
    */
   void StoreClauseResultInTable(QueryResultPairList, string, string);
+
+  /* Helper function to trim a string */
+  string Trim(const string&);
+
 };
 
 #endif  // !QUERY_EVALUATOR_H
