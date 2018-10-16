@@ -96,7 +96,7 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
 
   if (DEBUG_FLAG) {
     //******* Debug CFG ************
-    vector<string> keys;
+    vector<int> keys;
     for (auto it = current_cfg_->begin(); it != current_cfg_->end(); ++it) {
       keys.push_back(it->first);
     }
@@ -106,7 +106,7 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
       StmtNumList adj_list = current_cfg_->at(key);
       string str;
       for (auto& node : adj_list) {
-        str.append(node);
+        str.append(to_string(node));
         str.append(" ");
       }
       cout << key << " --> " << str << "\n";
@@ -546,26 +546,21 @@ pair<VarNameSet, ConstValueSet> Parser::ProcessConditional() {
 void Parser::PopulatePkbFollows(StmtNumIntList stmt_nums) {
   for (size_t i = 0; i < stmt_nums.size(); i++) {
     for (size_t j = i + 1; j < stmt_nums.size(); j++) {
-      string followee = std::to_string(stmt_nums[i]);
-      string follower = std::to_string(stmt_nums[j]);
-      pkb_->InsertFollows(followee, follower);
+      pkb_->InsertFollows(stmt_nums[i], stmt_nums[j]);
     }
   }
 }
 
 void Parser::PopulatePkbParent(int parent_num,
                                StmtNumIntList children_stmt_nums) {
-  string parent_num_str = std::to_string(parent_num);
   for (size_t i = 0; i < children_stmt_nums.size(); i++) {
-    string child_num_str = std::to_string(children_stmt_nums[i]);
-    pkb_->InsertParent(parent_num_str, child_num_str);
+    pkb_->InsertParent(parent_num, children_stmt_nums[i]);
   }
 }
 
 void Parser::PopulatePkbUses(int stmt_num, VarNameSet used_vars) {
-  string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : used_vars) {
-    pkb_->InsertUsesS(stmt_num_str, var);
+    pkb_->InsertUsesS(stmt_num, var);
   }
 }
 
@@ -576,14 +571,12 @@ void Parser::PopulatePkbUses(ProcName proc_name, VarNameSet used_vars) {
 }
 
 void Parser::PopulatePkbUses(int stmt_num, VarName used_var) {
-  string stmt_num_str = std::to_string(stmt_num);
-  pkb_->InsertUsesS(stmt_num_str, used_var);
+  pkb_->InsertUsesS(stmt_num, used_var);
 }
 
 void Parser::PopulatePkbModifies(int stmt_num, VarNameSet modified_vars) {
-  string stmt_num_str = std::to_string(stmt_num);
   for (const auto& var : modified_vars) {
-    pkb_->InsertModifiesS(stmt_num_str, var);
+    pkb_->InsertModifiesS(stmt_num, var);
   }
 }
 
@@ -594,8 +587,7 @@ void Parser::PopulatePkbModifies(ProcName proc_name, VarNameSet modified_vars) {
 }
 
 void Parser::PopulatePkbModifies(int stmt_num, VarName modified_var) {
-  string stmt_num_str = std::to_string(stmt_num);
-  pkb_->InsertModifiesS(stmt_num_str, modified_var);
+  pkb_->InsertModifiesS(stmt_num, modified_var);
 }
 
 // Helper methods
