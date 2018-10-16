@@ -76,7 +76,7 @@
   ProcNameList CallTable::GetCaller(ProcName callee_proc) {
     ProcNameList caller_list;
     if (direct_callee_table_.find(callee_proc) != direct_callee_table_.end()) {
-      caller_list.push_back(direct_callee_table_[callee_proc].front());
+      caller_list = direct_callee_table_[callee_proc];
     }
     return caller_list;
   }

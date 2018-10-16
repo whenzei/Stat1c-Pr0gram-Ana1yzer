@@ -443,8 +443,8 @@ class PKB {
   // @returns a list of <stmt_num, proc> pairs
   StmtNumProcPairList GetAllCallingStmtPairs();
 
-  // Finds and returns the direct callee for given procedure.
-  // @returns a list containing one direct callee (can be empty)
+  // Finds and returns all direct callees for given procedure.
+  // @returns a list containing all direct callees for given proc (can be empty)
   // @params caller procedure name
   ProcNameList GetCallee(ProcName caller_proc);
 
@@ -453,8 +453,8 @@ class PKB {
   // @params caller procedure name
   ProcNameList GetCalleeT(ProcName caller_proc);
 
-  // Finds and returns the direct caller for given procedure.
-  // @returns a list containing one direct caller (can be empty)
+  // Finds and returns all direct callers for given procedure.
+  // @returns a list containing all direct callers for given proc (can be empty)
   // @params callee procedure name
   ProcNameList GetCaller(ProcName callee_proc);
 

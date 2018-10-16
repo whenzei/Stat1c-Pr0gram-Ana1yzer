@@ -10,8 +10,9 @@ class DesignExtractor {
   PKB* pkb_;
 
   void UpdateParentT();
-  void UpdateCallUsesAndModifies();
+  void UpdateUsesAndModifiesWithCallGraph();
   void UpdateCallT();
+
   //******** Helper Methods **************
 
   // Search for child of current stmt_num recursively
