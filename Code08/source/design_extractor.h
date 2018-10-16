@@ -30,7 +30,14 @@ class DesignExtractor {
   //**************************************
  public:
   DesignExtractor(PKB* pkb);
+
+  // extract data from PKB and updates various relations such as ParentT and
+  // Calls' Modifies and Uses
   void UpdatePkb();
+
+  // Check if call graph has cyclic calls,
+  // @throws SemanticException if cycle exists.
+  void CheckCyclicCalls();
 };
 
 #endif

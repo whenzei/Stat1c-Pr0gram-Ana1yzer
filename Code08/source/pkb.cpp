@@ -511,6 +511,8 @@ CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
+  // exception will be thrown if there are cycles
+  de.CheckCyclicCalls();
   de.UpdatePkb();
 }
 

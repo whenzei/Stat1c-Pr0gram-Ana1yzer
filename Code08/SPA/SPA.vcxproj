@@ -63,7 +63,9 @@
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />
     <ClInclude Include="..\source\pql_with.h" />
+    <ClInclude Include="..\source\semantic_error_exception.h" />
     <ClInclude Include="..\source\statement_data.h" />
+    <ClInclude Include="..\source\syntactic_error_exception.h" />
     <ClInclude Include="..\source\util.h" />
     <ClInclude Include="..\source\validator.h" />
     <ClInclude Include="..\source\tokenizer.h" />

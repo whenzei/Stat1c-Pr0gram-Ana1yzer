@@ -92,6 +92,7 @@ class Parser {
 
   // parses the string contents of the file located at given filepath
   // @param filepath file to be parsed
+  // @throws SyntacticErrorException if parse issues encountered
   // @return true if parse successful (meaning no syntax errors), or false if
   // validation failed
   bool Parse(string filepath);

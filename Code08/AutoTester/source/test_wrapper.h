@@ -12,6 +12,7 @@
 class TestWrapper : public AbstractWrapper {
  private:
   PKB pkb_;
+  bool exception_caught_;
 
  public:
   // default constructor

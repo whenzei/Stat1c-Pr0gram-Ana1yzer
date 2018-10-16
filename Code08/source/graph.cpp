@@ -88,3 +88,44 @@ vector<string> Graph::Toposort() {
 
   return toposorted;
 }
+
+bool Graph::HasCycle(const string &name, NodeSet &adj,
+                     VisitedMap &visited_map) {
+  if (!visited_map.at(name)) {
+    visited_map.at(name) = true;
+
+    for (auto node : adj) {
+      string node_name = node->name_;
+      if (visited_map.at(node_name)) {
+        return true;
+      }
+      NodeSet neighbours = node_map_.at(node_name)->neighbours_;
+
+      if (HasCycle(node_name, neighbours, visited_map)) {
+        return true;
+      }
+    }
+    visited_map.at(name) = false;
+  }
+  return false;
+}
+
+bool Graph::HasCycle() {
+  // mark all the vertices as not visited
+  VisitedMap visited_map;
+
+  for (auto it : node_map_) {
+    visited_map.emplace(it.first, false);
+  }
+
+  // call the recursive helper function
+  for (auto it : node_map_) {
+    string node_name = it.second->name_;
+    NodeSet adj = it.second->neighbours_;
+    if (HasCycle(node_name, adj, visited_map)) {
+      return true;
+    }
+  }
+
+  return false;
+}
