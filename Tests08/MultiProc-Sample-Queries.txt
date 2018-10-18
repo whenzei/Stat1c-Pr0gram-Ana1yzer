@@ -901,7 +901,7 @@ Select s such that Uses(s, "_")
 185 - USES-S syn-syn [call][select right]
 call c; variable v;
 Select v such that Uses(c, v)
-x, sum, apple, pear, y, sum, f, count, z, m
+x, sum, apple, pear, y, a, f, count, z, m
 5000
 186 - USES-S syn-syn [call][select left]
 call c; variable v;
@@ -921,7 +921,7 @@ Select c such that Uses(c, _)
 189 - MODIFIES-S syn-syn [call][select right]
 call c; variable v;
 Select v such that Modifies(c, v)
-x, pear, y, sum, z, f, count, m, a
+x, pear, y, sum, z, f, count, m, a, apple
 5000
 190 - MODIFIES-S syn-syn [call][select left]
 call c; variable v;
@@ -946,7 +946,7 @@ first, second, fourth, fifth
 194 - CALLS syn-ident [procedure]
 procedure p;
 Select p such that Calls(p, "second")
-first
+first, fourth
 5000
 195 - CALLS syn-wildcard [procedure]
 procedure p;
@@ -1061,12 +1061,12 @@ Select ifs such that Next(ifs, s)
 217 - NEXT syn-syn [if] [assign]
 assign a; if ifs;
 Select a such that Next(ifs, a)
-24, 25, 34, 35, 53, 54
+21, 24, 25, 34, 35, 53, 54
 5000
 218 - NEXT syn-syn [while] [assign]
-while w; assign a;
-Select s such that Next(w, a)
-7, 9, 11, 14, 19, 48
+while w; stmt s;
+Select s such that Next(w, s)
+7, 9, 11, 14, 19, 48, 10, 6, 20, 22, 31, 37, 56
 5000
 219 - NEXT syn-wildcard [assign]
 assign a;
@@ -1106,7 +1106,7 @@ Select r such that Next*(1, 3)
 226 - NEXT* digit-syn [if]
 if ifs;
 Select ifs such that Next*(1, ifs)
-5
+5, 12
 5000
 227 - NEXT* digit-syn [stmt]
 stmt s;
@@ -1121,7 +1121,7 @@ I, Romeo, a, apple, b, beta, c, chArlie, count, delta, f, i, j1k, k, l, left, m,
 229 - NEXT* syn-digit [while]
 while w;
 Select w such that Next*(w, 11)
-10
+10, 13, 18, 6, 8
 5000
 230 - NEXT* syn-digit [assign]
 assign a;
@@ -1141,11 +1141,11 @@ Select ifs such that Next*(ifs, s)
 233 - NEXT* syn-syn [if] [assign]
 assign a; if ifs;
 Select a such that Next*(ifs, a)
-7, 9, 11, 14, 15, 16, 19, 20, 21, 24, 25, 34, 35, 37
+7, 9, 11, 14, 15, 16, 19, 20, 21, 24, 25, 34, 35, 37, 32, 48, 49, 50, 51, 53, 54, 55, 58
 5000
 234 - NEXT* syn-syn [while] [assign]
 while w; assign a;
-Select s such that Next*(w, a)
+Select a such that Next*(w, a)
 7, 9, 11, 14, 15, 16, 19, 20, 32, 34, 35, 37, 48, 49, 50, 51, 53, 54, 55, 58
 5000
 235 - NEXT* syn-wildcard [assign]
@@ -1166,7 +1166,7 @@ Select w such that Next*(w, _)
 238 - NEXT* syn-syn [assign-stmt] pattern a left wildcard right subset
 assign a; stmt s;
 Select s such that Next*(a, s) pattern a (_, _"Romeo"_)
-15, 17
+15, 17, 10, 11, 12, 13, 14, 16, 18, 19, 20, 22
 5000
 239 - NEXT* syn-syn [assign-stmt] pattern a left syn right wildcard
 assign a; stmt s; variable v;
@@ -1191,7 +1191,7 @@ false
 243 - PATTERN if syn [variable]
 variable v; if ifs;
 Select v pattern ifs(v, _, _)
-a, left, x sum
+a, left, x, sum, apple
 5000
 244 - PATTERN if wildcard
 if ifs;
@@ -1206,7 +1206,7 @@ Select ifs pattern ifs("sum", _, _)
 246 - PATTERN while syn [variable]
 variable v; while w;
 Select v pattern w(v, _)
-beta, tmp, x, left, b, c, apple, count
+beta, tmp, x, left, b, c, apple, count, right
 5000
 247 - PATTERN while wildcard
 while w;

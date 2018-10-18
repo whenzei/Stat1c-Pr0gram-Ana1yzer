@@ -39,13 +39,28 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     // Temp code, will implement tuple processing later
     if (user_query.GetSelections().size() > 1) {
       for (auto& select_syn : user_query.GetSelections()) {
-        tuple_results.push_back(GetSelectAllResult(select_syn.second));
+        QueryResultList select_all_result =
+            GetSelectAllResult(select_syn.second);
+        if (select_all_result.empty()) {
+          SetClauseFlag(false);
+        } else {
+          tuple_results.push_back(select_all_result);
+        }
+
+        // If the clause is false already, no need to continue evaluating
+        if (!IsValidClause()) {
+          break;
+        }
       }
     } else {
-      QueryResultList get_all_result =
+      QueryResultList select_all_result =
           GetSelectAllResult(user_query.GetSelections().front().second);
-      copy(get_all_result.begin(), get_all_result.end(),
-           back_inserter(final_results));
+      if (select_all_result.empty()) {
+        SetClauseFlag(false);
+      } else {
+        copy(select_all_result.begin(), select_all_result.end(),
+             back_inserter(final_results));
+      }
     }
   }
   // Else use GetSuchThatResult/GetPatternResult method
@@ -88,7 +103,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   cout << "Tuple size: " << tuple_results.size() << endl;
 
   // Do tuple processing
-  if (!tuple_results.empty()) {
+  if (!tuple_results.empty() && IsValidClause()) {
     string temp;
     TupleCrossProduct(final_results, temp, tuple_results.begin(),
                       tuple_results.end());
@@ -127,6 +142,9 @@ QueryResultList PqlEvaluator::GetResultFromTable(Synonym select_syn) {
   else {
     cout << "Select all in (GetFinalResultFromTable)" << endl;
     table_result = GetSelectAllResult(select_syn.second);
+    if (table_result.empty()) {
+      SetClauseFlag(false);
+    }
   }
 
   return table_result;
@@ -2157,7 +2175,6 @@ string PqlEvaluator::Trim(const string& str) {
   size_t last = str.find_last_not_of(' ');
   return str.substr(first, (last - first + 1));
 }
-
 
 /* Getters and Setters */
 
