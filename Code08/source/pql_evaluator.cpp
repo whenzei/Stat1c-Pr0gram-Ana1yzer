@@ -1975,7 +1975,7 @@ QueryResultList PqlEvaluator::FilterWithResult(
   return filtered_result;
 }
 
-QueryResultList PqlEvaluator::FilterResult(vector<string> unfiltered_result,
+QueryResultList PqlEvaluator::FilterResult(QueryResultList unfiltered_result,
                                            PqlDeclarationEntity entity_type) {
   QueryResultList filtered_result;
   PKB pkb = GetPKB();
@@ -1999,7 +1999,7 @@ QueryResultList PqlEvaluator::FilterResult(vector<string> unfiltered_result,
 }
 
 QueryResultList PqlEvaluator::FilterVariableResult(
-    vector<string> unfiltered_result, PqlDeclarationEntity variable_type) {
+    QueryResultList unfiltered_result, PqlDeclarationEntity variable_type) {
   QueryResultList filtered_result;
 
   for (auto& iter : unfiltered_result) {
@@ -2015,8 +2015,7 @@ QueryResultList PqlEvaluator::FilterVariableResult(
 }
 
 QueryResultPairList PqlEvaluator::FilterPairResult(
-    PqlResultFilterType filter_type,
-    vector<pair<string, string>> unfiltered_pair_result,
+    PqlResultFilterType filter_type, QueryResultPairList unfiltered_pair_result,
     PqlDeclarationEntity left_type, PqlDeclarationEntity right_type) {
   QueryResultPairList filtered_result;
   PKB pkb = GetPKB();
