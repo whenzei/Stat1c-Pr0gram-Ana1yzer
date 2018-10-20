@@ -2,13 +2,17 @@
 
 #include "var_list.h"
 
-void VarList::InsertVarName(VarName var_name) {
+int VarList::InsertVarName(VarName var_name) {
   if (var_name_set_.insert(var_name).second) {
+    int index = var_count;
     var_name_list_.push_back(var_name);
     var_name_twin_list_.push_back(make_pair(var_name, var_name));
-    var_index_map_[var_name] = var_count;
+    var_index_map_[var_name] = index;
+    index_var_map_[index] = var_name;
     var_count++;
+    return index;
   }
+  return -1;
 }
 
 VarNameList VarList::GetAllVarName() {

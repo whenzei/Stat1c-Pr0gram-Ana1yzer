@@ -16,19 +16,19 @@ using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
-using StmtNumList = vector<int>;
-using StmtNumSet = unordered_set<int>;
-using VarName = string;
-using VarNameList = vector<string>;
-using ProcName = string;
-using ProcNameList = vector<string>;
-using ProcNameSet = unordered_set<string>;
-using UsesMap = unordered_map<int, vector<string>>;
-using UsesProcMap = unordered_map<string, vector<string>>;
-using UsedByMap = unordered_map<string, vector<int>>;
-using UsedByProcMap = unordered_map<string, vector<string>>;
-using StmtVarPairList = vector<pair<int, string>>;
-using ProcVarPairList = vector<pair<string, string>>;
+using StmtNumList = vector<StmtNum>;
+using StmtNumSet = unordered_set<StmtNum>;
+using VarName = int;
+using VarNameList = vector<VarName>;
+using ProcName = int;
+using ProcNameList = vector<ProcName>;
+using ProcNameSet = unordered_set<ProcName>;
+using UsesMap = unordered_map<StmtNum, vector<VarName>>;
+using UsesProcMap = unordered_map<ProcName, vector<VarName>>; // Proc, List of Var
+using UsedByMap = unordered_map<VarName, vector<StmtNum>>;
+using UsedByProcMap = unordered_map<VarName, vector<ProcName>>; // Var, List of Proc
+using StmtVarPairList = vector<pair<StmtNum, VarName>>;
+using ProcVarPairList = vector<pair<ProcName, VarName>>;
 
 // The uses table class for the PKB component
 // Used to store uses relationships between stmt/proc and variables that are

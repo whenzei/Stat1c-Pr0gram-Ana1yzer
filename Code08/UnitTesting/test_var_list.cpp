@@ -10,6 +10,16 @@ TEST_CLASS(TestVarList) {
   const string kSampleVar1 = "a";
   const string kSampleVar2 = "b";
 
+  TEST_METHOD(TestInsertVar) {
+    VarList var_list;
+    int result = var_list.InsertVarName(kSampleVar1);
+    Assert::AreEqual(1, result);
+    result = var_list.InsertVarName(kSampleVar2);
+    Assert::AreEqual(2, result);
+    result = var_list.InsertVarName(kSampleVar2);
+    Assert::AreEqual(-1, result);
+  }
+
   TEST_METHOD(TestGetAllVarName) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);

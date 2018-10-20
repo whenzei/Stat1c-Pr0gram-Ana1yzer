@@ -40,7 +40,9 @@ class ProcList {
  public:
   
   // inserts proc_name into the procedure list
-  void InsertProcName(ProcName proc_name);
+  // @returns index of the inserted procedure name is successful
+  // @returns -1 if procedure name is already in the procedure list
+  int InsertProcName(ProcName proc_name);
 
   // @returns the list of all procedure names (can be empty)
   ProcNameList GetAllProcName();

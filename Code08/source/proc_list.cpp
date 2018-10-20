@@ -2,14 +2,17 @@
 
 #include "proc_list.h"
 
-void ProcList::InsertProcName(ProcName proc_name) {
+int ProcList::InsertProcName(ProcName proc_name) {
   if (proc_name_set_.insert(proc_name).second) {
+    int index = num_procs;
     proc_name_list_.push_back(proc_name);
     proc_name_twin_list_.push_back(make_pair(proc_name, proc_name));
-    proc_index_map_[proc_name] = num_procs;
-    index_proc_map_[num_procs] = proc_name;
+    proc_index_map_[proc_name] = index;
+    index_proc_map_[index] = proc_name;
     num_procs++;
+    return index;
   }
+  return -1;
 }
 
 ProcNameList ProcList::GetAllProcName() { return proc_name_list_; }

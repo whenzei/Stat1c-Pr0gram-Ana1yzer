@@ -15,24 +15,22 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using CallMap = unordered_map<string, vector<string>>;
-using CallMapInt = unordered_map<string, vector<int>>;
 using StmtNum = int;
-using StmtNumList = vector<int>;
-using StmtNumProcPairList = vector<pair<int, string>>;
-using ProcName = string;
-using ProcNameList = vector<string>;
-using ProcNameSet = unordered_set<string>;
-using ProcNamePairList = vector<pair<string, string>>;
+using ProcName = int;
+// int can be StmtNum or ProcName.
+using CallMap = unordered_map<int, vector<ProcName>>;
+using StmtNumList = vector<StmtNum>;
+using StmtNumProcPairList = vector<pair<StmtNum, ProcName>>;
+using ProcNameList = vector<ProcName>;
+using ProcNameSet = unordered_set<ProcName>;
+using ProcNamePairList = vector<pair<ProcName, ProcName>>;
 
 class CallTable {
   CallMap call_table_; // stores <proc calling, proc called>
   CallMap direct_call_table_; // stores <direct proc calling, proc called>
   CallMap callee_table_; // stores <proc called by, proc calling>
   CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
-  
-  // TODO: Change the type back to CallMap once proc-int mappings are done.
-  CallMapInt stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
+  CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
 
   ProcNameList caller_list_;  // stores procs calling any other proc
   ProcNameSet caller_set_; // stores procs calling any other proc

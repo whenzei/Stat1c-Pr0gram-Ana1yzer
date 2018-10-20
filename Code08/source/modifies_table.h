@@ -15,21 +15,18 @@ using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
-using StmtNumList = vector<int>;
-using StmtNumSet = unordered_set<int>;
-using VarName = string;
-using VarNameList = vector<string>;
-using ProcName = string;
-using ProcNameList = vector<string>;
-using ProcNameSet = unordered_set<string>;
-using ModifiesMap = unordered_map<int, vector<string>>;
-// TODO: Temporary. Delete when proc-int gets resolved.
-using ModifiesProcMap = unordered_map<string, vector<string>>;
-using ModifiedByMap = unordered_map<string, vector<int>>;
-// TODO: Temporary. Delete when proc-int gets resolved.
-using ModifiedByProcMap = unordered_map<string, vector<string>>;
-using StmtVarPairList = vector<pair<int, string>>;
-using ProcVarPairList = vector<pair<string, string>>;
+using StmtNumList = vector<StmtNum>;
+using StmtNumSet = unordered_set<StmtNum>;
+using VarName = int;
+using VarNameList = vector<VarName>;
+using ProcName = int;
+using ProcNameList = vector<ProcName>;
+using ProcNameSet = unordered_set<ProcName>;
+// int can be either ProcName or StmtNum.
+using ModifiesMap = unordered_map<int, vector<VarName>>;
+using ModifiedByMap = unordered_map<VarName, vector<int>>;
+using StmtVarPairList = vector<pair<StmtNum, VarName>>;
+using ProcVarPairList = vector<pair<ProcName, VarName>>;
 
 // The modifies table class for the PKB component
 // Used to store modifies relationships between stmt/proc and variables that are
@@ -41,8 +38,8 @@ class ModifiesTable {
   ProcNameSet modifying_proc_set_;
   ModifiesMap modifies_s_map_;
   ModifiedByMap modified_by_s_map_;
-  ModifiesProcMap modifies_p_map_;
-  ModifiedByProcMap modified_by_p_map_;
+  ModifiesMap modifies_p_map_;
+  ModifiedByMap modified_by_p_map_;
 
  public:
   // inserts a modifies relationship between stmt_num and var_name into

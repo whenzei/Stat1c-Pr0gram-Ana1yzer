@@ -13,6 +13,16 @@ TEST_CLASS(TestProcList) {
 
  public:
 
+  TEST_METHOD(TestInsertProc) {
+    ProcList proc_list;
+    int result = proc_list.InsertProcName(kProcName1);
+    Assert::AreEqual(1, result);
+    result = proc_list.InsertProcName(kProcName2);
+    Assert::AreEqual(2, result);
+    result = proc_list.InsertProcName(kProcName2);
+    Assert::AreEqual(-1, result);
+  }
+
   TEST_METHOD(TestGetAllProcName) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);

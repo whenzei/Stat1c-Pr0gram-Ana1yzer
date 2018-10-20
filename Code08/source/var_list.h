@@ -44,7 +44,9 @@ class VarList {
   VarNamePairList GetAllVarNameTwin();
 
   // Inserts var_name into VarList
-  void InsertVarName(VarName var_name);
+  // @return index of the inserted variable if successful
+  // @return -1 if variable name already exists in the variable list
+  int InsertVarName(VarName var_name);
 
   // @return true if var_name is in the var list
   bool IsVarName(VarName var_name);
