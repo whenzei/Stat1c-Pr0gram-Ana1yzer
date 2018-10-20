@@ -416,30 +416,40 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
   string syn_name = with_syn.first;
   PqlDeclarationEntity syn_type = with_syn.second;
   QueryResultList result_list;
+  VarProcToIndexMap proc_to_index = GetProcToIndex();
+  VarProcToIndexMap var_to_index = GetVarToIndex();
 
   switch (syn_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Is procedure?" << endl;
-      if (pkb.IsProcName(comparison_val)) {
-        result_list.push_back(comparison_val);
-        StoreClauseResultInTable(result_list, syn_name);
+      if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
+        if (pkb.IsProcName(proc_to_index[comparison_val])) {
+          result_list.push_back(proc_to_index[comparison_val]);
+          StoreClauseResultInTable(result_list, syn_name);
+        } else {
+          SetClauseFlag(false);
+        }
       } else {
         SetClauseFlag(false);
       }
       return;
     case PqlDeclarationEntity::kVariable:
       cout << "Is variable?" << endl;
-      if (pkb.IsVarName(comparison_val)) {
-        result_list.push_back(comparison_val);
-        StoreClauseResultInTable(result_list, syn_name);
+      if (var_to_index.find(comparison_val) != var_to_index.end()) {
+        if (pkb.IsVarName(var_to_index[comparison_val])) {
+          result_list.push_back(var_to_index[comparison_val]);
+          StoreClauseResultInTable(result_list, syn_name);
+        } else {
+          SetClauseFlag(false);
+        }
       } else {
         SetClauseFlag(false);
       }
       return;
     case PqlDeclarationEntity::kAssign:
       cout << "Is assign?" << endl;
-      if (pkb.IsAssignStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsAssignStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -447,8 +457,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kStmt:
       cout << "Is stmt?" << endl;
-      if (pkb.IsStmtNum(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsStmtNum(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -456,8 +466,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kRead:
       cout << "Is read?" << endl;
-      if (pkb.IsReadStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsReadStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -465,8 +475,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kPrint:
       cout << "Is print?" << endl;
-      if (pkb.IsPrintStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsPrintStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -474,8 +484,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kCall:
       cout << "Is call?" << endl;
-      if (pkb.IsCallStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsCallStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -483,17 +493,21 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kCallName:
       cout << "Is call procname?" << endl;
-      if (pkb.IsCalledProc(comparison_val)) {
-        result_list.push_back(comparison_val);
-        StoreClauseResultInTable(result_list, syn_name);
+      if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
+        if (pkb.IsCalledProc(proc_to_index[comparison_val])) {
+          result_list.push_back(proc_to_index[comparison_val]);
+          StoreClauseResultInTable(result_list, syn_name);
+        } else {
+          SetClauseFlag(false);
+        }
       } else {
         SetClauseFlag(false);
       }
       return;
     case PqlDeclarationEntity::kWhile:
       cout << "Is while?" << endl;
-      if (pkb.IsWhileStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsWhileStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -501,8 +515,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kIf:
       cout << "Is if?" << endl;
-      if (pkb.IsIfStmt(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsIfStmt(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -511,7 +525,7 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
     case PqlDeclarationEntity::kConstant:
       cout << "Is const?" << endl;
       if (pkb.IsConstValue(stoi(comparison_val))) {
-        result_list.push_back(comparison_val);
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -519,8 +533,8 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
       return;
     case PqlDeclarationEntity::kProgline:
       cout << "Is progline?" << endl;
-      if (pkb.IsStmtNum(comparison_val)) {
-        result_list.push_back(comparison_val);
+      if (pkb.IsStmtNum(stoi(comparison_val))) {
+        result_list.push_back(stoi(comparison_val));
         StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);

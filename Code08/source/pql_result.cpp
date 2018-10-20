@@ -46,7 +46,7 @@ void PqlResult::MergeResults(QueryResultList result_list,
     // Iterating through the row
     for (auto& row : result_table) {
       // If the column value in table matches the value in result list
-      if (merge_set.count(row[conflict_column_num])) {
+      if (merge_set.count(std::to_string(row[conflict_column_num]))) {
         // Row has passed the comparison
         new_table.push_back(row);
       }
@@ -196,7 +196,7 @@ void PqlResult::SetupMergeSet(QueryResultList result_list) {
   ClearMergeSet();
 
   for (auto& iter : result_list) {
-    AddMergeSet(iter);
+    AddMergeSet(std::to_string(iter));
   }
 }
 
@@ -244,7 +244,7 @@ void PqlResult::SetColumnCount(int column_count) {
 
 void PqlResult::AddMergeSet(string key) { this->merge_set_.insert(key); }
 
-void PqlResult::AddMergeMap(string key, string value) {
+void PqlResult::AddMergeMap(int key, int value) {
   MergeMap::iterator iter = merge_map_.find(key);
 
   if (iter != merge_map_.end()) {
@@ -254,7 +254,7 @@ void PqlResult::AddMergeMap(string key, string value) {
   } else {
     // cout << "Unique item (" << key << "," << value << ")" << endl;
     // Create new list
-    vector<string> merge_map_list;
+    vector<int> merge_map_list;
     merge_map_list.push_back(value);
     this->merge_map_.insert(std::make_pair(key, merge_map_list));
   }
