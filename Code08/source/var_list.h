@@ -14,12 +14,12 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using VarName = string;
-using VarNameList = vector<string>;
-using VarNameSet = unordered_set<string>;
-using VarNamePairList = vector<pair<string, string>>;
-using VarIndexMap = unordered_map<string, int>;
-using IndexVarMap = unordered_map<int, string>;
+using VarName = int;
+using VarNameList = vector<VarName>;
+using VarNameSet = unordered_set<VarName>;
+using VarNamePairList = vector<pair<VarName, VarName>>;
+using VarIndexMap = unordered_map<VarName, int>;
+using IndexVarMap = unordered_map<int, VarName>;
 
 // The variable list class for the PKB component
 // Used to store variable names that are passed into PKB from the parser

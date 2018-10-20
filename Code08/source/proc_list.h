@@ -14,12 +14,12 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using ProcName = string;
-using ProcNameList = vector<string>;
-using ProcNamePairList = vector<pair<string, string>>;
-using ProcNameSet = unordered_set<string>;
-using ProcIndexMap = unordered_map<string, int>;
-using IndexProcMap = unordered_map<int, string>;
+using ProcName = int;
+using ProcNameList = vector<ProcName>;
+using ProcNamePairList = vector<pair<ProcName, ProcName>>;
+using ProcNameSet = unordered_set<ProcName>;
+using ProcIndexMap = unordered_map<ProcName, int>;
+using IndexProcMap = unordered_map<int, ProcName>;
 
 // The procedure list class for the PKB component
 // Used to store procedure names that are passed into PKB from the parser
