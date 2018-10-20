@@ -16,9 +16,17 @@ ProcNamePairList PKB::GetAllProcNameTwin() {
   return proc_list_.GetAllProcNameTwin();
 }
 
+ProcIndexMap PKB::GetProcToIndexMapping() { return proc_list_.GetProcToIndexMapping();  }
+
+IndexProcMap PKB::GetIndexToProcMapping() { return proc_list_.GetIndexToProcMapping();  }
+
 VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
 
 VarNamePairList PKB::GetAllVarNameTwin() { return var_list_.GetAllVarNameTwin(); }
+
+VarIndexMap PKB::GetVarToIndexMapping() { return var_list_.GetVarToIndexMapping(); }
+
+IndexVarMap PKB::GetIndexToVarMapping() { return var_list_.GetIndexToVarMapping(); }
 
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
