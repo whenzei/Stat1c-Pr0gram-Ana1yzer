@@ -20,7 +20,7 @@ using std::unordered_map;
 using std::vector;
 using FinalResult = list<string>;
 using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, string>>;
+using QueryResultPairList = vector<pair<string, int>>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -221,8 +221,8 @@ class PqlEvaluator {
    * @param List of results of each select clause
    */
   void TupleCrossProduct(FinalResult& final_result, string& temp_result,
-                                vector<QueryResultList>::iterator curr,
-                                vector<QueryResultList>::iterator end);
+                         vector<QueryResultList>::iterator curr,
+                         vector<QueryResultList>::iterator end);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
@@ -255,7 +255,7 @@ class PqlEvaluator {
    * @returns vector<string> list that only contains result of a certain entity
    * type
    */
-  QueryResultList FilterResult(vector<string> unfiltered_result,
+  QueryResultList FilterResult(QueryResultList unfiltered_result,
                                PqlDeclarationEntity entity_type);
 
   /**
@@ -264,7 +264,7 @@ class PqlEvaluator {
    * @returns vector<string> list that only contains result of a certain entity
    * type
    */
-  QueryResultList FilterVariableResult(vector<string> unfiltered_result,
+  QueryResultList FilterVariableResult(QueryResultList unfiltered_result,
                                        PqlDeclarationEntity variable_type);
 
   /**
@@ -276,7 +276,7 @@ class PqlEvaluator {
    */
   QueryResultPairList FilterPairResult(
       PqlResultFilterType filter_type,
-      vector<pair<string, string>> unfiltered_pair_result,
+      QueryResultPairList unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
 
   /**
@@ -293,7 +293,6 @@ class PqlEvaluator {
 
   /* Helper function to trim a string */
   string Trim(const string&);
-
 };
 
 #endif  // !QUERY_EVALUATOR_H
