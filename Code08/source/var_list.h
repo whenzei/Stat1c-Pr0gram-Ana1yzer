@@ -49,12 +49,11 @@ class VarList {
   // @return true if var_name is in the var list
   bool IsVarName(VarName var_name);
 
-  // @returns the integer index mapped to the Variable name
-  // @returns -1 if there is no such variable name in the list
-  int GetIndexForVar(VarName var_name);
+  // @returns an unordered map with Index to Var mapping
+  IndexVarMap GetIndexToVarMapping();
 
-  // @returns the Variable name index mapped to the index
-  VarName GetVarForIndex(int index);
+  // @returns an unordered map with Var to Index mapping
+  VarIndexMap GetVarToIndexMapping();
 };
 
 #endif !SPA_VAR_LIST_H

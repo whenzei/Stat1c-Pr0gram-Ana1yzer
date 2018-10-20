@@ -20,16 +20,10 @@ bool ProcList::IsProcName(ProcName proc_name) {
 
 ProcNamePairList ProcList::GetAllProcNameTwin() { return proc_name_twin_list_; }
 
-int ProcList::GetIndexForProc(ProcName proc_name) {
-  if (proc_index_map_.find(proc_name) != proc_index_map_.end()) {
-    return proc_index_map_[proc_name];
-  }
-  return -1;
+IndexProcMap ProcList::GetIndexToProcMapping() {
+  return index_proc_map_;
 }
 
-ProcName ProcList::GetProcForIndex(int index) {
-  if (index_proc_map_.find(index) != index_proc_map_.end()) {
-    return index_proc_map_[index];
-  }
-  return ProcName();
+ProcIndexMap ProcList::GetProcToIndexMapping() {
+  return proc_index_map_;
 }

@@ -51,12 +51,11 @@ class ProcList {
   // @returns the list of all procedure names in pairs (in each pair, the same procedure name is repeated)
   ProcNamePairList GetAllProcNameTwin();
 
-  // @returns the integer index mapped to the Procedure name
-  // @returns -1 if there is no such procedure name in the list
-  int GetIndexForProc(ProcName proc_name);
+  // @returns an unordered map with Index to Proc mapping
+  IndexProcMap GetIndexToProcMapping();
 
-  // @returns the Procedure name index mapped to the index
-  ProcName GetProcForIndex(int index);
+  // @returns an unordered map with Proc to Index mapping
+  ProcIndexMap GetProcToIndexMapping();
 };
 
 #endif  // !SPA_PROC_LIST_H

@@ -23,16 +23,10 @@ VarNamePairList VarList::GetAllVarNameTwin() {
   return var_name_twin_list_;
 }
 
-int VarList::GetIndexForVar(VarName var_name) {
-  if (var_index_map_.find(var_name) != var_index_map_.end()) {
-    return var_index_map_[var_name];
-  }
-  return -1;
+IndexVarMap VarList::GetIndexToVarMapping() {
+  return index_var_map_;
 }
 
-VarName VarList::GetVarForIndex(int index) {
-  if (index_var_map_.find(index) != index_var_map_.end()) {
-    return index_var_map_[index];
-  }
-  return VarName();
+VarIndexMap VarList::GetVarToIndexMapping() {
+  return var_index_map_;
 }

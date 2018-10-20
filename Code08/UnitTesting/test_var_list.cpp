@@ -45,32 +45,32 @@ TEST_CLASS(TestVarList) {
     Assert::AreEqual(kSampleVar2, result_list.back().second);
   }
 
-  TEST_METHOD(TestGetIndexForVar) {
+  TEST_METHOD(TestGetIndexToVarMapping) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
     var_list.InsertVarName(kSampleVar2);
-    int var_index1 = var_list.GetIndexForVar(kSampleVar1);
-    Assert::AreEqual(1, var_index1);
-    int var_index2 = var_list.GetIndexForVar(kSampleVar2);
-    Assert::AreEqual(2, var_index2);
+    IndexVarMap index_var_map = var_list.GetIndexToVarMapping();
+    Assert::AreEqual(kSampleVar1, index_var_map[1]);
+    index_var_map = var_list.GetIndexToVarMapping();
+    Assert::AreEqual(kSampleVar2, index_var_map[2]);
     // Duplicate. Shouldn't affect index
     var_list.InsertVarName(kSampleVar2);
-    var_index2 = var_list.GetIndexForVar(kSampleVar2);
-    Assert::AreEqual(2, var_index2);
+    index_var_map = var_list.GetIndexToVarMapping();
+    Assert::AreEqual(kSampleVar2, index_var_map[2]);
   }
 
-  TEST_METHOD(TestGetVarForIndex) {
+  TEST_METHOD(TestGetVarToIndexMapping) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
     var_list.InsertVarName(kSampleVar2);
-    VarName var1 = var_list.GetVarForIndex(1);
-    Assert::AreEqual(kSampleVar1, var1);
-    VarName var2 = var_list.GetVarForIndex(2);
-    Assert::AreEqual(kSampleVar2, var2);
+    VarIndexMap var_index_map = var_list.GetVarToIndexMapping();
+    Assert::AreEqual(1, var_index_map[kSampleVar1]);
+    VarIndexMap var_index_map = var_list.GetVarToIndexMapping();
+    Assert::AreEqual(2, var_index_map[kSampleVar2]);
     // Duplicate. Shouldn't affect var
     var_list.InsertVarName(kSampleVar2);
-    var2 = var_list.GetVarForIndex(2);
-    Assert::AreEqual(kSampleVar2, var2);
+    var_index_map = var_list.GetVarToIndexMapping();
+    Assert::AreEqual(2, var_index_map[kSampleVar2]);
   }
 };
 }  // namespace PKBTests
