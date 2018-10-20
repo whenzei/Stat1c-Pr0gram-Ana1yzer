@@ -26,6 +26,11 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // Initialise new result table class
   PqlResult* pql_result = new PqlResult();
   SetPqlResult(*pql_result);
+  SetIndexToProc(pkb.GetIndexToProcMapping());
+  SetIndexToVar(pkb.GetIndexToVarMapping());
+  SetProcToIndex(pkb.GetProcToIndexMapping());
+  SetVarToIndex(pkb.GetVarToIndexMapping());
+
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
@@ -1857,7 +1862,7 @@ void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
     final_result.push_back(Trim(temp_result));
     return;
   }
-  //TODO CONVERSION for var/proc
+  // TODO CONVERSION for var/proc
   const QueryResultList& curr_list = *curr;
   for (QueryResultList::const_iterator it = curr_list.begin();
        it != curr_list.end(); it++) {
@@ -2178,6 +2183,30 @@ string PqlEvaluator::Trim(const string& str) {
 }
 
 /* Getters and Setters */
+
+void PqlEvaluator::SetIndexToVar(IndexToVarProcMap map) {
+  this->index_to_var = map;
+}
+
+void PqlEvaluator::SetIndexToProc(IndexToVarProcMap map) {
+  this->index_to_proc = map;
+}
+
+void PqlEvaluator::SetVarToIndex(VarProcToIndexMap map) {
+  this->var_to_index = map;
+}
+
+void PqlEvaluator::SetProcToIndex(VarProcToIndexMap map) {
+  this->proc_to_index = map;
+}
+
+IndexToVarProcMap PqlEvaluator::GetIndexToVar() { return this->index_to_var; }
+
+IndexToVarProcMap PqlEvaluator::GetIndexToProc() { return this->index_to_proc; }
+
+VarProcToIndexMap PqlEvaluator::GetVarToIndex() { return this->var_to_index; }
+
+VarProcToIndexMap PqlEvaluator::GetProcToIndex() { return this->proc_to_index; }
 
 void PqlEvaluator::SetClauseFlag(bool clause_flag) {
   this->clause_flag_ = clause_flag;
