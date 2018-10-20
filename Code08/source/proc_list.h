@@ -14,7 +14,7 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using ProcName = int;
+using ProcName = string;
 using ProcNameList = vector<ProcName>;
 using ProcNamePairList = vector<pair<ProcName, ProcName>>;
 using ProcNameSet = unordered_set<ProcName>;

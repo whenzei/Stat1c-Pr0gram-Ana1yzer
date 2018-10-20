@@ -14,7 +14,7 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using VarName = int;
+using VarName = string;
 using VarNameList = vector<VarName>;
 using VarNameSet = unordered_set<VarName>;
 using VarNamePairList = vector<pair<VarName, VarName>>;
