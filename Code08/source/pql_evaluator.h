@@ -19,8 +19,10 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using FinalResult = list<string>;
-using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, int>>;
+using QueryResultList = vector<int>;
+using QueryResultPairList = vector<pair<int, int>>;
+using VarProcToIndexMap = unordered_map<string, int>;
+using IndexToVarProcMap = unordered_map<int, string>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -29,6 +31,10 @@ class PqlEvaluator {
   bool clause_flag_;      // to determine if clauses are true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
+  IndexToVarProcMap index_to_var;
+  IndexToVarProcMap index_to_proc;
+  VarProcToIndexMap var_to_index;
+  VarProcToIndexMap proc_to_index;
 
  public:
   /* Contructor */
@@ -39,12 +45,20 @@ class PqlEvaluator {
   void SetPKB(PKB);
   void SetClauseFlag(bool);
   void SetPqlResult(PqlResult);
+  void SetIndexToVar(IndexToVarProcMap);
+  void SetIndexToProc(IndexToVarProcMap);
+  void SetVarToIndex(VarProcToIndexMap);
+  void SetProcToIndex(VarProcToIndexMap);
 
   /* Getter */
   PqlQuery GetQuery();
   PKB GetPKB();
   bool IsValidClause();
   PqlResult GetPqlResult();
+  IndexToVarProcMap GetIndexToVar();
+  IndexToVarProcMap GetIndexToProc();
+  VarProcToIndexMap GetVarToIndex();
+  VarProcToIndexMap GetProcToIndex();
 
   /**
    * Called by the GUI. Use the Query provided by user

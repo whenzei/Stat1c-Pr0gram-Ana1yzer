@@ -1857,7 +1857,7 @@ void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
     final_result.push_back(Trim(temp_result));
     return;
   }
-
+  //TODO CONVERSION for var/proc
   const QueryResultList& curr_list = *curr;
   for (QueryResultList::const_iterator it = curr_list.begin();
        it != curr_list.end(); it++) {
@@ -1957,7 +1957,7 @@ QueryResultList PqlEvaluator::FilterWithResult(
     case PqlDeclarationEntity::kConstant:
       cout << "Filter Constant" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsConstValue(stoi(iter))) {
+        if (pkb.IsConstValue(iter)) {
           filtered_result.push_back(iter);
         }
       }
@@ -1988,9 +1988,9 @@ QueryResultList PqlEvaluator::FilterResult(QueryResultList unfiltered_result,
   }
 
   for (auto& iter : unfiltered_result) {
-    string result = iter;
+    int result = iter;
 
-    if (pkb.GetStmtType(iter) == entity_type) {
+    if (pkb.GetStmtType(result) == entity_type) {
       filtered_result.push_back(result);
     }
   }
@@ -2001,12 +2001,14 @@ QueryResultList PqlEvaluator::FilterResult(QueryResultList unfiltered_result,
 QueryResultList PqlEvaluator::FilterVariableResult(
     QueryResultList unfiltered_result, PqlDeclarationEntity variable_type) {
   QueryResultList filtered_result;
+  PKB pkb = GetPKB();
 
   for (auto& iter : unfiltered_result) {
-    if (variable_type == PqlDeclarationEntity::kConstant && isdigit(iter[0])) {
+    if (variable_type == PqlDeclarationEntity::kConstant &&
+        pkb.IsConstValue(iter)) {
       filtered_result.push_back(iter);
     } else if (variable_type == PqlDeclarationEntity::kVariable &&
-               !isdigit(iter[0])) {
+               pkb.IsVarName(iter)) {
       filtered_result.push_back(iter);
     }
   }
@@ -2048,8 +2050,8 @@ QueryResultPairList PqlEvaluator::FilterPairResult(
   }
 
   for (auto& iter : unfiltered_pair_result) {
-    string left_result = iter.first;
-    string right_result = iter.second;
+    int left_result = iter.first;
+    int right_result = iter.second;
     switch (filter_type) {
       case kFilterLeft:
         if (pkb.GetStmtType(left_result) == left_type) {
