@@ -61,12 +61,24 @@ class PKB {
   // @returns the list of <p, p> (same p repeated twice)
   ProcNamePairList GetAllProcNameTwin();
 
+  // @return the procedure name-index map
+  ProcIndexMap GetProcToIndexMapping();
+
+  // @return the index-procedure name map
+  IndexProcMap GetIndexToProcMapping();
+
   // get all variable names stored inside variable list
   // @returns the list of variable names (can be empty)
   VarNameList GetAllVarName();
 
   // @returns the list of <v, v> (same v repeated twice)
   VarNamePairList GetAllVarNameTwin();
+
+  // @return the variable name-index map
+  VarIndexMap GetVarToIndexMapping();
+
+  // @return the index-variable name map
+  IndexVarMap GetIndexToVarMapping();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
