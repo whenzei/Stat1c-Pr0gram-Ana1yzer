@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "var_list.h"
-#include "proc_list.h"
 
 using std::pair;
 using std::string;
@@ -42,17 +40,15 @@ class ModifiesTable {
   ModifiedByMap modified_by_s_map_;
   ModifiesMap modifies_p_map_;
   ModifiedByMap modified_by_p_map_;
-  ProcList proc_list_;
-  VarList var_list_;
 
  public:
   // inserts a modifies relationship between stmt_num and var_name into
   // modifies_s_map_ and modified_by_s_map
-  void InsertModifiesS(StmtNum stmt_num, VarName var_name);
+  void InsertModifiesS(StmtNum stmt_num, VarIndex var_name_id);
 
   // inserts a modifies relationship between proc_name and var_name into
   // modifies_p_map_ and modified_by_p_map
-  void InsertModifiesP(ProcName proc_name, VarName var_name);
+  void InsertModifiesP(ProcIndex proc_name_id, VarIndex var_name_id);
 
   // @returns true if var_name is modified in stmt_num
   bool IsModifiedByS(StmtNum stmt_num, VarIndex var_name_id);
