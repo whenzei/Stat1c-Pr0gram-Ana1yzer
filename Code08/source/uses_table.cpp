@@ -83,8 +83,8 @@ bool UsesTable::IsUsedByP(ProcIndex proc_name_id, VarIndex var_name_id) {
   }
 }
 
-StmtVarPairList UsesTable::GetAllUsesSPair() {
-  StmtVarPairList uses_pairs;
+StmtVarIndexPairList UsesTable::GetAllUsesSPair() {
+  StmtVarIndexPairList uses_pairs;
   for (auto entry : uses_s_map_) {
     for (auto var_name : entry.second) {
       uses_pairs.push_back(make_pair(entry.first, var_name));

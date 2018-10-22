@@ -213,11 +213,11 @@ StmtNumPairList PKB::GetAllCallStmtTwin() {
   return stmt_type_list_.GetAllCallStmtTwin();
 }
 
-bool PKB::IsVarName(VarName var_name) { return var_list_.IsVarName(var_name); }
+bool PKB::IsVarName(VarIndex var_index) { return var_list_.IsVarName(var_index); }
 
 bool PKB::IsStmtNum(StmtNum stmt_num) { return stmt_table_.IsStmtNum(stmt_num); }
 
-bool PKB::IsProcName(ProcName proc_name) { return proc_list_.IsProcName(proc_name); }
+bool PKB::IsProcName(ProcIndex proc_index) { return proc_list_.IsProcName(proc_index); }
 
 bool PKB::IsConstValue(ConstValue const_value) {
   return const_list_.IsConstValue(const_value);
@@ -366,7 +366,7 @@ ProcIndexList PKB::GetAllModifyingP() {
   return modifies_table_.GetAllModifyingProc();
 }
 
-StmtVarPairList PKB::GetAllModifiesPairS() {
+StmtVarIndexPairList PKB::GetAllModifiesPairS() {
   return modifies_table_.GetAllModifiesPairS();
 }
 
@@ -402,7 +402,7 @@ bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
   return uses_table_.IsUsedByP(GetProcIndex(proc_name), GetVarIndex(var_name));
 }
 
-StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }
+StmtVarIndexPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }
 
 ProcVarPairList PKB::GetAllUsesPairP() { return uses_table_.GetAllUsesPPair(); }
 
@@ -533,6 +533,10 @@ bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
 
 bool PKB::IsCalledProc(ProcName callee_proc) {
   return call_table_.IsCalledProc(GetProcIndex(callee_proc));
+}
+
+bool PKB::IsCalledProc(ProcIndex callee_proc_index) {
+  return call_table_.IsCalledProc(callee_proc_index);
 }
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }

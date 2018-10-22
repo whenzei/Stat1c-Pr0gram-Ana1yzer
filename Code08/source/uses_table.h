@@ -23,10 +23,11 @@ using VarIndexList = vector<VarIndex>;
 using ProcIndex = int;
 using ProcIndexList = vector<ProcIndex>;
 using ProcNameIndexSet = unordered_set<ProcIndex>;
+using ProcIndexSet = unordered_set<ProcIndex>;
 // int can be StmtNum or ProcIndex
 using UsesMap = unordered_map<int, vector<VarIndex>>;
 using UsedByMap = unordered_map<VarIndex, vector<int>>;
-using StmtVarPairList = vector<pair<StmtNum, VarIndex>>;
+using StmtVarIndexPairList = vector<pair<StmtNum, VarIndex>>;
 using ProcVarPairList = vector<pair<ProcIndex, VarIndex>>;
 
 // The uses table class for the PKB component
@@ -36,7 +37,7 @@ class UsesTable {
   StmtNumList using_stmt_list_;
   ProcIndexList using_proc_list_;
   StmtNumSet using_stmt_set_;
-  ProcNameSet using_proc_set_;
+  ProcIndexSet using_proc_set_;
   UsesMap uses_s_map_;
   UsedByMap used_by_s_map_;
   UsesMap uses_p_map_;
@@ -78,7 +79,7 @@ class UsesTable {
   bool IsUsedByP(ProcIndex proc_name_id, VarIndex var_name_id);
 
   // @returns a list of all <stmt_num, var_name> uses_pairs (can be empty)
-  StmtVarPairList GetAllUsesSPair();
+  StmtVarIndexPairList GetAllUsesSPair();
 
   // @returns a list of all <proc_name, var_name> uses_pairs (can be empty)
   ProcVarPairList GetAllUsesPPair();

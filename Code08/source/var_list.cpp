@@ -19,8 +19,8 @@ VarIndexList VarList::GetAllVarName() {
   return var_name_index_list_;
 }
 
-bool VarList::IsVarName(VarName var_name) {
-  return var_index_map_.find(var_name) != var_index_map_.end(); 
+bool VarList::IsVarName(VarIndex var_index) {
+  return index_var_map_.find(var_index) != index_var_map_.end();
 }
 
 VarIndexPairList VarList::GetAllVarNameTwin() {

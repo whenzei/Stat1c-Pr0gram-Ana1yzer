@@ -91,8 +91,8 @@ ProcIndexList ModifiesTable::GetAllModifyingProc() {
   return modifying_proc_list_;
 }
 
-StmtVarPairList ModifiesTable::GetAllModifiesPairS() {
-  StmtVarPairList modifies_pair_list;
+StmtVarIndexPairList ModifiesTable::GetAllModifiesPairS() {
+  StmtVarIndexPairList modifies_pair_list;
   for (auto entry : modifies_s_map_) {
     for (VarIndex& var_name_id : entry.second) {
       modifies_pair_list.push_back(make_pair(entry.first, var_name_id));

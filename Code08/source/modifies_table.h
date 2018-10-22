@@ -25,7 +25,7 @@ using ProcNameIndexSet = unordered_set<ProcIndex>;
 // int can be either ProcName or StmtNum.
 using ModifiesMap = unordered_map<int, vector<VarIndex>>;
 using ModifiedByMap = unordered_map<VarIndex, vector<int>>;
-using StmtVarPairList = vector<pair<StmtNum, VarIndex>>;
+using StmtVarIndexPairList = vector<pair<StmtNum, VarIndex>>;
 using ProcVarPairList = vector<pair<ProcIndex, VarIndex>>;
 
 // The modifies table class for the PKB component
@@ -75,7 +75,7 @@ class ModifiesTable {
   ProcIndexList GetAllModifyingProc();
 
   // @returns a list of all pairs of <modifying_stmt_num, modified_var_name>
-  StmtVarPairList GetAllModifiesPairS();
+  StmtVarIndexPairList GetAllModifiesPairS();
 
   // @returns a list of all pairs of <modifying_proc_name, modified_var_name>
   ProcVarPairList GetAllModifiesPairP();

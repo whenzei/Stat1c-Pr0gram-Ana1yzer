@@ -17,8 +17,8 @@ int ProcList::InsertProcName(ProcName proc_name) {
 
 ProcIndexList ProcList::GetAllProcName() { return proc_name_index_list_; }
 
-bool ProcList::IsProcName(ProcName proc_name) {
-  return proc_index_map_.find(proc_name) != proc_index_map_.end();
+bool ProcList::IsProcName(ProcIndex proc_index) {
+  return index_proc_map_.find(proc_index) != index_proc_map_.end();
 }
 
 ProcIndexPairList ProcList::GetAllProcNameTwin() {

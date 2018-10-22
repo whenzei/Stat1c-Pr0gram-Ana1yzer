@@ -46,7 +46,7 @@ class ProcList {
   ProcIndexList GetAllProcName();
 
   // @returns true if proc_name exists in the proc list
-  bool IsProcName(ProcName proc_name);
+  bool IsProcName(ProcIndex proc_index);
 
   // @returns the list of all procedure names in pairs (in each pair, the same procedure name is repeated)
   ProcIndexPairList GetAllProcNameTwin();

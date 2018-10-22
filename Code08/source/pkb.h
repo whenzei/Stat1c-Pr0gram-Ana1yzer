@@ -235,13 +235,13 @@ class PKB {
  * Is-A Functions *
  ***********************/
   // @returns true if var_name is a variable in the variable list
-  bool IsVarName(VarName var_name);
+  bool IsVarName(VarIndex var_index);
 
   // @returns true if stmt_num is a statement in the statement list
   bool IsStmtNum(StmtNum stmt_num);
 
   // @returns true if proc_name is a procedure in the procedure list
-  bool IsProcName(ProcName proc_name);
+  bool IsProcName(ProcIndex proc_index);
 
   // @returns true if const_value is a constant in the constant list
   bool IsConstValue(ConstValue const_value);
@@ -371,7 +371,7 @@ class PKB {
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Modifies(stmt_num, var_name)
-  StmtVarPairList GetAllModifiesPairS();
+  StmtVarIndexPairList GetAllModifiesPairS();
 
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
@@ -407,7 +407,7 @@ class PKB {
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Uses(stmt_num, var_name)
-  StmtVarPairList GetAllUsesPairS();
+  StmtVarIndexPairList GetAllUsesPairS();
 
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Uses(proc_name, var_name)
@@ -526,8 +526,8 @@ class PKB {
   bool IsCallT(ProcName caller_proc, ProcName callee_proc);
 
   // @returns true if callee is called by any other proc
-
   bool IsCalledProc(ProcName callee_proc);
+  bool IsCalledProc(ProcIndex callee_proc_index);
 
   // @returns true if Call Table has any calls relationships
   // false if otherwise

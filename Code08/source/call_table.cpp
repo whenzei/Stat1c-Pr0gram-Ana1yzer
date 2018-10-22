@@ -71,6 +71,7 @@
     for (auto& proc_index : callee_list) {
       callee_name_list.push_back(proc_list_.GetProcName(proc_index));
     }
+    return callee_name_list;
   }
 
   ProcIndexList CallTable::GetCalleeT(ProcIndex caller_proc) {
@@ -137,7 +138,7 @@
 
   bool CallTable::IsCallT(ProcIndex caller_proc, ProcIndex callee_proc) {
     if (call_table_.find(caller_proc) != call_table_.end()) {
-      ProcNameList callee_list = call_table_[caller_proc];
+      ProcIndexList callee_list = call_table_[caller_proc];
       return (find(callee_list.begin(), callee_list.end(), callee_proc) != callee_list.end());
     }
     return false; 

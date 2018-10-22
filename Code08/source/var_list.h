@@ -50,7 +50,7 @@ class VarList {
   int InsertVarName(VarName var_name);
 
   // @return true if var_name is in the var list
-  bool IsVarName(VarName var_name);
+  bool IsVarName(VarIndex var_index);
 
   // @returns an unordered map with Index to Var mapping
   IndexVarMap GetIndexToVarMapping();
