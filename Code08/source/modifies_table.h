@@ -17,16 +17,16 @@ using std::vector;
 using StmtNum = int;
 using StmtNumList = vector<StmtNum>;
 using StmtNumSet = unordered_set<StmtNum>;
-using VarName = int;
-using VarNameList = vector<VarName>;
-using ProcName = int;
-using ProcNameList = vector<ProcName>;
-using ProcNameSet = unordered_set<ProcName>;
+using VarNameIndex = int;
+using VarNameIndexList = vector<VarNameIndex>;
+using ProcNameIndex = int;
+using ProcNameIndexList = vector<ProcNameIndex>;
+using ProcNameIndexSet = unordered_set<ProcNameIndex>;
 // int can be either ProcName or StmtNum.
-using ModifiesMap = unordered_map<int, vector<VarName>>;
-using ModifiedByMap = unordered_map<VarName, vector<int>>;
-using StmtVarPairList = vector<pair<StmtNum, VarName>>;
-using ProcVarPairList = vector<pair<ProcName, VarName>>;
+using ModifiesMap = unordered_map<int, vector<VarNameIndex>>;
+using ModifiedByMap = unordered_map<VarNameIndex, vector<int>>;
+using StmtVarPairList = vector<pair<StmtNum, VarNameIndex>>;
+using ProcVarPairList = vector<pair<ProcNameIndex, VarNameIndex>>;
 
 // The modifies table class for the PKB component
 // Used to store modifies relationships between stmt/proc and variables that are
@@ -34,8 +34,8 @@ using ProcVarPairList = vector<pair<ProcName, VarName>>;
 class ModifiesTable {
   StmtNumList modifying_stmt_list_;
   StmtNumSet modifying_stmt_set_;
-  ProcNameList modifying_proc_list_;
-  ProcNameSet modifying_proc_set_;
+  ProcNameIndexList modifying_proc_list_;
+  ProcNameIndexSet modifying_proc_set_;
   ModifiesMap modifies_s_map_;
   ModifiedByMap modified_by_s_map_;
   ModifiesMap modifies_p_map_;
@@ -44,35 +44,35 @@ class ModifiesTable {
  public:
   // inserts a modifies relationship between stmt_num and var_name into
   // modifies_s_map_ and modified_by_s_map
-  void InsertModifiesS(StmtNum stmt_num, VarName var_name);
+  void InsertModifiesS(StmtNum stmt_num, VarNameIndex var_name_id);
 
   // inserts a modifies relationship between proc_name and var_name into
   // modifies_p_map_ and modified_by_p_map
-  void InsertModifiesP(ProcName proc_name, VarName var_name);
+  void InsertModifiesP(ProcNameIndex proc_name_id, VarNameIndex var_name_id);
 
   // @returns true if var_name is modified in stmt_num
-  bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
+  bool IsModifiedByS(StmtNum stmt_num, VarNameIndex var_name_id);
 
   // @returns true if var_name is modified in proc_name
-  bool IsModifiedByP(ProcName proc_name, VarName var_name);
+  bool IsModifiedByP(ProcNameIndex proc_name_id, VarNameIndex var_name_id);
 
   // @returns a list of variables modified in stmt_num
-  VarNameList GetModifiedVarS(StmtNum stmt_num);
+  VarNameIndexList GetModifiedVarS(StmtNum stmt_num);
 
   // @returns a list of variables modified in proc_name
-  VarNameList GetModifiedVarP(ProcName proc_name);
+  VarNameIndexList GetModifiedVarP(ProcNameIndex proc_name_id);
 
   // @returns a list of statements that modify var_name
-  StmtNumList GetModifyingStmt(VarName var_name);
+  StmtNumList GetModifyingStmt(VarNameIndex var_name_id);
 
   // @returns a list of statements that modify some variable
   StmtNumList GetAllModifyingStmt();
 
   // @returns a list of procedures that modify var_name
-  ProcNameList GetModifyingProc(VarName var_name);
+  ProcNameIndexList GetModifyingProc(VarNameIndex var_name_id);
 
   // @returns a list of procedures that modify some variable
-  ProcNameList GetAllModifyingProc();
+  ProcNameIndexList GetAllModifyingProc();
 
   // @returns a list of all pairs of <modifying_stmt_num, modified_var_name>
   StmtVarPairList GetAllModifiesPairS();
