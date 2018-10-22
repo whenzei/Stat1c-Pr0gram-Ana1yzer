@@ -2,38 +2,38 @@
 
 #include "uses_table.h"
 
-void UsesTable::InsertUsesS(StmtNum stmt_num, VarName var_name) {
-  if (!IsUsedByS(stmt_num, var_name)) {
+void UsesTable::InsertUsesS(StmtNum stmt_num, VarNameIndex var_name_id) {
+  if (!IsUsedByS(stmt_num, var_name_id)) {
     if (using_stmt_set_.insert(stmt_num).second) {
       using_stmt_list_.push_back(stmt_num);
     }
-    uses_s_map_[stmt_num].push_back(var_name);
-    used_by_s_map_[var_name].push_back(stmt_num);
+    uses_s_map_[stmt_num].push_back(var_name_id);
+    used_by_s_map_[var_name_id].push_back(stmt_num);
   }
 }
 
-void UsesTable::InsertUsesP(ProcName proc_name, VarName var_name) {
-  if (!IsUsedByP(proc_name, var_name)) {
-    if (using_proc_set_.insert(proc_name).second) {
-      using_proc_list_.push_back(proc_name);
+void UsesTable::InsertUsesP(ProcNameIndex proc_name_id, VarNameIndex var_name_id) {
+  if (!IsUsedByP(proc_name_id, var_name_id)) {
+    if (using_proc_set_.insert(proc_name_id).second) {
+      using_proc_list_.push_back(proc_name_id);
     }
-    uses_p_map_[proc_name].push_back(var_name);
-    used_by_p_map_[var_name].push_back(proc_name);
+    uses_p_map_[proc_name_id].push_back(var_name_id);
+    used_by_p_map_[var_name_id].push_back(proc_name_id);
   }
 }
 
-VarNameList UsesTable::GetUsedVarS(StmtNum stmt_num) {
-  VarNameList used_vars;
+VarNameIndexList UsesTable::GetUsedVarS(StmtNum stmt_num) {
+  VarNameIndexList used_vars;
   if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
     used_vars = uses_s_map_[stmt_num];
   }
   return used_vars;
 }
 
-VarNameList UsesTable::GetUsedVarP(ProcName proc_name) {
-  VarNameList used_vars;
-  if (uses_p_map_.find(proc_name) != uses_p_map_.end()) {
-    used_vars = uses_p_map_[proc_name];
+VarNameIndexList UsesTable::GetUsedVarP(ProcNameIndex proc_name_id) {
+  VarNameIndexList used_vars;
+  if (uses_p_map_.find(proc_name_id) != uses_p_map_.end()) {
+    used_vars = uses_p_map_[proc_name_id];
   }
   return used_vars;
 }
@@ -42,30 +42,30 @@ StmtNumList UsesTable::GetAllUsingStmt() {
   return using_stmt_list_; 
 }
 
-ProcNameList UsesTable::GetAllUsingProc() {
+ProcNameIndexList UsesTable::GetAllUsingProc() {
   return using_proc_list_;
 }
 
-StmtNumList UsesTable::GetUsingStmt(VarName var_name) {
+StmtNumList UsesTable::GetUsingStmt(VarNameIndex var_name_id) {
   StmtNumList using_stmts;
-  if (used_by_s_map_.find(var_name) != used_by_s_map_.end()) {
-    using_stmts = used_by_s_map_[var_name];
+  if (used_by_s_map_.find(var_name_id) != used_by_s_map_.end()) {
+    using_stmts = used_by_s_map_[var_name_id];
   }
   return using_stmts;
 }
 
-ProcNameList UsesTable::GetUsingProc(VarName var_name) {
-  ProcNameList using_proc;
-  if (used_by_p_map_.find(var_name) != used_by_p_map_.end()) {
-    using_proc = used_by_p_map_[var_name];
+ProcNameIndexList UsesTable::GetUsingProc(VarNameIndex var_name_id) {
+  ProcNameIndexList using_proc;
+  if (used_by_p_map_.find(var_name_id) != used_by_p_map_.end()) {
+    using_proc = used_by_p_map_[var_name_id];
   }
   return using_proc;
 }
 
-bool UsesTable::IsUsedByS(StmtNum stmt_num, VarName var_name) {
+bool UsesTable::IsUsedByS(StmtNum stmt_num, VarNameIndex var_name_id) {
   if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
-    VarNameList var_name_list = (*uses_s_map_.find(stmt_num)).second;
-    return find(var_name_list.begin(), var_name_list.end(), var_name) !=
+    VarNameIndexList var_name_list = (*uses_s_map_.find(stmt_num)).second;
+    return find(var_name_list.begin(), var_name_list.end(), var_name_id) !=
       var_name_list.end();
   }
   else {
@@ -73,10 +73,10 @@ bool UsesTable::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   }
 }
 
-bool UsesTable::IsUsedByP(ProcName proc_name, VarName var_name) {
-  if (uses_p_map_.find(proc_name) != uses_p_map_.end()) {
-    VarNameList var_name_list = (*uses_p_map_.find(proc_name)).second;
-    return find(var_name_list.begin(), var_name_list.end(), var_name) !=
+bool UsesTable::IsUsedByP(ProcNameIndex proc_name_id, VarNameIndex var_name_id) {
+  if (uses_p_map_.find(proc_name_id) != uses_p_map_.end()) {
+    VarNameIndexList var_name_list = (*uses_p_map_.find(proc_name_id)).second;
+    return find(var_name_list.begin(), var_name_list.end(), var_name_id) !=
            var_name_list.end();
   } else {
     return false;
