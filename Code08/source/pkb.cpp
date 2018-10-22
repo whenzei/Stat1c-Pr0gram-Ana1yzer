@@ -10,7 +10,7 @@ void PKB::InsertProcName(ProcName proc_name) {
   next_table_.InsertCFG(proc_name);
 }
 
-ProcNameList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
+ProcIndexList PKB::GetAllProcName() { return proc_list_.GetAllProcName(); }
 
 ProcNamePairList PKB::GetAllProcNameTwin() {
   return proc_list_.GetAllProcNameTwin();
@@ -18,15 +18,29 @@ ProcNamePairList PKB::GetAllProcNameTwin() {
 
 ProcIndexMap PKB::GetProcToIndexMapping() { return proc_list_.GetProcToIndexMapping();  }
 
-IndexProcMap PKB::GetIndexToProcMapping() { return proc_list_.GetIndexToProcMapping();  }
+IndexProcMap PKB::GetIndexToProcMapping() {
+  return proc_list_.GetIndexToProcMapping();
+}
 
-VarNameList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+ProcName PKB::GetProcName(ProcIndex index) { return proc_list_.GetProcName(index); }
 
-VarNamePairList PKB::GetAllVarNameTwin() { return var_list_.GetAllVarNameTwin(); }
+ProcIndex PKB::GetProcIndex(ProcName proc_name) {
+  return proc_list_.GetProcIndex(proc_name);
+}
+
+VarIndexList PKB::GetAllVarName() { return var_list_.GetAllVarName(); }
+
+VarIndexPairList PKB::GetAllVarNameTwin() { return var_list_.GetAllVarNameTwin(); }
 
 VarIndexMap PKB::GetVarToIndexMapping() { return var_list_.GetVarToIndexMapping(); }
 
-IndexVarMap PKB::GetIndexToVarMapping() { return var_list_.GetIndexToVarMapping(); }
+IndexVarMap PKB::GetIndexToVarMapping() {
+  return var_list_.GetIndexToVarMapping();
+}
+
+VarName PKB::GetVarName(VarIndex index) { return var_list_.GetVarName(index); }
+
+VarIndex PKB::GetVarIndex(VarName var_name) { return var_list_.GetVarIndex(var_name); }
 
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
@@ -113,19 +127,19 @@ void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
 }
 
 void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {
-  modifies_table_.InsertModifiesS(modifying_stmt, modified_var);
+  modifies_table_.InsertModifiesS(modifying_stmt, GetVarIndex(modified_var));
 }
 
 void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
-  modifies_table_.InsertModifiesP(modifying_proc, modified_var);
+  modifies_table_.InsertModifiesP(GetProcIndex(modifying_proc), GetVarIndex(modified_var));
 }
 
 void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
-  uses_table_.InsertUsesS(using_stmt, used_var);
+  uses_table_.InsertUsesS(using_stmt, GetVarIndex(used_var));
 }
 
 void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
-  uses_table_.InsertUsesP(using_proc, used_var);
+  uses_table_.InsertUsesP(GetProcIndex(using_proc), GetVarIndex(used_var));
 }
 
 void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
@@ -137,7 +151,7 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
                                                  child_stmt_num);
 }
 
-void PKB::InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt) {
+void PKB::InsertNext(ProcName proc_name, StmtNum previous_stmt, StmtNum next_stmt) {
   next_table_.InsertNext(proc_name, previous_stmt, next_stmt);
 }
 
@@ -305,34 +319,34 @@ StmtNumPairList PKB::GetAllParentTPair() {
 }
 
 bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
-  return modifies_table_.IsModifiedByS(stmt_num, var_name);
+  return modifies_table_.IsModifiedByS(stmt_num, GetVarIndex(var_name));
 }
 
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
-  return modifies_table_.IsModifiedByP(proc_name, var_name);
+  return modifies_table_.IsModifiedByP(GetProcIndex(proc_name), GetVarIndex(var_name));
 }
 
-VarNameList PKB::GetModifiedVarS(StmtNum stmt_num) {
+VarIndexList PKB::GetModifiedVarS(StmtNum stmt_num) {
   return modifies_table_.GetModifiedVarS(stmt_num);
 }
 
-VarNameList PKB::GetModifiedVarP(ProcName proc_name) {
-  return modifies_table_.GetModifiedVarP(proc_name);
+VarIndexList PKB::GetModifiedVarP(ProcName proc_name) {
+  return modifies_table_.GetModifiedVarP(GetProcIndex(proc_name));
 }
 
 StmtNumList PKB::GetModifyingS(VarName var_name) {
-  return modifies_table_.GetModifyingStmt(var_name);
+  return modifies_table_.GetModifyingStmt(GetVarIndex(var_name));
 }
 
-ProcNameList PKB::GetModifyingP(VarName var_name) {
-  return modifies_table_.GetModifyingProc(var_name);
+ProcIndexList PKB::GetModifyingP(VarName var_name) {
+  return modifies_table_.GetModifyingProc(GetVarIndex(var_name));
 }
 
 StmtNumList PKB::GetAllModifyingS() {
   return modifies_table_.GetAllModifyingStmt();
 }
 
-ProcNameList PKB::GetAllModifyingP() {
+ProcIndexList PKB::GetAllModifyingP() {
   return modifies_table_.GetAllModifyingProc();
 }
 
@@ -344,32 +358,32 @@ ProcVarPairList PKB::GetAllModifiesPairP() {
   return modifies_table_.GetAllModifiesPairP();
 }
 
-VarNameList PKB::GetUsedVarS(StmtNum stmt_num) {
+VarIndexList PKB::GetUsedVarS(StmtNum stmt_num) {
   return uses_table_.GetUsedVarS(stmt_num);
 }
 
-VarNameList PKB::GetUsedVarP(ProcName proc_name) {
-  return uses_table_.GetUsedVarP(proc_name);
+VarIndexList PKB::GetUsedVarP(ProcName proc_name) {
+  return uses_table_.GetUsedVarP(GetProcIndex(proc_name));
 }
 
 StmtNumList PKB::GetAllUsingStmt() { return uses_table_.GetAllUsingStmt(); }
 
-ProcNameList PKB::GetAllUsingProc() { return uses_table_.GetAllUsingProc(); }
+ProcIndexList PKB::GetAllUsingProc() { return uses_table_.GetAllUsingProc(); }
 
 StmtNumList PKB::GetUsingStmt(VarName var_name) {
-  return uses_table_.GetUsingStmt(var_name);
+  return uses_table_.GetUsingStmt(GetVarIndex(var_name));
 }
 
-ProcNameList PKB::GetUsingProc(VarName var_name) {
-  return uses_table_.GetUsingProc(var_name);
+ProcIndexList PKB::GetUsingProc(VarName var_name) {
+  return uses_table_.GetUsingProc(GetVarIndex(var_name));
 }
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
-  return uses_table_.IsUsedByS(stmt_num, var_name);
+  return uses_table_.IsUsedByS(stmt_num, GetVarIndex(var_name));
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
-  return uses_table_.IsUsedByP(proc_name, var_name);
+  return uses_table_.IsUsedByP(GetProcIndex(proc_name), GetVarIndex(var_name));
 }
 
 StmtVarPairList PKB::GetAllUsesPairS() { return uses_table_.GetAllUsesSPair(); }

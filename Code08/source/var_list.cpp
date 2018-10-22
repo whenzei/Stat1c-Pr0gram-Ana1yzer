@@ -15,7 +15,7 @@ int VarList::InsertVarName(VarName var_name) {
   return -1;
 }
 
-VarNameIndexList VarList::GetAllVarName() {
+VarIndexList VarList::GetAllVarName() {
   return var_name_index_list_;
 }
 
@@ -23,7 +23,7 @@ bool VarList::IsVarName(VarName var_name) {
   return var_index_map_.find(var_name) != var_index_map_.end(); 
 }
 
-VarNameIndexPairList VarList::GetAllVarNameTwin() {
+VarIndexPairList VarList::GetAllVarNameTwin() {
   return var_name_index_twin_list_;
 }
 
@@ -34,8 +34,20 @@ IndexVarMap VarList::GetIndexToVarMapping() {
 VarIndexMap VarList::GetVarToIndexMapping() {
   return var_index_map_; }
 
-VarName VarList::GetVarName(VarNameIndex index) { return index_var_map_[index]; }
+VarName VarList::GetVarName(VarIndex index) {
+  IndexVarMap::iterator iter = index_var_map_.find(index);
+  if (iter != index_var_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarName();
+  }
+}
 
-VarNameIndex VarList::GetVarNameIndex(VarName var_name) {
-  return var_index_map_[var_name];
+VarIndex VarList::GetVarIndex(VarName var_name) {
+  VarIndexMap::iterator iter = var_index_map_.find(var_name);
+  if (iter != var_index_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarIndex();
+  }
 }

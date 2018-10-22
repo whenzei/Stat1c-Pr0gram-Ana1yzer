@@ -16,17 +16,18 @@ using std::unordered_set;
 using std::vector;
 
 using VarName = string;
-using VarNameIndex = int;
-using VarNameIndexList = vector<VarNameIndex>;
-using VarNameIndexPairList = vector<pair<VarNameIndex, VarNameIndex>>;
-using VarIndexMap = unordered_map<VarName, VarNameIndex>;
-using IndexVarMap = unordered_map<VarNameIndex, VarName>;
+using VarIndex = int;
+using VarIndexList = vector<VarIndex>;
+using VarIndexPairList = vector<pair<VarIndex, VarIndex>>;
+using VarNameSet = unordered_set<VarName>;
+using VarIndexMap = unordered_map<VarName, VarIndex>;
+using IndexVarMap = unordered_map<VarIndex, VarName>;
 
 // The variable list class for the PKB component
 // Used to store variable names that are passed into PKB from the parser
 class VarList {
-  VarNameIndexList var_name_index_list_;
-  VarNameIndexPairList var_name_index_twin_list_;
+  VarIndexList var_name_index_list_;
+  VarIndexPairList var_name_index_twin_list_;
   // TODO: Depending on PQL's preferences, might have to add below
   // a list of Proc Indices and just return the entire list.
   VarIndexMap var_index_map_;
@@ -38,10 +39,10 @@ class VarList {
 
  public:
   // Returns a list of all variable names in the VarList.
-  VarNameIndexList GetAllVarName();
+  VarIndexList GetAllVarName();
 
   // Returns a list of all variable names in pairs (in each pair, the same var_name is repeated)
-  VarNameIndexPairList GetAllVarNameTwin();
+  VarIndexPairList GetAllVarNameTwin();
 
   // Inserts var_name into VarList
   // @return index of the inserted variable if successful
@@ -58,10 +59,10 @@ class VarList {
   VarIndexMap GetVarToIndexMapping();
 
   // @returns the corresponding var name
-  VarName GetVarName(VarNameIndex index);
+  VarName GetVarName(VarIndex index);
 
   // @returns the corresponding var name index
-  VarNameIndex GetVarNameIndex(VarName var_name);
+  VarIndex GetVarIndex(VarName var_name);
 };
 
 #endif !SPA_VAR_LIST_H

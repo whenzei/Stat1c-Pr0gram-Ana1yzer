@@ -5,7 +5,7 @@
 using std::find;
 using std::make_pair;
 
-void ModifiesTable::InsertModifiesS(StmtNum stmt_num, VarNameIndex var_name_id) {
+void ModifiesTable::InsertModifiesS(StmtNum stmt_num, VarIndex var_name_id) {
   if (!IsModifiedByS(stmt_num, var_name_id)) {
     if (modifying_stmt_set_.insert(stmt_num).second) {
       modifying_stmt_list_.push_back(stmt_num);
@@ -15,7 +15,7 @@ void ModifiesTable::InsertModifiesS(StmtNum stmt_num, VarNameIndex var_name_id) 
   }
 }
 
-void ModifiesTable::InsertModifiesP(ProcNameIndex proc_name_id, VarNameIndex var_name_id) {
+void ModifiesTable::InsertModifiesP(ProcIndex proc_name_id, VarIndex var_name_id) {
   if (!IsModifiedByP(proc_name_id, var_name_id)) {
     if (modifying_proc_set_.insert(proc_name_id).second) {
       modifying_proc_list_.push_back(proc_name_id);
@@ -25,10 +25,10 @@ void ModifiesTable::InsertModifiesP(ProcNameIndex proc_name_id, VarNameIndex var
   }
 }
 
-bool ModifiesTable::IsModifiedByS(StmtNum stmt_num, VarNameIndex var_name_id) {
+bool ModifiesTable::IsModifiedByS(StmtNum stmt_num, VarIndex var_name_id) {
   ModifiesMap::iterator iter = modifies_s_map_.find(stmt_num);
   if (iter != modifies_s_map_.end()) {
-    VarNameIndexList var_name_list = (*iter).second;
+    VarIndexList var_name_list = (*iter).second;
     return find(var_name_list.begin(), var_name_list.end(), var_name_id) !=
            var_name_list.end();
   } else {
@@ -36,10 +36,10 @@ bool ModifiesTable::IsModifiedByS(StmtNum stmt_num, VarNameIndex var_name_id) {
   }
 }
 
-bool ModifiesTable::IsModifiedByP(ProcNameIndex proc_name_id, VarNameIndex var_name_id) {
+bool ModifiesTable::IsModifiedByP(ProcIndex proc_name_id, VarIndex var_name_id) {
   ModifiesMap::iterator iter = modifies_p_map_.find(proc_name_id);
   if (iter != modifies_p_map_.end()) {
-    VarNameIndexList var_name_list = (*iter).second;
+    VarIndexList var_name_list = (*iter).second;
     return find(var_name_list.begin(), var_name_list.end(), var_name_id) !=
            var_name_list.end();
   } else {
@@ -47,25 +47,25 @@ bool ModifiesTable::IsModifiedByP(ProcNameIndex proc_name_id, VarNameIndex var_n
   }
 }
 
-VarNameIndexList ModifiesTable::GetModifiedVarS(StmtNum stmt_num) {
+VarIndexList ModifiesTable::GetModifiedVarS(StmtNum stmt_num) {
   ModifiesMap::iterator iter = modifies_s_map_.find(stmt_num);
   if (iter != modifies_s_map_.end()) {
     return (*iter).second;
   } else {
-    return VarNameIndexList();
+    return VarIndexList();
   }
 }
 
-VarNameIndexList ModifiesTable::GetModifiedVarP(ProcNameIndex proc_name_id) {
+VarIndexList ModifiesTable::GetModifiedVarP(ProcIndex proc_name_id) {
   ModifiesMap::iterator iter = modifies_p_map_.find(proc_name_id);
   if (iter != modifies_p_map_.end()) {
     return (*iter).second;
   } else {
-    return VarNameIndexList();
+    return VarIndexList();
   }
 }
 
-StmtNumList ModifiesTable::GetModifyingStmt(VarNameIndex var_name_id) {
+StmtNumList ModifiesTable::GetModifyingStmt(VarIndex var_name_id) {
   ModifiedByMap::iterator iter = modified_by_s_map_.find(var_name_id);
   if (iter != modified_by_s_map_.end()) {
     return (*iter).second;
@@ -78,23 +78,23 @@ StmtNumList ModifiesTable::GetAllModifyingStmt() {
   return modifying_stmt_list_;
 }
 
-ProcNameIndexList ModifiesTable::GetModifyingProc(VarNameIndex var_name_id) {
+ProcIndexList ModifiesTable::GetModifyingProc(VarIndex var_name_id) {
   ModifiedByMap::iterator iter = modified_by_p_map_.find(var_name_id);
   if (iter != modified_by_p_map_.end()) {
     return (*iter).second;
   } else {
-    return ProcNameIndexList();
+    return ProcIndexList();
   }
 }
 
-ProcNameIndexList ModifiesTable::GetAllModifyingProc() {
+ProcIndexList ModifiesTable::GetAllModifyingProc() {
   return modifying_proc_list_;
 }
 
 StmtVarPairList ModifiesTable::GetAllModifiesPairS() {
   StmtVarPairList modifies_pair_list;
   for (auto entry : modifies_s_map_) {
-    for (VarNameIndex& var_name_id : entry.second) {
+    for (VarIndex& var_name_id : entry.second) {
       modifies_pair_list.push_back(make_pair(entry.first, var_name_id));
 	}
   }
@@ -104,7 +104,7 @@ StmtVarPairList ModifiesTable::GetAllModifiesPairS() {
 ProcVarPairList ModifiesTable::GetAllModifiesPairP() {
   ProcVarPairList modifies_pair_list;
   for (auto entry : modifies_p_map_) {
-    for (VarNameIndex& var_name_id : entry.second) {
+    for (VarIndex& var_name_id : entry.second) {
       modifies_pair_list.push_back(make_pair(entry.first, var_name_id));
     }
   }
