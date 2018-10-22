@@ -7,8 +7,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "proc_list.h"
-#include "var_list.h"
 
 using std::make_pair;
 using std::pair;
@@ -38,22 +36,20 @@ class UsesTable {
   StmtNumList using_stmt_list_;
   ProcIndexList using_proc_list_;
   StmtNumSet using_stmt_set_;
-  ProcNameIndexSet using_proc_set_;
+  ProcNameSet using_proc_set_;
   UsesMap uses_s_map_;
   UsedByMap used_by_s_map_;
   UsesMap uses_p_map_;
   UsedByMap used_by_p_map_;
-  ProcList proc_list_;
-  VarList var_list_;
 
  public:
   // Inserts a uses relationship between stmt_num and var_name in the
   // uses_s_map_ and used_by_s_map_
-  void InsertUsesS(StmtNum stmt_num, VarName var_name);
+  void InsertUsesS(StmtNum stmt_num, VarIndex var_name_id);
 
   // Inserts a uses relationship between proc_name and var_name in the
   // uses_p_map_ and used_by_p_map_
-  void InsertUsesP(ProcName proc_name, VarName var_name);
+  void InsertUsesP(ProcIndex proc_name_id, VarIndex var_name_id);
 
   // @returns a list of variables used in statement identified by stmt_num
   // (can be empty)

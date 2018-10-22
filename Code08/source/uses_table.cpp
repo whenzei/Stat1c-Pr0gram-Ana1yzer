@@ -2,8 +2,7 @@
 
 #include "uses_table.h"
 
-void UsesTable::InsertUsesS(StmtNum stmt_num, VarName var_name) {
-  int var_name_id = var_list_.GetVarIndex(var_name);
+void UsesTable::InsertUsesS(StmtNum stmt_num, VarIndex var_name_id) {
   if (!IsUsedByS(stmt_num, var_name_id)) {
     if (using_stmt_set_.insert(stmt_num).second) {
       using_stmt_list_.push_back(stmt_num);
@@ -13,9 +12,7 @@ void UsesTable::InsertUsesS(StmtNum stmt_num, VarName var_name) {
   }
 }
 
-void UsesTable::InsertUsesP(ProcName proc_name, VarName var_name) {
-  int var_name_id = var_list_.GetVarIndex(var_name);
-  int proc_name_id = proc_list_.GetProcIndex(proc_name);
+void UsesTable::InsertUsesP(ProcIndex proc_name_id, VarIndex var_name_id) {
   if (!IsUsedByP(proc_name_id, var_name_id)) {
     if (using_proc_set_.insert(proc_name_id).second) {
       using_proc_list_.push_back(proc_name_id);
