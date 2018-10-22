@@ -111,7 +111,7 @@ class PKB {
                              ProcName called_proc_name);
 
   // @returns toposorted order of procedure calls in a ProcNameList
-  ProcNameList GetToposortedCalls();
+  vector<string> GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -153,14 +153,22 @@ class PKB {
   // Inserts a modifies relationship between modifying_stmt and modified_var
   void InsertModifiesS(StmtNum modifying_stmt, VarName modified_var);
 
+  void InsertModifiesS(StmtNum modifying_stmt, VarIndex modified_var_id);
+
   // Inserts a modifies relationship between modifying_proc and modified_var
   void InsertModifiesP(ProcName modifying_proc, VarName modified_var);
+
+  void InsertModifiesP(ProcIndex modifying_proc_id, VarIndex modified_var_id);
 
   // Inserts a uses relationship between using_stmt and used_var
   void InsertUsesS(StmtNum using_stmt, VarName used_var);
 
+  void InsertUsesS(StmtNum using_stmt, VarIndex used_var_id);
+
   // Inserts a uses relationship between using_proc and used_var
   void InsertUsesP(ProcName using_proc, VarName used_var);
+
+  void InsertUsesP(ProcIndex using_proc_id, VarIndex used_var_id);
 
   // Inserts a direct parent relationship between parent_stmt_num and
   // child_stmt_num
@@ -446,6 +454,9 @@ class PKB {
   bool InsertIndirectCallRelationship(ProcName caller_proc,
                                       ProcName callee_proc);
 
+  bool InsertIndirectCallRelationship(ProcName caller_proc,
+    ProcIndex callee_proc_index);
+
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
   // @params caller procedure name and callee procedure name
@@ -469,7 +480,9 @@ class PKB {
   // Finds and returns all direct callees for given procedure.
   // @returns a list containing all direct callees for given proc (can be empty)
   // @params caller procedure name
-  ProcIndexList GetCallee(ProcName caller_proc);
+  ProcIndexList GetCallee(ProcIndex caller_proc);
+
+  ProcNameList GetCallee(ProcName caller_proc);
 
   // Finds and returns all callees for given procedure.
   // @returns a list containing all callees for given proc (can be empty)
@@ -488,6 +501,11 @@ class PKB {
 
   // @returns all procedures calling some other proc (can be empty)
   ProcIndexList GetAllCaller();
+
+  // Special method to retrieve all caller procs in String format.
+  // To be only used by DE when populating PKB.
+  // @returns a list of all procedures calling some other proc, in string form
+  ProcNameList GetAllCallerName();
 
   // @returns all procedures being called by some other proc (can be empty)
   ProcIndexList GetAllCallee();

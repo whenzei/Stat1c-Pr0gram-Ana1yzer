@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "proc_list.h"
 
 using std::make_pair;
 using std::pair;
@@ -16,14 +17,16 @@ using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
-using ProcName = int;
+using ProcIndex = int;
+using ProcName = string;
 // int can be StmtNum or ProcName.
-using CallMap = unordered_map<int, vector<ProcName>>;
+using CallMap = unordered_map<int, vector<ProcIndex>>;
 using StmtNumList = vector<StmtNum>;
-using StmtNumProcPairList = vector<pair<StmtNum, ProcName>>;
-using ProcNameList = vector<ProcName>;
-using ProcNameSet = unordered_set<ProcName>;
-using ProcNamePairList = vector<pair<ProcName, ProcName>>;
+using StmtNumProcPairList = vector<pair<StmtNum, ProcIndex>>;
+using ProcIndexList = vector<ProcIndex>;
+using ProcIndexSet = unordered_set<ProcIndex>;
+using ProcNameList = vector<string>;
+using ProcNamePairList = vector<pair<ProcIndex, ProcIndex>>;
 
 class CallTable {
   CallMap call_table_; // stores <proc calling, proc called>
@@ -32,11 +35,12 @@ class CallTable {
   CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
   CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
 
-  ProcNameList caller_list_;  // stores procs calling any other proc
-  ProcNameSet caller_set_; // stores procs calling any other proc
-  ProcNameList callee_list_; // stores procs called by any other proc
+  ProcIndexList caller_list_;  // stores procs calling any other proc
+  ProcIndexSet caller_set_; // stores procs calling any other proc
+  ProcIndexList callee_list_; // stores procs called by any other proc
   ProcNamePairList callee_twin_list_; // stores procs called by any other proc (in pairs)
-  ProcNameSet callee_set_; // stores procs called by any other proc
+  ProcIndexSet callee_set_; // stores procs called by any other proc
+  ProcList proc_list_;
 
 public:
   // PROC-PROC RELATIONSHIP INSERT
@@ -44,24 +48,24 @@ public:
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
 
   // Inserts a DIRECT caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertDirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
 
   // STATEMENT-PROC RELATIONSHIP INSERT
   // Inserts a calls relationship to the call table.
   // @params stmt num of statement
   // @params proc name of the procedure *being called*
-  void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
+  void InsertCalls(StmtNum stmt_num, ProcIndex callee_proc);
 
   // Finds and returns a list of stmt numbers calling the given proc.
   // @params proc name of the procedure being called
   // @returns a list of stmt numbers (can be empty)
-  StmtNumList GetCallingStmts(ProcName callee_proc);
+  StmtNumList GetCallingStmts(ProcIndex callee_proc);
 
   // Finds and returns a list of pairs of all stmt numbers
   // and procedures called by that stmt number.
@@ -71,28 +75,30 @@ public:
   // Finds and returns the direct callee for given procedure.
   // @returns a list containing one direct callee (can be empty)
   // @params caller procedure name
+  ProcIndexList GetCallee(ProcIndex caller_proc);
+
   ProcNameList GetCallee(ProcName caller_proc);
 
   // Finds and returns all callees for given procedure.
   // @returns a list containing all callees for given proc (can be empty)
   // @params caller procedure name 
-  ProcNameList GetCalleeT(ProcName caller_proc);
+  ProcIndexList GetCalleeT(ProcIndex caller_proc);
 
   // Finds and returns the direct caller for given procedure.
   // @returns a list containing one direct caller (can be empty)
   // @params callee procedure name
-  ProcNameList GetCaller(ProcName callee_proc);
+  ProcIndexList GetCaller(ProcIndex callee_proc);
 
   // Finds and returns all callers for given procedure.
   // @returns a list containing all callers for given proc (can be empty)
   // @params callee procedure name 
-  ProcNameList GetCallerT(ProcName callee_proc);
+  ProcIndexList GetCallerT(ProcIndex callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)
-  ProcNameList GetAllCaller();
+  ProcIndexList GetAllCaller();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcNameList GetAllCallee();
+  ProcIndexList GetAllCallee();
 
   // @returns all procedures being called by some other proc (can be empty)
   ProcNamePairList GetAllCalleeTwin();
@@ -104,13 +110,13 @@ public:
   ProcNamePairList GetAllCallTPairs();
 
   // @returns true if Call(caller, callee) is true
-  bool IsCall(ProcName caller_proc, ProcName callee_proc);
+  bool IsCall(ProcIndex caller_proc, ProcIndex callee_proc);
 
   // @returns true if Call*(caller, callee) is true
-  bool IsCallT(ProcName caller_proc, ProcName callee_proc);
+  bool IsCallT(ProcIndex caller_proc, ProcIndex callee_proc);
 
   // @returns true if callee_proc is called by any other procedure
-  bool IsCalledProc(ProcName callee_proc);
+  bool IsCalledProc(ProcIndex callee_proc);
 
   // @returns true if Call Table has any calls relationships
   // false if otherwise

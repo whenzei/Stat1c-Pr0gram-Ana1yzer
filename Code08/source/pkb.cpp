@@ -60,7 +60,7 @@ void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name, ProcName called_proc_na
   call_graph_.AddEdge(curr_proc_name, called_proc_name);
 }
 
-ProcNameList PKB::GetToposortedCalls() {
+vector<string> PKB::GetToposortedCalls() {
   return call_graph_.Toposort();
 }
 
@@ -130,16 +130,32 @@ void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {
   modifies_table_.InsertModifiesS(modifying_stmt, GetVarIndex(modified_var));
 }
 
+void PKB::InsertModifiesS(StmtNum modifying_stmt, VarIndex modified_var_id) {
+  modifies_table_.InsertModifiesS(modifying_stmt, modified_var_id);
+}
+
 void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
   modifies_table_.InsertModifiesP(GetProcIndex(modifying_proc), GetVarIndex(modified_var));
+}
+
+void PKB::InsertModifiesP(ProcIndex modifying_proc_id, VarIndex modified_var_id) {
+  modifies_table_.InsertModifiesP(modifying_proc_id, modified_var_id);
 }
 
 void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
   uses_table_.InsertUsesS(using_stmt, GetVarIndex(used_var));
 }
 
+void PKB::InsertUsesS(StmtNum using_stmt, VarIndex used_var_id) {
+  uses_table_.InsertUsesS(using_stmt, used_var_id);
+}
+
 void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
   uses_table_.InsertUsesP(GetProcIndex(using_proc), GetVarIndex(used_var));
+}
+
+void PKB::InsertUsesP(ProcIndex using_proc_id, VarIndex used_var_id) {
+  uses_table_.InsertUsesP(using_proc_id, used_var_id);
 }
 
 void PKB::InsertParent(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
@@ -439,45 +455,63 @@ StmtVarPairList PKB::GetAllIfPatternPair() { return pattern_table_.GetAllIfPatte
 
 bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
                                          ProcName callee_proc) {
-  return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
+  return call_table_.InsertIndirectCallRelationship(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
+}
+
+bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
+                                         ProcIndex callee_proc) {
+  return call_table_.InsertIndirectCallRelationship(GetProcIndex(caller_proc), callee_proc);
 }
 
 bool PKB::InsertDirectCallRelationship(ProcName caller_proc,
                                        ProcName callee_proc) {
-  return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
+  return call_table_.InsertDirectCallRelationship(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
 }
 
 void PKB::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {
-  call_table_.InsertCalls(stmt_num, callee_proc);
+  call_table_.InsertCalls(stmt_num, GetProcIndex(callee_proc));
 }
 
 StmtNumList PKB::GetCallingStmts(ProcName callee_proc) {
-  return call_table_.GetCallingStmts(callee_proc);
+  return call_table_.GetCallingStmts(GetProcIndex(callee_proc));
 }
 
 StmtNumProcPairList PKB::GetAllCallingStmtPairs() {
   return call_table_.GetAllCallingStmtPairs();
 }
 
+ProcIndexList PKB::GetCallee(ProcIndex caller_proc) {
+  return call_table_.GetCallee(caller_proc);
+}
+
 ProcNameList PKB::GetCallee(ProcName caller_proc) {
   return call_table_.GetCallee(caller_proc);
 }
 
-ProcNameList PKB::GetCalleeT(ProcName caller_proc) {
-  return call_table_.GetCalleeT(caller_proc);
+ProcIndexList PKB::GetCalleeT(ProcName caller_proc) {
+  return call_table_.GetCalleeT(GetProcIndex(caller_proc));
 }
 
-ProcNameList PKB::GetCaller(ProcName callee_proc) {
-  return call_table_.GetCaller(callee_proc);
+ProcIndexList PKB::GetCaller(ProcName callee_proc) {
+  return call_table_.GetCaller(GetProcIndex(callee_proc));
 }
 
-ProcNameList PKB::GetCallerT(ProcName callee_proc) {
-  return call_table_.GetCallerT(callee_proc);
+ProcIndexList PKB::GetCallerT(ProcName callee_proc) {
+  return call_table_.GetCallerT(GetProcIndex(callee_proc));
 }
 
-ProcNameList PKB::GetAllCaller() { return call_table_.GetAllCaller(); }
+ProcIndexList PKB::GetAllCaller() { return call_table_.GetAllCaller(); }
 
-ProcNameList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
+ProcNameList PKB::GetAllCallerName() {
+  ProcIndexList caller_index_list = GetAllCaller();
+  ProcNameList caller_name_list;
+  for (auto& proc : caller_index_list) {
+    caller_name_list.push_back(GetProcName(proc));
+  }
+  return caller_name_list;
+}
+
+ProcIndexList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
 
 ProcNamePairList PKB::GetAllCalleeTwin() { return call_table_.GetAllCalleeTwin(); }
 
@@ -490,15 +524,15 @@ ProcNamePairList PKB::GetAllCallTPairs() {
 }
 
 bool PKB::IsCall(ProcName caller_proc, ProcName callee_proc) {
-  return call_table_.IsCall(caller_proc, callee_proc);
+  return call_table_.IsCall(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
 }
 
 bool PKB::IsCallT(ProcName caller_proc, ProcName callee_proc) {
-  return call_table_.IsCallT(caller_proc, callee_proc);
+  return call_table_.IsCallT(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
 }
 
 bool PKB::IsCalledProc(ProcName callee_proc) {
-  return call_table_.IsCalledProc(callee_proc);
+  return call_table_.IsCalledProc(GetProcIndex(callee_proc));
 }
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
