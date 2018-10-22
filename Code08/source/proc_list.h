@@ -5,29 +5,27 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
+using std::make_pair;
 using std::pair;
 using std::string;
 using std::unordered_map;
-using std::unordered_set;
 using std::vector;
 
 using ProcName = string;
-using ProcNameList = vector<ProcName>;
-using ProcNamePairList = vector<pair<ProcName, ProcName>>;
-using ProcNameSet = unordered_set<ProcName>;
-using ProcIndexMap = unordered_map<ProcName, int>;
-using IndexProcMap = unordered_map<int, ProcName>;
+using ProcNameIndex = int;
+using ProcNameIndexList = vector<ProcNameIndex>;
+using ProcNameIndexPairList = vector<pair<ProcNameIndex, ProcNameIndex>>;
+using ProcIndexMap = unordered_map<ProcName, ProcNameIndex>;
+using IndexProcMap = unordered_map<ProcNameIndex, ProcName>;
 
 // The procedure list class for the PKB component
 // Used to store procedure names that are passed into PKB from the parser
 class ProcList {
   
- ProcNameList proc_name_list_;
- ProcNamePairList proc_name_twin_list_;
- ProcNameSet proc_name_set_;
+ ProcNameIndexList proc_name_index_list_;
+ ProcNameIndexPairList proc_name_index_twin_list_;
  // TODO: Depending on PQL's preferences, might have to add below
  // a list of Proc Indices and just return the entire list.
  ProcIndexMap proc_index_map_;
@@ -45,19 +43,25 @@ class ProcList {
   int InsertProcName(ProcName proc_name);
 
   // @returns the list of all procedure names (can be empty)
-  ProcNameList GetAllProcName();
+  ProcNameIndexList GetAllProcName();
 
   // @returns true if proc_name exists in the proc list
   bool IsProcName(ProcName proc_name);
 
   // @returns the list of all procedure names in pairs (in each pair, the same procedure name is repeated)
-  ProcNamePairList GetAllProcNameTwin();
+  ProcNameIndexPairList GetAllProcNameTwin();
 
   // @returns an unordered map with Index to Proc mapping
   IndexProcMap GetIndexToProcMapping();
 
   // @returns an unordered map with Proc to Index mapping
   ProcIndexMap GetProcToIndexMapping();
+
+  // @returns the corresponding procedure name
+  ProcName GetProcName(ProcNameIndex index);
+
+  // @returns the corresponding procedure name index
+  ProcNameIndex GetProcNameIndex(ProcName proc_name);
 };
 
 #endif  // !SPA_PROC_LIST_H
