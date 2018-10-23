@@ -28,7 +28,7 @@ TEST_CLASS(TestQueryEvaluator) {
 
   TEST_METHOD(TestTupleCrossProduct) {
     PqlEvaluator qe;
-    vector<QueryResultList> test_items = {{"1", "2"}, {"4", "5"}};
+    vector<QueryResultList> test_items = {{1, 2}, {4, 5}};
     FinalResult fr;
     string temp;
     qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
@@ -44,7 +44,7 @@ TEST_CLASS(TestQueryEvaluator) {
 
   TEST_METHOD(TestTupleCrossProduct2) {
     PqlEvaluator qe;
-    vector<QueryResultList> test_items = {{"1", "2", "3"}, {"4", "5"}, {"7", "8", "9", "10"}};
+    vector<QueryResultList> test_items = {{1, 2, 3}, {4, 5}, {7, 8, 9, 10}};
     FinalResult fr;
     string temp;
     qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
