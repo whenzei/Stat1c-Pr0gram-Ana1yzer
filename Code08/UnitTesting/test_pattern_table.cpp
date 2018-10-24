@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "pattern_table.h"
+#include "var_list.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using TokenType = Tokenizer::TokenType;
@@ -14,6 +15,9 @@ TEST_CLASS(TestPatternTable) {
   const VarName kVarName1 = a;
   const VarName kVarName2 = b;
   const VarName kVarName3 = c;
+  const VarIndex kVarIndex1 = 1;
+  const VarIndex kVarIndex2 = 2;
+  const VarIndex kVarIndex3 = 3;
   const Token kToken32 = {TokenType::kDigit, "32"};
   const Token kTokenA = {TokenType::kName, "a"};
   const Token kTokenPlus = {TokenType::kOperator, "+"};
@@ -23,6 +27,15 @@ TEST_CLASS(TestPatternTable) {
   const TokenList kTokenList2 = {kToken32, kTokenA, kTokenPlus, kTokenB,
                                  kTokenMult};
   const TokenList kTokenList3 = {kToken32};
+  
+  VarList var_list;
+
+  // Setup: Pre-populate the variable list to compare indices.
+  void setUp() {
+    var_list.InsertVarName(kVarName1);
+    var_list.InsertVarName(kVarName2);
+    var_list.InsertVarName(kVarName3);
+  }
 
   TEST_METHOD(TestGetAssignWithLfsVar) {
     PatternTable pattern_table;
@@ -157,41 +170,41 @@ TEST_CLASS(TestPatternTable) {
         pattern_table.GetAllAssignPatternPair({kToken32, kTokenA, kTokenPlus});
     Assert::IsTrue(result1.size() == 1);
     Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kVarName1, result1.front().second);
+    Assert::AreEqual(kVarIndex1, result1.front().second);
     StmtVarPairList result5 = pattern_table.GetAllAssignPatternPair({kToken32});
     Assert::IsTrue(result5.size() == 1);
     Assert::AreEqual(kStmtNum1, result5.front().first);
-    Assert::AreEqual(kVarName1, result5.front().second);
+    Assert::AreEqual(kVarIndex1, result5.front().second);
     StmtVarPairList result6 =
         pattern_table.GetAllAssignPatternPair(TokenList());
     Assert::IsTrue(result6.size() == 1);
     Assert::AreEqual(kStmtNum1, result6.front().first);
-    Assert::AreEqual(kVarName1, result6.front().second);
+    Assert::AreEqual(kVarIndex1, result6.front().second);
     pattern_table.InsertAssignPattern(kStmtNum2, kVarName1, kTokenList2);
     StmtVarPairList result2 =
         pattern_table.GetAllAssignPatternPair({kToken32, kTokenA, kTokenPlus});
     Assert::IsTrue(result2.size() == 2);
     Assert::AreEqual(kStmtNum1, result2.front().first);
-    Assert::AreEqual(kVarName1, result2.front().second);
+    Assert::AreEqual(kVarIndex1, result2.front().second);
     Assert::AreEqual(kStmtNum2, result2.back().first);
-    Assert::AreEqual(kVarName1, result2.back().second);
+    Assert::AreEqual(kVarIndex1, result2.back().second);
     StmtVarPairList result3 = pattern_table.GetAllAssignPatternPair({kTokenB});
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kStmtNum2, result3.front().first);
-    Assert::AreEqual(kVarName1, result3.front().second);
+    Assert::AreEqual(kVarIndex1, result3.front().second);
     pattern_table.InsertAssignPattern(kStmtNum3, kVarName2, kTokenList1);
     StmtVarPairList result4 =
         pattern_table.GetAllAssignPatternPair(TokenList());
     Assert::IsTrue(result4.size() == 3);
     StmtVarPairList::iterator iter = result4.begin();
     Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum3, (*iter).first);
-    Assert::AreEqual(kVarName2, (*iter).second);
+    Assert::AreEqual(kVarIndex2, (*iter).second);
   }
 
   TEST_METHOD(TestGetAllAssignExactPatternPair) {
@@ -201,7 +214,7 @@ TEST_CLASS(TestPatternTable) {
         {kToken32, kTokenA, kTokenPlus});
     Assert::IsTrue(result1.size() == 1);
     Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kVarName1, result1.front().second);
+    Assert::AreEqual(kVarIndex1, result1.front().second);
     StmtVarPairList result5 =
         pattern_table.GetAllAssignExactPatternPair({kToken32});
     Assert::IsTrue(result5.empty());
@@ -216,15 +229,15 @@ TEST_CLASS(TestPatternTable) {
         {kToken32, kTokenA, kTokenPlus, kTokenB, kTokenMult});
     Assert::IsTrue(result3.size() == 1);
     Assert::AreEqual(kStmtNum2, result3.front().first);
-    Assert::AreEqual(kVarName1, result3.front().second);
+    Assert::AreEqual(kVarIndex1, result3.front().second);
     pattern_table.InsertAssignPattern(kStmtNum3, kVarName2, kTokenList1);
     StmtVarPairList result4 = pattern_table.GetAllAssignExactPatternPair(
         {kToken32, kTokenA, kTokenPlus});
     Assert::IsTrue(result4.size() == 2);
     Assert::AreEqual(kStmtNum1, result4.front().first);
-    Assert::AreEqual(kVarName1, result4.front().second);
+    Assert::AreEqual(kVarIndex1, result4.front().second);
     Assert::AreEqual(kStmtNum3, result4.back().first);
-    Assert::AreEqual(kVarName2, result4.back().second);
+    Assert::AreEqual(kVarIndex2, result4.back().second);
   }
 
   TEST_METHOD(TestGetWhileWithPattern) { 
@@ -251,16 +264,16 @@ TEST_CLASS(TestPatternTable) {
     Assert::IsTrue(result.size() == 4);
     StmtVarPairList::iterator iter = result.begin();
     Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum3, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kVarName3, (*iter).second);
+    Assert::AreEqual(kVarIndex3, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kVarName2, (*iter).second);
+    Assert::AreEqual(kVarIndex2, (*iter).second);
   }
 
   TEST_METHOD(TestGetIfWithPattern) {
@@ -287,16 +300,16 @@ TEST_CLASS(TestPatternTable) {
     Assert::IsTrue(result.size() == 4);
     StmtVarPairList::iterator iter = result.begin();
     Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum3, (*iter).first);
-    Assert::AreEqual(kVarName1, (*iter).second);
+    Assert::AreEqual(kVarIndex1, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kVarName3, (*iter).second);
+    Assert::AreEqual(kVarIndex3, (*iter).second);
     iter++;
     Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kVarName2, (*iter).second);
+    Assert::AreEqual(kVarIndex2, (*iter).second);
   }
 };
 }  // namespace PKBTests

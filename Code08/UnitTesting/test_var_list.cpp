@@ -9,6 +9,8 @@ namespace PKBTests {
 TEST_CLASS(TestVarList) {
   const string kSampleVar1 = "a";
   const string kSampleVar2 = "b";
+  const int kSampleVarIndex1 = 1;
+  const int kSampleVarIndex2 = 2;
 
   TEST_METHOD(TestInsertVar) {
     VarList var_list;
@@ -26,18 +28,18 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarNameList result_list = var_list.GetAllVarName();
+    VarIndexList result_list = var_list.GetAllVarName();
     Assert::IsTrue(result_list.size() == 2);
-    Assert::AreEqual(kSampleVar1, result_list.front());
-    Assert::AreEqual(kSampleVar2, result_list.back());
+    Assert::AreEqual(kSampleVarIndex1, result_list.front());
+    Assert::AreEqual(kSampleVarIndex2, result_list.back());
   }
 
   TEST_METHOD(TestIsVarName) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
-    bool result = var_list.IsVarName(kSampleVar1);
+    bool result = var_list.IsVarName(kSampleVarIndex1);
     Assert::IsTrue(result);
-    result = var_list.IsVarName(kSampleVar2);
+    result = var_list.IsVarName(kSampleVarIndex2);
     Assert::IsFalse(result);
   }
 
@@ -47,12 +49,12 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarNamePairList result_list = var_list.GetAllVarNameTwin();
+    VarIndexPairList result_list = var_list.GetAllVarNameTwin();
     Assert::IsTrue(result_list.size() == 2);
-    Assert::AreEqual(kSampleVar1, result_list.front().first);
-    Assert::AreEqual(kSampleVar1, result_list.front().second);
-    Assert::AreEqual(kSampleVar2, result_list.back().first);
-    Assert::AreEqual(kSampleVar2, result_list.back().second);
+    Assert::AreEqual(kSampleVarIndex1, result_list.front().first);
+    Assert::AreEqual(kSampleVarIndex1, result_list.front().second);
+    Assert::AreEqual(kSampleVarIndex2, result_list.back().first);
+    Assert::AreEqual(kSampleVarIndex2, result_list.back().second);
   }
 
   TEST_METHOD(TestGetIndexToVarMapping) {

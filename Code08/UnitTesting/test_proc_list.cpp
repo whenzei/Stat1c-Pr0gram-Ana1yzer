@@ -10,6 +10,9 @@ TEST_CLASS(TestProcList) {
   const ProcName kProcName1 = "simple";
   const ProcName kProcName2 = "SimPle";
   const ProcName kProcName3 = "simple123";
+  const ProcIndex kProcIndex1 = 1;
+  const ProcIndex kProcIndex2 = 2;
+  const ProcIndex kProcIndex3 = 3;
 
  public:
 
@@ -30,21 +33,21 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName3);
 	// duplicate
     proc_list.InsertProcName(kProcName1);
-    ProcNameList proc_list_result = proc_list.GetAllProcName();
+    ProcIndexList proc_list_result = proc_list.GetAllProcName();
     Assert::IsTrue(proc_list_result.size() == 3);
-    Assert::AreEqual(kProcName1, proc_list_result.front());
-    ProcNameList::iterator iter = proc_list_result.begin();
+    Assert::AreEqual(kProcIndex1, proc_list_result.front());
+    ProcIndexList::iterator iter = proc_list_result.begin();
     iter++;
-    Assert::AreEqual(kProcName2, *iter);
-    Assert::AreEqual(kProcName3, proc_list_result.back());
+    Assert::AreEqual(kProcIndex2, *iter);
+    Assert::AreEqual(kProcIndex3, proc_list_result.back());
   }
 
   TEST_METHOD(TestIsProcName) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);
-    bool result = proc_list.IsProcName(kProcName1);
+    bool result = proc_list.IsProcName(kProcIndex1);
     Assert::IsTrue(result);
-    result = proc_list.IsProcName(kProcName2);
+    result = proc_list.IsProcName(kProcIndex2);
     Assert::IsFalse(result);
   }
 
@@ -54,12 +57,12 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName2);
     // duplicate
     proc_list.InsertProcName(kProcName1);
-    ProcNamePairList proc_list_result = proc_list.GetAllProcNameTwin();
+    ProcIndexPairList proc_list_result = proc_list.GetAllProcNameTwin();
     Assert::IsTrue(proc_list_result.size() == 2);
-    Assert::AreEqual(kProcName1, proc_list_result.front().first);
-    Assert::AreEqual(kProcName1, proc_list_result.front().second);
-    Assert::AreEqual(kProcName2, proc_list_result.back().first);
-    Assert::AreEqual(kProcName2, proc_list_result.back().second);
+    Assert::AreEqual(kProcIndex1, proc_list_result.front().first);
+    Assert::AreEqual(kProcIndex1, proc_list_result.front().second);
+    Assert::AreEqual(kProcIndex2, proc_list_result.back().first);
+    Assert::AreEqual(kProcIndex2, proc_list_result.back().second);
   }
 
   TEST_METHOD(TestGetIndexToProcMapping) {
@@ -67,7 +70,7 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     IndexProcMap index_proc_map = proc_list.GetIndexToProcMapping();
-    Assert::AreEqual(kProcName1,index_proc_map[1]);
+    Assert::AreEqual(kProcName1, index_proc_map[1]);
     index_proc_map = proc_list.GetIndexToProcMapping();
     Assert::AreEqual(kProcName2, index_proc_map[2]);
     // Duplicate. Shouldn't affect index
