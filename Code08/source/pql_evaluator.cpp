@@ -34,14 +34,13 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
-  vector<QueryResultList> tuple_results;
+  vector<FinalResult> tuple_results;
 
   PqlQuery user_query = GetQuery();
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
   if (user_query.GetClauses().empty()) {
-    // Temp code, will implement tuple processing later
     if (user_query.GetSelections().size() > 1) {
       for (auto& select_syn : user_query.GetSelections()) {
         QueryResultList select_all_result =
@@ -49,22 +48,24 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         if (select_all_result.empty()) {
           SetClauseFlag(false);
         } else {
-          tuple_results.push_back(select_all_result);
+          tuple_results.push_back(
+              ConvertListIntToString(select_all_result, select_syn.second));
         }
-
         // If the clause is false already, no need to continue evaluating
         if (!IsValidClause()) {
           break;
         }
       }
-    } else {
-      QueryResultList select_all_result =
-          GetSelectAllResult(user_query.GetSelections().front().second);
+    }
+    // Only one select
+    else {
+      PqlDeclarationEntity select_type =
+          user_query.GetSelections().front().second;
+      QueryResultList select_all_result = GetSelectAllResult(select_type);
       if (select_all_result.empty()) {
         SetClauseFlag(false);
       } else {
-        copy(select_all_result.begin(), select_all_result.end(),
-             back_inserter(final_results));
+        final_results = ConvertListIntToString(select_all_result, select_type);
       }
     }
   }
@@ -90,17 +91,19 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
     // No false clause and it is not BOOLEAN
     if (IsValidClause() && !user_query.GetSelections().empty()) {
-      // Temp code, will implement tuple processing later
       if (user_query.GetSelections().size() > 1) {
         for (auto& select_syn : user_query.GetSelections()) {
-          tuple_results.push_back(GetResultFromTable(select_syn));
+          tuple_results.push_back(ConvertListIntToString(
+              GetResultFromTable(select_syn), select_syn.second));
         }
-      } else {
+      }
+      // Only one select
+      else {
         Synonym select_syn = GetQuery().GetSelections().front();
 
         QueryResultList other_clause_result = GetResultFromTable(select_syn);
-        copy(other_clause_result.begin(), other_clause_result.end(),
-             back_inserter(final_results));
+        final_results =
+            ConvertListIntToString(other_clause_result, select_syn.second);
       }
     }
   }
@@ -808,7 +811,7 @@ void PqlEvaluator::EvaluateCalls(PqlSuchthat suchthat,
       }
       return;
     case kOneSynonymRight:
-      result_list = pkb.GetCallee(left_name);
+      result_list = pkb.GetCallee(stoi(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not caller " << endl;
@@ -1164,7 +1167,8 @@ void PqlEvaluator::EvaluateFollows(PqlSuchthat suchthat,
       }
       return;
     case kOneSynonymLeft:
-      result_list = FilterResult(pkb.GetFollowedBy(stoi(right_name)), left_type);
+      result_list =
+          FilterResult(pkb.GetFollowedBy(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No followee for this type " << endl;
@@ -1259,7 +1263,8 @@ void PqlEvaluator::EvaluateFollowsT(PqlSuchthat suchthat,
       }
       return;
     case kOneSynonymLeft:
-      result_list = FilterResult(pkb.GetFollowedByT(stoi(right_name)), left_type);
+      result_list =
+          FilterResult(pkb.GetFollowedByT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No indirect followee for this type " << endl;
@@ -1866,10 +1871,36 @@ void PqlEvaluator::StoreClauseResultInTable(
   SetPqlResult(pql_result);
 }
 
+FinalResult PqlEvaluator::ConvertListIntToString(
+    QueryResultList result_list, PqlDeclarationEntity select_type) {
+  FinalResult string_list;
+
+  cout << "Converting int to string" << endl;
+
+  if (select_type != PqlDeclarationEntity::kVariable &&
+      select_type != PqlDeclarationEntity::kProcedure) {
+    for (auto& result : result_list) {
+      string_list.push_back(to_string(result));
+    }
+  } else if (select_type == PqlDeclarationEntity::kVariable) {
+    IndexToVarProcMap itv = GetIndexToVar();
+    for (auto& result : result_list) {
+      string_list.push_back(itv[result]);
+    }
+  } else if (select_type == PqlDeclarationEntity::kProcedure) {
+    IndexToVarProcMap itp = GetIndexToProc();
+    for (auto& result : result_list) {
+      string_list.push_back(itp[result]);
+    }
+  }
+
+  return string_list;
+}
+
 void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
                                      string& temp_result,
-                                     vector<QueryResultList>::iterator curr,
-                                     vector<QueryResultList>::iterator end) {
+                                     vector<FinalResult>::iterator curr,
+                                     vector<FinalResult>::iterator end) {
   if (curr == end) {
     // terminal condition of the recursion. We no longer have
     // any input vectors to manipulate. Add the current result (temp_result)
@@ -1877,9 +1908,8 @@ void PqlEvaluator::TupleCrossProduct(FinalResult& final_result,
     final_result.push_back(Trim(temp_result));
     return;
   }
-  // TODO CONVERSION for var/proc
-  const QueryResultList& curr_list = *curr;
-  for (QueryResultList::const_iterator it = curr_list.begin();
+  const FinalResult& curr_list = *curr;
+  for (FinalResult::const_iterator it = curr_list.begin();
        it != curr_list.end(); it++) {
     string temp_prev = temp_result;
     temp_result += *it + " ";

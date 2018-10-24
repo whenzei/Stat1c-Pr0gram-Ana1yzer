@@ -235,8 +235,8 @@ class PqlEvaluator {
    * @param List of results of each select clause
    */
   void TupleCrossProduct(FinalResult& final_result, string& temp_result,
-                         vector<QueryResultList>::iterator curr,
-                         vector<QueryResultList>::iterator end);
+                         vector<FinalResult>::iterator curr,
+                         vector<FinalResult>::iterator end);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
@@ -292,6 +292,12 @@ class PqlEvaluator {
       PqlResultFilterType filter_type,
       QueryResultPairList unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+
+  /**
+   * Convert the results from int to string using pkb mapping
+   * @param the vector<int> of results and synonym type
+   */
+  FinalResult ConvertListIntToString(QueryResultList, PqlDeclarationEntity);
 
   /**
    * Stores the list of results into the PqlResult table
