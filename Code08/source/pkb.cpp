@@ -513,6 +513,15 @@ ProcNameList PKB::GetAllCallerName() {
 
 ProcIndexList PKB::GetAllCallee() { return call_table_.GetAllCallee(); }
 
+ProcNameList PKB::GetAllCalleeName() {
+  ProcIndexList callee_index_list = GetAllCallee();
+  ProcNameList callee_name_list;
+  for (auto& proc : callee_index_list) {
+    callee_name_list.push_back(GetProcName(proc));
+  }
+  return callee_name_list;
+}
+
 ProcNamePairList PKB::GetAllCalleeTwin() { return call_table_.GetAllCalleeTwin(); }
 
 ProcNamePairList PKB::GetAllCallPairs() {

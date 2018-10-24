@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include "tokenizer.h"
+#include "var_list.h"
 
 using std::pair;
 using std::string;
@@ -14,10 +15,11 @@ using std::unordered_map;
 using StmtNum = int;
 using StmtNumList = vector<int>;
 using VarName = string;
+using VarIndex = int;
 using Expr = string;
-using StmtVarPairList = vector<pair<int, string>>;
-using VarStmtMap = unordered_map<string, vector<int>>;
-using StmtVarMap = unordered_map<int, string>;
+using StmtVarPairList = vector<pair<int, VarIndex>>;
+using VarStmtMap = unordered_map<VarIndex, vector<int>>;
+using StmtVarMap = unordered_map<int, VarIndex>;
 using ExprStmtMap = unordered_map<string, vector<int>>;
 
 // The pattern table class for the PKB component
@@ -29,6 +31,7 @@ class PatternTable {
   ExprStmtMap assign_sub_expr_map_;
   VarStmtMap while_var_stmt_map_;
   VarStmtMap if_var_stmt_map_;
+  VarList var_list;
   
  public:
   // add the stmt_num and var_name to assign_var_stmt_map_ and

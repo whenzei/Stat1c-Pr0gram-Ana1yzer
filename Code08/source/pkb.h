@@ -510,6 +510,11 @@ class PKB {
   // @returns all procedures being called by some other proc (can be empty)
   ProcIndexList GetAllCallee();
 
+  // Special method to retrieve all caller procs in String format.
+  // To be only used by DE when populating PKB.
+  // @returns a list of all procedures calling some other proc, in string form
+  ProcNameList GetAllCalleeName();
+
   // @returns all procedures being called by some other proc (in pairs)
   ProcNamePairList GetAllCalleeTwin();
 

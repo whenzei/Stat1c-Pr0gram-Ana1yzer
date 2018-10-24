@@ -11,6 +11,7 @@ void PatternTable::InsertAssignPattern(StmtNum stmt_num, VarName var_name,
                                        TokenList expr_tokenlist) {
   if (!expr_tokenlist.empty()) {
     TokenList::iterator iter = expr_tokenlist.begin();
+    int var_index = var_list.GetVarIndex(var_name);
     stack<string> subtree_stack;
     Token token;
     string operand1;
@@ -38,21 +39,24 @@ void PatternTable::InsertAssignPattern(StmtNum stmt_num, VarName var_name,
     }
     assign_sub_expr_map_[string()].push_back(stmt_num);
     assign_exact_expr_map_[subtree_stack.top()].push_back(stmt_num);
-    assign_stmt_var_map_[stmt_num] = var_name;
-    assign_var_stmt_map_[var_name].push_back(stmt_num);
+    assign_stmt_var_map_[stmt_num] = var_index;
+    assign_var_stmt_map_[var_index].push_back(stmt_num);
   }
 }
 
 void PatternTable::InsertWhilePattern(StmtNum stmt_num, VarName var_name) {
-  while_var_stmt_map_[var_name].push_back(stmt_num);
+  int var_index = var_list.GetVarIndex(var_name);
+  while_var_stmt_map_[var_index].push_back(stmt_num);
 }
 
 void PatternTable::InsertIfPattern(StmtNum stmt_num, VarName var_name) {
-  if_var_stmt_map_[var_name].push_back(stmt_num);
+  int var_index = var_list.GetVarIndex(var_name);
+  if_var_stmt_map_[var_index].push_back(stmt_num);
 }
 
 StmtNumList PatternTable::GetAssignWithLfsVar(VarName var_name) {
-  VarStmtMap::iterator iter = assign_var_stmt_map_.find(var_name);
+  int var_index = var_list.GetVarIndex(var_name);
+  VarStmtMap::iterator iter = assign_var_stmt_map_.find(var_index);
   if (iter != assign_var_stmt_map_.end()) {
     return (*iter).second;
   } else {
@@ -85,10 +89,11 @@ StmtNumList PatternTable::GetAssignWithPattern(VarName var_name,
   Expr sub_expr = ToString(sub_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
   StmtNumList result;
+  int var_index = var_list.GetVarIndex(var_name);
   if (iter != assign_sub_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
     for (StmtNum& stmt_num : intermediate_result) {
-      if (assign_stmt_var_map_[stmt_num] == var_name) {
+      if (assign_stmt_var_map_[stmt_num] == var_index) {
         result.push_back(stmt_num);
       }
     }
@@ -100,11 +105,12 @@ StmtNumList PatternTable::GetAssignWithExactPattern(VarName var_name,
                                                     TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
+  int var_index = var_list.GetVarIndex(var_name);
   StmtNumList result;
   if (iter != assign_exact_expr_map_.end()) {
     StmtNumList intermediate_result = (*iter).second;
     for (StmtNum& stmt_num : intermediate_result) {
-      if (assign_stmt_var_map_[stmt_num] == var_name) {
+      if (assign_stmt_var_map_[stmt_num] == var_index) {
         result.push_back(stmt_num);
       }
     }
@@ -139,7 +145,8 @@ StmtVarPairList PatternTable::GetAllAssignExactPatternPair(TokenList exact_expr_
 }
 
 StmtNumList PatternTable::GetWhileWithPattern(VarName var_name) {
-  VarStmtMap::iterator iter = while_var_stmt_map_.find(var_name);
+  int var_index = var_list.GetVarIndex(var_name);
+  VarStmtMap::iterator iter = while_var_stmt_map_.find(var_index);
   if (iter != while_var_stmt_map_.end()) {
     return (*iter).second;
   } else {
@@ -158,7 +165,8 @@ StmtVarPairList PatternTable::GetAllWhilePatternPair() {
 }
 
 StmtNumList PatternTable::GetIfWithPattern(VarName var_name) {
-  VarStmtMap::iterator iter = if_var_stmt_map_.find(var_name);
+  int var_index = var_list.GetVarIndex(var_name);
+  VarStmtMap::iterator iter = if_var_stmt_map_.find(var_index);
   if (iter != if_var_stmt_map_.end()) {
     return (*iter).second;
   } else {
