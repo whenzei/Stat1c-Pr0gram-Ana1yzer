@@ -410,9 +410,9 @@ StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   if (var_name.compare("") == 0) {
     return pattern_table_.GetAssignWithSubExpr(sub_expr);
   } else if (sub_expr.empty()) {
-    return pattern_table_.GetAssignWithLfsVar(var_name);
+    return pattern_table_.GetAssignWithLfsVar(GetVarIndex(var_name));
   } else {
-    return pattern_table_.GetAssignWithPattern(var_name, sub_expr);
+    return pattern_table_.GetAssignWithPattern(GetVarIndex(var_name), sub_expr);
   }
 }
 
@@ -421,7 +421,8 @@ StmtNumList PKB::GetAssignWithExactPattern(VarName var_name,
   if (var_name.compare("") == 0) {
     return pattern_table_.GetAssignWithExactExpr(exact_expr);
   } else {
-    return pattern_table_.GetAssignWithExactPattern(var_name, exact_expr);
+    return pattern_table_.GetAssignWithExactPattern(GetVarIndex(var_name),
+                                                    exact_expr);
   }
 }
 
@@ -437,7 +438,7 @@ StmtNumList PKB::GetWhileWithPattern(VarName var_name) {
   if (var_name.compare("") == 0) {
     return GetAllWhileStmt();
   } else {
-    return pattern_table_.GetWhileWithPattern(var_name);
+    return pattern_table_.GetWhileWithPattern(GetVarIndex(var_name));
   }
 }
 
@@ -447,7 +448,7 @@ StmtNumList PKB::GetIfWithPattern(VarName var_name) {
   if (var_name.compare("") == 0) {
     return GetAllIfStmt();
   } else {
-    return pattern_table_.GetIfWithPattern(var_name);
+    return pattern_table_.GetIfWithPattern(GetVarIndex(var_name));
   }
 }
 
@@ -628,7 +629,7 @@ void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
       AssignStmtData* assign_stmt_data = (AssignStmtData*)stmt_data;
       pattern_table_.InsertAssignPattern(
           assign_stmt_data->GetStmtNum(),
-          assign_stmt_data->GetModifiedVariable(),
+          GetVarIndex(assign_stmt_data->GetModifiedVariable()),
           assign_stmt_data->GetPostfixedExpr());
       break;
     }
@@ -637,7 +638,8 @@ void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
       StmtNum stmt_num = while_stmt_data->GetStmtNum();
       VarNameSet control_variables = while_stmt_data->GetUsedVariables();
       for (auto& control_variable : control_variables) {
-        pattern_table_.InsertWhilePattern(stmt_num, control_variable);
+        pattern_table_.InsertWhilePattern(stmt_num,
+                                          GetVarIndex(control_variable));
 	  }
       break;
     }
@@ -646,7 +648,7 @@ void PKB::HandleInsertPattern(StmtType stmt_type, void* stmt_data) {
       StmtNum stmt_num = if_stmt_data->GetStmtNum();
       VarNameSet control_variables = if_stmt_data->GetUsedVariables();
       for (auto& control_variable : control_variables) {
-        pattern_table_.InsertIfPattern(stmt_num, control_variable);
+        pattern_table_.InsertIfPattern(stmt_num, GetVarIndex(control_variable));
       }
       break;
     }

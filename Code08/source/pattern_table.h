@@ -6,7 +6,6 @@
 #include <string>
 #include <unordered_map>
 #include "tokenizer.h"
-#include "var_list.h"
 
 using std::pair;
 using std::string;
@@ -31,25 +30,24 @@ class PatternTable {
   ExprStmtMap assign_sub_expr_map_;
   VarStmtMap while_var_stmt_map_;
   VarStmtMap if_var_stmt_map_;
-  VarList var_list_;
   
  public:
   // add the stmt_num and var_name to assign_var_stmt_map_ and
   // assign_stmt_var_map_
   // generate all sub-expressions and add to assign_sub_expr_map_
   // add the exact epression to assign_exact_expr_map_
-  void InsertAssignPattern(StmtNum stmt_num, VarName var_name,
+  void InsertAssignPattern(StmtNum stmt_num, VarIndex var_index,
                            TokenList token_list);
 
   // add the stmt_num and var_name to while_var_stmt_map_ 
-  void InsertWhilePattern(StmtNum stmt_num, VarName var_name);
+  void InsertWhilePattern(StmtNum stmt_num, VarIndex var_index);
 
   // add the stmt_num and var_name to if_var_stmt_map_
-  void InsertIfPattern(StmtNum stmt_num, VarName var_name);
+  void InsertIfPattern(StmtNum stmt_num, VarIndex var_index);
 
   // @returns a list of assign statements with var_name as the left hand side
   // variable
-  StmtNumList GetAssignWithLfsVar(VarName var_name);
+  StmtNumList GetAssignWithLfsVar(VarIndex var_index);
 
   // @returns a list of assign statements that contain the given sub-expression on
   // the right hand side
@@ -61,12 +59,12 @@ class PatternTable {
 
   // @returns a list of assign statements that have var_name as the left hand side
   // variable and contain the given sub-expression on the right hand side
-  StmtNumList GetAssignWithPattern(VarName var_name,
+  StmtNumList GetAssignWithPattern(VarIndex var_index,
                                    TokenList sub_expr_tokenlist);
 
   // @returns a list of assign statements that have var_name as the left hand side
   // variable and have the given expression on the right hand side
-  StmtNumList GetAssignWithExactPattern(VarName var_name, TokenList exact_expr_tokenlist);
+  StmtNumList GetAssignWithExactPattern(VarIndex var_index, TokenList exact_expr_tokenlist);
 
   // @returns a list of all pairs of assign statements and their corresponding
   // lfs var_name that contain the given sub-expression on the right hand side
@@ -78,7 +76,7 @@ class PatternTable {
 
   // @returns a list of while statements that have var_name as a control
   // variable
-  StmtNumList GetWhileWithPattern(VarName var_name);
+  StmtNumList GetWhileWithPattern(VarIndex var_index);
 
   // @returns a list of all pairs of while statements and their control
   // variables
@@ -86,7 +84,7 @@ class PatternTable {
 
   // @returns a list of if statements that have var_name as a control
   // variable
-  StmtNumList GetIfWithPattern(VarName var_name);
+  StmtNumList GetIfWithPattern(VarIndex var_index);
 
   // @returns a list of all pairs of if statements and their control
   // variables
