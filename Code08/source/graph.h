@@ -27,8 +27,6 @@ class Graph {
   // have both set and vector for O(1) retrieval of different actions
   AdjList adj_list_;
   AdjSet adj_set_;
-  unordered_map<string, int> str_to_int_;
-  unordered_map<int, string> int_to_str_;
   int size_;
 
   void Toposort(const Vertex& v, bool visited[], queue<int>& topoqueue);

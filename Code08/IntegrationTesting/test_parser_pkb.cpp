@@ -401,10 +401,13 @@ TEST_CLASS(TestParserPkb) {
     parser.Parse(tokenized_program);
 
     PKB true_pkb = PKB();
+    true_pkb.InsertModifiesS(1, "a");
     true_pkb.InsertUsesS(1, "b");
+    true_pkb.InsertModifiesS(2, "c");
     true_pkb.InsertUsesS(2, "d");
     true_pkb.InsertUsesS(2, "e");
     true_pkb.InsertUsesS(2, "f");
+    true_pkb.InsertModifiesS(3, "j");
     true_pkb.InsertUsesS(3, "k");
     true_pkb.InsertUsesS(3, "l");
 
@@ -423,8 +426,8 @@ TEST_CLASS(TestParserPkb) {
 
     //*******************************
 
-    StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
-    StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
+    VarIndexList test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
+    VarIndexList true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
 
     iter_1 = test_used_var_of_stmt.begin();
     iter_2 = true_used_var_of_stmt.begin();
@@ -459,24 +462,45 @@ TEST_CLASS(TestParserPkb) {
     TokenList tokenized_program = Tokenizer::Tokenize(program);
     parser.Parse(tokenized_program);
 
+    // since recursive descent, do parent last
     PKB true_pkb = PKB();
+    true_pkb.InsertModifiesS(1, "a");
     true_pkb.InsertUsesS(1, "b");
+
+    true_pkb.InsertModifiesS(3, "e");
     true_pkb.InsertUsesS(3, "f");
+
+    true_pkb.InsertModifiesS(4, "asd");
     true_pkb.InsertUsesS(4, "ddd");
+
+    true_pkb.InsertModifiesS(6, "a");
     true_pkb.InsertUsesS(6, "a");
+
+    true_pkb.InsertModifiesS(7, "k");
     true_pkb.InsertUsesS(7, "k");
+
     true_pkb.InsertUsesS(5, "a");
     true_pkb.InsertUsesS(5, "a");
     true_pkb.InsertUsesS(5, "k");
+    true_pkb.InsertModifiesS(5, "a");
+    true_pkb.InsertModifiesS(5, "k");
+
+    true_pkb.InsertModifiesS(8, "k");
+
     true_pkb.InsertUsesS(9, "print");
+
     true_pkb.InsertUsesS(2, "a");
     true_pkb.InsertUsesS(2, "b");
     true_pkb.InsertUsesS(2, "f");
     true_pkb.InsertUsesS(2, "ddd");
     true_pkb.InsertUsesS(2, "a");
-    true_pkb.InsertUsesS(2, "a");
     true_pkb.InsertUsesS(2, "k");
     true_pkb.InsertUsesS(2, "print");
+    true_pkb.InsertModifiesS(2, "e");
+    true_pkb.InsertModifiesS(2, "asd");
+    true_pkb.InsertModifiesS(2, "a");
+    true_pkb.InsertModifiesS(2, "k");
+    true_pkb.InsertModifiesS(2, "k");
 
     true_pkb.InsertUsesP("one", "b");
     true_pkb.InsertUsesP("one", "a");
@@ -551,8 +575,13 @@ TEST_CLASS(TestParserPkb) {
 
     PKB true_pkb = PKB();
     true_pkb.InsertModifiesS(1, "a");
+    true_pkb.InsertUsesS(1, "b");
     true_pkb.InsertModifiesS(2, "while");
+    true_pkb.InsertUsesS(2, "k");
     true_pkb.InsertModifiesS(3, "if");
+    true_pkb.InsertUsesS(3, "x");
+    true_pkb.InsertUsesS(3, "y");
+    true_pkb.InsertUsesS(3, "z");
     true_pkb.InsertModifiesS(4, "if");
     true_pkb.InsertModifiesS(5, "if");
 
@@ -623,27 +652,50 @@ TEST_CLASS(TestParserPkb) {
 
     PKB true_pkb = PKB();
     true_pkb.InsertModifiesS(1, "a");
+    true_pkb.InsertUsesS(1, "b");
+
     true_pkb.InsertModifiesS(4, "if");
+
     true_pkb.InsertModifiesS(5, "z");
+    true_pkb.InsertUsesS(5, "a");
+
     true_pkb.InsertModifiesS(6, "t");
+    true_pkb.InsertUsesS(3, "abc");
+
     true_pkb.InsertModifiesS(8, "w");
+
     true_pkb.InsertModifiesS(9, "a");
+    true_pkb.InsertUsesS(9, "b");
+
     true_pkb.InsertModifiesS(10, "x");
+
     true_pkb.InsertModifiesS(7, "w");
     true_pkb.InsertModifiesS(7, "a");
     true_pkb.InsertModifiesS(7, "x");
+    true_pkb.InsertUsesS(7, "a");
+    true_pkb.InsertUsesS(7, "b");
+
     true_pkb.InsertModifiesS(3, "if");
     true_pkb.InsertModifiesS(3, "z");
     true_pkb.InsertModifiesS(3, "t");
     true_pkb.InsertModifiesS(3, "w");
     true_pkb.InsertModifiesS(3, "a");
     true_pkb.InsertModifiesS(3, "x");
+    true_pkb.InsertUsesS(3, "a");
+    true_pkb.InsertUsesS(3, "abc");
+    true_pkb.InsertUsesS(3, "b");
+
     true_pkb.InsertModifiesS(2, "if");
     true_pkb.InsertModifiesS(2, "w");
     true_pkb.InsertModifiesS(2, "z");
     true_pkb.InsertModifiesS(2, "t");
     true_pkb.InsertModifiesS(2, "a");
     true_pkb.InsertModifiesS(2, "x");
+    true_pkb.InsertUsesS(2, "x");
+    true_pkb.InsertUsesS(2, "y");
+    true_pkb.InsertUsesS(2, "a");
+    true_pkb.InsertUsesS(2, "abc");
+    true_pkb.InsertUsesS(2, "b");
 
     true_pkb.InsertModifiesP("one", "a");
     true_pkb.InsertModifiesP("one", "w");
@@ -959,15 +1011,17 @@ TEST_CLASS(TestParserPkb) {
 
     // Test direct and indirect callees of procedure "one"
     ProcIndexList callees_1 = test_pkb.GetCalleeT("one");
-    ProcIndexList expected_callees_1 = ProcIndexList{2, 4, 3, 5};
+    ProcIndexSet actual_set_1(callees_1.begin(), callees_1.end());
+    ProcIndexSet expected_callees_1{1, 2, 3, 4};
     Assert::IsTrue(callees_1.size() == 4);
-    Assert::IsTrue(callees_1 == expected_callees_1);
+    Assert::IsTrue(actual_set_1 == expected_callees_1);
 
     // Test direct and indirect callers of procedure "five"
     ProcIndexList callees_2 = test_pkb.GetCallerT("five");
-    ProcIndexList expected_callees_2 = ProcIndexList{3, 1, 2, 4};
+    ProcIndexSet actual_set_2(callees_2.begin(), callees_2.end());
+    ProcIndexSet expected_callees_2{0, 1, 2, 3};
     Assert::IsTrue(callees_2.size() == 4);
-    Assert::IsTrue(callees_2 == expected_callees_2);
+    Assert::IsTrue(actual_set_2 == expected_callees_2);
   }
   TEST_METHOD(TestCallsTWithMultipleCallPerProc) {
     PKB test_pkb = PKB();
@@ -998,13 +1052,15 @@ TEST_CLASS(TestParserPkb) {
     // Test direct and indirect callees of procedure "one"
     // If this part fails, it's because the indices don't match.
     ProcIndexList callees_1 = test_pkb.GetCalleeT("one");
-    ProcIndexList expected_callees_1 = ProcIndexList{2, 3, 4, 5, 6, 7};
+    // zero based indexes so all the indexes - 1
+    ProcIndexList expected_callees_1 = ProcIndexList{1, 2, 3, 4, 5, 6};
     Assert::IsTrue(callees_1.size() == 6);
     Assert::IsTrue(callees_1 == expected_callees_1);
 
     // Test direct and indirect callers of procedure "you"
     ProcIndexList callees_2 = test_pkb.GetCallerT("you");
-    ProcIndexList expected_callees_2 = ProcIndexList{5, 8, 1, 2, 3, 4};
+    // zero based indexes so all the indexes - 1
+    ProcIndexList expected_callees_2 = ProcIndexList{4, 7, 0, 1, 2, 3};
     Assert::IsTrue(callees_2.size() == 6);
     Assert::IsTrue(callees_2 == expected_callees_2);
   }
