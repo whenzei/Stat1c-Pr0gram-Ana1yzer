@@ -421,15 +421,15 @@ TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
 
   //*******************************
 
-  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
-  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
+  VarIndexList test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
+  VarIndexList true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
 
   iter_1 = test_used_var_of_stmt.begin();
   iter_2 = true_used_var_of_stmt.begin();
 
   // Should have two used vars
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
 
   //*******************************
 }
@@ -501,34 +501,34 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //*******************************
-  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS(2);
-  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS(2);
+  VarIndexList test_used_var_of_stmt = test_pkb.GetUsedVarS(2);
+  VarIndexList true_used_var_of_stmt = true_pkb.GetUsedVarS(2);
 
   iter_1 = test_used_var_of_stmt.begin();
   iter_2 = true_used_var_of_stmt.begin();
 
   // Should have five used vars
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
 
   //*******************************
-  StmtNumList test_used_vars_proc = test_pkb.GetUsedVarP("one");
-  StmtNumList true_used_vars_proc = true_pkb.GetUsedVarP("one");
+  VarIndexList test_used_vars_proc = test_pkb.GetUsedVarP("one");
+  VarIndexList true_used_vars_proc = true_pkb.GetUsedVarP("one");
 
   iter_1 = test_used_vars_proc.begin();
   iter_2 = true_used_vars_proc.begin();
 
   // Should have six used vars in procedure "one"
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
 
   //*******************************
 }
@@ -584,14 +584,14 @@ TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
 
   //*******************************
 
-  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
-  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
+  VarIndexList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
+  VarIndexList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
   iter_1 = test_modified_stmt_get_var.begin();
   iter_2 = true_modified_stmt_get_var.begin();
 
   // Should only have one modified variable at stmt_num 2
-  Assert::AreEqual(*iter_1, *iter_2);
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
 
   //*******************************
 }
@@ -686,36 +686,36 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
 
   //*******************************
 
-  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
-  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
+  VarIndexList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
+  VarIndexList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
   iter_1 = test_modified_stmt_get_var.begin();
   iter_2 = true_modified_stmt_get_var.begin();
 
   // Should only have six modified variable at stmt_num 2
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
 
   //*******************************
-
-  StmtNumList test_modified_vars_proc = test_pkb.GetModifiedVarP("one");
-  StmtNumList true_modified_vars_proc = true_pkb.GetModifiedVarP("one");
+  
+  VarIndexList test_modified_vars_proc = test_pkb.GetModifiedVarP("one");
+  VarIndexList true_modified_vars_proc = true_pkb.GetModifiedVarP("one");
 
   iter_1 = test_modified_vars_proc.begin();
   iter_2 = true_modified_vars_proc.begin();
 
   // Should only have six modified variable at procedure "one"
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1++, *iter_2++);
-  Assert::AreEqual(*iter_1, *iter_2);
-
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1++), true_pkb.GetVarName(*iter_2++));
+  Assert::AreEqual(test_pkb.GetVarName(*iter_1), true_pkb.GetVarName(*iter_2));
+  
   //*******************************
 }
 

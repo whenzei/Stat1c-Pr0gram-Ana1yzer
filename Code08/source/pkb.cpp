@@ -127,6 +127,8 @@ void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
 }
 
 void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {
+  // insert the variable if it hasn't already been inserted
+  var_list_.InsertVarName(modified_var);
   modifies_table_.InsertModifiesS(modifying_stmt, GetVarIndex(modified_var));
 }
 
@@ -135,6 +137,9 @@ void PKB::InsertModifiesS(StmtNum modifying_stmt, VarIndex modified_var_id) {
 }
 
 void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
+  // insert the variable and procedure name if they haven't already been inserted
+  proc_list_.InsertProcName(modifying_proc);
+  var_list_.InsertVarName(modified_var);
   modifies_table_.InsertModifiesP(GetProcIndex(modifying_proc), GetVarIndex(modified_var));
 }
 
@@ -143,6 +148,8 @@ void PKB::InsertModifiesP(ProcIndex modifying_proc_id, VarIndex modified_var_id)
 }
 
 void PKB::InsertUsesS(StmtNum using_stmt, VarName used_var) {
+  // insert the variable if it hasn't already been inserted
+  var_list_.InsertVarName(used_var);
   uses_table_.InsertUsesS(using_stmt, GetVarIndex(used_var));
 }
 
@@ -151,6 +158,9 @@ void PKB::InsertUsesS(StmtNum using_stmt, VarIndex used_var_id) {
 }
 
 void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
+  // insert the variable and procedure name if they haven't already been inserted
+  proc_list_.InsertProcName(using_proc);
+  var_list_.InsertVarName(used_var);
   uses_table_.InsertUsesP(GetProcIndex(using_proc), GetVarIndex(used_var));
 }
 
