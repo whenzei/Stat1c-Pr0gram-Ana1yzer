@@ -11,10 +11,10 @@ TEST_CLASS(TestNextTable) {
   const StmtNumInt kStmtNumInt2 = 2;
   const StmtNumInt kStmtNumInt3 = 3;
   const StmtNumInt kStmtNumInt4 = 4;
-  const StmtNum kStmtNum1 = "1";
-  const StmtNum kStmtNum2 = "2";
-  const StmtNum kStmtNum3 = "3";
-  const StmtNum kStmtNum4 = "4";
+  const StmtNum kStmtNum1 = 1;
+  const StmtNum kStmtNum2 = 2;
+  const StmtNum kStmtNum3 = 3;
+  const StmtNum kStmtNum4 = 4;
   const ProcName kProcName1 = "One";
   
   TEST_METHOD(TestIsNextRelationship) {

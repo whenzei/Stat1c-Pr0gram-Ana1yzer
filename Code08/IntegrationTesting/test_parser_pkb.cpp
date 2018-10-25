@@ -26,9 +26,9 @@ TokenList tokenized_program = Tokenizer::Tokenize(program);
 parser.Parse(tokenized_program);
 
 PKB true_pkb = PKB();
-true_pkb.InsertFollows("1", "2");
-true_pkb.InsertFollows("1", "3");
-true_pkb.InsertFollows("2", "3");
+true_pkb.InsertFollows(1, 2);
+true_pkb.InsertFollows(1, 3);
+true_pkb.InsertFollows(2, 3);
 
 //*********************************
 
@@ -54,8 +54,8 @@ Assert::AreEqual(*iter_1, *iter_2);
 
 //*************************************
 
-StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows("2");
-StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows("2");
+StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows(2);
+StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows(2);
 
 iter_1 = stmt_num_test_get_follows.begin();
 iter_2 = stmt_num_true_get_follows.begin();
@@ -65,8 +65,8 @@ Assert::AreEqual(*iter_1, *iter_2);
 
 //*************************************
 
-StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT("1");
-StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT("1");
+StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT(1);
+StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT(1);
 
 iter_1 = stmt_num_test_get_follows_t.begin();
 iter_2 = stmt_num_true_get_follows_t.begin();
@@ -101,10 +101,10 @@ TEST_METHOD(TestFollowsOfOneNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertFollows("3", "4");
-  true_pkb.InsertFollows("1", "2");
-  true_pkb.InsertFollows("1", "6");
-  true_pkb.InsertFollows("2", "6");
+  true_pkb.InsertFollows(3, 4);
+  true_pkb.InsertFollows(1, 2);
+  true_pkb.InsertFollows(1, 6);
+  true_pkb.InsertFollows(2, 6);
 
   //*************************************
 
@@ -134,8 +134,8 @@ TEST_METHOD(TestFollowsOfOneNestedStatements) {
 
   //**************************************
 
-  StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows("1");
-  StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows("1");
+  StmtNumList stmt_num_test_get_follows = test_pkb.GetFollows(1);
+  StmtNumList stmt_num_true_get_follows = true_pkb.GetFollows(1);
 
   iter_1 = stmt_num_test_get_follows.begin();
   iter_2 = stmt_num_true_get_follows.begin();
@@ -145,8 +145,8 @@ TEST_METHOD(TestFollowsOfOneNestedStatements) {
 
   //*************************************
 
-  StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT("1");
-  StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT("1");
+  StmtNumList stmt_num_test_get_follows_t = test_pkb.GetFollowsT(1);
+  StmtNumList stmt_num_true_get_follows_t = true_pkb.GetFollowsT(1);
 
   iter_1 = stmt_num_test_get_follows_t.begin();
   iter_2 = stmt_num_true_get_follows_t.begin();
@@ -177,10 +177,10 @@ TEST_METHOD(TestParentOfOneNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertParent("2", "3");
-  true_pkb.InsertParent("2", "4");
-  true_pkb.InsertParent("2", "5");
-  true_pkb.InsertParent("6", "7");
+  true_pkb.InsertParent(2, 3);
+  true_pkb.InsertParent(2, 4);
+  true_pkb.InsertParent(2, 5);
+  true_pkb.InsertParent(6, 7);
 
   //*******************************
 
@@ -210,8 +210,8 @@ TEST_METHOD(TestParentOfOneNestedStatements) {
 
   //*********************************
 
-  StmtNumList test_child_of_stmt = test_pkb.GetChild("2");
-  StmtNumList true_child_of_stmt = true_pkb.GetChild("2");
+  StmtNumList test_child_of_stmt = test_pkb.GetChild(2);
+  StmtNumList true_child_of_stmt = true_pkb.GetChild(2);
 
   iter_1 = test_child_of_stmt.begin();
   iter_2 = true_child_of_stmt.begin();
@@ -222,8 +222,8 @@ TEST_METHOD(TestParentOfOneNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //**********************************
-  StmtNumList test_parent_of_stmt = test_pkb.GetParent("7");
-  StmtNumList true_parent_of_stmt = true_pkb.GetParent("7");
+  StmtNumList test_parent_of_stmt = test_pkb.GetParent(7);
+  StmtNumList true_parent_of_stmt = true_pkb.GetParent(7);
 
   iter_1 = test_parent_of_stmt.begin();
   iter_2 = true_parent_of_stmt.begin();
@@ -254,12 +254,12 @@ TEST_METHOD(TestParentOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertParent("5", "6");
-  true_pkb.InsertParent("5", "7");
-  true_pkb.InsertParent("2", "3");
-  true_pkb.InsertParent("2", "4");
-  true_pkb.InsertParent("2", "5");
-  true_pkb.InsertParent("2", "8");
+  true_pkb.InsertParent(5, 6);
+  true_pkb.InsertParent(5, 7);
+  true_pkb.InsertParent(2, 3);
+  true_pkb.InsertParent(2, 4);
+  true_pkb.InsertParent(2, 5);
+  true_pkb.InsertParent(2, 8);
 
   //*******************************
 
@@ -291,8 +291,8 @@ TEST_METHOD(TestParentOfNestedStatements) {
 
   //*********************************
 
-  StmtNumList test_child_of_stmt = test_pkb.GetChild("5");
-  StmtNumList true_child_of_stmt = true_pkb.GetChild("5");
+  StmtNumList test_child_of_stmt = test_pkb.GetChild(5);
+  StmtNumList true_child_of_stmt = true_pkb.GetChild(5);
 
   iter_1 = test_child_of_stmt.begin();
   iter_2 = true_child_of_stmt.begin();
@@ -303,8 +303,8 @@ TEST_METHOD(TestParentOfNestedStatements) {
 
   //**********************************
 
-  StmtNumList test_parent_of_stmt = test_pkb.GetParent("5");
-  StmtNumList true_parent_of_stmt = true_pkb.GetParent("5");
+  StmtNumList test_parent_of_stmt = test_pkb.GetParent(5);
+  StmtNumList true_parent_of_stmt = true_pkb.GetParent(5);
 
   iter_1 = test_parent_of_stmt.begin();
   iter_2 = true_parent_of_stmt.begin();
@@ -337,25 +337,25 @@ TEST_METHOD(TestParentStarOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertParent("8", "9");
-  true_pkb.InsertParent("5", "6");
-  true_pkb.InsertParent("5", "7");
-  true_pkb.InsertParent("5", "8");
-  true_pkb.InsertParent("2", "3");
-  true_pkb.InsertParent("2", "4");
-  true_pkb.InsertParent("2", "5");
-  true_pkb.InsertParent("2", "10");
+  true_pkb.InsertParent(8, 9);
+  true_pkb.InsertParent(5, 6);
+  true_pkb.InsertParent(5, 7);
+  true_pkb.InsertParent(5, 8);
+  true_pkb.InsertParent(2, 3);
+  true_pkb.InsertParent(2, 4);
+  true_pkb.InsertParent(2, 5);
+  true_pkb.InsertParent(2, 10);
 
-  true_pkb.InsertParentT("5", "9");
-  true_pkb.InsertParentT("2", "5");
-  true_pkb.InsertParentT("2", "6");
-  true_pkb.InsertParentT("2", "7");
-  true_pkb.InsertParentT("2", "8");
-  true_pkb.InsertParentT("2", "9");
+  true_pkb.InsertParentT(5, 9);
+  true_pkb.InsertParentT(2, 5);
+  true_pkb.InsertParentT(2, 6);
+  true_pkb.InsertParentT(2, 7);
+  true_pkb.InsertParentT(2, 8);
+  true_pkb.InsertParentT(2, 9);
   //*******************************
 
-  StmtNumList test_parent_t = test_pkb.GetParentT("9");
-  StmtNumList true_parent_t = true_pkb.GetParentT("9");
+  StmtNumList test_parent_t = test_pkb.GetParentT(9);
+  StmtNumList true_parent_t = true_pkb.GetParentT(9);
 
   StmtNumList::iterator iter_1 = test_parent_t.begin();
   StmtNumList::iterator iter_2 = true_parent_t.begin();
@@ -367,8 +367,8 @@ TEST_METHOD(TestParentStarOfNestedStatements) {
 
   //*******************************
 
-  StmtNumList test_child_t = test_pkb.GetChildT("2");
-  StmtNumList true_child_t = true_pkb.GetChildT("2");
+  StmtNumList test_child_t = test_pkb.GetChildT(2);
+  StmtNumList true_child_t = true_pkb.GetChildT(2);
 
   iter_1 = test_child_t.begin();
   iter_2 = true_child_t.begin();
@@ -399,12 +399,12 @@ TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertUsesS("1", "b");
-  true_pkb.InsertUsesS("2", "d");
-  true_pkb.InsertUsesS("2", "e");
-  true_pkb.InsertUsesS("2", "f");
-  true_pkb.InsertUsesS("3", "k");
-  true_pkb.InsertUsesS("3", "l");
+  true_pkb.InsertUsesS(1, "b");
+  true_pkb.InsertUsesS(2, "d");
+  true_pkb.InsertUsesS(2, "e");
+  true_pkb.InsertUsesS(2, "f");
+  true_pkb.InsertUsesS(3, "k");
+  true_pkb.InsertUsesS(3, "l");
 
   //*******************************
 
@@ -421,8 +421,8 @@ TEST_METHOD(TestUsesOfOnlyAssignmentStatements) {
 
   //*******************************
 
-  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("3");
-  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("3");
+  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
+  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
 
   iter_1 = test_used_var_of_stmt.begin();
   iter_2 = true_used_var_of_stmt.begin();
@@ -458,23 +458,23 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertUsesS("1", "b");
-  true_pkb.InsertUsesS("3", "f");
-  true_pkb.InsertUsesS("4", "ddd");
-  true_pkb.InsertUsesS("6", "a");
-  true_pkb.InsertUsesS("7", "k");
-  true_pkb.InsertUsesS("5", "a");
-  true_pkb.InsertUsesS("5", "a");
-  true_pkb.InsertUsesS("5", "k");
-  true_pkb.InsertUsesS("9", "print");
-  true_pkb.InsertUsesS("2", "a");
-  true_pkb.InsertUsesS("2", "b");
-  true_pkb.InsertUsesS("2", "f");
-  true_pkb.InsertUsesS("2", "ddd");
-  true_pkb.InsertUsesS("2", "a");
-  true_pkb.InsertUsesS("2", "a");
-  true_pkb.InsertUsesS("2", "k");
-  true_pkb.InsertUsesS("2", "print");
+  true_pkb.InsertUsesS(1, "b");
+  true_pkb.InsertUsesS(3, "f");
+  true_pkb.InsertUsesS(4, "ddd");
+  true_pkb.InsertUsesS(6, "a");
+  true_pkb.InsertUsesS(7, "k");
+  true_pkb.InsertUsesS(5, "a");
+  true_pkb.InsertUsesS(5, "a");
+  true_pkb.InsertUsesS(5, "k");
+  true_pkb.InsertUsesS(9, "print");
+  true_pkb.InsertUsesS(2, "a");
+  true_pkb.InsertUsesS(2, "b");
+  true_pkb.InsertUsesS(2, "f");
+  true_pkb.InsertUsesS(2, "ddd");
+  true_pkb.InsertUsesS(2, "a");
+  true_pkb.InsertUsesS(2, "a");
+  true_pkb.InsertUsesS(2, "k");
+  true_pkb.InsertUsesS(2, "print");
 
   true_pkb.InsertUsesP("one", "b");
   true_pkb.InsertUsesP("one", "a");
@@ -501,8 +501,8 @@ TEST_METHOD(TestUsesOfNestedStatements) {
   Assert::AreEqual(*iter_1, *iter_2);
 
   //*******************************
-  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS("2");
-  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS("2");
+  StmtNumList test_used_var_of_stmt = test_pkb.GetUsedVarS(2);
+  StmtNumList true_used_var_of_stmt = true_pkb.GetUsedVarS(2);
 
   iter_1 = test_used_var_of_stmt.begin();
   iter_2 = true_used_var_of_stmt.begin();
@@ -548,11 +548,11 @@ TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertModifiesS("1", "a");
-  true_pkb.InsertModifiesS("2", "while");
-  true_pkb.InsertModifiesS("3", "if");
-  true_pkb.InsertModifiesS("4", "if");
-  true_pkb.InsertModifiesS("5", "if");
+  true_pkb.InsertModifiesS(1, "a");
+  true_pkb.InsertModifiesS(2, "while");
+  true_pkb.InsertModifiesS(3, "if");
+  true_pkb.InsertModifiesS(4, "if");
+  true_pkb.InsertModifiesS(5, "if");
 
   //*******************************
 
@@ -584,8 +584,8 @@ TEST_METHOD(TestModifiesOfOnlyAssignmentStatements) {
 
   //*******************************
 
-  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS("2");
-  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS("2");
+  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
+  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
   iter_1 = test_modified_stmt_get_var.begin();
   iter_2 = true_modified_stmt_get_var.begin();
@@ -620,28 +620,28 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  true_pkb.InsertModifiesS("1", "a");
-  true_pkb.InsertModifiesS("4", "if");
-  true_pkb.InsertModifiesS("5", "z");
-  true_pkb.InsertModifiesS("6", "t");
-  true_pkb.InsertModifiesS("8", "w");
-  true_pkb.InsertModifiesS("9", "a");
-  true_pkb.InsertModifiesS("10", "x");
-  true_pkb.InsertModifiesS("7", "w");
-  true_pkb.InsertModifiesS("7", "a");
-  true_pkb.InsertModifiesS("7", "x");
-  true_pkb.InsertModifiesS("3", "if");
-  true_pkb.InsertModifiesS("3", "z");
-  true_pkb.InsertModifiesS("3", "t");
-  true_pkb.InsertModifiesS("3", "w");
-  true_pkb.InsertModifiesS("3", "a");
-  true_pkb.InsertModifiesS("3", "x");
-  true_pkb.InsertModifiesS("2", "if");
-  true_pkb.InsertModifiesS("2", "w");
-  true_pkb.InsertModifiesS("2", "z");
-  true_pkb.InsertModifiesS("2", "t");
-  true_pkb.InsertModifiesS("2", "a");
-  true_pkb.InsertModifiesS("2", "x");
+  true_pkb.InsertModifiesS(1, "a");
+  true_pkb.InsertModifiesS(4, "if");
+  true_pkb.InsertModifiesS(5, "z");
+  true_pkb.InsertModifiesS(6, "t");
+  true_pkb.InsertModifiesS(8, "w");
+  true_pkb.InsertModifiesS(9, "a");
+  true_pkb.InsertModifiesS(10, "x");
+  true_pkb.InsertModifiesS(7, "w");
+  true_pkb.InsertModifiesS(7, "a");
+  true_pkb.InsertModifiesS(7, "x");
+  true_pkb.InsertModifiesS(3, "if");
+  true_pkb.InsertModifiesS(3, "z");
+  true_pkb.InsertModifiesS(3, "t");
+  true_pkb.InsertModifiesS(3, "w");
+  true_pkb.InsertModifiesS(3, "a");
+  true_pkb.InsertModifiesS(3, "x");
+  true_pkb.InsertModifiesS(2, "if");
+  true_pkb.InsertModifiesS(2, "w");
+  true_pkb.InsertModifiesS(2, "z");
+  true_pkb.InsertModifiesS(2, "t");
+  true_pkb.InsertModifiesS(2, "a");
+  true_pkb.InsertModifiesS(2, "x");
 
   true_pkb.InsertModifiesP("one", "a");
   true_pkb.InsertModifiesP("one", "w");
@@ -686,8 +686,8 @@ TEST_METHOD(TestModifiesOfNestedStatements) {
 
   //*******************************
 
-  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS("2");
-  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS("2");
+  StmtNumList test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
+  StmtNumList true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
   iter_1 = test_modified_stmt_get_var.begin();
   iter_2 = true_modified_stmt_get_var.begin();
@@ -771,13 +771,13 @@ TEST_METHOD(TestCfgIfWhileStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (size_t i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
+    StmtNumList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
       Assert::AreEqual(test_adj_list.at(j),
-                       std::to_string(true_adj_list.at(j)));
+                       true_adj_list.at(j));
     }
   }
 }
@@ -830,13 +830,13 @@ TEST_METHOD(TestCfgIfInIfStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
+    StmtNumList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
       Assert::AreEqual(test_adj_list.at(j),
-                       std::to_string(true_adj_list.at(j)));
+                       true_adj_list.at(j));
     }
   }
 }
@@ -885,13 +885,13 @@ TEST_METHOD(TestCfgIfInIfInIfStatements) {
   CFG* test_cfg = test_pkb.GetCFG("one");
 
   for (int i = 1; i < list_of_adj_list.size(); i++) {
-    StmtNumList test_adj_list = (*test_cfg).at(std::to_string(i));
+    StmtNumList test_adj_list = (*test_cfg).at(i);
     StmtNumIntList true_adj_list = list_of_adj_list.at(i);
 
     Assert::AreEqual(test_adj_list.size(), true_adj_list.size());
     for (size_t j = 0; j < test_adj_list.size(); j++) {
       Assert::AreEqual(test_adj_list.at(j),
-                       std::to_string(true_adj_list.at(j)));
+                       true_adj_list.at(j));
     }
   }
 }
@@ -916,23 +916,23 @@ TEST_METHOD(TestProcessCalls) {
   parser.Parse(tokenized_program);
 
   PKB true_pkb = PKB();
-  StmtNumList expected_stmts = StmtNumList{"1", "2", "3", "4", "5"};
+  StmtNumList expected_stmts = StmtNumList{1, 2, 3, 4, 5};
   StmtNumList call_stmts = test_pkb.GetAllCallStmt();
   Assert::IsTrue(call_stmts.size() == 5);
   Assert::IsTrue(call_stmts == expected_stmts);
-  ProcNameList callers = test_pkb.GetAllCaller();
+  ProcNameList callers = test_pkb.GetAllCallerName();
   ProcNameList expected_callers = ProcNameList{"one", "two", "three", "four"};
   Assert::IsTrue(callers.size() == 4);
   Assert::IsTrue(callers == expected_callers);
 
-  ProcNameList callees = test_pkb.GetAllCallee();
+  ProcNameList callees = test_pkb.GetAllCalleeName();
   ProcNameList expected_callees = ProcNameList{"two", "three", "four", "five"};
   Assert::IsTrue(callees.size() == 4);
   Assert::IsTrue(callees == expected_callees);
 
-  StmtNumList proc_order = test_pkb.GetToposortedCalls();
-  StmtNumList expected_order =
-      StmtNumList{"five", "three", "four", "two", "one"};
+  ProcNameList proc_order = test_pkb.GetToposortedCalls();
+  ProcNameList expected_order =
+    ProcNameList{"five", "three", "four", "two", "one"};
   Assert::IsTrue(proc_order == expected_order);
 }
 TEST_METHOD(TestCallsTWithOneCallPerProc) {
@@ -954,14 +954,14 @@ TEST_METHOD(TestCallsTWithOneCallPerProc) {
   parser.Parse(tokenized_program);
 
   // Test direct and indirect callees of procedure "one"
-  ProcNameList callees_1 = test_pkb.GetCalleeT("one");
-  ProcNameList expected_callees_1 = ProcNameList{"two", "four", "three", "five"};
+  ProcIndexList callees_1 = test_pkb.GetCalleeT("one");
+  ProcIndexList expected_callees_1 = ProcIndexList{2, 4, 3, 5};
   Assert::IsTrue(callees_1.size() == 4);
   Assert::IsTrue(callees_1 == expected_callees_1);
 
   // Test direct and indirect callers of procedure "five"
-  ProcNameList callees_2 = test_pkb.GetCallerT("five");
-  ProcNameList expected_callees_2 = ProcNameList{"three","one", "two", "four"};
+  ProcIndexList callees_2 = test_pkb.GetCallerT("five");
+  ProcIndexList expected_callees_2 = ProcIndexList{3, 1, 2, 4};
   Assert::IsTrue(callees_2.size() == 4);
   Assert::IsTrue(callees_2 == expected_callees_2);
 }
@@ -992,16 +992,17 @@ TEST_METHOD(TestCallsTWithMultipleCallPerProc) {
   parser.Parse(tokenized_program);
 
   // Test direct and indirect callees of procedure "one"
-  ProcNameList callees_1 = test_pkb.GetCalleeT("one");
-  ProcNameList expected_callees_1 =
-      ProcNameList{"two", "three", "four", "five", "me", "you"};
+  // If this part fails, it's because the indices don't match.
+  ProcIndexList callees_1 = test_pkb.GetCalleeT("one");
+  ProcIndexList expected_callees_1 =
+    ProcIndexList{2, 3, 4, 5, 6, 7};
   Assert::IsTrue(callees_1.size() == 6);
   Assert::IsTrue(callees_1 == expected_callees_1);
 
   // Test direct and indirect callers of procedure "you"
-  ProcNameList callees_2 = test_pkb.GetCallerT("you");
-  ProcNameList expected_callees_2 =
-      ProcNameList{"five", "them", "one", "two", "three", "four"};
+  ProcIndexList callees_2 = test_pkb.GetCallerT("you");
+  ProcIndexList expected_callees_2 =
+    ProcIndexList{5, 8, 1, 2, 3, 4};
   Assert::IsTrue(callees_2.size() == 6);
   Assert::IsTrue(callees_2 == expected_callees_2);
 }

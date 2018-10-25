@@ -19,8 +19,10 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using FinalResult = list<string>;
-using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, string>>;
+using QueryResultList = vector<int>;
+using QueryResultPairList = vector<pair<int, int>>;
+using VarProcToIndexMap = unordered_map<string, int>;
+using IndexToVarProcMap = unordered_map<int, string>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -29,6 +31,10 @@ class PqlEvaluator {
   bool clause_flag_;      // to determine if clauses are true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
+  IndexToVarProcMap index_to_var;
+  IndexToVarProcMap index_to_proc;
+  VarProcToIndexMap var_to_index;
+  VarProcToIndexMap proc_to_index;
 
  public:
   /* Contructor */
@@ -39,12 +45,20 @@ class PqlEvaluator {
   void SetPKB(PKB);
   void SetClauseFlag(bool);
   void SetPqlResult(PqlResult);
+  void SetIndexToVar(IndexToVarProcMap);
+  void SetIndexToProc(IndexToVarProcMap);
+  void SetVarToIndex(VarProcToIndexMap);
+  void SetProcToIndex(VarProcToIndexMap);
 
   /* Getter */
   PqlQuery GetQuery();
   PKB GetPKB();
   bool IsValidClause();
   PqlResult GetPqlResult();
+  IndexToVarProcMap GetIndexToVar();
+  IndexToVarProcMap GetIndexToProc();
+  VarProcToIndexMap GetVarToIndex();
+  VarProcToIndexMap GetProcToIndex();
 
   /**
    * Called by the GUI. Use the Query provided by user
@@ -221,8 +235,8 @@ class PqlEvaluator {
    * @param List of results of each select clause
    */
   void TupleCrossProduct(FinalResult& final_result, string& temp_result,
-                                vector<QueryResultList>::iterator curr,
-                                vector<QueryResultList>::iterator end);
+                         vector<FinalResult>::iterator curr,
+                         vector<FinalResult>::iterator end);
 
   /**
    * Determine the number of synonym in the such that param (e.g such that
@@ -255,7 +269,7 @@ class PqlEvaluator {
    * @returns vector<string> list that only contains result of a certain entity
    * type
    */
-  QueryResultList FilterResult(vector<string> unfiltered_result,
+  QueryResultList FilterResult(QueryResultList unfiltered_result,
                                PqlDeclarationEntity entity_type);
 
   /**
@@ -264,7 +278,7 @@ class PqlEvaluator {
    * @returns vector<string> list that only contains result of a certain entity
    * type
    */
-  QueryResultList FilterVariableResult(vector<string> unfiltered_result,
+  QueryResultList FilterVariableResult(QueryResultList unfiltered_result,
                                        PqlDeclarationEntity variable_type);
 
   /**
@@ -276,8 +290,14 @@ class PqlEvaluator {
    */
   QueryResultPairList FilterPairResult(
       PqlResultFilterType filter_type,
-      vector<pair<string, string>> unfiltered_pair_result,
+      QueryResultPairList unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+
+  /**
+   * Convert the results from int to string using pkb mapping
+   * @param the vector<int> of results and synonym type
+   */
+  FinalResult ConvertListIntToString(QueryResultList, PqlDeclarationEntity);
 
   /**
    * Stores the list of results into the PqlResult table
@@ -293,7 +313,6 @@ class PqlEvaluator {
 
   /* Helper function to trim a string */
   string Trim(const string&);
-
 };
 
 #endif  // !QUERY_EVALUATOR_H

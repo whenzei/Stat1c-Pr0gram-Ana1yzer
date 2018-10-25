@@ -2,21 +2,52 @@
 
 #include "var_list.h"
 
-void VarList::InsertVarName(VarName var_name) {
-  if (var_name_set_.insert(var_name).second) {
-    var_name_list_.push_back(var_name);
-    var_name_twin_list_.push_back(make_pair(var_name, var_name));
+int VarList::InsertVarName(VarName var_name) {
+  if (var_index_map_.find(var_name) == var_index_map_.end()) {
+    int index = var_count;
+    var_name_index_list_.push_back(index);
+    var_name_index_twin_list_.push_back(make_pair(index, index));
+    var_index_map_[var_name] = index;
+    index_var_map_[index] = var_name;
+    var_count++;
+    return index;
+  }
+  return -1;
+}
+
+VarIndexList VarList::GetAllVarName() {
+  return var_name_index_list_;
+}
+
+bool VarList::IsVarName(VarIndex var_index) {
+  return index_var_map_.find(var_index) != index_var_map_.end();
+}
+
+VarIndexPairList VarList::GetAllVarNameTwin() {
+  return var_name_index_twin_list_;
+}
+
+IndexVarMap VarList::GetIndexToVarMapping() {
+  return index_var_map_;
+}
+
+VarIndexMap VarList::GetVarToIndexMapping() {
+  return var_index_map_; }
+
+VarName VarList::GetVarName(VarIndex index) {
+  IndexVarMap::iterator iter = index_var_map_.find(index);
+  if (iter != index_var_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarName();
   }
 }
 
-VarNameList VarList::GetAllVarName() {
-  return var_name_list_;
-}
-
-bool VarList::IsVarName(VarName var_name) {
-  return var_name_set_.find(var_name) != var_name_set_.end(); 
-}
-
-VarNamePairList VarList::GetAllVarNameTwin() {
-  return var_name_twin_list_;
+VarIndex VarList::GetVarIndex(VarName var_name) {
+  VarIndexMap::iterator iter = var_index_map_.find(var_name);
+  if (iter != var_index_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarIndex();
+  }
 }

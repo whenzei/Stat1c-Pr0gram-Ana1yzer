@@ -35,7 +35,7 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
     StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_name);
     for (auto call_stmt : calling_stmts) {
       // get the procedures that has this call statement
-      ProcNameList caller_procs = pkb_->GetCaller(proc_name);
+      ProcIndexList caller_procs = pkb_->GetCaller(proc_name);
       // get all ParentT of call statement
       StmtNumList parent_stmts = pkb_->GetParentT(call_stmt);
 
@@ -68,7 +68,7 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
 }
 
 void DesignExtractor::UpdateCallT() {
-  ProcNameList procs = pkb_->GetAllCaller();
+  ProcNameList procs = pkb_->GetAllCallerName();
   for (auto& proc : procs) {
     ProcNameList callee_procs = pkb_->GetCallee(proc);
     for (auto& direct_callee : callee_procs) {

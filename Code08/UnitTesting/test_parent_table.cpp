@@ -7,10 +7,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PKBTests {
 
 TEST_CLASS(TestParentTable) {
-  const StmtNum kStmtNum1 = "1";
-  const StmtNum kStmtNum2 = "2";
-  const StmtNum kStmtNum3 = "3";
-  const StmtNum kStmtNum4 = "4";
+  const StmtNum kStmtNum1 = 1;
+  const StmtNum kStmtNum2 = 2;
+  const StmtNum kStmtNum3 = 3;
+  const StmtNum kStmtNum4 = 4;
   
   TEST_METHOD(TestIsParent) {
     ParentTable parent_table;
