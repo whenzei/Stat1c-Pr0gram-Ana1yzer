@@ -1,38 +1,46 @@
 #include "graph.h"
 
-Graph::Graph() { size_ = 0; }
+Graph::Graph() {
+  size_ = 0;
+  adj_list_ = unordered_map<int, vector<int>>();
+}
 
-bool Graph::AddNode(const string &name) {
-  // not already in the node map
-  if (!node_map_.count(name)) {
-    Node *node;
-    node = new Node(name);
-    node_map_[name] = node;
-    size_++;
-    return true;
+bool Graph::AddNode(const string &name) { 
+  // node already exists
+  if (str_to_int_.count(name)) {
+    return false;
   }
+  int uniq_id = size_++;
+  str_to_int_[name] = uniq_id;
+  int_to_str_[uniq_id] = name;
 
-  return false;
+  return true;
+}
+
+void Graph::AddEdge(const int &from, const int &to) {
+  if (!adj_list_.count(from)) {
+    adj_list_.emplace(from, vector<int>());
+  }
+  adj_list_[from].push_back(to);
 }
 
 void Graph::AddEdge(const string &from, const string &to) {
-  if (!node_map_.count(from)) {
+  if (!str_to_int_.count(from)) {
     AddNode(from);
   }
-  if (!node_map_.count(to)) {
+  if (!str_to_int_.count(to)) {
     AddNode(to);
   }
-  Node *from_node = node_map_.find(from)->second;
-  Node *to_node = node_map_.find(to)->second;
-  from_node->neighbours_.insert(to_node);
+
+  AddEdge(str_to_int_.at(from), str_to_int_.at(to));
 }
 
 unordered_set<string> Graph::GetNeighbourNames(const string &name) {
   unordered_set<string> result;
-  if (node_map_.count(name)) {
-    unordered_set<Node *> node_neighbours = node_map_.at(name)->neighbours_;
+  if (str_to_int_.count(name) && adj_list_.count(str_to_int_.at(name))) {
+    vector<int> node_neighbours = adj_list_.at(str_to_int_.at(name));
     for (const auto node : node_neighbours) {
-      result.insert(node->name_);
+      result.insert(int_to_str_.at(node));
     }
   }
   return result;
@@ -40,92 +48,98 @@ unordered_set<string> Graph::GetNeighbourNames(const string &name) {
 
 int Graph::GetSize() { return size_; }
 
-void Graph::Toposort(const string &name, VisitedMap &visited_map,
-                     queue<string> &topoqueue) {
+void Graph::Toposort(const int &v, bool visited[], queue<int> &topoqueue) {
   if (size_ == 0) {
     // only single procedure
     return;
   }
 
   // mark the current node as visited
-  visited_map.at(name) = true;
+  visited[v] = true;
 
   // recur for all the vertices adjacent to node
-  Node *from_node = node_map_.find(name)->second;
-  for (auto node : from_node->neighbours_) {
-    if (!visited_map.at(node->name_)) {
-      Toposort(node->name_, visited_map, topoqueue);
+  if (adj_list_.count(v)) {
+    for (auto node : adj_list_.at(v)) {
+      if (!visited[node]) {
+        Toposort(node, visited, topoqueue);
+      }
     }
   }
 
   // push to topoqueue;
-  topoqueue.push(name);
+  topoqueue.push(v);
 }
 
 vector<string> Graph::Toposort() {
-  queue<string> topoqueue;
+  queue<int> topoqueue;
   vector<string> toposorted;
   // mark all the vertices as not visited
-  VisitedMap visited_map;
-  for (auto it : node_map_) {
-    visited_map.emplace(it.first, false);
+  bool *visited = new bool[size_];
+  for (int i = 0; i < size_; i++) {
+    visited[i] = false;
   }
 
   // call the recursive helper function to store toposorted nodes
   // starting from all nodes
-  for (auto it : node_map_) {
-    string node_name = it.first;
-    if (!visited_map.at(node_name)) {
-      Toposort(node_name, visited_map, topoqueue);
+  for (int i = 0; i < size_; i++) {
+    if (visited[i] == false) {
+      Toposort(i, visited, topoqueue);
     }
   }
 
   // add queue to vector in FIFO order
   while (!topoqueue.empty()) {
-    toposorted.push_back(topoqueue.front());
+    string name = int_to_str_.at(topoqueue.front());
+    toposorted.push_back(name);
     topoqueue.pop();
   }
 
+  delete[] visited;
   return toposorted;
 }
 
-bool Graph::HasCycle(const string &name, NodeSet &adj,
-                     VisitedMap &visited_map) {
-  if (!visited_map.at(name)) {
-    visited_map.at(name) = true;
+vector<int> Graph::DFS() { return vector<int>(); }
+
+bool Graph::HasCycle(const int &v, vector<int> &adj, bool visited[]) {
+  if (!visited[v]) {
+    visited[v] = true;
 
     for (auto node : adj) {
-      string node_name = node->name_;
-      if (visited_map.at(node_name)) {
+      if (visited[node]) {
         return true;
       }
-      NodeSet neighbours = node_map_.at(node_name)->neighbours_;
 
-      if (HasCycle(node_name, neighbours, visited_map)) {
-        return true;
+      if (adj_list_.count(node)) {
+        vector<int> neighbours = adj_list_.at(node);
+
+        if (HasCycle(node, neighbours, visited)) {
+          return true;
+        }
       }
     }
-    visited_map.at(name) = false;
+    visited[v] = false;
   }
   return false;
 }
 
 bool Graph::HasCycle() {
   // mark all the vertices as not visited
-  VisitedMap visited_map;
-
-  for (auto it : node_map_) {
-    visited_map.emplace(it.first, false);
+  bool *visited = new bool[size_];
+  for (int i = 0; i < size_; i++) {
+    visited[i] = false;
   }
 
   // call the recursive helper function
-  for (auto it : node_map_) {
-    string node_name = it.second->name_;
-    NodeSet adj = it.second->neighbours_;
-    if (HasCycle(node_name, adj, visited_map)) {
+  for (int i = 0; i < size_; i++) {
+    if (!adj_list_.count(i)) {
+      continue;
+    }
+    vector<int> neighbours = adj_list_.at(i);
+    if (HasCycle(i, neighbours, visited)) {
       return true;
     }
   }
 
+  delete[] visited;
   return false;
 }

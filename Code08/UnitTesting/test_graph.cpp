@@ -52,6 +52,7 @@ TEST_CLASS(TestGraph) {
     neighbours = graph.GetNeighbourNames(kProcName1);
     Assert::IsTrue(neighbours.size() == 2);
     Assert::IsTrue(neighbours.find(kProcName3) != neighbours.end());
+    // kProcName3 has no outwards arrows
     Assert::IsTrue(graph.GetNeighbourNames(kProcName3).size() == 0);
 
     /* 1
