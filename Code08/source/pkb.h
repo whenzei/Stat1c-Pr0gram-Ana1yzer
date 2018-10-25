@@ -111,7 +111,7 @@ class PKB {
                              ProcName called_proc_name);
 
   // @returns toposorted order of procedure calls in a ProcNameList
-  vector<string> GetToposortedCalls();
+  vector<int> GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
