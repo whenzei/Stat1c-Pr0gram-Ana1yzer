@@ -43,6 +43,6 @@ ProcIndex ProcList::GetProcIndex(ProcName proc_name) {
   if (iter != proc_index_map_.end()) {
     return (*iter).second;
   } else {
-    return ProcIndex();
+    return -1;
   }
 }

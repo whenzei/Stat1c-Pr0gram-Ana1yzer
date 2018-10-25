@@ -455,17 +455,12 @@ StmtVarPairList PKB::GetAllIfPatternPair() { return pattern_table_.GetAllIfPatte
 
 bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
                                          ProcName callee_proc) {
-  return call_table_.InsertIndirectCallRelationship(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
-}
-
-bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
-                                         ProcIndex callee_proc) {
-  return call_table_.InsertIndirectCallRelationship(GetProcIndex(caller_proc), callee_proc);
+  return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
 }
 
 bool PKB::InsertDirectCallRelationship(ProcName caller_proc,
                                        ProcName callee_proc) {
-  return call_table_.InsertDirectCallRelationship(GetProcIndex(caller_proc), GetProcIndex(callee_proc));
+  return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
 }
 
 void PKB::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {

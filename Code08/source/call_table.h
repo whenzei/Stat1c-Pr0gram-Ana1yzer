@@ -48,13 +48,13 @@ public:
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
+  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
 
   // Inserts a DIRECT caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertDirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
+  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
 
   // STATEMENT-PROC RELATIONSHIP INSERT
   // Inserts a calls relationship to the call table.
