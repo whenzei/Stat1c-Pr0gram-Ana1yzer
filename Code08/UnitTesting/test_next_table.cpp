@@ -116,25 +116,6 @@ TEST_CLASS(TestNextTable) {
     Assert::AreEqual(kStmtNum2, result1.back());
   }
 
-  TEST_METHOD(TestGetAllNextPairs) {
-    NextTable next_table;
-    next_table.InsertCFG(kProcName1);
-    next_table.InsertNext(kProcName1, kStmtNum1, kStmtNum2);
-    next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum3);
-    next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum4);
-    StmtNumPairList result1 = next_table.GetAllNextPairs();
-    Assert::IsTrue(result1.size() == 3);
-    StmtNumPairList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kStmtNum2, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kStmtNum3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kStmtNum4, (*iter).second);
-  }
-
   TEST_METHOD(TestHasNextRelationship) {
     NextTable next_table;
     next_table.InsertCFG(kProcName1);

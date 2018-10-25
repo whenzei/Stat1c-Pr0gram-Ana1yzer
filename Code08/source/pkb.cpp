@@ -159,10 +159,12 @@ void PKB::InsertModifiesS(StmtNum modifying_stmt, VarIndex modified_var_id) {
 }
 
 void PKB::InsertModifiesP(ProcName modifying_proc, VarName modified_var) {
-  // insert the variable and procedure name if they haven't already been inserted
+  // insert the variable and procedure name if they haven't already been
+  // inserted
   proc_list_.InsertProcName(modifying_proc);
   var_list_.InsertVarName(modified_var);
-  modifies_table_.InsertModifiesP(GetProcIndex(modifying_proc), GetVarIndex(modified_var));
+  modifies_table_.InsertModifiesP(GetProcIndex(modifying_proc),
+                                  GetVarIndex(modified_var));
 }
 
 void PKB::InsertModifiesP(ProcIndex modifying_proc_id,
@@ -181,7 +183,8 @@ void PKB::InsertUsesS(StmtNum using_stmt, VarIndex used_var_id) {
 }
 
 void PKB::InsertUsesP(ProcName using_proc, VarName used_var) {
-  // insert the variable and procedure name if they haven't already been inserted
+  // insert the variable and procedure name if they haven't already been
+  // inserted
   proc_list_.InsertProcName(using_proc);
   var_list_.InsertVarName(used_var);
   uses_table_.InsertUsesP(GetProcIndex(using_proc), GetVarIndex(used_var));
@@ -203,6 +206,10 @@ void PKB::InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
 void PKB::InsertNext(ProcName proc_name, StmtNum previous_stmt,
                      StmtNum next_stmt) {
   next_table_.InsertNext(proc_name, previous_stmt, next_stmt);
+}
+
+void PKB::SetAllNextPairs(StmtNumPairList next_pair_list) {
+  next_table_.SetAllNextPairs(next_pair_list);
 }
 
 StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
@@ -645,13 +652,13 @@ StmtNumList PKB::GetAllNext() { return next_table_.GetAllNext(); }
 
 StmtNumList PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
 
-StmtNumPairList PKB::GetAllNextPairs() {
-  return next_table_.GetAllNextPairs();
-}
+StmtNumPairList PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
 
 bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
 
 CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
+
+CFG* PKB::GetCombinedCFG() { return next_table_.GetCombinedCFG(); }
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
