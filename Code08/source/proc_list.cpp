@@ -3,46 +3,59 @@
 #include "proc_list.h"
 
 int ProcList::InsertProcName(ProcName proc_name) {
-  if (proc_index_map_.find(proc_name) == proc_index_map_.end()) {
-    int index = num_procs;
-    proc_name_index_list_.push_back(index);
-    proc_name_index_twin_list_.push_back(make_pair(index, index));
-    proc_index_map_[proc_name] = index;
-    index_proc_map_[index] = proc_name;
-    num_procs++;
-    return index;
+  if (proc_id_map_.find(proc_name) == proc_id_map_.end()) {
+    int proc_id = num_procs++;
+    // populate index list
+    proc_id_list_.push_back(proc_id);
+    proc_id_twin_list_.push_back(make_pair(proc_id, proc_id));
+
+    // populate name list
+    proc_name_list_.push_back(proc_name);
+    proc_name_twin_list_.push_back(make_pair(proc_name, proc_name));
+
+    proc_id_map_[proc_name] = proc_id;
+    id_proc_map_[proc_id] = proc_name;
+    return proc_id;
   }
   return -1;
 }
 
-ProcIndexList ProcList::GetAllProcName() { return proc_name_index_list_; }
+ProcNameList ProcList::GetAllProcNames() { return proc_name_list_; }
 
-bool ProcList::IsProcName(ProcIndex proc_index) {
-  return index_proc_map_.find(proc_index) != index_proc_map_.end();
+ProcIndexList ProcList::GetAllProcIndices() { return proc_id_list_; }
+
+bool ProcList::IsProcIndex(ProcIndex proc_id) {
+  return id_proc_map_.find(proc_id) != id_proc_map_.end();
 }
 
-ProcIndexPairList ProcList::GetAllProcNameTwin() {
-  return proc_name_index_twin_list_;
+bool ProcList::IsProcName(ProcName proc_name) {
+  return proc_id_map_.find(proc_name) != proc_id_map_.end();
 }
 
-IndexProcMap ProcList::GetIndexToProcMapping() { return index_proc_map_; }
+ProcNamePairList ProcList::GetAllProcNameTwin() {
+  return proc_name_twin_list_;
+}
 
-ProcIndexMap ProcList::GetProcToIndexMapping() { return proc_index_map_; }
+ProcIndexPairList ProcList::GetAllProcIndexTwin() {
+  return proc_id_twin_list_;
+}
 
-ProcName ProcList::GetProcName(ProcIndex index) {
-  IndexProcMap::iterator iter = index_proc_map_.find(index);
-  if (iter != index_proc_map_.end()) {
-    return (*iter).second;
-  } else {
-    return ProcName();
+IndexProcMap ProcList::GetIndexToProcMapping() { return id_proc_map_; }
+
+ProcIndexMap ProcList::GetProcToIndexMapping() { return proc_id_map_; }
+
+ProcName ProcList::GetProcName(ProcIndex proc_id) {
+  if (id_proc_map_.count(proc_id)) {
+    return id_proc_map_.at(proc_id);
   }
+
+  return ProcName();
 }
 
 ProcIndex ProcList::GetProcIndex(ProcName proc_name) {
-  ProcIndexMap::iterator iter = proc_index_map_.find(proc_name);
-  if (iter != proc_index_map_.end()) {
-    return (*iter).second;
-  } else {
-    return -1;
+  if (proc_id_map_.count(proc_name)) {
+    return proc_id_map_.at(proc_name);
   }
+
+  return -1;
 }

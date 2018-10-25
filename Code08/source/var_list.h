@@ -26,8 +26,8 @@ using IndexVarMap = unordered_map<VarIndex, VarName>;
 // The variable list class for the PKB component
 // Used to store variable names that are passed into PKB from the parser
 class VarList {
-  VarIndexList var_name_index_list_;
-  VarIndexPairList var_name_index_twin_list_;
+  VarIndexList var_index_list_;
+  VarIndexPairList var_index_twin_list_;
   // TODO: Depending on PQL's preferences, might have to add below
   // a list of Proc Indices and just return the entire list.
   VarIndexMap var_index_map_;
@@ -39,18 +39,21 @@ class VarList {
 
  public:
   // Returns a list of all variable names in the VarList.
-  VarIndexList GetAllVarName();
+  VarIndexList GetAllVarIndices();
 
   // Returns a list of all variable names in pairs (in each pair, the same var_name is repeated)
-  VarIndexPairList GetAllVarNameTwin();
+  VarIndexPairList GetAllVarIndexTwin();
 
   // Inserts var_name into VarList
   // @return index of the inserted variable if successful
   // @return -1 if variable name already exists in the variable list
   int InsertVarName(VarName var_name);
 
+  // @return true if var_id is in the var list
+  bool IsVarIndex(VarIndex var_id);
+
   // @return true if var_name is in the var list
-  bool IsVarName(VarIndex var_index);
+  bool IsVarName(VarName var_name);
 
   // @returns an unordered map with Index to Var mapping
   IndexVarMap GetIndexToVarMapping();

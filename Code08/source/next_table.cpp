@@ -3,20 +3,20 @@
 #include "next_table.h"
 
 void NextTable::InsertCFG(ProcName proc_name) {
-  cfg_table_.emplace(proc_name, make_pair(CFG(), CFG()));
+  cfg_table_.emplace(proc_name, CFG());
+  reversed_cfg_table_.emplace(proc_name, CFG());
 }
 
-// TODO: Change StmtNumInts to ints and delete unnecessary lines
-void NextTable::InsertNext(ProcName proc_name, StmtNumInt previous_stmt_int,
-                           StmtNumInt next_stmt_int) {
-  StmtNum previous_stmt = previous_stmt_int;
-  StmtNum next_stmt = next_stmt_int;
-  combined_cfg_[previous_stmt].push_back(next_stmt);
-  combined_reverse_cfg_[next_stmt].push_back(previous_stmt);
-  CFG* proc_cfg_ = &cfg_table_[proc_name].first;
-  CFG* proc_reverse_cfg_ = &cfg_table_[proc_name].second;
-  (*proc_cfg_)[previous_stmt].push_back(next_stmt);
-  (*proc_reverse_cfg_)[next_stmt].push_back(previous_stmt);
+void NextTable::InsertNext(ProcName proc_name, StmtNum previous_stmt,
+                           StmtNum next_stmt) {
+  combined_cfg_.AddEdge(previous_stmt, next_stmt);
+  reversed_combined_cfg_.AddEdge(next_stmt, previous_stmt);
+
+  // assert that there will be a cfg table for the proc name provided
+  CFG* proc_cfg_ = &cfg_table_[proc_name];
+  CFG* proc_reverse_cfg_ = &reversed_cfg_table_[proc_name];
+  proc_cfg_->AddEdge(previous_stmt, next_stmt);
+  proc_reverse_cfg_->AddEdge(next_stmt, previous_stmt);
 
   if (previous_set_.insert(previous_stmt).second) {
     previous_list_.push_back(previous_stmt);
@@ -26,59 +26,45 @@ void NextTable::InsertNext(ProcName proc_name, StmtNumInt previous_stmt_int,
   }
 }
 
-CFG* NextTable::GetCFG(ProcName proc_name) {
-  return &(cfg_table_[proc_name].first);
-}
+CFG* NextTable::GetCFG(ProcName proc_name) { return &(cfg_table_[proc_name]); }
 
 bool NextTable::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
-  CFG::iterator iter = combined_cfg_.find(previous_stmt);
-  if (iter != combined_cfg_.end()) {
-    StmtNumList next_stmts = (*iter).second;
-    return find(next_stmts.begin(), next_stmts.end(), next_stmt) !=
-           next_stmts.end();
-  } else {
-    return false;
-  }
+  VertexSet neighbours = combined_cfg_.GetNeighboursSet(previous_stmt);
+  return neighbours.find(next_stmt) != neighbours.end();
 }
 
-bool NextTable::IsNext(StmtNum stmt_num) { return next_set_.find(stmt_num) != next_set_.end(); }
+bool NextTable::IsNext(StmtNum stmt_num) {
+  return next_set_.find(stmt_num) != next_set_.end();
+}
 
 bool NextTable::IsPrevious(StmtNum stmt_num) {
   return previous_set_.find(stmt_num) != previous_set_.end();
 }
 
 StmtNumList NextTable::GetNext(StmtNum stmt_num) {
-  CFG::iterator iter = combined_cfg_.find(stmt_num);
-  if (iter != combined_cfg_.end()) {
-    return (*iter).second;
-  } else {
-    return StmtNumList();
-  };
+  return combined_cfg_.GetNeighboursList(stmt_num);
 }
 
 StmtNumList NextTable::GetPrevious(StmtNum stmt_num) {
-  CFG::iterator iter = combined_reverse_cfg_.find(stmt_num);
-  if (iter != combined_reverse_cfg_.end()) {
-    return (*iter).second;
-  } else {
-    return StmtNumList();
-  };
+  return reversed_combined_cfg_.GetNeighboursList(stmt_num);
 }
 
 StmtNumList NextTable::GetAllNext() { return next_list_; }
 
 StmtNumList NextTable::GetAllPrevious() { return previous_list_; }
 
+// TODO: remove all to_strings once str to int is done
 StmtNumPairList NextTable::GetAllNextPairs() {
   StmtNumPairList next_pair_list;
-  for (auto entry : combined_cfg_) {
-    for (StmtNum& next_stmt : entry.second) {
-      next_pair_list.push_back(make_pair(entry.first, next_stmt));
+  for (auto entry : combined_cfg_.GetAdjList()) {
+    int prev_stmt = entry.first;
+    for (int& next_stmt : entry.second) {
+      next_pair_list.push_back(std::make_pair(prev_stmt, next_stmt));
     }
   }
   return next_pair_list;
 }
 
-bool NextTable::HasNextRelationship() { return !combined_cfg_.empty(); }
+bool NextTable::HasNextRelationship() { return !combined_cfg_.IsEmpty(); }
 
 // TODO: add getter methods, check with pql whether to return string or int

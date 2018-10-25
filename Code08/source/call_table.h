@@ -19,36 +19,36 @@ using std::vector;
 using StmtNum = int;
 using ProcIndex = int;
 using ProcName = string;
-// int can be StmtNum or ProcName.
+// int can be StmtNum or ProcIndex.
 using CallMap = unordered_map<int, vector<ProcIndex>>;
-using StmtNumList = vector<StmtNum>;
 using StmtNumProcPairList = vector<pair<StmtNum, ProcIndex>>;
-using ProcIndexList = vector<ProcIndex>;
 using ProcIndexSet = unordered_set<ProcIndex>;
-using ProcNameList = vector<string>;
-using ProcNamePairList = vector<pair<ProcIndex, ProcIndex>>;
+using StmtNumList = vector<StmtNum>;
 
 class CallTable {
-  CallMap call_table_; // stores <proc calling, proc called>
-  CallMap direct_call_table_; // stores <direct proc calling, proc called>
-  CallMap callee_table_; // stores <proc called by, proc calling>
-  CallMap direct_callee_table_; // stores <direct proc called by, proc calling>
-  CallMap stmt_num_proc_table_; // stores <procedure called, stmt_nums calling it>
+  CallMap call_table_;           // stores <proc calling, proc called>
+  CallMap direct_call_table_;    // stores <direct proc calling, proc called>
+  CallMap callee_table_;         // stores <proc called by, proc calling>
+  CallMap direct_callee_table_;  // stores <direct proc called by, proc calling>
+  CallMap
+      stmt_num_proc_table_;  // stores <procedure called, stmt_nums calling it>
 
   ProcIndexList caller_list_;  // stores procs calling any other proc
-  ProcIndexSet caller_set_; // stores procs calling any other proc
-  ProcIndexList callee_list_; // stores procs called by any other proc
-  ProcNamePairList callee_twin_list_; // stores procs called by any other proc (in pairs)
-  ProcIndexSet callee_set_; // stores procs called by any other proc
+  ProcIndexSet caller_set_;    // stores procs calling any other proc
+  ProcIndexList callee_list_;  // stores procs called by any other proc
+  ProcIndexPairList
+      callee_twin_list_;     // stores procs called by any other proc (in pairs)
+  ProcIndexSet callee_set_;  // stores procs called by any other proc
   ProcList proc_list_;
 
-public:
+ public:
   // PROC-PROC RELATIONSHIP INSERT
   // Inserts an INDIRECt caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcName caller_proc,
+                                      ProcName callee_proc);
 
   // Inserts a DIRECT caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
@@ -81,7 +81,7 @@ public:
 
   // Finds and returns all callees for given procedure.
   // @returns a list containing all callees for given proc (can be empty)
-  // @params caller procedure name 
+  // @params caller procedure name
   ProcIndexList GetCalleeT(ProcIndex caller_proc);
 
   // Finds and returns the direct caller for given procedure.
@@ -91,7 +91,7 @@ public:
 
   // Finds and returns all callers for given procedure.
   // @returns a list containing all callers for given proc (can be empty)
-  // @params callee procedure name 
+  // @params callee procedure name
   ProcIndexList GetCallerT(ProcIndex callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)
@@ -101,13 +101,13 @@ public:
   ProcIndexList GetAllCallee();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcNamePairList GetAllCalleeTwin();
+  ProcIndexPairList GetAllCalleeTwin();
 
   // @returns a list of all <caller, direct callee> pairs
-  ProcNamePairList GetAllCallPairs();
+  ProcIndexPairList GetAllCallPairs();
 
   // @returns a list of all <caller, callee> pairs
-  ProcNamePairList GetAllCallTPairs();
+  ProcIndexPairList GetAllCallTPairs();
 
   // @returns true if Call(caller, callee) is true
   bool IsCall(ProcIndex caller_proc, ProcIndex callee_proc);
@@ -121,7 +121,6 @@ public:
   // @returns true if Call Table has any calls relationships
   // false if otherwise
   bool HasCallsRelationship();
-
 };
 
 #endif !SPA_CALL_TABLE_H

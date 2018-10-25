@@ -261,12 +261,12 @@ QueryResultList PqlEvaluator::GetSelectAllResult(
       // Get all procedures name from PKB and store into
       // results list
       cout << "Select all procedure." << endl;
-      return pkb.GetAllProcName();
+      return pkb.GetAllProcIndices();
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
       // results list
       cout << "Select all variables." << endl;
-      return pkb.GetAllVarName();
+      return pkb.GetAllVarIndices();
     case PqlDeclarationEntity::kAssign:
       // Get all statement number of statement which
       // contains assignment from PKB and store into results
@@ -332,10 +332,10 @@ QueryResultPairList PqlEvaluator::GetSelectAllTwinResult(
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Select all twin procedure." << endl;
-      return pkb.GetAllProcNameTwin();
+      return pkb.GetAllProcIndexTwin();
     case PqlDeclarationEntity::kVariable:
       cout << "Select all twin variables." << endl;
-      return pkb.GetAllVarNameTwin();
+      return pkb.GetAllVarIndexTwin();
     case PqlDeclarationEntity::kAssign:
       cout << "Select all twin assign statement." << endl;
       return pkb.GetAllAssignStmtTwin();
@@ -426,7 +426,7 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
     case PqlDeclarationEntity::kProcedure:
       cout << "Is procedure?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
-        if (pkb.IsProcName(proc_to_index[comparison_val])) {
+        if (pkb.IsProcIndex(proc_to_index[comparison_val])) {
           result_list.push_back(proc_to_index[comparison_val]);
           StoreClauseResultInTable(result_list, syn_name);
         } else {
@@ -439,7 +439,7 @@ void PqlEvaluator::EvaluateWithOneSynonym(Synonym with_syn,
     case PqlDeclarationEntity::kVariable:
       cout << "Is variable?" << endl;
       if (var_to_index.find(comparison_val) != var_to_index.end()) {
-        if (pkb.IsVarName(var_to_index[comparison_val])) {
+        if (pkb.IsVarIndex(var_to_index[comparison_val])) {
           result_list.push_back(var_to_index[comparison_val]);
           StoreClauseResultInTable(result_list, syn_name);
         } else {
@@ -1927,7 +1927,7 @@ QueryResultList PqlEvaluator::FilterWithResult(
     case PqlDeclarationEntity::kProcedure:
       cout << "Filter Proc" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsProcName(iter)) {
+        if (pkb.IsProcIndex(iter)) {
           filtered_result.push_back(iter);
         }
       }
@@ -1935,7 +1935,7 @@ QueryResultList PqlEvaluator::FilterWithResult(
     case PqlDeclarationEntity::kVariable:
       cout << "Filter Var" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsVarName(iter)) {
+        if (pkb.IsVarIndex(iter)) {
           filtered_result.push_back(iter);
         }
       }
@@ -2058,7 +2058,7 @@ QueryResultList PqlEvaluator::FilterVariableResult(
         pkb.IsConstValue(iter)) {
       filtered_result.push_back(iter);
     } else if (variable_type == PqlDeclarationEntity::kVariable &&
-               pkb.IsVarName(iter)) {
+               pkb.IsVarIndex(iter)) {
       filtered_result.push_back(iter);
     }
   }

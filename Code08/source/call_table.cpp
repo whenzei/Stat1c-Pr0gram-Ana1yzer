@@ -122,10 +122,10 @@
   ProcIndexList CallTable::GetAllCallee() {
     return callee_list_; }
 
-  ProcNamePairList CallTable::GetAllCalleeTwin() { return callee_twin_list_; }
+  ProcIndexPairList CallTable::GetAllCalleeTwin() { return callee_twin_list_; }
 
-  ProcNamePairList CallTable::GetAllCallPairs() {
-    ProcNamePairList call_pair_list;
+  ProcIndexPairList CallTable::GetAllCallPairs() {
+    ProcIndexPairList call_pair_list;
     for (auto entry : direct_call_table_) {
       if (direct_call_table_.find(entry.first) != direct_call_table_.end()) {
         call_pair_list.push_back(make_pair(entry.first, direct_call_table_[entry.first].front()));
@@ -134,8 +134,8 @@
     return call_pair_list;
   }
 
-  ProcNamePairList CallTable::GetAllCallTPairs() {
-    ProcNamePairList call_pair_list;
+  ProcIndexPairList CallTable::GetAllCallTPairs() {
+    ProcIndexPairList call_pair_list;
     for (auto entry : call_table_) {
       if (call_table_.find(entry.first) != call_table_.end()) {
         for (ProcIndex called_proc : call_table_[entry.first]) {
