@@ -28,7 +28,7 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarIndexList result_list = var_list.GetAllVarName();
+    VarIndexList result_list = var_list.GetAllVarIndices();
     Assert::IsTrue(result_list.size() == 2);
     Assert::AreEqual(kSampleVarIndex1, result_list.front());
     Assert::AreEqual(kSampleVarIndex2, result_list.back());
@@ -37,9 +37,18 @@ TEST_CLASS(TestVarList) {
   TEST_METHOD(TestIsVarName) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1);
-    bool result = var_list.IsVarName(kSampleVarIndex1);
+    bool result = var_list.IsVarName(kSampleVar1);
     Assert::IsTrue(result);
-    result = var_list.IsVarName(kSampleVarIndex2);
+    result = var_list.IsVarName(kSampleVar2);
+    Assert::IsFalse(result);
+  }
+
+  TEST_METHOD(TestIsVarIndex) {
+    VarList var_list;
+    var_list.InsertVarName(kSampleVar1);
+    bool result = var_list.IsVarIndex(kSampleVarIndex1);
+    Assert::IsTrue(result);
+    result = var_list.IsVarIndex(kSampleVarIndex2);
     Assert::IsFalse(result);
   }
 
@@ -49,7 +58,7 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarIndexPairList result_list = var_list.GetAllVarNameTwin();
+    VarIndexPairList result_list = var_list.GetAllVarIndexTwin();
     Assert::IsTrue(result_list.size() == 2);
     Assert::AreEqual(kSampleVarIndex1, result_list.front().first);
     Assert::AreEqual(kSampleVarIndex1, result_list.front().second);

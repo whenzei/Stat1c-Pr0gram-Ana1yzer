@@ -23,11 +23,11 @@ void UsesTable::InsertUsesP(ProcIndex proc_name_id, VarIndex var_name_id) {
 }
 
 VarIndexList UsesTable::GetUsedVarS(StmtNum stmt_num) {
-  VarIndexList used_vars;
-  if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
-    used_vars = uses_s_map_[stmt_num];
+  if (uses_s_map_.count(stmt_num)) {
+    return uses_s_map_[stmt_num];
   }
-  return used_vars;
+
+  return VarIndexList();
 }
 
 VarIndexList UsesTable::GetUsedVarP(ProcIndex proc_name_id) {

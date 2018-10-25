@@ -33,7 +33,7 @@ class Graph {
 
   void Toposort(const Vertex& v, bool visited[], queue<int>& topoqueue);
 
-  bool HasCycle(const Vertex& v, VertexSet& adj, bool visited[]);
+  bool HasCycle(const Vertex& v, VertexSet* neighbours, bool visited[]);
 
  public:
   Graph();

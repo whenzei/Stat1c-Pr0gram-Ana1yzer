@@ -160,7 +160,7 @@ namespace PKBTests {
       ProcIndexPairList callee_list;
       callee_list = call_table.GetAllCalleeTwin();
       Assert::IsTrue(callee_list.size() == 3);
-      ProcNamePairList::iterator iter = callee_list.begin();
+      ProcIndexPairList::iterator iter = callee_list.begin();
       Assert::AreEqual(kProcIndex2, (*iter).first);
       Assert::AreEqual(kProcIndex2, (*iter).second);
       iter++;
@@ -200,9 +200,9 @@ namespace PKBTests {
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
       call_table.InsertIndirectCallRelationship(kProcName1, kProcName4);
       call_table.InsertIndirectCallRelationship(kProcName2, kProcName4);
-      ProcNamePairList pair_list = call_table.GetAllCallTPairs();
+      ProcIndexPairList pair_list = call_table.GetAllCallTPairs();
       Assert::IsTrue(pair_list.size() == 6);
-      ProcNamePairList::iterator iter = pair_list.begin();
+      ProcIndexPairList::iterator iter = pair_list.begin();
       Assert::AreEqual(kProcIndex1, (*iter).first);
       Assert::AreEqual(kProcIndex2, (*iter).second);
       iter++;

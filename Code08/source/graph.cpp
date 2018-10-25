@@ -37,11 +37,9 @@ void Graph::Toposort(const Vertex &v, bool visited[], queue<int> &topoqueue) {
   visited[v] = true;
 
   // recur for all the vertices adjacent to node
-  if (adj_list_.count(v)) {
-    for (auto node : adj_list_.at(v)) {
-      if (!visited[node]) {
-        Toposort(node, visited, topoqueue);
-      }
+  for (auto node : adj_set_[v]) {
+    if (!visited[node]) {
+      Toposort(node, visited, topoqueue);
     }
   }
 
@@ -78,28 +76,6 @@ VertexList Graph::Toposort() {
 
 vector<int> Graph::DFS() { return vector<int>(); }
 
-bool Graph::HasCycle(const Vertex &v, VertexSet &adj, bool visited[]) {
-  if (!visited[v]) {
-    visited[v] = true;
-
-    for (auto node : adj) {
-      if (visited[node]) {
-        return true;
-      }
-
-      if (adj_list_.count(node)) {
-        VertexSet neighbours = adj_set_.at(node);
-
-        if (HasCycle(node, neighbours, visited)) {
-          return true;
-        }
-      }
-    }
-    visited[v] = false;
-  }
-  return false;
-}
-
 bool Graph::HasCycle() {
   // mark all the vertices as not visited
   bool *visited = new bool[size_];
@@ -109,11 +85,7 @@ bool Graph::HasCycle() {
 
   // call the recursive helper function
   for (int i = 0; i < size_; i++) {
-    if (!adj_list_.count(i)) {
-      continue;
-    }
-    VertexSet neighbours = adj_set_.at(i);
-    if (HasCycle(i, neighbours, visited)) {
+    if (HasCycle(i, &adj_set_[i], visited)) {
       return true;
     }
   }
@@ -122,9 +94,27 @@ bool Graph::HasCycle() {
   return false;
 }
 
-VertexSet Graph::GetNeighboursSet(const Vertex &v) { 
+bool Graph::HasCycle(const Vertex &v, VertexSet *adj, bool visited[]) {
+  if (!visited[v]) {
+    visited[v] = true;
+
+    for (auto &node : *adj) {
+      if (visited[node]) {
+        return true;
+      }
+      if (HasCycle(node, &adj_set_[node], visited)) {
+        return true;
+      }
+    }
+    visited[v] = false;
+  }
+
+  return false;
+}
+
+VertexSet Graph::GetNeighboursSet(const Vertex &v) {
   if (adj_set_.count(v)) {
-    return adj_set_.at(v); 
+    return adj_set_.at(v);
   }
   return VertexSet();
 }
