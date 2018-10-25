@@ -76,6 +76,9 @@ CallGraph* PKB::GetCallGraph() { return &call_graph_; }
 
 void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name,
                                 ProcName called_proc_name) {
+  // add the procedures into pkb in case they have not been added yet
+  this->InsertProcName(curr_proc_name);
+  this->InsertProcName(called_proc_name);
   ProcIndex curr_proc_id = this->GetProcIndex(curr_proc_name);
   ProcIndex called_proc_id = this->GetProcIndex(called_proc_name);
   call_graph_.AddEdge(curr_proc_id, called_proc_id);

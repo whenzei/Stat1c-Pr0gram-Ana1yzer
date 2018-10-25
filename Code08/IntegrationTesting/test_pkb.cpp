@@ -352,7 +352,8 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(pkb.GetCallGraph()->GetSize() == 2);
 
     ProcIndexList actual_sorted_calls = pkb.GetToposortedCalls();
-    ProcIndexList expected_calls = ProcIndexList{kProcIndex1, kProcIndex2};
+    // expect 2 first, then 1
+    ProcIndexList expected_calls = ProcIndexList{kProcIndex2, kProcIndex1};
     Assert::IsTrue(actual_sorted_calls == expected_calls);
   }
 };
