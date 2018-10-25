@@ -2,53 +2,32 @@
 
 Graph::Graph() {
   size_ = 0;
-  adj_list_ = unordered_map<int, vector<int>>();
+  adj_list_ = AdjList();
+  adj_set_ = AdjSet();
 }
 
-bool Graph::AddNode(const string &name) { 
-  // node already exists
-  if (str_to_int_.count(name)) {
-    return false;
+void Graph::AddEdge(const Vertex &from, const Vertex &to) {
+  if (!adj_set_.count(from)) {
+    size_++;
+    adj_set_.emplace(from, VertexSet());
+    adj_list_.emplace(from, VertexList());
   }
-  int uniq_id = size_++;
-  str_to_int_[name] = uniq_id;
-  int_to_str_[uniq_id] = name;
 
-  return true;
+  if (!adj_set_.count(to)) {
+    size_++;
+    adj_set_.emplace(to, VertexSet());
+    adj_list_.emplace(to, VertexList());
+  }
+
+  if (!adj_set_.at(from).count(to)) {
+    adj_list_[from].push_back(to);
+    adj_set_[from].emplace(to);
+  }
 }
 
-void Graph::AddEdge(const int &from, const int &to) {
-  if (!adj_list_.count(from)) {
-    adj_list_.emplace(from, vector<int>());
-  }
-  adj_list_[from].push_back(to);
-}
+bool Graph::IsEmpty() { return size_ == 0; }
 
-void Graph::AddEdge(const string &from, const string &to) {
-  if (!str_to_int_.count(from)) {
-    AddNode(from);
-  }
-  if (!str_to_int_.count(to)) {
-    AddNode(to);
-  }
-
-  AddEdge(str_to_int_.at(from), str_to_int_.at(to));
-}
-
-unordered_set<string> Graph::GetNeighbourNames(const string &name) {
-  unordered_set<string> result;
-  if (str_to_int_.count(name) && adj_list_.count(str_to_int_.at(name))) {
-    vector<int> node_neighbours = adj_list_.at(str_to_int_.at(name));
-    for (const auto node : node_neighbours) {
-      result.insert(int_to_str_.at(node));
-    }
-  }
-  return result;
-}
-
-int Graph::GetSize() { return size_; }
-
-void Graph::Toposort(const int &v, bool visited[], queue<int> &topoqueue) {
+void Graph::Toposort(const Vertex &v, bool visited[], queue<int> &topoqueue) {
   if (size_ == 0) {
     // only single procedure
     return;
@@ -70,9 +49,9 @@ void Graph::Toposort(const int &v, bool visited[], queue<int> &topoqueue) {
   topoqueue.push(v);
 }
 
-vector<string> Graph::Toposort() {
+VertexList Graph::Toposort() {
   queue<int> topoqueue;
-  vector<string> toposorted;
+  VertexList toposorted;
   // mark all the vertices as not visited
   bool *visited = new bool[size_];
   for (int i = 0; i < size_; i++) {
@@ -89,8 +68,7 @@ vector<string> Graph::Toposort() {
 
   // add queue to vector in FIFO order
   while (!topoqueue.empty()) {
-    string name = int_to_str_.at(topoqueue.front());
-    toposorted.push_back(name);
+    toposorted.push_back(topoqueue.front());
     topoqueue.pop();
   }
 
@@ -100,7 +78,7 @@ vector<string> Graph::Toposort() {
 
 vector<int> Graph::DFS() { return vector<int>(); }
 
-bool Graph::HasCycle(const int &v, vector<int> &adj, bool visited[]) {
+bool Graph::HasCycle(const Vertex &v, VertexSet &adj, bool visited[]) {
   if (!visited[v]) {
     visited[v] = true;
 
@@ -110,7 +88,7 @@ bool Graph::HasCycle(const int &v, vector<int> &adj, bool visited[]) {
       }
 
       if (adj_list_.count(node)) {
-        vector<int> neighbours = adj_list_.at(node);
+        VertexSet neighbours = adj_set_.at(node);
 
         if (HasCycle(node, neighbours, visited)) {
           return true;
@@ -134,7 +112,7 @@ bool Graph::HasCycle() {
     if (!adj_list_.count(i)) {
       continue;
     }
-    vector<int> neighbours = adj_list_.at(i);
+    VertexSet neighbours = adj_set_.at(i);
     if (HasCycle(i, neighbours, visited)) {
       return true;
     }
@@ -143,3 +121,18 @@ bool Graph::HasCycle() {
   delete[] visited;
   return false;
 }
+
+VertexSet Graph::GetNeighboursSet(const Vertex &v) { 
+  if (adj_set_.count(v)) {
+    return adj_set_.at(v); 
+  }
+  return VertexSet();
+}
+
+VertexList Graph::GetNeighboursList(const Vertex &v) { return adj_list_.at(v); }
+
+int Graph::GetSize() { return size_; }
+
+AdjList Graph::GetAdjList() { return adj_list_; }
+
+AdjSet Graph::GetAdjSet() { return adj_set_; }
