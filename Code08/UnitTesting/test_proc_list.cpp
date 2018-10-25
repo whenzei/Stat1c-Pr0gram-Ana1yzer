@@ -10,18 +10,18 @@ TEST_CLASS(TestProcList) {
   const ProcName kProcName1 = "simple";
   const ProcName kProcName2 = "SimPle";
   const ProcName kProcName3 = "simple123";
-  const ProcIndex kProcIndex1 = 1;
-  const ProcIndex kProcIndex2 = 2;
-  const ProcIndex kProcIndex3 = 3;
+  const ProcIndex kProcIndex1 = 0;
+  const ProcIndex kProcIndex2 = 1;
+  const ProcIndex kProcIndex3 = 2;
 
  public:
 
   TEST_METHOD(TestInsertProc) {
     ProcList proc_list;
     int result = proc_list.InsertProcName(kProcName1);
-    Assert::AreEqual(1, result);
+    Assert::AreEqual(0, result);
     result = proc_list.InsertProcName(kProcName2);
-    Assert::AreEqual(2, result);
+    Assert::AreEqual(1, result);
     result = proc_list.InsertProcName(kProcName2);
     Assert::AreEqual(-1, result);
   }
@@ -70,13 +70,13 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     IndexProcMap index_proc_map = proc_list.GetIndexToProcMapping();
-    Assert::AreEqual(kProcName1, index_proc_map[1]);
+    Assert::AreEqual(kProcName1, index_proc_map[0]);
     index_proc_map = proc_list.GetIndexToProcMapping();
-    Assert::AreEqual(kProcName2, index_proc_map[2]);
+    Assert::AreEqual(kProcName2, index_proc_map[1]);
     // Duplicate. Shouldn't affect index
     proc_list.InsertProcName(kProcName2);
     index_proc_map = proc_list.GetIndexToProcMapping();    
-    Assert::AreEqual(kProcName2, index_proc_map[2]);
+    Assert::AreEqual(kProcName2, index_proc_map[1]);
   }
 
   TEST_METHOD(TestGetProcToIndexMapping) {
@@ -84,13 +84,13 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     ProcIndexMap proc_index_map = proc_list.GetProcToIndexMapping();
-    Assert::AreEqual(1, proc_index_map[kProcName1]);
+    Assert::AreEqual(0, proc_index_map[kProcName1]);
     proc_index_map = proc_list.GetProcToIndexMapping();
-    Assert::AreEqual(2, proc_index_map[kProcName2]);
+    Assert::AreEqual(1, proc_index_map[kProcName2]);
     // Duplicate. Shouldn't affect index
     proc_list.InsertProcName(kProcName2);
     proc_index_map = proc_list.GetProcToIndexMapping();
-    Assert::AreEqual(2, proc_index_map[kProcName2]);
+    Assert::AreEqual(1, proc_index_map[kProcName2]);
   }
 };
 }  // namespace UnitTesting

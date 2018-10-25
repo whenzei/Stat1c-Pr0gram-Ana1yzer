@@ -12,12 +12,12 @@ TEST_CLASS(TestPatternTable) {
   const StmtNum kStmtNum1 = 1;
   const StmtNum kStmtNum2 = 3;
   const StmtNum kStmtNum3 = 5;
-  const VarName kVarName1 = a;
-  const VarName kVarName2 = b;
-  const VarName kVarName3 = c;
-  const VarIndex kVarIndex1 = 1;
-  const VarIndex kVarIndex2 = 2;
-  const VarIndex kVarIndex3 = 3;
+  const VarName kVarName1 = "a";
+  const VarName kVarName2 = "b";
+  const VarName kVarName3 = "c";
+  const VarIndex kVarIndex1 = 0;
+  const VarIndex kVarIndex2 = 1;
+  const VarIndex kVarIndex3 = 2;
   const Token kToken32 = {TokenType::kDigit, "32"};
   const Token kTokenA = {TokenType::kName, "a"};
   const Token kTokenPlus = {TokenType::kOperator, "+"};
@@ -28,13 +28,13 @@ TEST_CLASS(TestPatternTable) {
                                  kTokenMult};
   const TokenList kTokenList3 = {kToken32};
   
-  VarList var_list;
+  VarList var_list_;
 
   // Setup: Pre-populate the variable list to compare indices.
   void setUp() {
-    var_list.InsertVarName(kVarName1);
-    var_list.InsertVarName(kVarName2);
-    var_list.InsertVarName(kVarName3);
+    var_list_.InsertVarName(kVarName1);
+    var_list_.InsertVarName(kVarName2);
+    var_list_.InsertVarName(kVarName3);
   }
 
   TEST_METHOD(TestGetAssignWithLfsVar) {

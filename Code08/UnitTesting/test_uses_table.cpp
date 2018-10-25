@@ -10,10 +10,10 @@ TEST_CLASS(TestUsesTable) {
   const StmtNum kSampleStmtIdx2 = 4;
   const StmtNum kSampleStmtIdx3 = 102;
   const StmtNum kSampleStmtIdx4 = 27;
-  const VarIndex kSampleVarIndex1 = 1;
-  const VarIndex kSampleVarIndex2 = 2;
-  const ProcIndex kSampleProcIndex1 = 1;
-  const ProcIndex kSampleProcIndex2 = 2;
+  const VarIndex kSampleVarIndex1 = 0;
+  const VarIndex kSampleVarIndex2 = 1;
+  const ProcIndex kSampleProcIndex1 = 0;
+  const ProcIndex kSampleProcIndex2 = 1;
 
   TEST_METHOD(TestGetUsedVarS) {
     UsesTable uses;
@@ -113,9 +113,9 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesP(kSampleProcIndex2, kSampleVarIndex1);
     ProcVarPairList uses_pair_list = uses.GetAllUsesPPair();
     Assert::IsTrue(uses_pair_list.size() == 2);
-    Assert::AreEqual(kSampleProcIndex2, uses_pair_list.front().first);
+    Assert::AreEqual(kSampleProcIndex1, uses_pair_list.front().first);
     Assert::AreEqual(kSampleVarIndex1, uses_pair_list.front().second);
-    Assert::AreEqual(kSampleProcIndex1, uses_pair_list.back().first);
+    Assert::AreEqual(kSampleProcIndex2, uses_pair_list.back().first);
     Assert::AreEqual(kSampleVarIndex1, uses_pair_list.back().second);
   }
 };

@@ -31,7 +31,7 @@ class PatternTable {
   ExprStmtMap assign_sub_expr_map_;
   VarStmtMap while_var_stmt_map_;
   VarStmtMap if_var_stmt_map_;
-  VarList var_list;
+  VarList var_list_;
   
  public:
   // add the stmt_num and var_name to assign_var_stmt_map_ and

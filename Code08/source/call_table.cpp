@@ -59,8 +59,9 @@
 
   ProcIndexList CallTable::GetCallee(ProcIndex caller_proc) {
     ProcIndexList callee_list;
-    if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
-      callee_list = direct_call_table_[caller_proc];
+    CallMap::iterator iter = direct_call_table_.find(caller_proc);
+    if (iter != direct_call_table_.end()) {
+      callee_list = (*iter).second;
     }
     return callee_list;
   }
@@ -68,7 +69,7 @@
   ProcNameList CallTable::GetCallee(ProcName caller_proc) {
     ProcIndexList callee_list = GetCallee(proc_list_.GetProcIndex(caller_proc));
     ProcNameList callee_name_list;
-    for (auto& proc_index : callee_list) {
+    for (int proc_index : callee_list) {
       callee_name_list.push_back(proc_list_.GetProcName(proc_index));
     }
     return callee_name_list;

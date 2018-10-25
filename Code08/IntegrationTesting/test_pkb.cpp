@@ -9,8 +9,8 @@ namespace PKBTests {
 TEST_CLASS(TestPKB) {
   const ProcName kProcName1 = "one";
   const ProcName kProcName2 = "two";
-  const ProcIndex kProcIndex1 = 1;
-  const ProcIndex kProcIndex2 = 2;
+  const ProcIndex kProcIndex1 = 0;
+  const ProcIndex kProcIndex2 = 1;
   const StmtNumInt kStmtNumInt1 = 1;
   const StmtNumInt kStmtNumInt2 = 2;
   const StmtNumInt kStmtNumInt3 = 3;
@@ -33,9 +33,9 @@ TEST_CLASS(TestPKB) {
   const VarName kVarName1 = "a";
   const VarName kVarName2 = "b";
   const VarName kVarName3 = "c";
-  const VarIndex kVarIndex1 = 1;
-  const VarIndex kVarIndex2 = 2;
-  const VarIndex kVarIndex3 = 3;
+  const VarIndex kVarIndex1 = 0;
+  const VarIndex kVarIndex2 = 1;
+  const VarIndex kVarIndex3 = 2;
   const ConstValue kConstValue1 = 12;
   const ConstValue kConstValue2 = 345;
   const VarNameSet kVarNameSet1 = {"b", "c"};

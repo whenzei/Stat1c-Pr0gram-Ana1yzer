@@ -14,13 +14,13 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
-using ResultTable = vector<vector<string>>;
-using ResultRow = vector<string>;
-using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, string>>;
+// using ResultTable = vector<vector<string>>;
+// using ResultRow = vector<string>;
+// using QueryResultList = vector<string>;
+// using QueryResultPairList = vector<pair<string, string>>;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
+/**
 namespace PQLTests {
 TEST_CLASS(TestPqlResult) {
  public:
@@ -595,4 +595,5 @@ TEST_CLASS(TestPqlResult) {
     Assert::IsTrue(pql_result.GetColumnCount() == 0);
   }
 };
-}  // namespace PQLTests
+*
+}*/  // namespace PQLTests 

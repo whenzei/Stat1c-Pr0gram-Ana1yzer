@@ -172,9 +172,9 @@ TEST_CLASS(TestModifiesTable) {
     modifies_table.InsertModifiesP(kProcIndex2, kVarIndex1);
     ProcVarPairList result4 = modifies_table.GetAllModifiesPairP();
     Assert::IsTrue(result4.size() == 2);
-    Assert::AreEqual(kProcIndex2, result4.front().first);
+    Assert::AreEqual(kProcIndex1, result4.front().first);
     Assert::AreEqual(kVarIndex1, result4.front().second);
-    Assert::AreEqual(kProcIndex1, result4.back().first);
+    Assert::AreEqual(kProcIndex2, result4.back().first);
     Assert::AreEqual(kVarIndex1, result4.back().second);
   }
 };

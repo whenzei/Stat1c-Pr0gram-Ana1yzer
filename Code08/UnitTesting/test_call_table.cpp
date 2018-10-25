@@ -9,9 +9,19 @@ namespace PKBTests {
     const ProcIndex kProcIndex1 = 1;
     const ProcIndex kProcIndex2 = 2;
     const ProcIndex kProcIndex3 = 3;
+    const ProcIndex kProcIndex4 = 4;
     const StmtNum kStmtNum1 = 1;
     const StmtNum kStmtNum2 = 4;
     const StmtNum kStmtNum3 = 893;
+
+    ProcList proc_list_;
+
+    void setUp() {
+      proc_list_.InsertProcName("one");
+      proc_list_.InsertProcName("two");
+      proc_list_.InsertProcName("three");
+      proc_list_.InsertProcName("four");
+    }
 
     TEST_METHOD(TestInsertDirectCallRelationship) {
       CallTable call_table;
@@ -55,7 +65,7 @@ namespace PKBTests {
     TEST_METHOD(TestGetCallee) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-      ProcNameList direct_callee_list;
+      ProcIndexList direct_callee_list;
       direct_callee_list = call_table.GetCallee(kProcIndex2);
       Assert::IsTrue(direct_callee_list.size() == 0);
       direct_callee_list = call_table.GetCallee(kProcIndex1);
@@ -71,7 +81,7 @@ namespace PKBTests {
     TEST_METHOD(TestGetCalleeT) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-      ProcNameList callee_list;
+      ProcIndexList callee_list;
       callee_list = call_table.GetCalleeT(kProcIndex2);
       Assert::IsTrue(callee_list.size() == 0);
       callee_list = call_table.GetCalleeT(kProcIndex1);
@@ -87,7 +97,7 @@ namespace PKBTests {
     TEST_METHOD(TestGetCaller) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-      ProcNameList direct_caller_list;
+      ProcIndexList direct_caller_list;
       direct_caller_list = call_table.GetCaller(kProcIndex1);
       Assert::IsTrue(direct_caller_list.size() == 0);
       direct_caller_list = call_table.GetCaller(kProcIndex2);
@@ -103,7 +113,7 @@ namespace PKBTests {
     TEST_METHOD(TestGetCallerT) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-      ProcNameList caller_list;
+      ProcIndexList caller_list;
       caller_list = call_table.GetCallerT(kProcIndex1);
       //Assert::IsTrue(caller_list.size() == 0);
       caller_list = call_table.GetCallerT(kProcIndex2);
@@ -119,11 +129,11 @@ namespace PKBTests {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
       call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
-      call_table.InsertDirectCallRelationship(kProcIndex3, kProcName4);
-      ProcNameList caller_list;
+      call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
+      ProcIndexList caller_list;
       caller_list = call_table.GetAllCaller();
       Assert::IsTrue(caller_list.size() == 3);
-      ProcNameList::iterator iter = caller_list.begin();
+      ProcIndexList::iterator iter = caller_list.begin();
       Assert::AreEqual(kProcIndex1, *iter);
       iter++;
       Assert::AreEqual(kProcIndex2, *iter);
@@ -135,24 +145,24 @@ namespace PKBTests {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
       call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
-      call_table.InsertDirectCallRelationship(kProcIndex3, kProcName4);
-      ProcNameList callee_list;
+      call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
+      ProcIndexList callee_list;
       callee_list = call_table.GetAllCallee();
       Assert::IsTrue(callee_list.size() == 3);
-      ProcNameList::iterator iter = callee_list.begin();
+      ProcIndexList::iterator iter = callee_list.begin();
       Assert::AreEqual(kProcIndex2, *iter);
       iter++;
       Assert::AreEqual(kProcIndex3, *iter);
       iter++;
-      Assert::AreEqual(kProcName4, *iter);
+      Assert::AreEqual(kProcIndex4, *iter);
     }
 
 	TEST_METHOD(TestGetAllCalleeTwin) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
       call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
-      call_table.InsertDirectCallRelationship(kProcIndex3, kProcName4);
-      ProcNamePairList callee_list;
+      call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
+      ProcIndexPairList callee_list;
       callee_list = call_table.GetAllCalleeTwin();
       Assert::IsTrue(callee_list.size() == 3);
       ProcNamePairList::iterator iter = callee_list.begin();
@@ -162,21 +172,21 @@ namespace PKBTests {
       Assert::AreEqual(kProcIndex3, (*iter).first);
       Assert::AreEqual(kProcIndex3, (*iter).second);
       iter++;
-      Assert::AreEqual(kProcName4, (*iter).first);
-      Assert::AreEqual(kProcName4, (*iter).second);
+      Assert::AreEqual(kProcIndex4, (*iter).first);
+      Assert::AreEqual(kProcIndex4, (*iter).second);
     }
 
     TEST_METHOD(TestGetCallPairs) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
       call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
-      call_table.InsertDirectCallRelationship(kProcIndex3, kProcName4);
+      call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
       call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex3);
-      call_table.InsertIndirectCallRelationship(kProcIndex1, kProcName4);
-      call_table.InsertIndirectCallRelationship(kProcIndex2, kProcName4);
-      ProcNamePairList pair_list = call_table.GetAllCallPairs();
+      call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex4);
+      call_table.InsertIndirectCallRelationship(kProcIndex2, kProcIndex4);
+      ProcIndexPairList pair_list = call_table.GetAllCallPairs();
       Assert::IsTrue(pair_list.size() == 3);
-      ProcNamePairList::iterator iter = pair_list.begin();
+      ProcIndexPairList::iterator iter = pair_list.begin();
       Assert::AreEqual(kProcIndex1, (*iter).first);
       Assert::AreEqual(kProcIndex2, (*iter).second);
       iter++;
@@ -184,17 +194,17 @@ namespace PKBTests {
       Assert::AreEqual(kProcIndex3, (*iter).second);
       iter++;
       Assert::AreEqual(kProcIndex3, (*iter).first);
-      Assert::AreEqual(kProcName4, (*iter).second);
+      Assert::AreEqual(kProcIndex4, (*iter).second);
     }
 
     TEST_METHOD(TestGetAllCallTPairs) {
       CallTable call_table;
       call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
       call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
-      call_table.InsertDirectCallRelationship(kProcIndex3, kProcName4);
+      call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
       call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex3);
-      call_table.InsertIndirectCallRelationship(kProcIndex1, kProcName4);
-      call_table.InsertIndirectCallRelationship(kProcIndex2, kProcName4);
+      call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex4);
+      call_table.InsertIndirectCallRelationship(kProcIndex2, kProcIndex4);
       ProcNamePairList pair_list = call_table.GetAllCallTPairs();
       Assert::IsTrue(pair_list.size() == 6);
       ProcNamePairList::iterator iter = pair_list.begin();
@@ -205,16 +215,16 @@ namespace PKBTests {
       Assert::AreEqual(kProcIndex3, (*iter).second);
       iter++;
       Assert::AreEqual(kProcIndex1, (*iter).first);
-      Assert::AreEqual(kProcName4, (*iter).second);
+      Assert::AreEqual(kProcIndex4, (*iter).second);
       iter++;
       Assert::AreEqual(kProcIndex2, (*iter).first);
       Assert::AreEqual(kProcIndex3, (*iter).second);
       iter++;
       Assert::AreEqual(kProcIndex2, (*iter).first);
-      Assert::AreEqual(kProcName4, (*iter).second);
+      Assert::AreEqual(kProcIndex4, (*iter).second);
       iter++;
       Assert::AreEqual(kProcIndex3, (*iter).first);
-      Assert::AreEqual(kProcName4, (*iter).second);
+      Assert::AreEqual(kProcIndex4, (*iter).second);
     }
 
     TEST_METHOD(TestIsCall) {
