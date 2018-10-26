@@ -13,8 +13,8 @@ using std::unordered_set;
 using std::vector;
 
 using ConstValue = int;
-using ConstValueList = vector<string>;
-using ConstValuePairList = vector<pair<string, string>>;
+using ConstValueList = vector<int>;
+using ConstValuePairList = vector<pair<int, int>>;
 using ConstValueSet = unordered_set<int>;
 
 // The constant list class for the PKB component
@@ -31,8 +31,8 @@ class ConstList {
   // Returns a list of all constant values in pairs (in each pair, the const value is repeated)
   ConstValuePairList GetAllConstValueTwin();
 
-  // Convert const_value from int to string (because output needs to be in the
-  // format vector<string>) and insert into the ConstList
+  // Inserts constant value into the ConstList.
+  // Duplicate values will be ignored.
   void InsertConstValue(ConstValue const_value);
 
   // Checks and returns whether the given value is a value in the const table.

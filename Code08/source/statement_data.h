@@ -6,12 +6,14 @@
 #include "pkb.h"
 #include "tokenizer.h"
 
+using StmtNum = int;
+
 class StatementData {
  public:
-  string stmt_num_;
-  int stmt_num_int_;
+  StmtNum stmt_num_;
+  StmtNum stmt_num_int_;
   int stmt_list_index_;
-  string GetStmtNum();
+  StmtNum GetStmtNum();
   int GetStmtListIndex();
 };
 

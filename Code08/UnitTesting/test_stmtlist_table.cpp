@@ -7,9 +7,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PKBTests {
 
 TEST_CLASS(TestStmtListTable) {
-  const StmtNum kStmtNum1 = "1";
-  const StmtNum kStmtNum2 = "2";
-  const StmtNum kStmtNum3 = "3";
+  const StmtNum kStmtNum1 = 1;
+  const StmtNum kStmtNum2 = 2;
+  const StmtNum kStmtNum3 = 3;
   const StmtListIndex kStmtListIndex1 = 0;
   const StmtListIndex kStmtListIndex2 = 1;
   const StmtListIndex kStmtListIndex3 = 1;

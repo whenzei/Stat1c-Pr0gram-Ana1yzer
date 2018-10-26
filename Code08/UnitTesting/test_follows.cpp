@@ -7,11 +7,11 @@ using std::next;
 
 namespace PKBTests {
   TEST_CLASS(TestFollowsTable) {
-    const StmtNum kSampleStmtIdx1 = "1";
-    const StmtNum kSampleStmtIdx2 = "2";
-    const StmtNum kSampleStmtIdx3 = "3";
-    const StmtNum kSampleStmtIdx4 = "4";
-    const StmtNum kSampleStmtIdx5 = "5";
+    const StmtNum kSampleStmtIdx1 = 1;
+    const StmtNum kSampleStmtIdx2 = 2;
+    const StmtNum kSampleStmtIdx3 = 3;
+    const StmtNum kSampleStmtIdx4 = 4;
+    const StmtNum kSampleStmtIdx5 = 5;
 
     TEST_METHOD(TestIsFollowsT) {
       FollowsTable follows_table;

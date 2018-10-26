@@ -14,10 +14,10 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
-using ResultTable = vector<vector<string>>;
-using ResultRow = vector<string>;
-using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, string>>;
+using ResultTable = vector<vector<int>>;
+using ResultRow = vector<int>;
+using QueryResultList = vector<int>;
+using QueryResultPairList = vector<pair<int, int>>;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -33,9 +33,9 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestInitTable) {
     PqlResult pql_result;
 
-    test_result_list.push_back("1");
-    test_result_list.push_back("2");
-    test_result_list.push_back("3");
+    test_result_list.push_back(1);
+    test_result_list.push_back(2);
+    test_result_list.push_back(3);
 
     pql_result.InitTable(test_result_list, "a");
 
@@ -54,8 +54,8 @@ TEST_CLASS(TestPqlResult) {
 
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
 
-    string expected_result1 = "1";
-    string expected_result3 = "3";
+    int expected_result1 = 1;
+    int expected_result3 = 3;
 
     // First row should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -66,9 +66,9 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestInitPairTable) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
@@ -89,33 +89,33 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    string expected_result1 = "1";
-    string expected_result3 = "3";
-    string expected_resulta = "a";
-    string expected_resultc = "c";
+    int expected_result1 = 1;
+    int expected_result3 = 3;
+    int expected_resulta = 7;
+    int expected_resultc = 9;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
+    // First row sec col should contain "7"
     Assert::AreEqual(expected_resulta, result_table[0][1]);
     // Last row first col should contain "3"
     Assert::AreEqual(expected_result3, result_table[2][0]);
-    // Last row sec col should contain "c"
+    // Last row sec col should contain "9"
     Assert::AreEqual(expected_resultc, result_table[2][1]);
   }
 
   TEST_METHOD(TestMergeTableNoConflict) {
     PqlResult pql_result;
 
-    test_result_list.push_back("1");
-    test_result_list.push_back("2");
-    test_result_list.push_back("3");
+    test_result_list.push_back(1);
+    test_result_list.push_back(2);
+    test_result_list.push_back(3);
 
     pql_result.InitTable(test_result_list, "a");
 
-    test_merge_list.push_back("a");
-    test_merge_list.push_back("b");
-    test_merge_list.push_back("c");
+    test_merge_list.push_back(7);
+    test_merge_list.push_back(8);
+    test_merge_list.push_back(9);
 
     pql_result.MergeResults(test_merge_list, kNoConflict, -1, "b");
 
@@ -136,11 +136,11 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    string expected_result1 = "1";
-    string expected_result3 = "3";
-    string expected_resulta = "a";
-    string expected_resultb = "b";
-    string expected_resultc = "c";
+    int expected_result1 = 1;
+    int expected_result3 = 3;
+    int expected_resulta = 7;
+    int expected_resultb = 8;
+    int expected_resultc = 9;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -159,15 +159,15 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableNoConflictPair) {
     PqlResult pql_result;
 
-    test_result_list.push_back("1");
-    test_result_list.push_back("2");
-    test_result_list.push_back("3");
+    test_result_list.push_back(1);
+    test_result_list.push_back(2);
+    test_result_list.push_back(3);
 
     pql_result.InitTable(test_result_list, "a");
 
-    test_mergepair_list.push_back(std::make_pair("a", "4"));
-    test_mergepair_list.push_back(std::make_pair("b", "5"));
-    test_mergepair_list.push_back(std::make_pair("c", "6"));
+    test_mergepair_list.push_back(std::make_pair(7, 4));
+    test_mergepair_list.push_back(std::make_pair(8, 5));
+    test_mergepair_list.push_back(std::make_pair(9, 6));
 
     pql_result.MergeResults(test_mergepair_list, kNoConflict, -1, -1, "c", "b");
 
@@ -190,14 +190,14 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    string expected_result1 = "1";
-    string expected_result3 = "3";
-    string expected_result4 = "4";
-    string expected_result5 = "5";
-    string expected_result6 = "6";
-    string expected_resulta = "a";
-    string expected_resultb = "b";
-    string expected_resultc = "c";
+    int expected_result1 = 1;
+    int expected_result3 = 3;
+    int expected_result4 = 4;
+    int expected_result5 = 5;
+    int expected_result6 = 6;
+    int expected_resulta = 7;
+    int expected_resultb = 8;
+    int expected_resultc = 9;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -222,16 +222,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithConflict) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_merge_list.push_back("1");
-    test_merge_list.push_back("5");
+    test_merge_list.push_back(1);
+    test_merge_list.push_back(5);
 
     // Conflict with column 0
     pql_result.MergeResults(test_merge_list, kConflict, 0, "a");
@@ -253,10 +253,10 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    string expected_result1 = "1";
-    string expected_result5 = "5";
-    string expected_resulta = "a";
-    string expected_resulte = "e";
+    int expected_result1 = 1;
+    int expected_result5 = 5;
+    int expected_resulta = 7;
+    int expected_resulte = 11;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -271,16 +271,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictLeftPair) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("1", "x"));
-    test_mergepair_list.push_back(std::make_pair("5", "y"));
+    test_mergepair_list.push_back(std::make_pair(1, 21));
+    test_mergepair_list.push_back(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
@@ -305,12 +305,12 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    string expected_result1 = "1";
-    string expected_result5 = "5";
-    string expected_resulta = "a";
-    string expected_resulte = "e";
-    string expected_resultx = "x";
-    string expected_resulty = "y";
+    int expected_result1 = 1;
+    int expected_result5 = 5;
+    int expected_resulta = 7;
+    int expected_resulte = 11;
+    int expected_resultx = 21;
+    int expected_resulty = 22;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -329,18 +329,18 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictLeftPairNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("8", "x"));
-    test_mergepair_list.push_back(std::make_pair("9", "y"));
-    test_mergepair_list.push_back(std::make_pair("9", "y"));
-    test_mergepair_list.push_back(std::make_pair("10", "l"));
+    test_mergepair_list.push_back(std::make_pair(8, 21));
+    test_mergepair_list.push_back(std::make_pair(9, 22));
+    test_mergepair_list.push_back(std::make_pair(9, 22));
+    test_mergepair_list.push_back(std::make_pair(10, 23));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
@@ -358,16 +358,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictRightPair) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("s", "b"));
-    test_mergepair_list.push_back(std::make_pair("p", "c"));
+    test_mergepair_list.push_back(std::make_pair(31, 8));
+    test_mergepair_list.push_back(std::make_pair(32, 9));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
@@ -392,12 +392,12 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    string expected_result2 = "2";
-    string expected_result3 = "3";
-    string expected_resultb = "b";
-    string expected_resultc = "c";
-    string expected_results = "s";
-    string expected_resultp = "p";
+    int expected_result2 = 2;
+    int expected_result3 = 3;
+    int expected_resultb = 8;
+    int expected_resultc = 9;
+    int expected_results = 31;
+    int expected_resultp = 32;
 
     // First row first col should contain "2"
     Assert::AreEqual(expected_result2, result_table[0][0]);
@@ -416,18 +416,18 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictRightPairNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("s", "y"));
-    test_mergepair_list.push_back(std::make_pair("p", "z"));
-    test_mergepair_list.push_back(std::make_pair("s", "y"));
-    test_mergepair_list.push_back(std::make_pair("p", "i"));
+    test_mergepair_list.push_back(std::make_pair(31, 21));
+    test_mergepair_list.push_back(std::make_pair(32, 22));
+    test_mergepair_list.push_back(std::make_pair(31, 23));
+    test_mergepair_list.push_back(std::make_pair(32, 24));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
@@ -445,16 +445,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithTwoConflict) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("d", "4"));
-    test_mergepair_list.push_back(std::make_pair("b", "2"));
+    test_mergepair_list.push_back(std::make_pair(10, 4));
+    test_mergepair_list.push_back(std::make_pair(8, 2));
 
     // Conflict with column 0 & 1
     pql_result.MergeResults(test_mergepair_list, kTwoConflict, 1, 0, "b", "a");
@@ -476,10 +476,10 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    string expected_result2 = "2";
-    string expected_result4 = "4";
-    string expected_resultb = "b";
-    string expected_resultd = "d";
+    int expected_result2 = 2;
+    int expected_result4 = 4;
+    int expected_resultb = 8;
+    int expected_resultd = 10;
 
     // First row first col should contain "2"
     Assert::AreEqual(expected_result2, result_table[0][0]);
@@ -494,23 +494,23 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestTwoMerge) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("1", "x"));
-    test_mergepair_list.push_back(std::make_pair("5", "y"));
+    test_mergepair_list.push_back(std::make_pair(1, 21));
+    test_mergepair_list.push_back(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
                             "c");
 
-    test_mergepair_list2.push_back(std::make_pair("8", "x"));
-    test_mergepair_list2.push_back(std::make_pair("9", "z"));
+    test_mergepair_list2.push_back(std::make_pair(8, 21));
+    test_mergepair_list2.push_back(std::make_pair(9, 23));
 
     // Conflict with column 2
     pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
@@ -537,10 +537,10 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
     Assert::AreEqual(expected_headerd, col_header.find("d")->second);
 
-    string expected_result1 = "1";
-    string expected_result8 = "8";
-    string expected_resulta = "a";
-    string expected_resultx = "x";
+    int expected_result1 = 1;
+    int expected_result8 = 8;
+    int expected_resulta = 7;
+    int expected_resultx = 21;
 
     // First row first col should contain "1"
     Assert::AreEqual(expected_result1, result_table[0][0]);
@@ -555,33 +555,33 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestTwoMergeNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair("1", "a"));
-    test_resultpair_list.push_back(std::make_pair("2", "b"));
-    test_resultpair_list.push_back(std::make_pair("3", "c"));
-    test_resultpair_list.push_back(std::make_pair("4", "d"));
-    test_resultpair_list.push_back(std::make_pair("5", "e"));
+    test_resultpair_list.push_back(std::make_pair(1, 7));
+    test_resultpair_list.push_back(std::make_pair(2, 8));
+    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.push_back(std::make_pair(4, 10));
+    test_resultpair_list.push_back(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair("1", "x"));
-    test_mergepair_list.push_back(std::make_pair("5", "y"));
+    test_mergepair_list.push_back(std::make_pair(1, 21));
+    test_mergepair_list.push_back(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
                             "c");
 
-    test_mergepair_list2.push_back(std::make_pair("8", "x"));
-    test_mergepair_list2.push_back(std::make_pair("9", "z"));
+    test_mergepair_list2.push_back(std::make_pair(8, 21));
+    test_mergepair_list2.push_back(std::make_pair(9, 23));
 
     // Conflict with column 2
     pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
                             "c");
 
     // This final constraint 1 b does not match the table with 1 a
-    test_mergepair_list3.push_back(std::make_pair("1", "b"));
-    test_mergepair_list3.push_back(std::make_pair("2", "a"));
-    test_mergepair_list3.push_back(std::make_pair("1", "b"));
-    test_mergepair_list3.push_back(std::make_pair("3", "c"));
+    test_mergepair_list3.push_back(std::make_pair(1, 8));
+    test_mergepair_list3.push_back(std::make_pair(2, 7));
+    test_mergepair_list3.push_back(std::make_pair(1, 8));
+    test_mergepair_list3.push_back(std::make_pair(3, 9));
 
     // Conflict with column 0, 1
     pql_result.MergeResults(test_mergepair_list3, kTwoConflict, 0, 1, "a", "b");
@@ -595,4 +595,5 @@ TEST_CLASS(TestPqlResult) {
     Assert::IsTrue(pql_result.GetColumnCount() == 0);
   }
 };
+
 }  // namespace PQLTests

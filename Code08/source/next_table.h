@@ -8,6 +8,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "graph.h"
+
 using std::pair;
 using std::string;
 using std::to_string;
@@ -15,31 +17,33 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using StmtNumInt = int;
-using StmtNum = string;
+using StmtNum = int;
 using ProcName = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
-using StmtNumPairList = vector<pair<string, string>>;
-using CFG = unordered_map<string, vector<string>>;
-using CFGTable = unordered_map<string, pair<CFG, CFG>>;
+using StmtNumList = vector<int>;
+using StmtNumSet = unordered_set<int>;
+using StmtNumPairList = vector<pair<int, int>>;
+using CFG = Graph;
+using CFGTable = unordered_map<string, CFG>;
 
 // The next table class for the PKB component
 // Used to store next relationships between stmts that are passed into PKB
 // from the parser
 class NextTable {
   CFG combined_cfg_;
-  CFG combined_reverse_cfg_;
+  CFG reversed_combined_cfg_;
   CFGTable cfg_table_;
+  CFGTable reversed_cfg_table_;
   StmtNumList previous_list_;
   StmtNumSet previous_set_;
   StmtNumList next_list_;
   StmtNumSet next_set_;
+  StmtNumPairList next_pair_list_;
 
  public:
   void InsertCFG(ProcName proc_name);
 
-  void InsertNext(ProcName proc_name, StmtNumInt previous_stmt_int, StmtNumInt next_stmt_int);
+  void InsertNext(ProcName proc_name, StmtNum previous_stmt_int,
+                  StmtNum next_stmt_int);
 
   CFG* GetCFG(ProcName proc_name);
 
@@ -58,6 +62,10 @@ class NextTable {
   StmtNumList GetAllPrevious();
 
   StmtNumPairList GetAllNextPairs();
+
+  CFG* GetCombinedCFG();
+
+  void SetAllNextPairs(StmtNumPairList next_pair_list);
 
   bool HasNextRelationship();
 };

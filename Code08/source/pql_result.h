@@ -16,12 +16,12 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
-using MergeMap = unordered_map<string, vector<string>>;
+using MergeMap = unordered_map<int, vector<int>>;
 using MergeSet = unordered_set<string>;
-using ResultTable = vector<vector<string>>;
-using ResultRow = vector<string>;
-using QueryResultList = vector<string>;
-using QueryResultPairList = vector<pair<string, string>>;
+using ResultTable = vector<vector<int>>;
+using ResultRow = vector<int>;
+using QueryResultList = vector<int>;
+using QueryResultPairList = vector<pair<int, int>>;
 
 /*
 This class stores the PQL result as a table
@@ -60,7 +60,7 @@ class PqlResult {
   void ClearColumnHeader();
   void SetResultTable(ResultTable);
   void SetColumnCount(int);
-  void AddMergeMap(string key, string value);
+  void AddMergeMap(int key, int value);
   void AddMergeSet(string key);
   void ClearMergeMap();
   void ClearMergeSet();

@@ -15,12 +15,12 @@ using std::string;
 using std::pair; 
 using std::vector;
 
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
+using StmtNum = int;
+using StmtNumList = vector<int>;
+using StmtNumSet = unordered_set<int>;
 using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
-using FollowsMap = unordered_map<string, vector<string>>;
-using FollowedByMap = unordered_map<string, vector<string>>;
+using FollowsMap = unordered_map<int, vector<int>>;
+using FollowedByMap = unordered_map<int, vector<int>>;
 
 // The follows table class for the PKB component
 // Used to store follows relationships between stmts that are passed into PKB
