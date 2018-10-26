@@ -41,6 +41,9 @@
     <ClCompile Include="test_const_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_dominates_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="test_parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
