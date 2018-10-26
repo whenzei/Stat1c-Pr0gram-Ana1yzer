@@ -12,6 +12,7 @@ class DesignExtractor {
   void UpdateParentT();
   void UpdateUsesAndModifiesWithCallGraph();
   void UpdateCallT();
+  void PopulateDominates();
 
   //******** Helper Methods **************
 
