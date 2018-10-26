@@ -75,8 +75,8 @@ class Parser {
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
-  void PopulatePkbFollows(StmtNumIntList stmt_nums);
-  void PopulatePkbParent(int stmt, StmtNumIntList stmt_nums);
+  void PopulatePkbFollows(StmtNumList stmt_nums);
+  void PopulatePkbParent(int stmt, StmtNumList stmt_nums);
   void PopulatePkbUses(int stmt_num, VarNameSet used_vars);
   void PopulatePkbUses(ProcName proc_name, VarNameSet used_vars);
   void PopulatePkbUses(int stmt_num, VarName used_var);

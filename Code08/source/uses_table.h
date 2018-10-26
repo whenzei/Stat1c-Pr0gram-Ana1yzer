@@ -15,27 +15,29 @@ using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
-using VarName = string;
-using VarNameList = vector<string>;
-using ProcName = string;
-using ProcNameList = vector<string>;
-using ProcNameSet = unordered_set<string>;
-using UsesMap = unordered_map<string, vector<string>>;
-using UsedByMap = unordered_map<string, vector<string>>;
-using StmtVarPairList = vector<pair<string, string>>;
-using ProcVarPairList = vector<pair<string, string>>;
+using StmtNum = int;
+using StmtNumList = vector<StmtNum>;
+using StmtNumSet = unordered_set<StmtNum>;
+using VarIndex = int;
+using VarIndexList = vector<VarIndex>;
+using ProcIndex = int;
+using ProcIndexList = vector<ProcIndex>;
+using ProcNameIndexSet = unordered_set<ProcIndex>;
+using ProcIndexSet = unordered_set<ProcIndex>;
+// int can be StmtNum or ProcIndex
+using UsesMap = unordered_map<int, vector<VarIndex>>;
+using UsedByMap = unordered_map<VarIndex, vector<int>>;
+using StmtVarIndexPairList = vector<pair<StmtNum, VarIndex>>;
+using ProcVarPairList = vector<pair<ProcIndex, VarIndex>>;
 
 // The uses table class for the PKB component
 // Used to store uses relationships between stmt/proc and variables that are
 // passed into PKB from the parser
 class UsesTable {
   StmtNumList using_stmt_list_;
-  ProcNameList using_proc_list_;
+  ProcIndexList using_proc_list_;
   StmtNumSet using_stmt_set_;
-  ProcNameSet using_proc_set_;
+  ProcIndexSet using_proc_set_;
   UsesMap uses_s_map_;
   UsedByMap used_by_s_map_;
   UsesMap uses_p_map_;
@@ -44,40 +46,40 @@ class UsesTable {
  public:
   // Inserts a uses relationship between stmt_num and var_name in the
   // uses_s_map_ and used_by_s_map_
-  void InsertUsesS(StmtNum stmt_num, VarName var_name);
+  void InsertUsesS(StmtNum stmt_num, VarIndex var_name_id);
 
   // Inserts a uses relationship between proc_name and var_name in the
   // uses_p_map_ and used_by_p_map_
-  void InsertUsesP(ProcName proc_name, VarName var_name);
+  void InsertUsesP(ProcIndex proc_name_id, VarIndex var_name_id);
 
   // @returns a list of variables used in statement identified by stmt_num
   // (can be empty)
-  VarNameList GetUsedVarS(StmtNum stmt_num);
+  VarIndexList GetUsedVarS(StmtNum stmt_num);
 
   // @returns a list of variables used in procedure identified by proc_name
   // (can be empty)
-  VarNameList GetUsedVarP(ProcName proc_name);
+  VarIndexList GetUsedVarP(ProcIndex proc_name_id);
 
   // @returns a list of statements that use some variable (can be empty)
   StmtNumList GetAllUsingStmt();
 
   // @returns a list of procedures that use some variable (can be empty)
-  ProcNameList GetAllUsingProc();
+  ProcIndexList GetAllUsingProc();
 
   // @returns a list of statements that use var_name (can be empty)
-  StmtNumList GetUsingStmt(VarName var_name);
+  StmtNumList GetUsingStmt(VarIndex var_name_id);
 
   // @returns a list of procedures that use var_name (can be empty)
-  ProcNameList GetUsingProc(VarName var_name);
+  ProcIndexList GetUsingProc(VarIndex var_name_id);
 
   // @returns true if var_name is used in statement with stmt_num
-  bool IsUsedByS(StmtNum stmt_num, VarName var_name);
+  bool IsUsedByS(StmtNum stmt_num, VarIndex var_name_id);
 
   // @returns true if var_name is used in procedure with proc_name
-  bool IsUsedByP(ProcName proc_name, VarName var_name);
+  bool IsUsedByP(ProcIndex proc_name_id, VarIndex var_name_id);
 
   // @returns a list of all <stmt_num, var_name> uses_pairs (can be empty)
-  StmtVarPairList GetAllUsesSPair();
+  StmtVarIndexPairList GetAllUsesSPair();
 
   // @returns a list of all <proc_name, var_name> uses_pairs (can be empty)
   ProcVarPairList GetAllUsesPPair();

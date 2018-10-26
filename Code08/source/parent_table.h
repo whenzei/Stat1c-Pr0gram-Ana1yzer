@@ -15,17 +15,16 @@ using std::unordered_set;
 using std::vector;
 using std::pair;
 
-// StmtNum is defined as a string inside PKB, because query results have to be
-// in the format list<string>. For consistency, all StmtNum inside PKB is string
-// so that it is easier to search and update the PKB data structures.
-using StmtNum = string;
-using StmtNumList = vector<string>;
-using StmtNumSet = unordered_set<string>;
-using ParentsMap = unordered_map<string, vector<string>>;
-using DirectParentMap = unordered_map<string, string>;
-using ChildrenMap = unordered_map<string, vector<string>>;
-using DirectChildrenMap = unordered_map<string, vector<string>>;
-using StmtNumPairList = vector<pair<string, string>>;
+// StmtNum is defined as a integers inside the PKB,
+// for faster processing and retrieval.
+using StmtNum = int;
+using StmtNumList = vector<int>;
+using StmtNumSet = unordered_set<int>;
+using ParentsMap = unordered_map<int, vector<int>>;
+using DirectParentMap = unordered_map<int, int>;
+using ChildrenMap = unordered_map<int, vector<int>>;
+using DirectChildrenMap = unordered_map<int, vector<int>>;
+using StmtNumPairList = vector<pair<int, int>>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships

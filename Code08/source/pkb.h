@@ -30,7 +30,6 @@ class StatementData;
 // statement_data.h must be at the end due to forward declaration
 #include "statement_data.h"
 
-using StmtNumInt = int;
 using CallGraph = Graph;
 
 class PKB {
@@ -49,6 +48,14 @@ class PKB {
   CallGraph call_graph_;
   CallTable call_table_;
 
+ private:
+  bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
+  void HandleInsertVariables(VarName variable, VarNameSet var_set);
+  void HandleInsertVariables(VarNameSet var_set);
+  void HandleInsertVariable(VarName variable);
+  void HandleInsertConstants(ConstValueSet constants);
+  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
+
  public:
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
@@ -56,17 +63,48 @@ class PKB {
 
   // get all procedure names stored inside procedure list
   // @returns the list of procedure names (can be empty)
-  ProcNameList GetAllProcName();
+  ProcNameList GetAllProcNames();
 
-  // @returns the list of <p, p> (same p repeated twice)
+  // get all procedure indices stored inside procedure list
+  // @returns the list of procedure indices (can be empty)
+  ProcIndexList GetAllProcIndices();
+
+  // @returns the list of <p_id, p_id> (same proc index repeated twice)
+  ProcIndexPairList GetAllProcIndexTwin();
+
+  // @returns the list of <p_name, p_name> (same proc name repeated twice)
   ProcNamePairList GetAllProcNameTwin();
 
-  // get all variable names stored inside variable list
-  // @returns the list of variable names (can be empty)
-  VarNameList GetAllVarName();
+  // @return the procedure name-index map
+  ProcIndexMap GetProcToIndexMapping();
+
+  // @return the index-procedure name map
+  IndexProcMap GetIndexToProcMapping();
+
+  // @returns the corresponding procedure name
+  ProcName GetProcName(ProcIndex index);
+
+  // @returns the corresponding procedure name index
+  ProcIndex GetProcIndex(ProcName proc_name);
+
+  // get all variable indices stored inside variable list
+  // @returns the list of variable indices (can be empty)
+  VarIndexList GetAllVarIndices();
 
   // @returns the list of <v, v> (same v repeated twice)
-  VarNamePairList GetAllVarNameTwin();
+  VarIndexPairList GetAllVarIndexTwin();
+
+  // @return the variable name-index map
+  VarIndexMap GetVarToIndexMapping();
+
+  // @return the index-variable name map
+  IndexVarMap GetIndexToVarMapping();
+
+  // @returns the corresponding var name
+  VarName GetVarName(VarIndex index);
+
+  // @returns the corresponding var name index
+  VarIndex GetVarIndex(VarName var_name);
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
@@ -88,7 +126,7 @@ class PKB {
                              ProcName called_proc_name);
 
   // @returns toposorted order of procedure calls in a ProcNameList
-  ProcNameList GetToposortedCalls();
+  vector<int> GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -130,14 +168,22 @@ class PKB {
   // Inserts a modifies relationship between modifying_stmt and modified_var
   void InsertModifiesS(StmtNum modifying_stmt, VarName modified_var);
 
+  void InsertModifiesS(StmtNum modifying_stmt, VarIndex modified_var_id);
+
   // Inserts a modifies relationship between modifying_proc and modified_var
   void InsertModifiesP(ProcName modifying_proc, VarName modified_var);
+
+  void InsertModifiesP(ProcIndex modifying_proc_id, VarIndex modified_var_id);
 
   // Inserts a uses relationship between using_stmt and used_var
   void InsertUsesS(StmtNum using_stmt, VarName used_var);
 
+  void InsertUsesS(StmtNum using_stmt, VarIndex used_var_id);
+
   // Inserts a uses relationship between using_proc and used_var
   void InsertUsesP(ProcName using_proc, VarName used_var);
+
+  void InsertUsesP(ProcIndex using_proc_id, VarIndex used_var_id);
 
   // Inserts a direct parent relationship between parent_stmt_num and
   // child_stmt_num
@@ -148,7 +194,9 @@ class PKB {
   void InsertParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // Inserts a next relationship between previous_stmt and next_stmt
-  void InsertNext(ProcName proc_name, StmtNumInt previous_stmt, StmtNumInt next_stmt);
+  void InsertNext(ProcName proc_name, StmtNum previous_stmt, StmtNum next_stmt);
+
+  void SetAllNextPairs(StmtNumPairList next_pair_list);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -201,9 +249,12 @@ class PKB {
   StmtNumPairList GetAllCallStmtTwin();
 
   /***********************
- * Is-A Functions *
- ***********************/
-  // @returns true if var_name is a variable in the variable list
+   * Is-A Functions *
+   ***********************/
+  // @returns true if var_id is a variable in the variable list
+  bool IsVarIndex(VarIndex var_id);
+
+  // @returns true if var_id is a variable in the variable list
   bool IsVarName(VarName var_name);
 
   // @returns true if stmt_num is a statement in the statement list
@@ -211,6 +262,9 @@ class PKB {
 
   // @returns true if proc_name is a procedure in the procedure list
   bool IsProcName(ProcName proc_name);
+
+  // @returns true if proc_id is a procedure in the procedure list
+  bool IsProcIndex(ProcIndex proc_id);
 
   // @returns true if const_value is a constant in the constant list
   bool IsConstValue(ConstValue const_value);
@@ -319,28 +373,33 @@ class PKB {
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
   // @returns a list of all n's that satisfy Modifies(stmt_num, n)
-  VarNameList GetModifiedVarS(StmtNum stmt_num);
+  VarIndexList GetModifiedVarS(StmtNum stmt_num);
 
+  // @params proc_name the name of the procedure to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Modifies(proc_name, n)
-  VarNameList GetModifiedVarP(ProcName proc_name);
+  VarIndexList GetModifiedVarP(ProcName proc_name);
+
+  // @params proc_id the id of the proc_name to check Uses(proc_name, n)
+  // @returns a list of all n's that satisfy Modifies(proc_name, n)
+  VarIndexList GetModifiedVarP(ProcIndex proc_id);
 
   // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, var_name)
   StmtNumList GetModifyingS(VarName var_name);
 
-  // @returns a list of all proc_name's that satisfy Modifies(proc_name,
-  // var_name)
-  ProcNameList GetModifyingP(VarName var_name);
+  // @returns a list of all indices of procedures that satisfy
+  // Modifies(proc_name, var_name)
+  ProcIndexList GetModifyingP(VarName var_name);
 
   // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, _)
   StmtNumList GetAllModifyingS();
 
   // @returns a list of all proc_name's that satisfy Modifies(proc_name,
   // _)
-  ProcNameList GetAllModifyingP();
+  ProcIndexList GetAllModifyingP();
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Modifies(stmt_num, var_name)
-  StmtVarPairList GetAllModifiesPairS();
+  StmtVarIndexPairList GetAllModifiesPairS();
 
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
@@ -351,22 +410,27 @@ class PKB {
    ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
-  VarNameList GetUsedVarS(StmtNum stmt_num);
+  VarIndexList GetUsedVarS(StmtNum stmt_num);
 
+  // @params proc_name the name of the procedure to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Uses(proc_name, n)
-  VarNameList GetUsedVarP(ProcName proc_name);
+  VarIndexList GetUsedVarP(ProcName proc_name);
+
+  // @params proc_id the id of the proc_name to check Uses(proc_name, n)
+  // @returns a list of all n's that satisfy Uses(proc_name, n)
+  VarIndexList GetUsedVarP(ProcIndex proc_id);
 
   // @returns a list of all stmt_num's that satisfy Uses(stmt_num, _)
   StmtNumList GetAllUsingStmt();
 
   // @returns a list of all proc_name's that satisfy Uses(proc_name, _)
-  ProcNameList GetAllUsingProc();
+  ProcIndexList GetAllUsingProc();
 
   // @returns a list of all stmt_num's that satisfy Uses(stmt_num, var_name)
   StmtNumList GetUsingStmt(VarName var_name);
 
   // @returns a list of all proc_name's that satisfy Uses(proc_name, var_name)
-  ProcNameList GetUsingProc(VarName var_name);
+  ProcIndexList GetUsingProc(VarName var_name);
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
@@ -376,7 +440,7 @@ class PKB {
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Uses(stmt_num, var_name)
-  StmtVarPairList GetAllUsesPairS();
+  StmtVarIndexPairList GetAllUsesPairS();
 
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Uses(proc_name, var_name)
@@ -423,6 +487,9 @@ class PKB {
   bool InsertIndirectCallRelationship(ProcName caller_proc,
                                       ProcName callee_proc);
 
+  bool InsertIndirectCallRelationship(ProcIndex caller_proc_id,
+                                      ProcIndex callee_proc_id);
+
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
   // @params caller procedure name and callee procedure name
@@ -433,50 +500,88 @@ class PKB {
   // @params proc name of the procedure *being called*
   void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
 
-  // Finds and returns a list of stmt numbers calling the given proc.
-  // @params proc name of the procedure being called
+  // Finds and returns a list of statement numbers calling the given proc.
+  // @params proc index of the procedure being called
   // @returns a list of stmt numbers (can be empty)
-  StmtNumList GetCallingStmts(ProcName callee_proc);
+  StmtNumList GetCallingStmts(ProcIndex callee_proc_id);
 
   // Finds and returns a list of pairs of all stmt numbers
   // and procedures called by that stmt number.
   // @returns a list of <stmt_num, proc> pairs
   StmtNumProcPairList GetAllCallingStmtPairs();
 
-  // Finds and returns all direct callees for given procedure.
-  // @returns a list containing all direct callees for given proc (can be empty)
+  // Finds and returns all indices of direct callees for given procedure.
+  // @params caller procedure index
+  // @returns a list containing all direct callees' indices for given proc (can
+  // be empty)
+  ProcIndexList GetCallee(ProcIndex caller_proc_id);
+
+  // Finds and returns all names of direct callees for given procedure.
   // @params caller procedure name
+  // @returns a list containing all direct callees' names for given proc (can be
+  // empty)
   ProcNameList GetCallee(ProcName caller_proc);
 
-  // Finds and returns all callees for given procedure.
-  // @returns a list containing all callees for given proc (can be empty)
+  // Finds and returns all indices of callees for given procedure.
+  // @params caller procedure index
+  // @returns a list containing all callees' indices for given proc (can be
+  // empty)
+  ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
+
+  // Finds and returns all indices of callees for given procedure.
   // @params caller procedure name
-  ProcNameList GetCalleeT(ProcName caller_proc);
+  // @returns a list containing all callees' indices for given proc (can be
+  // empty)
+  ProcIndexList GetCalleeT(ProcName caller_proc);
 
-  // Finds and returns all direct callers for given procedure.
-  // @returns a list containing all direct callers for given proc (can be empty)
-  // @params callee procedure name
-  ProcNameList GetCaller(ProcName callee_proc);
+  // Finds and returns all indices of direct callers for given procedure.
+  // @params callee procedure index
+  // @returns a list containing all direct callers' indices for given proc (can
+  // be empty)
+  ProcIndexList GetCaller(ProcIndex callee_proc_id);
 
-  // Finds and returns all callers for given procedure.
-  // @returns a list containing all callers for given proc (can be empty)
+  // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure name
-  ProcNameList GetCallerT(ProcName callee_proc);
+  // @returns a list containing all direct callers' indices for given proc (can
+  // be empty)
+  ProcIndexList GetCaller(ProcName callee_proc);
+
+  // Finds and returns all indices of callers for given procedure.
+  // @params callee procedure index
+  // @returns a list containing all callers' indices for given proc (can be
+  // empty)
+  ProcIndexList GetCallerT(ProcIndex callee_proc_id);
+
+  // Finds and returns all indices of callers for given procedure.
+  // @params callee procedure name
+  // @returns a list containing all callers' indices for given proc (can be
+  // empty)
+  ProcIndexList GetCallerT(ProcName callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)
-  ProcNameList GetAllCaller();
+  ProcIndexList GetAllCaller();
+
+  // Special method to retrieve all caller procs in String format.
+  // To be only used by DE when populating PKB.
+  // @returns a list of all procedures calling some other proc, in string form
+  ProcNameList GetAllCallerName();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcNameList GetAllCallee();
+  ProcIndexList GetAllCallee();
+
+  // Special method to retrieve all caller procs in String format.
+  // To be only used by DE when populating PKB.
+  // @returns a list of all procedures calling some other proc, in string form
+  ProcNameList GetAllCalleeName();
 
   // @returns all procedures being called by some other proc (in pairs)
-  ProcNamePairList GetAllCalleeTwin();
+  ProcIndexPairList GetAllCalleeTwin();
 
   // @returns a list of all <caller, direct callee> pairs
-  ProcNamePairList GetAllCallPairs();
+  ProcIndexPairList GetAllCallPairs();
 
   // @returns a list of all <caller, callee> pairs
-  ProcNamePairList GetAllCallTPairs();
+  ProcIndexPairList GetAllCallTPairs();
 
   // @returns true if Call(caller, callee) is true
   bool IsCall(ProcName caller_proc, ProcName callee_proc);
@@ -485,8 +590,8 @@ class PKB {
   bool IsCallT(ProcName caller_proc, ProcName callee_proc);
 
   // @returns true if callee is called by any other proc
-
   bool IsCalledProc(ProcName callee_proc);
+  bool IsCalledProc(ProcIndex callee_proc_id);
 
   // @returns true if Call Table has any calls relationships
   // false if otherwise
@@ -522,17 +627,12 @@ class PKB {
   // @returns the cfg belonging to a specified procedure
   CFG* GetCFG(ProcName proc_name);
 
+  // @returns the combined cfg of the program
+  CFG* GetCombinedCFG();
+
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
-
- private:
-  bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
-  void HandleInsertVariables(VarName variable, VarNameSet var_set);
-  void HandleInsertVariables(VarNameSet var_set);
-  void HandleInsertVariable(VarName variable);
-  void HandleInsertConstants(ConstValueSet constants);
-  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 };
 
 #endif  // !SPA_PKB_H

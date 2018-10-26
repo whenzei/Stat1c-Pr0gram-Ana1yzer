@@ -8,7 +8,7 @@
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
-
+/*
 namespace PkbPqlExtractorTests {
 TEST_CLASS(TestPkbPqlExtractor){
 public :
@@ -127,6 +127,7 @@ public :
          \_ ^/
           6
      */
+/*
 
      PKB dummy_pkb;
      dummy_pkb.InsertNext("one", 1, 2);
@@ -148,6 +149,7 @@ public :
         ^/          /^
         9 -> 10 -> 11
      */
+/*
 
      PKB dummy_pkb;
      dummy_pkb.InsertNext("one", 1, 2);
@@ -180,6 +182,7 @@ public :
               \_    \_
                 6     7 -> 8
      */
+/*
 
      PKB dummy_pkb;
      dummy_pkb.InsertNext("one", 1, 2);
@@ -200,3 +203,5 @@ public :
 }
 ;
 }
+
+*/

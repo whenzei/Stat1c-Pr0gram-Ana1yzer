@@ -12,13 +12,12 @@ using std::pair;
 using std::unordered_map;
 using std::vector;
 
-// StmtNum is defined as a string inside PKB, because query results have to be
-// in the format vector<string>. For consistency, all StmtNum inside PKB is string
-// so that it is easier to search and update the PKB data structures.
-using StmtNum = string;
-using StmtNumList = vector<string>;
+// StmtNum is defined as int inside the PKB,
+// for faster processing and retrieval.
+using StmtNum = int;
+using StmtNumList = vector<int>;
 using StmtListIndex = int;
-using StmtListMap = unordered_map<int, vector<string>>;
+using StmtListMap = unordered_map<int, vector<int>>;
 
 // The statement list table class for the PKB component
 // Used to store statement list indices and corresponding statement numbers
