@@ -98,7 +98,7 @@ bool Graph::HasCycle() {
 }
 
 bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
-  if (!&visited[v]) {
+  if (!(*visited)[v]) {
     (*visited)[v] = true;
 
     for (auto &node : *adj) {
