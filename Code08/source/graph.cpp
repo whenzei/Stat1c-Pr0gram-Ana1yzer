@@ -115,7 +115,7 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
   return false;
 }
 
-VertexList Graph::DFS(const Vertex &from) {
+VertexList Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
     visited[kv.first] = false;
@@ -126,7 +126,7 @@ VertexList Graph::DFS(const Vertex &from) {
   return path;
 }
 
-VertexSet Graph::GetUnreachableVertices(Vertex &v) {
+VertexSet Graph::GetUnreachableVertices(Vertex v) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
     visited[kv.first] = false;

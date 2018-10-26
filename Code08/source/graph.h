@@ -56,11 +56,11 @@ class Graph {
 
   // Performs a DFS of all vertices reachable from given vertex v
   // @returns vector of vertices in DFS
-  VertexList DFS(const Vertex& v);
+  VertexList DFS(const Vertex v);
 
   // Get all unreachable vertices when the given vertex v is removed
   // @returns set of all non-visited vertices
-  VertexSet GetUnreachableVertices(Vertex& v);
+  VertexSet GetUnreachableVertices(Vertex v);
 
   // Check for cycles in the graph
   // @returns true if cycle exists, false otherwise
