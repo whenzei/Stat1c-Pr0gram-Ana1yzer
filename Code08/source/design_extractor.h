@@ -8,7 +8,6 @@
 class DesignExtractor {
  private:
   PKB* pkb_;
-
   void UpdateParentT();
   void UpdateUsesAndModifiesWithCallGraph();
   void UpdateCallT();
@@ -39,6 +38,8 @@ class DesignExtractor {
   // Check if call graph has cyclic calls,
   // @throws SemanticException if cycle exists.
   void CheckCyclicCalls();
+
+  void PopulateAllNextPairs();
 };
 
 #endif

@@ -25,10 +25,10 @@ TEST_CLASS(TestQueryEvaluator) {
   PqlDeclarationEntity keyword_if = PqlDeclarationEntity::kIf;
   PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
   PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
-  /*
+
   TEST_METHOD(TestTupleCrossProduct) {
     PqlEvaluator qe;
-    vector<QueryResultList> test_items = {{1, 2}, {4, 5}};
+    vector<FinalResult> test_items = {{"1", "2"}, {"4", "5"}};
     FinalResult fr;
     string temp;
     qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
@@ -44,7 +44,8 @@ TEST_CLASS(TestQueryEvaluator) {
 
   TEST_METHOD(TestTupleCrossProduct2) {
     PqlEvaluator qe;
-    vector<QueryResultList> test_items = {{1, 2, 3}, {4, 5}, {7, 8, 9, 10}};
+    vector<FinalResult> test_items = {
+        {"1", "2", "3"}, {"4", "5"}, {"7", "8", "9", "10"}};
     FinalResult fr;
     string temp;
     qe.TupleCrossProduct(fr, temp, test_items.begin(), test_items.end());
@@ -57,7 +58,6 @@ TEST_CLASS(TestQueryEvaluator) {
     Assert::AreEqual(expectedstart, fr.front());
     Assert::AreEqual(expectedend, fr.back());
   }
-  */
 
   TEST_METHOD(TestTrim) {
     string smt = "abc ";

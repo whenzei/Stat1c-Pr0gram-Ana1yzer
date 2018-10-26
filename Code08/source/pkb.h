@@ -48,6 +48,14 @@ class PKB {
   CallGraph call_graph_;
   CallTable call_table_;
 
+ private:
+  bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
+  void HandleInsertVariables(VarName variable, VarNameSet var_set);
+  void HandleInsertVariables(VarNameSet var_set);
+  void HandleInsertVariable(VarName variable);
+  void HandleInsertConstants(ConstValueSet constants);
+  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
+
  public:
   // inserts the given procedure name into the procedure list
   // @param proc_name the procedure name to be inserted
@@ -187,6 +195,8 @@ class PKB {
 
   // Inserts a next relationship between previous_stmt and next_stmt
   void InsertNext(ProcName proc_name, StmtNum previous_stmt, StmtNum next_stmt);
+
+  void SetAllNextPairs(StmtNumPairList next_pair_list);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
@@ -617,17 +627,12 @@ class PKB {
   // @returns the cfg belonging to a specified procedure
   CFG* GetCFG(ProcName proc_name);
 
+  // @returns the combined cfg of the program
+  CFG* GetCombinedCFG();
+
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
-
- private:
-  bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
-  void HandleInsertVariables(VarName variable, VarNameSet var_set);
-  void HandleInsertVariables(VarNameSet var_set);
-  void HandleInsertVariable(VarName variable);
-  void HandleInsertConstants(ConstValueSet constants);
-  void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 };
 
 #endif  // !SPA_PKB_H

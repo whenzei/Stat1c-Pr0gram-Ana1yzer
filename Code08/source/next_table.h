@@ -37,6 +37,7 @@ class NextTable {
   StmtNumSet previous_set_;
   StmtNumList next_list_;
   StmtNumSet next_set_;
+  StmtNumPairList next_pair_list_;
 
  public:
   void InsertCFG(ProcName proc_name);
@@ -61,6 +62,10 @@ class NextTable {
   StmtNumList GetAllPrevious();
 
   StmtNumPairList GetAllNextPairs();
+
+  CFG* GetCombinedCFG();
+
+  void SetAllNextPairs(StmtNumPairList next_pair_list);
 
   bool HasNextRelationship();
 };

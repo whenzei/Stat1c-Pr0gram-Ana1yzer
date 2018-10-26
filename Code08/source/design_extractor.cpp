@@ -6,6 +6,7 @@
 DesignExtractor::DesignExtractor(PKB* pkb) { pkb_ = pkb; }
 
 void DesignExtractor::UpdatePkb() {
+  PopulateAllNextPairs();
   UpdateParentT();
   UpdateUsesAndModifiesWithCallGraph();
   UpdateCallT();
@@ -16,6 +17,18 @@ void DesignExtractor::CheckCyclicCalls() {
   if (pkb_->GetCallGraph()->HasCycle()) {
     throw SemanticErrorException("Cyclic call statements found, terminating.");
   }
+}
+
+void DesignExtractor::PopulateAllNextPairs() {
+  CFG* cfg = pkb_->GetCombinedCFG();
+  StmtNumPairList next_pair_list;
+  for (auto entry : cfg->GetAdjList()) {
+    int prev_stmt = entry.first;
+    for (int& next_stmt : entry.second) {
+      next_pair_list.push_back(std::make_pair(prev_stmt, next_stmt));
+    }
+  }
+  pkb_->SetAllNextPairs(next_pair_list);
 }
 
 void DesignExtractor::UpdateParentT() {

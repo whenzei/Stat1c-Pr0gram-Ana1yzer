@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "parser.h"
 #include "pkb.h"
+#include "design_extractor.h"
 
 #include <list>
 #include <string>
@@ -12,7 +13,7 @@ using tt = Tokenizer::TokenType;
 
 namespace ParserPKBTests {
 TEST_CLASS(TestParserPkb) {
-  const string he = "h";
+  const string kProcName1 = "one";
  public:
   // Include both Follows and Follows* tests
   TEST_METHOD(TestFollowsOfStatementsOnly) {
@@ -1063,6 +1064,30 @@ TEST_CLASS(TestParserPkb) {
     ProcIndexList expected_callees_2 = ProcIndexList{4, 7, 0, 1, 2, 3};
     Assert::IsTrue(callees_2.size() == 6);
     Assert::IsTrue(callees_2 == expected_callees_2);
+  }
+
+  TEST_METHOD(TestPopulateAllNextPairs) {
+    PKB test_pkb = PKB();
+    test_pkb.InsertProcName(kProcName1);
+    test_pkb.InsertNext(kProcName1, 1, 2);
+    test_pkb.InsertNext(kProcName1, 2, 3);
+    test_pkb.InsertNext(kProcName1, 2, 4);
+
+    DesignExtractor de = DesignExtractor(&test_pkb);
+
+    de.PopulateAllNextPairs();
+
+    StmtNumPairList result1 = test_pkb.GetAllNextPairs();
+    Assert::IsTrue(result1.size() == 3);
+    StmtNumPairList::iterator iter = result1.begin();
+    Assert::AreEqual(1, (*iter).first);
+    Assert::AreEqual(2, (*iter).second);
+    iter++;
+    Assert::AreEqual(2, (*iter).first);
+    Assert::AreEqual(3, (*iter).second);
+    iter++;
+    Assert::AreEqual(2, (*iter).first);
+    Assert::AreEqual(4, (*iter).second);
   }
 };
 }  // namespace ParserPKBTests

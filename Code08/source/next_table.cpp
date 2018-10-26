@@ -53,18 +53,12 @@ StmtNumList NextTable::GetAllNext() { return next_list_; }
 
 StmtNumList NextTable::GetAllPrevious() { return previous_list_; }
 
-// TODO: remove all to_strings once str to int is done
-StmtNumPairList NextTable::GetAllNextPairs() {
-  StmtNumPairList next_pair_list;
-  for (auto entry : combined_cfg_.GetAdjList()) {
-    int prev_stmt = entry.first;
-    for (int& next_stmt : entry.second) {
-      next_pair_list.push_back(std::make_pair(prev_stmt, next_stmt));
-    }
-  }
-  return next_pair_list;
+StmtNumPairList NextTable::GetAllNextPairs() { return next_pair_list_; }
+
+CFG* NextTable::GetCombinedCFG() { return &combined_cfg_; }
+
+void NextTable::SetAllNextPairs(StmtNumPairList next_pair_list) {
+  next_pair_list_ = next_pair_list;
 }
 
 bool NextTable::HasNextRelationship() { return !combined_cfg_.IsEmpty(); }
-
-// TODO: add getter methods, check with pql whether to return string or int
