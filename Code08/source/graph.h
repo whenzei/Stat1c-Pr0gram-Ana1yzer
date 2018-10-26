@@ -16,14 +16,15 @@ using std::unordered_set;
 using std::vector;
 
 using Vertex = int;
-using VertexList = vector<int>;
-using VertexSet = unordered_set<int>;
-using AdjSet = unordered_map<int, VertexSet>;
-using AdjList = unordered_map<int, VertexList>;
-using VisitedMap = unordered_map<int, bool>;
+using VertexList = vector<Vertex>;
+using VertexSet = unordered_set<Vertex>;
+using AdjSet = unordered_map<Vertex, VertexSet>;
+using AdjList = unordered_map<Vertex, VertexList>;
+using VisitedMap = unordered_map<Vertex, bool>;
 
 class Graph {
   // have both set and vector for O(1) retrieval of different actions
+  Vertex root_;
   AdjList adj_list_;
   AdjSet adj_set_;
   int size_;
@@ -57,6 +58,10 @@ class Graph {
   // @returns vector of vertices in DFS
   VertexList DFS(const Vertex& v);
 
+  // Get all unreachable vertices when the given vertex v is removed
+  // @returns set of all non-visited vertices
+  VertexSet GetUnreachableVertices(Vertex& v);
+
   // Check for cycles in the graph
   // @returns true if cycle exists, false otherwise
   bool HasCycle();
@@ -70,6 +75,9 @@ class Graph {
 
   // @returns the AdjSet of the graph
   AdjSet GetAdjSet();
+
+  // @returns set of all vertices in the graph
+  VertexSet GetAllVertices();
 };
 
 #endif  // !SPA_GRAPH_H

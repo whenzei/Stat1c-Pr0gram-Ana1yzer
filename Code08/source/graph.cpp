@@ -1,4 +1,5 @@
 #include "graph.h"
+#include <iostream>
 
 Graph::Graph() {
   size_ = 0;
@@ -7,6 +8,10 @@ Graph::Graph() {
 }
 
 void Graph::AddEdge(const Vertex &from, const Vertex &to) {
+  if (size_ == 0) {
+    // first vertex in graph is the root
+    root_ = from;
+  }
   if (!adj_set_.count(from)) {
     size_++;
     adj_set_.emplace(from, VertexSet());
@@ -121,10 +126,44 @@ VertexList Graph::DFS(const Vertex &from) {
   return path;
 }
 
+VertexSet Graph::GetUnreachableVertices(Vertex &v) {
+  VisitedMap visited;
+  for (auto &kv : adj_set_) {
+    visited[kv.first] = false;
+  }
+
+  visited[v] = true;
+
+  VertexList path;  // don't need this, just here for reusability
+  std::cout << "At vertex " << v << std::endl;
+  DFS(root_, &visited, &path);
+  std::cout << std::endl;
+
+  VertexSet result;
+
+  // set visited[v] back to false
+  visited[v] = false;
+
+  for (auto &kv : visited) {
+    bool is_visited = kv.second;
+    if (!is_visited) {
+      // add to result if node is not visited
+      result.emplace(kv.first);
+    }
+  }
+
+  return result;
+}
+
 void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
+  if ((*visited)[v]) {
+    return;
+  }
+
   (*visited)[v] = true;
 
   // add saving of path here if want pre-order traversal
+  std::cout << v << " ";
   path->push_back(v);
 
   VertexSet *neighbours = &adj_set_[v];
@@ -156,3 +195,13 @@ int Graph::GetSize() { return size_; }
 AdjList Graph::GetAdjList() { return adj_list_; }
 
 AdjSet Graph::GetAdjSet() { return adj_set_; }
+
+VertexSet Graph::GetAllVertices() {
+  VertexSet result;
+  for (auto &kv : adj_set_) {
+    // return all keys (meaning the vertex itself)
+    result.emplace(kv.first);
+  }
+
+  return result;
+}
