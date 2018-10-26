@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "pkb.h"
+#include "pql_evaluate_with.h"
 #include "pql_evaluator.h"
 #include "pql_extractor.h"
 #include "pql_global.h"
@@ -37,6 +38,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   vector<FinalResult> tuple_results;
 
   PqlQuery user_query = GetQuery();
+  PqlEvaluateWith* with_evaluator = new PqlEvaluateWith();
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
@@ -80,7 +82,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           GetPatternResult(*(PqlPattern*)clause_iter);
           continue;
         case PqlClauseType::kWith:
-          GetWithResult(*(PqlWith*)clause_iter);
+          SetClauseFlag(with_evaluator->EvaluateWithClause(this, pkb, *(PqlWith*)clause_iter));
+          // GetWithResult(*(PqlWith*)clause_iter);
           continue;
       }
       // If the clause is false already, no need to continue evaluating
