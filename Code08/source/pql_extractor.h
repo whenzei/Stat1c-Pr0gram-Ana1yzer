@@ -3,19 +3,31 @@
 #ifndef PQL_EXTRACTOR
 #define PQL_EXTRACTOR
 
+#include <stack>
+
 #include "pkb.h"
 #include "pql_global.h"
+
+using std::stack;
+using LastModifiedMap = unordered_map<VarIndex, StmtNum>;
 
 // Helper class to extract information from PKB to evaluate:
 // Next*, Affects and Affects*
 class PqlExtractor {
  private:
   PKB pkb_;
+  stack<LastModifiedMap*> modified_vars_stack_;
+  CFG* curr_affects_cfg_;
+  VisitedMap curr_visited_;
 
   // Helper method
   //@params start is the StmtNum that should be in the LHS of all pairs
   //        res_list is passed by reference
   void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
+
+  bool DfsAffects(Vertex curr, Vertex start, Vertex target);
+
+  void ClearVisitedMap();
 
  public:
   PqlExtractor(PKB pkb);
@@ -39,6 +51,11 @@ class PqlExtractor {
 
   // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
   StmtNumPairList GetAllNextTPairs();
+  
+  //****************** Affects* *******************************
+
+  // @returns true if Affects(stmt_1, stmt_2) holds, else false
+  bool isAffects(StmtNum stmt_1, StmtNum stmt_2);
 
   //*********************************************************
 };

@@ -121,6 +121,47 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
+
+
+bool PqlExtractor::isAffects(StmtNum stmt_1, StmtNum stmt_2) {
+  
+  ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
+  ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
+
+  if (p1 == ProcName() || p2== ProcName()) {
+    return false;
+  }
+
+  // Check if both stmts are assignment
+  if (pkb_.GetStmtType(stmt_1) != StmtType::kAssign &&
+      pkb_.GetStmtType(stmt_2) != StmtType::kAssign) {
+    return false;
+  }
+
+  VarIndex modified_var = pkb_.GetModifiedVarS(stmt_1).front();
+
+  // Check if variable modified in stmt_1 is used in stmt_2
+  if (!pkb_.IsUsedByS(stmt_2, pkb_.GetVarName(modified_var))) {
+    return false;
+  }
+  
+  curr_affects_cfg_ = pkb_.GetCFG(p1);
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
+
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = flag || DfsAffects(neighbour, stmt_1, stmt_2);
+  }
+
+  ClearVisitedMap();
+  return flag;
+}
+
+
+
+// Helper Methods
+
 void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
@@ -150,3 +191,38 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
     }
   }
 }
+
+
+bool PqlExtractor::DfsAffects(Vertex curr, Vertex start, Vertex target) {
+  if (curr_visited_.count(curr) == 1) {
+    return false;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  if (curr_stmt_type == StmtType::kAssign && target == curr) {
+    return true;
+  }
+
+  if (curr_stmt_type == StmtType::kCall || curr_stmt_type == StmtType::kRead ||
+      curr_stmt_type == StmtType::kAssign) {
+    VarIndex start_var = pkb_.GetModifiedVarS(start).front();
+    if (pkb_.IsModifiedByS(curr, pkb_.GetVarName(start_var))) {
+      return false;
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = flag || DfsAffects(neighbour, start, target);
+    if (flag) {
+      return flag;
+    }
+  }
+
+  return flag;
+}
+
+void PqlExtractor::ClearVisitedMap() { curr_visited_.clear(); }
