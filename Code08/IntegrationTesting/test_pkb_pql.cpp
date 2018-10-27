@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "pql_parser.h"
-#include "pql_query.h"
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_parser.h"
+#include "pql_query.h"
 
 #include <list>
 #include <string>
@@ -12,29 +12,33 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace PKBPQLTests {
-TEST_CLASS(TestPKBPQL){
-public:
-  TEST_METHOD(TestSelectAllAssign){
+TEST_CLASS(TestPKBPQL) {
+  const string h = "h";
+
+ public:
+  TEST_METHOD(TestSelectAllAssign) {
     PKB pkb;
-	PqlEvaluator qe;
-	AssignStmtData stmt1(1, 0, "x", unordered_set<string>(), unordered_set<int>(), TokenList());
-	AssignStmtData stmt2(8, 0, "i", unordered_set<string>(), unordered_set<int>(), TokenList());
+    PqlEvaluator qe;
+    AssignStmtData stmt1(1, 0, "x", unordered_set<string>(),
+                         unordered_set<int>(), TokenList());
+    AssignStmtData stmt2(8, 0, "i", unordered_set<string>(),
+                         unordered_set<int>(), TokenList());
 
-	pkb.InsertAssignStmt(&stmt1);
-	pkb.InsertAssignStmt(&stmt2);
+    pkb.InsertAssignStmt(&stmt1);
+    pkb.InsertAssignStmt(&stmt2);
 
-	string user_query = "assign a; Select a";
+    string user_query = "assign a; Select a";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(user_query, query);
     parser.Parse();
 
-	FinalResult resultlist = qe.GetResultFromQuery(query, pkb);
+    FinalResult resultlist = qe.GetResultFromQuery(query, pkb);
 
-	string output = resultlist.front();
+    string output = resultlist.front();
 
-	string expected_output = "1";
+    string expected_output = "1";
 
-	Assert::AreEqual(expected_output, output);
+    Assert::AreEqual(expected_output, output);
   }
 
   TEST_METHOD(TestSelectAllProc) {
@@ -182,5 +186,5 @@ public:
 
     Assert::AreEqual(expected_result, first_result);
   }
-  };
-}
+};
+}  // namespace PKBPQLTests

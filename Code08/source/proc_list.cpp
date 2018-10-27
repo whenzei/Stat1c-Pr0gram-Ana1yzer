@@ -32,13 +32,9 @@ bool ProcList::IsProcName(ProcName proc_name) {
   return proc_id_map_.find(proc_name) != proc_id_map_.end();
 }
 
-ProcNamePairList ProcList::GetAllProcNameTwin() {
-  return proc_name_twin_list_;
-}
+ProcNamePairList ProcList::GetAllProcNameTwin() { return proc_name_twin_list_; }
 
-ProcIndexPairList ProcList::GetAllProcIndexTwin() {
-  return proc_id_twin_list_;
-}
+ProcIndexPairList ProcList::GetAllProcIndexTwin() { return proc_id_twin_list_; }
 
 IndexProcMap ProcList::GetIndexToProcMapping() { return id_proc_map_; }
 

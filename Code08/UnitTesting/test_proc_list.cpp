@@ -15,7 +15,6 @@ TEST_CLASS(TestProcList) {
   const ProcIndex kProcIndex3 = 2;
 
  public:
-
   TEST_METHOD(TestInsertProc) {
     ProcList proc_list;
     int result = proc_list.InsertProcName(kProcName1);
@@ -31,7 +30,7 @@ TEST_CLASS(TestProcList) {
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     proc_list.InsertProcName(kProcName3);
-	// duplicate
+    // duplicate
     proc_list.InsertProcName(kProcName1);
     ProcIndexList proc_list_result = proc_list.GetAllProcIndices();
     Assert::IsTrue(proc_list_result.size() == 3);
@@ -84,7 +83,7 @@ TEST_CLASS(TestProcList) {
     Assert::AreEqual(kProcName2, index_proc_map[1]);
     // Duplicate. Shouldn't affect index
     proc_list.InsertProcName(kProcName2);
-    index_proc_map = proc_list.GetIndexToProcMapping();    
+    index_proc_map = proc_list.GetIndexToProcMapping();
     Assert::AreEqual(kProcName2, index_proc_map[1]);
   }
 
@@ -102,4 +101,4 @@ TEST_CLASS(TestProcList) {
     Assert::AreEqual(1, proc_index_map[kProcName2]);
   }
 };
-}  // namespace UnitTesting
+}  // namespace PKBTests

@@ -29,7 +29,7 @@ class Graph {
   AdjSet adj_set_;
   int size_;
 
-  void Toposort(const Vertex& v, VisitedMap* visited, queue<int>* topoqueue);
+  void Toposort(const Vertex& v, VisitedMap* visited, queue<Vertex>* topoqueue);
 
   bool HasCycle(const Vertex& v, VisitedMap* visited, VertexSet* neighbours);
 

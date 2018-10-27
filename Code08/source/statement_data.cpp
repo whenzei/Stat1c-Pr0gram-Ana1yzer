@@ -79,10 +79,6 @@ CallStmtData::CallStmtData(int stmt_num, int stmt_list_index,
   callee_proc_name_ = callee_proc_name;
 }
 
-ProcName CallStmtData::GetCallerProcName() {
-  return caller_proc_name_;
-}
+ProcName CallStmtData::GetCallerProcName() { return caller_proc_name_; }
 
-ProcName CallStmtData::GetCalleeProcName() {
-  return callee_proc_name_;
-}
+ProcName CallStmtData::GetCalleeProcName() { return callee_proc_name_; }

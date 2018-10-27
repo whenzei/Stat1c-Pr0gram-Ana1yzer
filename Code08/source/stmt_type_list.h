@@ -4,14 +4,14 @@
 #define SPA_STMT_TYPE_LIST_H
 
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "pql_global.h"
 
 // StmtNum is defined as a string inside PKB, because query results have to be
-// in the format vector<string>. For consistency, all StmtNum inside PKB is string
-// so that it is easier to search and update the PKB data structures.
+// in the format vector<string>. For consistency, all StmtNum inside PKB is
+// string so that it is easier to search and update the PKB data structures.
 using std::pair;
 using std::string;
 using std::unordered_map;
@@ -21,7 +21,8 @@ using StmtNum = int;
 using StmtNumList = vector<int>;
 using StmtNumPairList = vector<pair<int, int>>;
 using StmtTypeMap = unordered_map<PqlDeclarationEntity, vector<int>>;
-using StmtTypePairMap = unordered_map<PqlDeclarationEntity, vector<pair<int, int>>>;
+using StmtTypePairMap =
+    unordered_map<PqlDeclarationEntity, vector<pair<int, int>>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g.

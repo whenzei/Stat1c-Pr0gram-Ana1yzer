@@ -3,16 +3,16 @@
 #ifndef SPA_FOLLOWS_TABLE_H
 #define SPA_FOLLOWS_TABLE_H
 
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <string>
 #include <vector>
 
 using std::make_pair;
+using std::pair;
+using std::string;
 using std::unordered_map;
 using std::unordered_set;
-using std::string;
-using std::pair; 
 using std::vector;
 
 using StmtNum = int;
@@ -35,7 +35,7 @@ class FollowsTable {
   StmtNumList followed_by_list_;
   StmtNumSet followed_by_set_;
 
-public:
+ public:
   // Inserts a follows relationship to the follows map and followed by map.
   // @params 2 stmt nums; stmt_num2 that follows stmt_num1
   void InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2);
@@ -46,11 +46,11 @@ public:
   // @returns true if follows(stmt_num1, stmt_num2) holds
   bool IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2);
 
-  // @returns a list of statements that directly or indirectly follow stmt_num 
+  // @returns a list of statements that directly or indirectly follow stmt_num
   // can be empty
   StmtNumList GetFollowsT(StmtNum stmt_num);
 
-  // @returns a list of statements that directly follow stmt_num 
+  // @returns a list of statements that directly follow stmt_num
   // conly one element or empty
   StmtNumList GetFollows(StmtNum stmt_num);
 
@@ -58,11 +58,11 @@ public:
   // can be empty
   StmtNumList GetAllFollows();
 
-  // @returns a list of statements that are directly or indirectly followed by stmt_num
-  // can be empty
+  // @returns a list of statements that are directly or indirectly followed by
+  // stmt_num can be empty
   StmtNumList GetFollowedByT(StmtNum stmt_num);
 
-  // @returns a list of statements that are directly followed by stmt_num 
+  // @returns a list of statements that are directly followed by stmt_num
   // only one element or empty
   StmtNumList GetFollowedBy(StmtNum stmt_num);
 

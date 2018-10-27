@@ -11,7 +11,7 @@ TEST_CLASS(TestParentTable) {
   const StmtNum kStmtNum2 = 2;
   const StmtNum kStmtNum3 = 3;
   const StmtNum kStmtNum4 = 4;
-  
+
   TEST_METHOD(TestIsParent) {
     ParentTable parent_table;
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
@@ -156,4 +156,4 @@ TEST_CLASS(TestParentTable) {
     Assert::AreEqual(kStmtNum4, parent_pair.back().second);
   }
 };
-}  // namespace UnitTesting
+}  // namespace PKBTests
