@@ -34,7 +34,7 @@ Parser::Parser(PKB* pkb) {
   stmt_list_num_ = 1;
 }
 
-bool Parser::Parse(string filepath) {
+void Parser::Parse(string filepath) {
   // read content from file
   string contents = Util::ReadContentFromFile(filepath);
   // retrieve vector of tokens
@@ -44,13 +44,11 @@ bool Parser::Parse(string filepath) {
   Validator validator = Validator(tokens_);
   if (!validator.ValidateProgram()) {
     cout << "Validation failed" << endl;
-    return false;
+    throw SyntacticErrorException("Validation of SIMPLE source failed.");
   }
 
   ParseProgram();
   pkb_->NotifyParseEnd();
-
-  return true;
 }
 
 // Method for testing which provides pre-written tokens of a program
