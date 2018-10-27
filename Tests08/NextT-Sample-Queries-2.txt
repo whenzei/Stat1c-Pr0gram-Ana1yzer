@@ -1,0 +1,25 @@
+1 - NEXT* digit-digit (same digits)
+assign a;
+Select BOOLEAN such that Next*(2, 2)
+true
+5000
+2 - NEXT* digit-digit (different digits)
+stmt s;
+Select s such that Next*(3, 1) and Parent(s, 3)
+1
+5000
+3 - NEXT* syn-digit
+stmt s;
+Select s such that Next*(s, 7)
+2, 3, 4, 5, 6, 1
+5000
+4 - NEXT* digit-syn
+stmt s;
+Select s such that Next*(5, s)
+1, 2, 3, 4 , 6, 7, 5
+5000
+5 - NEXT* syn-syn
+stmt s1, s2;
+Select <s1, s2> such that Next*(s1, s2)
+1 2,1 3,1 4,1 5,1 6, 1 1, 1 7, 4 5, 4 6, 4 4, 4 1, 4 2, 4 3, 4 7, 2 3, 2 4, 2 5, 2 6, 2 1, 2 2, 2 7, 3 1, 3 2, 3 3, 3 4, 3 5, 3 6, 3 7, 5 1, 5 2, 5 3, 5 4, 5 5, 5 6, 5 7, 6 1, 6 2, 6 3, 6 4, 6 5, 6 6, 6 7
+5000

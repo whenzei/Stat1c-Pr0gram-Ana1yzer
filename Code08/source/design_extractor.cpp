@@ -10,6 +10,7 @@ void DesignExtractor::UpdatePkb() {
   UpdateParentT();
   UpdateUsesAndModifiesWithCallGraph();
   UpdateCallT();
+  PopulateDominates();
 }
 
 void DesignExtractor::CheckCyclicCalls() {
@@ -88,6 +89,22 @@ void DesignExtractor::UpdateCallT() {
       DescentForCallee(proc, direct_callee);
     }
   }
+}
+
+void DesignExtractor::PopulateDominates() {
+  unordered_map<ProcName, unordered_map<Vertex, unordered_set<int>>> dominates;
+  ProcNameList all_procs = pkb_->GetAllProcNames();
+  for (auto& proc : all_procs) {
+    CFG* cfg = pkb_->GetCFG(proc);
+    // we know a vertex dominates another if the vertex is a cut vertex
+    VertexSet all_vertices = cfg->GetAllVertices();
+
+    for (Vertex v : all_vertices) {
+      VertexSet unreachables = cfg->GetUnreachableVertices(v);
+      dominates[proc][v] = unreachables;
+    }
+  }
+  // TODO: insert setter method to PKB's dominate table here
 }
 
 void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
