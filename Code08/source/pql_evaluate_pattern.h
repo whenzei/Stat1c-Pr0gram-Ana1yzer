@@ -20,7 +20,7 @@ using std::vector;
 using QueryResultList = vector<int>;
 using QueryResultPairList = vector<pair<int, int>>;
 
-/*A class to evaluate user query and return result to user*/
+/*A class to evaluate the pql pattern clause*/
 class PqlEvaluatePattern {
  private:
   PKB pkb_;           // pkb database
@@ -41,25 +41,26 @@ class PqlEvaluatePattern {
   /**
    * The main method for all pattern-type queries
    * Method will determine which type of pattern clause is to be evaluated
-   * @param pattern clause in the Query
+   * @param The evaluator, pkb and pattern clause in the Query
+   * @return boolean of whether the clause is true/false
    */
   bool EvaluatePatternClause(PqlEvaluator*, PKB, PqlPattern);
 
   /**
    * Evaluate assign pattern and store result in PqlResult table
-   * @param pattern clause in the Query
+   * @param The evaluator and pattern clause in the Query
    */
   void EvaluateAssignPattern(PqlEvaluator*, PqlPattern pattern);
 
   /**
    * Evaluate while pattern and store result in PqlResult table
-   * @param pattern clause in the Query
+   * @param The evaluator and pattern clause in the Query
    */
   void EvaluateWhilePattern(PqlEvaluator*, PqlPattern pattern);
 
   /**
    * Evaluate if pattern and store result in PqlResult table
-   * @param pattern clause in the Query
+   * @param The evaluator and pattern clause in the Query
    */
   void EvaluateIfPattern(PqlEvaluator*, PqlPattern pattern);
 };
