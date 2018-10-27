@@ -52,7 +52,6 @@ bool PqlEvaluateWith::EvaluateWithClause(PqlEvaluator* pql_eval, PKB pkb,
 
 QueryResultList PqlEvaluateWith::GetSelectAllResult(
     PqlDeclarationEntity select_type) {
-  PKB pkb = GetPKB();
   QueryResultList results;
 
   switch (select_type) {
@@ -60,63 +59,63 @@ QueryResultList PqlEvaluateWith::GetSelectAllResult(
       // Get all procedures name from PKB and store into
       // results list
       cout << "Select all procedure." << endl;
-      return pkb.GetAllProcIndices();
+      return this->pkb_.GetAllProcIndices();
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
       // results list
       cout << "Select all variables." << endl;
-      return pkb.GetAllVarIndices();
+      return this->pkb_.GetAllVarIndices();
     case PqlDeclarationEntity::kAssign:
       // Get all statement number of statement which
       // contains assignment from PKB and store into results
       // list
       cout << "Select all assign statement." << endl;
-      return pkb.GetAllAssignStmt();
+      return this->pkb_.GetAllAssignStmt();
     case PqlDeclarationEntity::kStmt:
       // Get all stmt number from PKB and store into results
       // list
       cout << "Select all statement." << endl;
-      return pkb.GetAllStmt();
+      return this->pkb_.GetAllStmt();
     case PqlDeclarationEntity::kRead:
       // Get all read stmt from PKB and store into results
       // list
       cout << "Select all read statement." << endl;
-      return pkb.GetAllReadStmt();
+      return this->pkb_.GetAllReadStmt();
     case PqlDeclarationEntity::kPrint:
       // Get all print stmt from PKB and store into results
       // list
       cout << "Select all print statement." << endl;
-      return pkb.GetAllPrintStmt();
+      return this->pkb_.GetAllPrintStmt();
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
       // list
       cout << "Select all call statement." << endl;
-      return pkb.GetAllCallStmt();
+      return this->pkb_.GetAllCallStmt();
     case PqlDeclarationEntity::kCallName:
       // Get all call stmt from PKB and store into results
       // list
       cout << "Select all call.procName statement." << endl;
-      return pkb.GetAllCallee();
+      return this->pkb_.GetAllCallee();
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into results
       // list
       cout << "Select all while statement." << endl;
-      return pkb.GetAllWhileStmt();
+      return this->pkb_.GetAllWhileStmt();
     case PqlDeclarationEntity::kIf:
       // Get all if stmt from PKB and store into results
       // list
       cout << "Select all if statement." << endl;
-      return pkb.GetAllIfStmt();
+      return this->pkb_.GetAllIfStmt();
     case PqlDeclarationEntity::kConstant:
       // Get all constant from PKB and store into results
       // list
       cout << "Select all constants." << endl;
-      return pkb.GetAllConstValue();
+      return this->pkb_.GetAllConstValue();
     case PqlDeclarationEntity::kProgline:
       // Get all program line from PKB and store into
       // results list
       cout << "Select all program lines." << endl;
-      return pkb.GetAllStmt();
+      return this->pkb_.GetAllStmt();
   }
 
   // Return empty result if nothing is found
@@ -125,46 +124,45 @@ QueryResultList PqlEvaluateWith::GetSelectAllResult(
 
 QueryResultPairList PqlEvaluateWith::GetSelectAllTwinResult(
     PqlDeclarationEntity select_type) {
-  PKB pkb = GetPKB();
   QueryResultPairList results;
 
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Select all twin procedure." << endl;
-      return pkb.GetAllProcIndexTwin();
+      return this->pkb_.GetAllProcIndexTwin();
     case PqlDeclarationEntity::kVariable:
       cout << "Select all twin variables." << endl;
-      return pkb.GetAllVarIndexTwin();
+      return this->pkb_.GetAllVarIndexTwin();
     case PqlDeclarationEntity::kAssign:
       cout << "Select all twin assign statement." << endl;
-      return pkb.GetAllAssignStmtTwin();
+      return this->pkb_.GetAllAssignStmtTwin();
     case PqlDeclarationEntity::kStmt:
       cout << "Select all twin statement." << endl;
-      return pkb.GetAllStmtTwin();
+      return this->pkb_.GetAllStmtTwin();
     case PqlDeclarationEntity::kRead:
       cout << "Select all twin read statement." << endl;
-      return pkb.GetAllReadStmtTwin();
+      return this->pkb_.GetAllReadStmtTwin();
     case PqlDeclarationEntity::kPrint:
       cout << "Select all twin print statement." << endl;
-      return pkb.GetAllPrintStmtTwin();
+      return this->pkb_.GetAllPrintStmtTwin();
     case PqlDeclarationEntity::kCall:
       cout << "Select all twin call statement." << endl;
-      return pkb.GetAllCallStmtTwin();
+      return this->pkb_.GetAllCallStmtTwin();
     case PqlDeclarationEntity::kCallName:
       cout << "Select all twin call.procName statement." << endl;
-      return pkb.GetAllCalleeTwin();
+      return this->pkb_.GetAllCalleeTwin();
     case PqlDeclarationEntity::kWhile:
       cout << "Select all twin while statement." << endl;
-      return pkb.GetAllWhileStmtTwin();
+      return this->pkb_.GetAllWhileStmtTwin();
     case PqlDeclarationEntity::kIf:
       cout << "Select all twin if statement." << endl;
-      return pkb.GetAllIfStmtTwin();
+      return this->pkb_.GetAllIfStmtTwin();
     case PqlDeclarationEntity::kConstant:
       cout << "Select all twin constants." << endl;
-      return pkb.GetAllConstValueTwin();
+      return this->pkb_.GetAllConstValueTwin();
     case PqlDeclarationEntity::kProgline:
       cout << "Select all twin program lines." << endl;
-      return pkb.GetAllStmtTwin();
+      return this->pkb_.GetAllStmtTwin();
   }
 
   // Return empty result if nothing is found
@@ -176,7 +174,6 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
                                              Synonym right_param) {
   cout << "Evaluating with two synonym" << endl;
 
-  PKB pkb = GetPKB();
   // Getting parameter of with
   string left_name = left_param.first;
   string right_name = right_param.first;
@@ -204,7 +201,8 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
       SetClauseFlag(false);
     } else {
       // Store both synonym in result table
-      pql_eval->StoreClauseResultInTable(filtered_result, left_name, right_name);
+      pql_eval->StoreClauseResultInTable(filtered_result, left_name,
+                                         right_name);
     }
   }
 }
@@ -214,19 +212,18 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
                                              string comparison_val) {
   cout << "Evaluating with one synonym" << endl;
 
-  PKB pkb = GetPKB();
   // Getting parameter of with
   string syn_name = with_syn.first;
   PqlDeclarationEntity syn_type = with_syn.second;
   QueryResultList result_list;
-  VarProcToIndexMap proc_to_index = pkb.GetProcToIndexMapping();	  
-  VarProcToIndexMap var_to_index = pkb.GetVarToIndexMapping();
+  VarProcToIndexMap proc_to_index = this->pkb_.GetProcToIndexMapping();
+  VarProcToIndexMap var_to_index = this->pkb_.GetVarToIndexMapping();
 
   switch (syn_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Is procedure?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
-        if (pkb.IsProcIndex(proc_to_index[comparison_val])) {
+        if (this->pkb_.IsProcIndex(proc_to_index[comparison_val])) {
           result_list.push_back(proc_to_index[comparison_val]);
           pql_eval->StoreClauseResultInTable(result_list, syn_name);
         } else {
@@ -239,7 +236,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kVariable:
       cout << "Is variable?" << endl;
       if (var_to_index.find(comparison_val) != var_to_index.end()) {
-        if (pkb.IsVarIndex(var_to_index[comparison_val])) {
+        if (this->pkb_.IsVarIndex(var_to_index[comparison_val])) {
           result_list.push_back(var_to_index[comparison_val]);
           pql_eval->StoreClauseResultInTable(result_list, syn_name);
         } else {
@@ -251,7 +248,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kAssign:
       cout << "Is assign?" << endl;
-      if (pkb.IsAssignStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsAssignStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -260,7 +257,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kStmt:
       cout << "Is stmt?" << endl;
-      if (pkb.IsStmtNum(stoi(comparison_val))) {
+      if (this->pkb_.IsStmtNum(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -269,7 +266,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kRead:
       cout << "Is read?" << endl;
-      if (pkb.IsReadStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsReadStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -278,7 +275,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kPrint:
       cout << "Is print?" << endl;
-      if (pkb.IsPrintStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsPrintStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -287,7 +284,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kCall:
       cout << "Is call?" << endl;
-      if (pkb.IsCallStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsCallStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -297,7 +294,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kCallName:
       cout << "Is call procname?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
-        if (pkb.IsCalledProc(proc_to_index[comparison_val])) {
+        if (this->pkb_.IsCalledProc(proc_to_index[comparison_val])) {
           result_list.push_back(proc_to_index[comparison_val]);
           pql_eval->StoreClauseResultInTable(result_list, syn_name);
         } else {
@@ -309,7 +306,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kWhile:
       cout << "Is while?" << endl;
-      if (pkb.IsWhileStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsWhileStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -318,7 +315,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kIf:
       cout << "Is if?" << endl;
-      if (pkb.IsIfStmt(stoi(comparison_val))) {
+      if (this->pkb_.IsIfStmt(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -327,7 +324,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kConstant:
       cout << "Is const?" << endl;
-      if (pkb.IsConstValue(stoi(comparison_val))) {
+      if (this->pkb_.IsConstValue(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -336,7 +333,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       return;
     case PqlDeclarationEntity::kProgline:
       cout << "Is progline?" << endl;
-      if (pkb.IsStmtNum(stoi(comparison_val))) {
+      if (this->pkb_.IsStmtNum(stoi(comparison_val))) {
         result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
@@ -349,13 +346,12 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
 QueryResultPairList PqlEvaluateWith::FilterWithResult(
     QueryResultList unfiltered_result, PqlDeclarationEntity entity_type) {
   QueryResultPairList filtered_result;
-  PKB pkb = GetPKB();
 
   switch (entity_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Filter Proc" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsProcIndex(iter)) {
+        if (this->pkb_.IsProcIndex(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -363,7 +359,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kVariable:
       cout << "Filter Var" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsVarIndex(iter)) {
+        if (this->pkb_.IsVarIndex(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -371,7 +367,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kAssign:
       cout << "Filter Assign" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsAssignStmt(iter)) {
+        if (this->pkb_.IsAssignStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -379,7 +375,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kStmt:
       cout << "Filter Stmt" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsStmtNum(iter)) {
+        if (this->pkb_.IsStmtNum(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -387,7 +383,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kRead:
       cout << "Filter Read" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsReadStmt(iter)) {
+        if (this->pkb_.IsReadStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -395,7 +391,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kPrint:
       cout << "Filter Print" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsPrintStmt(iter)) {
+        if (this->pkb_.IsPrintStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -403,7 +399,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kCall:
       cout << "Filter Call" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsCallStmt(iter)) {
+        if (this->pkb_.IsCallStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -411,7 +407,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kCallName:
       cout << "Filter CallName" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsCalledProc(iter)) {
+        if (this->pkb_.IsCalledProc(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -419,7 +415,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kWhile:
       cout << "Filter While" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsWhileStmt(iter)) {
+        if (this->pkb_.IsWhileStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -427,7 +423,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kIf:
       cout << "Filter If" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsIfStmt(iter)) {
+        if (this->pkb_.IsIfStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -435,7 +431,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kConstant:
       cout << "Filter Constant" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsConstValue(iter)) {
+        if (this->pkb_.IsConstValue(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -443,7 +439,7 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
     case PqlDeclarationEntity::kProgline:
       cout << "Filter Progline" << endl;
       for (auto& iter : unfiltered_result) {
-        if (pkb.IsStmtNum(iter)) {
+        if (this->pkb_.IsStmtNum(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
@@ -495,5 +491,3 @@ void PqlEvaluateWith::SetClauseFlag(bool clause_flag) {
 bool PqlEvaluateWith::IsValidClause() { return clause_flag_; }
 
 void PqlEvaluateWith::SetPKB(PKB pkb) { this->pkb_ = pkb; }
-
-PKB PqlEvaluateWith::GetPKB() { return pkb_; }

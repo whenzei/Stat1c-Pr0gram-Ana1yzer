@@ -39,7 +39,6 @@ class PqlEvaluateWith {
   void SetClauseFlag(bool);
 
   /* Getter */
-  PKB GetPKB();
   bool IsValidClause();
 
   /**

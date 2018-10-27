@@ -41,7 +41,6 @@ bool PqlEvaluatePattern::EvaluatePatternClause(PqlEvaluator* pql_eval, PKB pkb,
 
 void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
                                               PqlPattern pattern) {
-  PKB pkb = GetPKB();
   // Getting parameter of pattern
   string pattern_var_name = pattern.GetType().first;
   pair<string, PqlDeclarationEntity> first_parameter =
@@ -55,7 +54,7 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
 
   switch (left_type) {
     case PqlDeclarationEntity::kUnderscore:
-      result_list = pkb.GetWhileWithPattern("");
+      result_list = this->pkb_.GetWhileWithPattern("");
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern " << endl;
@@ -64,7 +63,7 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
       }
       return;
     case PqlDeclarationEntity::kIdent:
-      result_list = pkb.GetWhileWithPattern(left_name);
+      result_list = this->pkb_.GetWhileWithPattern(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern for variable" << left_name << endl;
@@ -73,7 +72,7 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
       }
       return;
     case PqlDeclarationEntity::kVariable:
-      result_pair_list = pkb.GetAllWhilePatternPair();
+      result_pair_list = this->pkb_.GetAllWhilePatternPair();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern for synonym " << left_name << endl;
@@ -87,7 +86,6 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
 
 void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
                                            PqlPattern pattern) {
-  PKB pkb = GetPKB();
   // Getting parameter of pattern
   string pattern_var_name = pattern.GetType().first;
   pair<string, PqlDeclarationEntity> first_parameter =
@@ -101,7 +99,7 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
 
   switch (left_type) {
     case PqlDeclarationEntity::kUnderscore:
-      result_list = pkb.GetIfWithPattern("");
+      result_list = this->pkb_.GetIfWithPattern("");
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern " << endl;
@@ -110,7 +108,7 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
       }
       return;
     case PqlDeclarationEntity::kIdent:
-      result_list = pkb.GetIfWithPattern(left_name);
+      result_list = this->pkb_.GetIfWithPattern(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern for variable" << left_name << endl;
@@ -119,7 +117,7 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
       }
       return;
     case PqlDeclarationEntity::kVariable:
-      result_pair_list = pkb.GetAllIfPatternPair();
+      result_pair_list = this->pkb_.GetAllIfPatternPair();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " No such pattern for synonym " << left_name << endl;
@@ -133,7 +131,6 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
 
 void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
                                                PqlPattern pattern) {
-  PKB pkb = GetPKB();
   // Getting parameter of pattern
   string pattern_var_name = pattern.GetType().first;
   pair<string, PqlDeclarationEntity> first_parameter =
@@ -152,7 +149,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
     case PqlPatternExpressionType::kExpression:
       switch (left_type) {
         case PqlDeclarationEntity::kUnderscore:
-          result_list = pkb.GetAssignWithExactPattern("", expression_token);
+          result_list =
+              this->pkb_.GetAssignWithExactPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern " << endl;
@@ -162,7 +160,7 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           return;
         case PqlDeclarationEntity::kIdent:
           result_list =
-              pkb.GetAssignWithExactPattern(left_name, expression_token);
+              this->pkb_.GetAssignWithExactPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for " << left_name << endl;
@@ -171,7 +169,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           }
           return;
         case PqlDeclarationEntity::kVariable:
-          result_pair_list = pkb.GetAllAssignExactPatternPair(expression_token);
+          result_pair_list =
+              this->pkb_.GetAllAssignExactPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for variable " << left_name << endl;
@@ -184,7 +183,7 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
     case PqlPatternExpressionType::kUnderscoreExpressionUnderscore:
       switch (left_type) {
         case PqlDeclarationEntity::kUnderscore:
-          result_list = pkb.GetAssignWithPattern("", expression_token);
+          result_list = this->pkb_.GetAssignWithPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern " << endl;
@@ -193,7 +192,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           }
           return;
         case PqlDeclarationEntity::kIdent:
-          result_list = pkb.GetAssignWithPattern(left_name, expression_token);
+          result_list =
+              this->pkb_.GetAssignWithPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for " << left_name << endl;
@@ -202,7 +202,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           }
           return;
         case PqlDeclarationEntity::kVariable:
-          result_pair_list = pkb.GetAllAssignPatternPair(expression_token);
+          result_pair_list =
+              this->pkb_.GetAllAssignPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for variable " << left_name << endl;
@@ -215,7 +216,7 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
     case PqlPatternExpressionType::kUnderscore:
       switch (left_type) {
         case PqlDeclarationEntity::kUnderscore:
-          result_list = pkb.GetAssignWithPattern("", expression_token);
+          result_list = this->pkb_.GetAssignWithPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern " << endl;
@@ -224,7 +225,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           }
           return;
         case PqlDeclarationEntity::kIdent:
-          result_list = pkb.GetAssignWithPattern(left_name, expression_token);
+          result_list =
+              this->pkb_.GetAssignWithPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for " << left_name << endl;
@@ -233,7 +235,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           }
           return;
         case PqlDeclarationEntity::kVariable:
-          result_pair_list = pkb.GetAllAssignPatternPair(expression_token);
+          result_pair_list =
+              this->pkb_.GetAllAssignPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
             cout << " No such pattern for variable " << left_name << endl;
@@ -255,5 +258,3 @@ void PqlEvaluatePattern::SetClauseFlag(bool clause_flag) {
 bool PqlEvaluatePattern::IsValidClause() { return clause_flag_; }
 
 void PqlEvaluatePattern::SetPKB(PKB pkb) { this->pkb_ = pkb; }
-
-PKB PqlEvaluatePattern::GetPKB() { return pkb_; }

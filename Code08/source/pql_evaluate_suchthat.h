@@ -38,7 +38,6 @@ class PqlEvaluateSuchthat {
   void SetClauseFlag(bool);
 
   /* Getter */
-  PKB GetPKB();
   bool IsValidClause();
 
   /**
