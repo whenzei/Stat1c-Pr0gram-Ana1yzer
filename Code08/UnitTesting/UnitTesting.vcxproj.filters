@@ -62,9 +62,6 @@
     <ClCompile Include="test_stmt_type_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
-    <ClCompile Include="test_stmtlist_table.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
     <ClCompile Include="test_var_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
