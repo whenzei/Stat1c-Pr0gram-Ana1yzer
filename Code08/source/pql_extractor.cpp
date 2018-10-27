@@ -7,13 +7,15 @@ using std::unordered_set;
 PqlExtractor::PqlExtractor(PKB pkb) { pkb_ = pkb; }
 
 bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
-  if (previous_stmt == next_stmt) {
-    return false;
-  }
 
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
-  next_stmt_queue.push(previous_stmt);
+  
+  StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
+  for (auto& temp_next_stmt : temp_next_stmts) {
+    next_stmt_queue.push(temp_next_stmt);
+  }
+   
 
   // BFS
   while (!next_stmt_queue.empty()) {
