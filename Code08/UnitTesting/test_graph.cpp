@@ -6,13 +6,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace FrontendTests {
 TEST_CLASS(TestGraph) {
-  const Vertex kVertex1 = 0;
-  const Vertex kVertex2 = 1;
-  const Vertex kVertex3 = 2;
-  const Vertex kVertex4 = 3;
-  const Vertex kVertex5 = 4;
-  const Vertex kVertex6 = 5;
-  const Vertex kVertex7 = 6;
+  const Vertex kVertex1 = 1;
+  const Vertex kVertex2 = 2;
+  const Vertex kVertex3 = 3;
+  const Vertex kVertex4 = 4;
+  const Vertex kVertex5 = 5;
+  const Vertex kVertex6 = 6;
+  const Vertex kVertex7 = 7;
 
  public:
   TEST_METHOD(TestAddEdge) {
@@ -71,9 +71,9 @@ TEST_CLASS(TestGraph) {
 
     Assert::IsTrue(graph.GetSize() == 5);
 
-    vector<Vertex> expected_result = vector<Vertex>{
-        kVertex5, kVertex3, kVertex4, kVertex2, kVertex1};
-    vector<Vertex> actual_result = graph.Toposort();
+    VertexList expected_result =
+        VertexList{kVertex5, kVertex3, kVertex4, kVertex2, kVertex1};
+    VertexList actual_result = graph.Toposort();
     Assert::IsTrue(expected_result == actual_result);
 
     // Add a disconnected component
@@ -85,11 +85,87 @@ TEST_CLASS(TestGraph) {
     graph.AddEdge(kVertex6, kVertex7);
 
     // additional 7->6 at the end
-    expected_result =
-        vector<Vertex>{kVertex5, kVertex3, kVertex4, kVertex2,
-                       kVertex1, kVertex7, kVertex6};
+    expected_result = VertexList{kVertex5, kVertex3, kVertex4, kVertex2,
+                                 kVertex1, kVertex7, kVertex6};
     actual_result = graph.Toposort();
     Assert::IsTrue(expected_result == actual_result);
+  }
+
+  TEST_METHOD(TestIsEmpty) {
+    Graph graph = Graph();
+    Assert::IsTrue(graph.IsEmpty());
+
+    graph.AddEdge(kVertex1, kVertex2);
+    Assert::IsFalse(graph.IsEmpty());
+  }
+
+  TEST_METHOD(TestHasCycle) {
+    Graph graph = Graph();
+
+    graph.AddEdge(kVertex1, kVertex2);
+    graph.AddEdge(kVertex2, kVertex3);
+
+    Assert::IsFalse(graph.HasCycle());
+
+    // test disjointed components
+    graph.AddEdge(kVertex4, kVertex5);
+    Assert::IsFalse(graph.HasCycle());
+
+    // should now have cycle
+    graph.AddEdge(kVertex3, kVertex4);
+    graph.AddEdge(kVertex5, kVertex1);
+    Assert::IsTrue(graph.HasCycle());
+  }
+
+  TEST_METHOD(TestGetNeighbours) {
+    Graph graph = Graph();
+
+    graph.AddEdge(kVertex1, kVertex2);
+    graph.AddEdge(kVertex1, kVertex3);
+    graph.AddEdge(kVertex1, kVertex5);
+    // duplicate edges should not appear in both set and list
+    graph.AddEdge(kVertex1, kVertex2);
+
+    VertexSet expected_set = VertexSet{kVertex2, kVertex3, kVertex5};
+    VertexList expected_list = VertexList{kVertex2, kVertex3, kVertex5};
+
+    Assert::IsTrue(expected_list == graph.GetNeighboursList(kVertex1));
+    Assert::IsTrue(expected_set == graph.GetNeighboursSet(kVertex1));
+
+    // graph is directed
+    Assert::IsTrue(VertexSet() == graph.GetNeighboursSet(kVertex2));
+  }
+
+  TEST_METHOD(TestGetUnreachableVertices) {
+    Graph graph = Graph();
+
+    graph.AddEdge(kVertex1, kVertex2);
+    // kVertex2 branches out to 3 and 4
+    graph.AddEdge(kVertex2, kVertex3);
+    graph.AddEdge(kVertex2, kVertex4);
+    // 3 and 4 coalesce to 5
+    graph.AddEdge(kVertex3, kVertex5);
+    graph.AddEdge(kVertex4, kVertex5);
+
+    // all vertices should be unreachable if kVertex1 is removed (since it is
+    // root too)
+    Assert::IsTrue(
+        VertexSet{kVertex1, kVertex2, kVertex3, kVertex4, kVertex5} ==
+        graph.GetUnreachableVertices(kVertex1));
+
+    // same for kVertex2
+    Assert::IsTrue(VertexSet{kVertex2, kVertex3, kVertex4, kVertex5} ==
+                   graph.GetUnreachableVertices(kVertex2));
+
+    // kVertex3 will only make itself unreachable since there exists a path to
+    // all other vertex through 4
+    Assert::IsTrue(VertexSet{kVertex3} ==
+                   graph.GetUnreachableVertices(kVertex3));
+
+    // adding alternative path means 2 doesnt block as many
+    graph.AddEdge(kVertex1, kVertex4);
+    Assert::IsTrue(VertexSet{kVertex2, kVertex3} ==
+                   graph.GetUnreachableVertices(kVertex2));
   }
 };
 }  // namespace FrontendTests
