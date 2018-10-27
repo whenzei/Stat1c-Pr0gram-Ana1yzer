@@ -15,17 +15,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PQLTests {
 TEST_CLASS(TestQueryEvaluator) {
  public:
-  PqlDeclarationEntity keyword_assign = PqlDeclarationEntity::kAssign;
-  PqlDeclarationEntity keyword_variable = PqlDeclarationEntity::kVariable;
-  PqlDeclarationEntity keyword_procedure = PqlDeclarationEntity::kProcedure;
-  PqlDeclarationEntity keyword_stmt = PqlDeclarationEntity::kStmt;
-  PqlDeclarationEntity keyword_constant = PqlDeclarationEntity::kConstant;
-  PqlDeclarationEntity keyword_read = PqlDeclarationEntity::kRead;
-  PqlDeclarationEntity keyword_print = PqlDeclarationEntity::kPrint;
-  PqlDeclarationEntity keyword_if = PqlDeclarationEntity::kIf;
-  PqlDeclarationEntity keyword_while = PqlDeclarationEntity::kWhile;
-  PqlDeclarationEntity keyword_progline = PqlDeclarationEntity::kProgline;
-
   TEST_METHOD(TestTupleCrossProduct) {
     PqlEvaluator qe;
     vector<FinalResult> test_items = {{"1", "2"}, {"4", "5"}};
@@ -71,7 +60,7 @@ TEST_CLASS(TestQueryEvaluator) {
     string result2 = qe.Trim(empty);
     Assert::AreEqual(expected2, result2);
   }
-
+  /*
   TEST_METHOD(TestCheckWithParamTypeTwoSyn) {
     PqlEvaluator qe;
     PqlWith with_clause = PqlWith("a", PqlDeclarationEntity::kAssign, "b",
@@ -195,6 +184,6 @@ TEST_CLASS(TestQueryEvaluator) {
     result = qe.CheckSuchthatParamType(such_that_clause.GetParameters());
 
     Assert::IsTrue(expected_result == result);
-  }
+  } */
 };
 }  // namespace PQLTests
