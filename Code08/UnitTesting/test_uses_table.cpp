@@ -119,4 +119,4 @@ TEST_CLASS(TestUsesTable) {
     Assert::AreEqual(kSampleVarIndex1, uses_pair_list.back().second);
   }
 };
-}
+}  // namespace PKBTests

@@ -1,4 +1,4 @@
-#include "stdafx.h" 
+#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "stmtlist_table.h"
 
@@ -20,7 +20,7 @@ TEST_CLASS(TestStmtListTable) {
     StmtNumList result1 = stmtlist_table.GetStmtNumList(kStmtListIndex1);
     Assert::AreEqual(kStmtNum1, result1.front());
   }
-  
+
   TEST_METHOD(TestInsertToSameStmtList) {
     StmtListTable stmtlist_table;
     stmtlist_table.InsertStmt(kStmtNum1, kStmtListIndex1);
@@ -29,7 +29,7 @@ TEST_CLASS(TestStmtListTable) {
     Assert::AreEqual(kStmtNum1, result.front());
     Assert::AreEqual(kStmtNum2, result.back());
   }
-  
+
   TEST_METHOD(TestInsertToDifferentStmtList) {
     StmtListTable stmtlist_table;
     stmtlist_table.InsertStmt(kStmtNum1, kStmtListIndex1);
@@ -39,7 +39,7 @@ TEST_CLASS(TestStmtListTable) {
     Assert::AreEqual(kStmtNum1, result1.front());
     Assert::AreEqual(kStmtNum2, result2.front());
   }
-  
+
   TEST_METHOD(TestInsertMultiple) {
     StmtListTable stmtlist_table;
     stmtlist_table.InsertStmt(kStmtNum1, kStmtListIndex1);
@@ -51,6 +51,5 @@ TEST_CLASS(TestStmtListTable) {
     Assert::AreEqual(kStmtNum2, result2.front());
     Assert::AreEqual(kStmtNum3, result2.back());
   }
-
 };
-}  // namespace UnitTesting
+}  // namespace PKBTests
