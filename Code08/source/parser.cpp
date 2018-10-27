@@ -31,7 +31,6 @@ Parser::Parser(PKB* pkb) {
   pkb_ = pkb;
   current_index_ = 0;  // index for list of tokens
   stmt_num_ = 0;
-  stmt_list_num_ = 1;
 }
 
 void Parser::Parse(string filepath) {
@@ -68,7 +67,7 @@ bool Parser::Parse(TokenList program_tokenized) {
 
 void Parser::ParseProgram() {
   do {
-    ProcessProcedure(stmt_list_num_);
+    ProcessProcedure();
   } while (!IsAtEnd());
 
   /****** Debug Call graph ******/
@@ -80,15 +79,16 @@ void Parser::ParseProgram() {
   }
 }
 
-void Parser::ProcessProcedure(int given_stmt_list_index) {
+void Parser::ProcessProcedure() {
   ReadNextToken();
   current_proc_name_ = ReadNextToken().value;
   pkb_->InsertProcName(current_proc_name_);
+  current_proc_index_ = pkb_->GetProcIndex(current_proc_name_);
   current_cfg_ = pkb_->GetCFG(current_proc_name_);
   // eat the open brace
   ReadNextToken();
 
-  ParseData parse_data = ProcessStatementList(given_stmt_list_index);
+  ParseData parse_data = ProcessStatementList();
 
   PopulatePkbModifies(current_proc_name_, parse_data.GetModifiedVariables());
   PopulatePkbUses(current_proc_name_, parse_data.GetUsedVariables());
@@ -96,7 +96,7 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
 }
 
-ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
+ParseData Parser::ProcessStatementList() {
   StmtNumList stmt_nums;
   VarNameSet modified_vars;
   VarNameSet used_vars;
@@ -108,7 +108,7 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   bool is_last_statement_if = false;
 
   do {
-    ParseData stmt_info = ProcessStatement(given_stmt_list_num);
+    ParseData stmt_info = ProcessStatement();
     StmtNum stmt_num = stmt_info.GetStmtNum();
     VarNameSet used_vars_to_insert = stmt_info.GetUsedVariables();
     VarNameSet modified_vars_to_insert = stmt_info.GetModifiedVariables();
@@ -160,7 +160,7 @@ ParseData Parser::ProcessStatementList(int given_stmt_list_num) {
   }
 }
 
-ParseData Parser::ProcessStatement(int given_stmt_list_num) {
+ParseData Parser::ProcessStatement() {
   int curr_stmt_num = ++stmt_num_;
 
   VarNameSet used_vars;
@@ -168,7 +168,7 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
 
   ReadNextToken();
   if (IsCurrentTokenKeyword() && !IsNextType(tt::kAssignment)) {
-    ParseData keyword_stmt_info = ProcessKeyword(given_stmt_list_num);
+    ParseData keyword_stmt_info = ProcessKeyword();
     used_vars = keyword_stmt_info.GetUsedVariables();
     modified_vars = keyword_stmt_info.GetModifiedVariables();
 
@@ -179,35 +179,35 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
                      nested_last_stmts_1, nested_last_stmts_2);
 
   } else {
-    ParseData assignment_stmt_info = ProcessAssignment(given_stmt_list_num);
+    ParseData assignment_stmt_info = ProcessAssignment();
     used_vars = assignment_stmt_info.GetUsedVariables();
     modified_vars.insert(assignment_stmt_info.GetModifiedVariable());
     return ParseData(curr_stmt_num, used_vars, modified_vars);
   }
 }
 
-ParseData Parser::ProcessKeyword(int given_stmt_list_num) {
+ParseData Parser::ProcessKeyword() {
   switch (current_token_.subtype) {
     case ts::kIf:
-      return ProcessIfBlock(given_stmt_list_num);
+      return ProcessIfBlock();
     case ts::kCall:
       // Modifies and Used not processed, DE will populate later
-      return ProcessCall(given_stmt_list_num);
+      return ProcessCall();
     case ts::kWhile:
-      return ProcessWhileBlock(given_stmt_list_num);
+      return ProcessWhileBlock();
     case ts::kRead:
-      return ProcessRead(given_stmt_list_num);
+      return ProcessRead();
     case ts::kPrint:
-      return ProcessPrint(given_stmt_list_num);
+      return ProcessPrint();
   }
 
   throw SyntacticErrorException("Unknown keyword detected.");
 }
 
-ParseData Parser::ProcessRead(int given_stmt_list_num) {
+ParseData Parser::ProcessRead() {
   VarName modified_var = ReadNextToken().value;
   pkb_->InsertReadStmt(
-      &ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
+      &ReadStmtData(stmt_num_, current_proc_index_, modified_var));
 
   PopulatePkbModifies(stmt_num_, modified_var);
 
@@ -216,10 +216,10 @@ ParseData Parser::ProcessRead(int given_stmt_list_num) {
   return ParseData(VarNameSet(), VarNameSet{modified_var});
 }
 
-ParseData Parser::ProcessPrint(int given_stmt_list_num) {
+ParseData Parser::ProcessPrint() {
   VarName used_var = ReadNextToken().value;
   pkb_->InsertPrintStmt(
-      &PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
+      &PrintStmtData(stmt_num_, current_proc_index_, used_var));
 
   PopulatePkbUses(stmt_num_, used_var);
 
@@ -228,10 +228,10 @@ ParseData Parser::ProcessPrint(int given_stmt_list_num) {
   return ParseData(VarNameSet{used_var}, VarNameSet());
 }
 
-ParseData Parser::ProcessCall(int given_stmt_list_index) {
+ParseData Parser::ProcessCall() {
   VarName called_proc_name = ReadNextToken().value;
   pkb_->InsertEdgeInCallGraph(current_proc_name_, called_proc_name);
-  pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
+  pkb_->InsertCallStmt(&CallStmtData(stmt_num_, current_proc_index_,
                                      current_proc_name_, called_proc_name));
 
   // eat semicolon
@@ -240,7 +240,7 @@ ParseData Parser::ProcessCall(int given_stmt_list_index) {
   return ParseData();
 }
 
-ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
+ParseData Parser::ProcessAssignment() {
   VarName lhs_var = current_token_.value;
   VarNameSet rhs_vars;
   ConstValueSet rhs_consts;
@@ -261,7 +261,7 @@ ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
   postfix_tokens_rhs = ExpressionHelper::ToPostfix(infix_tokens_rhs);
 
   // Update PKB of assignment statement
-  pkb_->InsertAssignStmt(&AssignStmtData(stmt_num_, given_stmt_list_num,
+  pkb_->InsertAssignStmt(&AssignStmtData(stmt_num_, current_proc_index_,
                                          lhs_var, rhs_vars, rhs_consts,
                                          postfix_tokens_rhs));
 
@@ -280,7 +280,7 @@ ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
     }
 
     cout << "Assignment statement#" << stmt_num_
-         << " added, stmtLst#: " << given_stmt_list_num << ", lhs: " << lhs_var
+         << " added, lhs: " << lhs_var
          << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
     //***********************************************
   }
@@ -288,10 +288,8 @@ ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
   return ParseData(rhs_vars, lhs_var);
 }
 
-ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
+ParseData Parser::ProcessIfBlock() {
   int if_stmt_num = stmt_num_;
-  int then_stmt_list_num = ++stmt_list_num_;
-  int else_stmt_list_num = ++stmt_list_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditionals = ProcessConditional();
 
   if (DEBUG_FLAG) {
@@ -301,8 +299,7 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
       control_var_str = control_var_str + " " + var;
     }
     cout << "If statement#" << if_stmt_num
-         << " added, stmtLst#: " << given_stmt_list_num
-         << ", control_variable: " << control_var_str << endl;
+         << " added, control_variable: " << control_var_str << endl;
     //*************************************
   }
 
@@ -310,21 +307,19 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   EatNumTokens(2);
 
   if (DEBUG_FLAG) {
-    cout << "[inside then block, stmtLst# should be " << then_stmt_list_num
-         << "]" << endl;
+    cout << "[inside then block]" << endl;
   }
   // Process everything inside the if block
-  ParseData then_stmt_info = ProcessStatementList(then_stmt_list_num);
+  ParseData then_stmt_info = ProcessStatementList();
 
   // eat "} else {" tokens
   EatNumTokens(3);
 
   if (DEBUG_FLAG) {
-    cout << "[inside else block, stmtLst# should be " << else_stmt_list_num
-         << "]" << endl;
+    cout << "[inside else block]" << endl;
   }
   // Process everything inside the counterpart else block
-  ParseData else_stmt_info = ProcessStatementList(else_stmt_list_num);
+  ParseData else_stmt_info = ProcessStatementList();
 
   // Get all child statements in the then and else block
   // Used for populating Parent relation in PKB
@@ -370,7 +365,7 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   }
 
   // Update PKB of the 'if' block
-  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
+  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, current_proc_index_,
                                  used_set_conditionals.first,
                                  used_set_conditionals.second));
 
@@ -409,9 +404,8 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   }
 }
 
-ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
+ParseData Parser::ProcessWhileBlock() {
   int while_stmt_num = stmt_num_;
-  int while_stmt_list_num = ++stmt_list_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditional = ProcessConditional();
 
   if (DEBUG_FLAG) {
@@ -421,8 +415,7 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
       control_var_str = control_var_str + " " + var;
     }
     cout << "While statement#" << while_stmt_num
-         << " added, stmtList#: " << given_stmt_list_num
-         << ", control_variable: " << control_var_str << endl;
+         << " added, control_variable: " << control_var_str << endl;
     //*************************************
   }
 
@@ -430,11 +423,10 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   ReadNextToken();
 
   if (DEBUG_FLAG) {
-    cout << "[inside while block, stmtLst# should be " << while_stmt_list_num
-         << "]" << endl;
+    cout << "[inside while block]" << endl;
   }
 
-  ParseData children_stmt_info = ProcessStatementList(while_stmt_list_num);
+  ParseData children_stmt_info = ProcessStatementList();
   StmtNumList children_stmt_nums = children_stmt_info.GetStmtNumList();
   VarNameSet used_vars = children_stmt_info.GetUsedVariables();
   VarNameSet modified_vars = children_stmt_info.GetModifiedVariables();
@@ -475,7 +467,7 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   }
 
   // Update PKB of the 'while' block
-  pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
+  pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, current_proc_index_,
                                        used_set_conditional.first,
                                        used_set_conditional.second));
 
