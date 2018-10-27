@@ -667,6 +667,36 @@ void PKB::NotifyParseEnd() {
   de.UpdatePkb();
 }
 
+void PKB::InsertDominates(Vertex dominating_vertex,
+                          VertexSet dominated_vertices) {
+  dominates_table_.InsertDominates(dominating_vertex, dominated_vertices);
+}
+
+bool PKB::IsDominates(StmtNum dominating_stmt, StmtNum dominated_stmt) {
+  return dominates_table_.IsDominates(dominating_stmt, dominated_stmt);
+}
+
+// every stmt dominates itself
+bool PKB::IsDominating(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
+
+bool PKB::IsDominated(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
+
+StmtNumList PKB::GetDominating(StmtNum stmt_num) {
+  return dominates_table_.GetDominating(stmt_num);
+}
+
+StmtNumList PKB::GetDominated(StmtNum stmt_num) {
+  return dominates_table_.GetDominated(stmt_num);
+}
+
+StmtNumList PKB::GetAllDominating() { return GetAllStmt(); }
+
+StmtNumList PKB::GetAllDominated() { return GetAllStmt(); }
+
+StmtNumPairList PKB::GetAllDominatesPairs() { return dominates_table_.GetAllDominatesPairs(); }
+
+bool PKB::HasDominatesRelationship() { return dominates_table_.HasDominatesRelationship(); }
+
 /***********************************
 **** Private methods begin here ****
 ***********************************/
