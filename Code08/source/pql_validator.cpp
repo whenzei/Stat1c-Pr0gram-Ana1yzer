@@ -10,14 +10,17 @@ using std::cout;
 using std::endl;
 using tt = Tokenizer::TokenType;
 
+/* Use Regex to check if a given string is of IDENT format. */
 bool PqlValidator::ValidateIdent(string content) {
   return regex_match(content, regex("[a-zA-Z][a-zA-Z0-9]*"));
 }
 
+/* Use Regex to check if a given string is of INTEGER format. */
 bool PqlValidator::ValidateInteger(string content) {
   return regex_match(content, regex("[0-9]*"));
 }
 
+/* Check if a given list of tokens is an expression. */
 bool PqlValidator::ValidateExpression(TokenList tokens) {
   // expr: expr ‘+’ term | expr ‘-’ term | term
   // term: term ‘*’ factor | term ‘ / ’ factor | term ‘%’ factor | factor
@@ -84,6 +87,7 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
   return true;
 }
 
+/* Check if an attribute is compatible with a certain entity type. */
 bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
   switch(type) {
     case PqlDeclarationEntity::kStmt:
@@ -109,4 +113,25 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
   }
 
   return false;
+}
+
+/* Check if a PqlDeclarationEntity is actually a real entity type. */
+bool PqlValidator::IsSynonym(PqlDeclarationEntity type) {
+  switch(type) {
+      case PqlDeclarationEntity::kStmt:
+      case PqlDeclarationEntity::kRead:
+      case PqlDeclarationEntity::kPrint:
+      case PqlDeclarationEntity::kCall:
+      case PqlDeclarationEntity::kCallName:
+      case PqlDeclarationEntity::kWhile:
+      case PqlDeclarationEntity::kIf:
+      case PqlDeclarationEntity::kAssign:
+      case PqlDeclarationEntity::kVariable:
+      case PqlDeclarationEntity::kConstant:
+      case PqlDeclarationEntity::kProgline:
+      case PqlDeclarationEntity::kProcedure:
+        return true;
+      default: 
+        return false;
+  }
 }

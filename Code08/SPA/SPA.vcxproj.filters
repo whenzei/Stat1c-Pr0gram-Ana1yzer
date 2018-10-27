@@ -236,7 +236,6 @@
     <ClInclude Include="..\source\call_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
-
     <ClInclude Include="..\source\semantic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>

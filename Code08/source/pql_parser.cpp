@@ -393,6 +393,9 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   // 9. Create such that object
   query_->AddClause(new PqlSuchthat(suchthat_type, first, first_type, second, second_type));
 
+  // 10. Generate group
+  GenerateGroup(first, first_type, second, second_type);
+
   /* LEGACY: TO BE DELETED */
   query_->AddSuchthat(PqlSuchthat(suchthat_type, first, first_type, second, second_type));
   /* LEGACY: TO BE DELETED */
@@ -555,6 +558,9 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   pattern->SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
   query_->AddClause(pattern);
 
+  // 9. Generate group
+  GenerateGroup(first, first_type);
+
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(*pattern);
   /* LEGACY: TO BE DELETED */
@@ -628,6 +634,9 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
 
   // 7. Create pattern object
   query_->AddClause(new PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+
+  // 8. Generate group
+  GenerateGroup(first, first_type);
 
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
@@ -721,6 +730,9 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
 
   // 9. Create pattern object
   query_->AddClause(new PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+
+  // 10. Generate group
+  GenerateGroup(first, first_type);
 
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
@@ -844,6 +856,9 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   // 10. Create with clause
   query_->AddClause(new PqlWith(left, left_type, right, right_type));
 
+  // 11. Generate group
+  GenerateGroup(left, left_type, right, right_type);
+
   --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end
   return true;
 }
@@ -931,3 +946,67 @@ bool PqlParser::ParseAttribute(TokenList tokens, int* current_index, PqlDeclarat
 }
 
 string PqlParser::GetErrorMessage() { return error_message_; }
+
+void PqlParser::GenerateGroup(string first, PqlDeclarationEntity first_type, string second, PqlDeclarationEntity second_type) {
+  // CASE 1: Both are synoynms
+  if (PqlValidator::IsSynonym(first_type) && PqlValidator::IsSynonym(second_type)) {
+    // Find if synonyms have existing groupings
+    int first_group = -1;
+    int second_group = -1;
+    if (synonym_group_.find(first) != synonym_group_.end()) {
+      first_group = synonym_group_.at(first);
+    }
+    if (synonym_group_.find(second) != synonym_group_.end()) {
+      second_group = synonym_group_.at(second);
+    }
+
+    // CASE 1a: Both no groups
+    if (first_group == -1 && second_group == -1) {
+      int group = group_ref_.size();
+      synonym_group_.insert({ first, group });
+      synonym_group_.insert({ second, group });
+      group_ref_.insert({ group, -1 });
+    }
+    // CASE 1b: Both have groups
+    else if (first_group != -1 && second_group != -1) {
+      // Check if both are in the same group
+      if (first_group != second_group) {
+        // CASE 1c.1: Both have no group ref
+        if (group_ref_.at(first_group) == -1 && group_ref_.at(second_group) == -1) {
+          group_ref_[second_group] = first_group;
+        }
+        // CASE 1c.3: Both have group ref
+        else if (group_ref_.at(first_group) != -1 && group_ref_.at(second_group) != -1) {
+          int root = second_group;
+          while (group_ref_.at(root) != -1) root = group_ref_.at(root);
+          group_ref_[root] = first_group;
+        }
+        // CASE 1c.2: Only 1 have group ref
+        else {
+          if (group_ref_.at(first_group) != -1) group_ref_[second_group] = first_group;
+          else group_ref_[first_group] = second_group;
+        }
+      }
+    }
+    // CASE 1c: 1 of them has group
+    else {
+      if (first_group != -1) synonym_group_.insert({ second, first_group });
+      else synonym_group_.insert({ first, second_group });
+    }
+  }
+  // CASE 2: Only 1 synonym
+  else if (PqlValidator::IsSynonym(first_type) || PqlValidator::IsSynonym(second_type)) {
+    string synonym;
+    if (PqlValidator::IsSynonym(first_type)) synonym = first;
+    else synonym = second;
+
+    // CASE 2a: No group yet
+    if (synonym_group_.find(synonym) == synonym_group_.end()) {
+    int group = group_ref_.size();
+      synonym_group_.insert({ synonym, group });
+      group_ref_.insert({ group, -1 });
+    }
+    // CASE 2b: Group exist, just ignore
+  }
+  // CASE 3: No synonyms, just ignore 
+}

@@ -24,6 +24,7 @@ using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
 using WithTable = unordered_map<PqlDeclarationEntity, EntitySet>;
+using Group = vector<PqlClause*>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -261,6 +262,11 @@ private:
   vector<Synonym> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
+  /* collection of group of clauses */
+  vector<Group> groups_;
+  /* */
+  unordered_map<string, int> synonym_group_;
+  unordered_map<int, int> group_ref_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;

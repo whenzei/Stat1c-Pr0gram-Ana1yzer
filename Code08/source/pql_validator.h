@@ -14,6 +14,7 @@ public:
   static bool ValidateInteger(string);
   static bool ValidateExpression(TokenList);
   static bool ValidateAttribute(PqlDeclarationEntity, string);
+  static bool IsSynonym(PqlDeclarationEntity);
 };
 
 #endif
