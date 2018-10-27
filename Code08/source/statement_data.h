@@ -6,15 +6,13 @@
 #include "pkb.h"
 #include "tokenizer.h"
 
-using StmtNum = int;
-
 class StatementData {
  public:
   StmtNum stmt_num_;
   StmtNum stmt_num_int_;
-  int stmt_list_index_;
+  ProcIndex proc_index_;
   StmtNum GetStmtNum();
-  int GetStmtListIndex();
+  ProcIndex GetProcOfStmt();
 };
 
 class AssignStmtData : public StatementData {
@@ -24,8 +22,9 @@ class AssignStmtData : public StatementData {
   TokenList postfixed_expr_;
 
  public:
-  AssignStmtData(int stmt_num, int stmt_list_index, VarName, VarNameSet,
-                 ConstValueSet, TokenList);
+  AssignStmtData(StmtNum stmt_num, ProcIndex proc_index, VarName lhs_var,
+                 VarNameSet rhs_vars, ConstValueSet rhs_consts,
+                 TokenList postfixed_expr);
 
   VarName GetModifiedVariable();
   VarNameSet GetUsedVariables();
@@ -38,7 +37,7 @@ class IfStmtData : public StatementData {
   ConstValueSet used_consts_;
 
  public:
-  IfStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
+  IfStmtData(StmtNum stmt_num, ProcIndex proc_index, VarNameSet control_vars,
              ConstValueSet used_consts);
   VarNameSet GetUsedVariables();
   ConstValueSet GetUsedConstants();
@@ -49,7 +48,7 @@ class WhileStmtData : public StatementData {
   ConstValueSet used_consts_;
 
  public:
-  WhileStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
+  WhileStmtData(StmtNum stmt_num, ProcIndex proc_index, VarNameSet control_vars,
                 ConstValueSet used_consts);
   VarNameSet GetUsedVariables();
   ConstValueSet GetUsedConstants();
@@ -59,7 +58,7 @@ class ReadStmtData : public StatementData {
   VarName modified_var_;
 
  public:
-  ReadStmtData(int stmt_num, int stmt_list_index, VarName modified_var);
+  ReadStmtData(StmtNum stmt_num, ProcIndex proc_index, VarName modified_var);
   VarName GetModifiedVariable();
 };
 
@@ -67,7 +66,7 @@ class PrintStmtData : public StatementData {
   VarName used_var_;
 
  public:
-  PrintStmtData(int stmt_num, int stmt_list_index, VarName used_var);
+  PrintStmtData(StmtNum stmt_num, ProcIndex proc_index, VarName used_var);
   VarName GetUsedVariable();
 };
 
@@ -75,7 +74,7 @@ class CallStmtData : public StatementData {
   ProcName caller_proc_name_;
   ProcName callee_proc_name_;
  public:
-  CallStmtData(int stmt_num, int stmt_list_index, ProcName caller_proc_name,
+  CallStmtData(StmtNum stmt_num, ProcIndex proc_index, ProcName caller_proc_name,
                ProcName callee_proc_name);
 
   ProcName GetCallerProcName();
