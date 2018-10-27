@@ -52,7 +52,25 @@ bool Validator::ValidateProgram() {
 
 bool Validator::IsValidProcedure() {
   // 'procedure' var_name '{'
-  if (!MatchNext(3, {tt::kName, tt::kName, tt::kOpenBrace})) {
+  if (!Match(tt::kName)) {
+    cout << "[PROC SYNTAX INVALID]" << endl;
+    return false;
+  }
+
+  // check duplicate procedure name
+  if (!Match(tt::kName)) {
+    cout << "[PROC SYNTAX INVALID]" << endl;
+    return false;
+  } else {
+    string proc_name = curr_token_.value;
+    // duplicate procedure name detected
+    if (all_proc_names_.count(proc_name)) {
+      cout << "[DUPLICATE PROC NAME DETECTED]" << endl;
+      return false;
+    }
+    all_proc_names_.emplace(proc_name);
+  }
+  if (!Match(tt::kOpenBrace)) {
     cout << "[PROC SYNTAX INVALID]" << endl;
     return false;
   }
