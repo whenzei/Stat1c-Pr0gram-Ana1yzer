@@ -16,7 +16,7 @@ using std::unordered_map;
 using StmtNum = int;
 using StmtListIndex = int;
 using StmtType = PqlDeclarationEntity;
-using StmtMap = unordered_map <int, pair<StmtType, int>>;
+using StmtMap = unordered_map<int, pair<StmtType, int>>;
 
 // The statement table class for the PKB component
 // Used to store statement number and the corresponding statement list index
@@ -32,7 +32,8 @@ class StmtTable {
   // inserted
   // @return true if the statement is not already in StmtTable and is inserted
   // into the table, false otherwise
-  bool InsertStmt(StmtNum stmt_num, StmtType stmt_type, StmtListIndex stmtlist_index);
+  bool InsertStmt(StmtNum stmt_num, StmtType stmt_type,
+                  StmtListIndex stmtlist_index);
 
   // @return the statement list index of a given statement
   StmtListIndex GetStmtListIndex(StmtNum stmt_num);

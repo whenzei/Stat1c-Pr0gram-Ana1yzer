@@ -174,10 +174,8 @@ ParseData Parser::ProcessStatement(int given_stmt_list_num) {
     used_vars = keyword_stmt_info.GetUsedVariables();
     modified_vars = keyword_stmt_info.GetModifiedVariables();
 
-    StmtNumList nested_last_stmts_1 =
-        keyword_stmt_info.GetNestedLastStmtsOne();
-    StmtNumList nested_last_stmts_2 =
-        keyword_stmt_info.GetNestedLastStmtsTwo();
+    StmtNumList nested_last_stmts_1 = keyword_stmt_info.GetNestedLastStmtsOne();
+    StmtNumList nested_last_stmts_2 = keyword_stmt_info.GetNestedLastStmtsTwo();
 
     return ParseData(curr_stmt_num, used_vars, modified_vars,
                      nested_last_stmts_1, nested_last_stmts_2);
@@ -379,14 +377,10 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
                                  used_set_conditionals.second));
 
   // Find last stmts
-  StmtNumList then_nested_last_stmts_1 =
-      then_stmt_info.GetNestedLastStmtsOne();
-  StmtNumList then_nested_last_stmts_2 =
-      then_stmt_info.GetNestedLastStmtsTwo();
-  StmtNumList else_nested_last_stmts_1 =
-      else_stmt_info.GetNestedLastStmtsOne();
-  StmtNumList else_nested_last_stmts_2 =
-      else_stmt_info.GetNestedLastStmtsTwo();
+  StmtNumList then_nested_last_stmts_1 = then_stmt_info.GetNestedLastStmtsOne();
+  StmtNumList then_nested_last_stmts_2 = then_stmt_info.GetNestedLastStmtsTwo();
+  StmtNumList else_nested_last_stmts_1 = else_stmt_info.GetNestedLastStmtsOne();
+  StmtNumList else_nested_last_stmts_2 = else_stmt_info.GetNestedLastStmtsTwo();
 
   if (then_nested_last_stmts_1.size() == 0 &&
       then_nested_last_stmts_2.size() == 0 &&
@@ -446,10 +440,8 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   StmtNumList children_stmt_nums = children_stmt_info.GetStmtNumList();
   VarNameSet used_vars = children_stmt_info.GetUsedVariables();
   VarNameSet modified_vars = children_stmt_info.GetModifiedVariables();
-  StmtNumList nested_last_stmts_1 =
-      children_stmt_info.GetNestedLastStmtsOne();
-  StmtNumList nested_last_stmts_2 =
-      children_stmt_info.GetNestedLastStmtsTwo();
+  StmtNumList nested_last_stmts_1 = children_stmt_info.GetNestedLastStmtsOne();
+  StmtNumList nested_last_stmts_2 = children_stmt_info.GetNestedLastStmtsTwo();
 
   // Update variables used in conditionals
   used_vars.insert(used_set_conditional.first.begin(),
@@ -532,8 +524,7 @@ void Parser::PopulatePkbFollows(StmtNumList stmt_nums) {
   }
 }
 
-void Parser::PopulatePkbParent(int parent_num,
-                               StmtNumList children_stmt_nums) {
+void Parser::PopulatePkbParent(int parent_num, StmtNumList children_stmt_nums) {
   for (size_t i = 0; i < children_stmt_nums.size(); i++) {
     pkb_->InsertParent(parent_num, children_stmt_nums[i]);
   }

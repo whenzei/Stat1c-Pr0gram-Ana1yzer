@@ -28,7 +28,8 @@ class ConstList {
   // Returns a list of all constant values in the ConstList.
   ConstValueList GetAllConstValue();
 
-  // Returns a list of all constant values in pairs (in each pair, the const value is repeated)
+  // Returns a list of all constant values in pairs (in each pair, the const
+  // value is repeated)
   ConstValuePairList GetAllConstValueTwin();
 
   // Inserts constant value into the ConstList.
