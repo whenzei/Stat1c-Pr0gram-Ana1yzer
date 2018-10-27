@@ -30,6 +30,10 @@ void PqlQuery::AddPattern(PqlPattern pattern) {
   patterns_.push_back(pattern);
 }
 
+void PqlQuery::AddGroup(Group group) {
+  groups_.push_back(group);
+}
+
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
 vector<Synonym> PqlQuery::GetSelections() { return selections_; }
@@ -41,6 +45,8 @@ vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }
 vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
 
 vector<PqlClause*> PqlQuery::GetClauses() { return clauses_; }
+
+vector<Group> PqlQuery::GetGroups() { return groups_; }
 
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {

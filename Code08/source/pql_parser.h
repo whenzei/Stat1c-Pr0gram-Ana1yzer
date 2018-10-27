@@ -88,7 +88,8 @@ private:
   */
   bool ParseAttribute(TokenList, int*, PqlDeclarationEntity*);
 
-  void GenerateGroup(string, PqlDeclarationEntity, string = "", PqlDeclarationEntity = PqlDeclarationEntity::kNone);
+  void PreprocessGroup(PqlClause*, string, PqlDeclarationEntity, string = "", PqlDeclarationEntity = PqlDeclarationEntity::kNone);
+  void GenerateGroups();
 };
 
 #endif

@@ -22,6 +22,7 @@
     <ClCompile Include="..\source\parse_data.cpp" />
     <ClCompile Include="..\source\pattern_table.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
+    <ClCompile Include="..\source\pql_clause.cpp" />
     <ClCompile Include="..\source\pql_extractor.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
     <ClCompile Include="..\source\pql_pattern.cpp" />

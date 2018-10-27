@@ -265,8 +265,6 @@ private:
   /* collection of group of clauses */
   vector<Group> groups_;
   /* */
-  unordered_map<string, int> synonym_group_;
-  unordered_map<int, int> group_ref_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;
@@ -282,11 +280,13 @@ public:
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
   void AddClause(PqlClause*);
+  void AddGroup(Group);
 
   /* Getters */
   Declarations GetDeclarations();
   vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
+  vector<Group> GetGroups();
 
   static PqlDeclarationEntity DeclarationStringToType(string);
 
