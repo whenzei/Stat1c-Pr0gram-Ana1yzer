@@ -38,7 +38,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   vector<FinalResult> tuple_results;
 
   PqlQuery user_query = GetQuery();
-  PqlEvaluateWith* with_evaluator = new PqlEvaluateWith();
+  PqlEvaluateWith with_evaluator;
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
@@ -82,7 +82,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           GetPatternResult(*(PqlPattern*)clause_iter);
           continue;
         case PqlClauseType::kWith:
-          SetClauseFlag(with_evaluator->EvaluateWithClause(this, pkb, *(PqlWith*)clause_iter));
+          SetClauseFlag(with_evaluator.EvaluateWithClause(
+              this, pkb, *(PqlWith*)clause_iter));
           // GetWithResult(*(PqlWith*)clause_iter);
           continue;
       }
@@ -129,6 +130,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     }
   }
 
+  // Destroy pql result object
+  delete pql_result;
   cout << "Result size: " << final_results.size() << endl;
 
   return final_results;
