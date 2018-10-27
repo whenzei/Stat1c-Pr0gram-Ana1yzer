@@ -10,10 +10,6 @@
 #include "pkb.h"
 #include "tokenizer.h"
 
-using std::string;
-using std::unordered_set;
-using ProcName = std::string;
-
 class Parser {
  private:
   PKB* pkb_;
@@ -21,6 +17,7 @@ class Parser {
   Token current_token_;
   CFG* current_cfg_;
   ProcName current_proc_name_;
+  ProcIndex current_proc_index_;
   int current_index_;
   int stmt_num_;
   int stmt_list_num_;

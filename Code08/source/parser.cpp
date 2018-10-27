@@ -86,6 +86,7 @@ void Parser::ProcessProcedure(int given_stmt_list_index) {
   ReadNextToken();
   current_proc_name_ = ReadNextToken().value;
   pkb_->InsertProcName(current_proc_name_);
+  current_proc_index_ = pkb_->GetProcIndex(current_proc_name_);
   current_cfg_ = pkb_->GetCFG(current_proc_name_);
   // eat the open brace
   ReadNextToken();
@@ -211,7 +212,7 @@ ParseData Parser::ProcessKeyword(int given_stmt_list_num) {
 ParseData Parser::ProcessRead(int given_stmt_list_num) {
   VarName modified_var = ReadNextToken().value;
   pkb_->InsertReadStmt(
-      &ReadStmtData(stmt_num_, given_stmt_list_num, modified_var));
+      &ReadStmtData(stmt_num_, current_proc_index_, modified_var));
 
   PopulatePkbModifies(stmt_num_, modified_var);
 
@@ -223,7 +224,7 @@ ParseData Parser::ProcessRead(int given_stmt_list_num) {
 ParseData Parser::ProcessPrint(int given_stmt_list_num) {
   VarName used_var = ReadNextToken().value;
   pkb_->InsertPrintStmt(
-      &PrintStmtData(stmt_num_, given_stmt_list_num, used_var));
+      &PrintStmtData(stmt_num_, current_proc_index_, used_var));
 
   PopulatePkbUses(stmt_num_, used_var);
 
@@ -235,7 +236,7 @@ ParseData Parser::ProcessPrint(int given_stmt_list_num) {
 ParseData Parser::ProcessCall(int given_stmt_list_index) {
   VarName called_proc_name = ReadNextToken().value;
   pkb_->InsertEdgeInCallGraph(current_proc_name_, called_proc_name);
-  pkb_->InsertCallStmt(&CallStmtData(stmt_num_, given_stmt_list_index,
+  pkb_->InsertCallStmt(&CallStmtData(stmt_num_, current_proc_index_,
                                      current_proc_name_, called_proc_name));
 
   // eat semicolon
@@ -265,7 +266,7 @@ ParseData Parser::ProcessAssignment(int given_stmt_list_num) {
   postfix_tokens_rhs = ExpressionHelper::ToPostfix(infix_tokens_rhs);
 
   // Update PKB of assignment statement
-  pkb_->InsertAssignStmt(&AssignStmtData(stmt_num_, given_stmt_list_num,
+  pkb_->InsertAssignStmt(&AssignStmtData(stmt_num_, current_proc_index_,
                                          lhs_var, rhs_vars, rhs_consts,
                                          postfix_tokens_rhs));
 
@@ -374,7 +375,7 @@ ParseData Parser::ProcessIfBlock(int given_stmt_list_num) {
   }
 
   // Update PKB of the 'if' block
-  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, given_stmt_list_num,
+  pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, current_proc_index_,
                                  used_set_conditionals.first,
                                  used_set_conditionals.second));
 
@@ -485,7 +486,7 @@ ParseData Parser::ProcessWhileBlock(int given_stmt_list_num) {
   }
 
   // Update PKB of the 'while' block
-  pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, given_stmt_list_num,
+  pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, current_proc_index_,
                                        used_set_conditional.first,
                                        used_set_conditional.second));
 
