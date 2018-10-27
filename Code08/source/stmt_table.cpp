@@ -1,8 +1,9 @@
-#pragma once 
+#pragma once
 
 #include "stmt_table.h"
 
-bool StmtTable::InsertStmt(StmtNum stmt_num, StmtType stmt_type, ProcIndex proc_index) {
+bool StmtTable::InsertStmt(StmtNum stmt_num, StmtType stmt_type,
+                           ProcIndex proc_index) {
   if (stmt_map_.find(stmt_num) != stmt_map_.end()) {
     return false;
   } else {

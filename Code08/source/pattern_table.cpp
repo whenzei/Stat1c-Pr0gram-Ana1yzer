@@ -70,7 +70,8 @@ StmtNumList PatternTable::GetAssignWithSubExpr(TokenList sub_expr_tokenlist) {
   }
 }
 
-StmtNumList PatternTable::GetAssignWithExactExpr(TokenList exact_expr_tokenlist) {
+StmtNumList PatternTable::GetAssignWithExactExpr(
+    TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   if (iter != assign_exact_expr_map_.end()) {
@@ -96,8 +97,8 @@ StmtNumList PatternTable::GetAssignWithPattern(VarIndex var_index,
   return result;
 }
 
-StmtNumList PatternTable::GetAssignWithExactPattern(VarIndex var_index,
-                                                    TokenList exact_expr_tokenlist) {
+StmtNumList PatternTable::GetAssignWithExactPattern(
+    VarIndex var_index, TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   StmtNumList result;
@@ -112,7 +113,8 @@ StmtNumList PatternTable::GetAssignWithExactPattern(VarIndex var_index,
   return result;
 }
 
-StmtVarPairList PatternTable::GetAllAssignPatternPair(TokenList sub_expr_tokenlist) {
+StmtVarPairList PatternTable::GetAllAssignPatternPair(
+    TokenList sub_expr_tokenlist) {
   Expr sub_expr = ToString(sub_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_sub_expr_map_.find(sub_expr);
   StmtVarPairList result;
@@ -125,7 +127,8 @@ StmtVarPairList PatternTable::GetAllAssignPatternPair(TokenList sub_expr_tokenli
   return result;
 }
 
-StmtVarPairList PatternTable::GetAllAssignExactPatternPair(TokenList exact_expr_tokenlist) {
+StmtVarPairList PatternTable::GetAllAssignExactPatternPair(
+    TokenList exact_expr_tokenlist) {
   Expr exact_expr = ToString(exact_expr_tokenlist);
   ExprStmtMap::iterator iter = assign_exact_expr_map_.find(exact_expr);
   StmtVarPairList result;
@@ -152,7 +155,7 @@ StmtVarPairList PatternTable::GetAllWhilePatternPair() {
   for (auto entry : while_var_stmt_map_) {
     for (StmtNum& stmt_num : entry.second) {
       result.push_back(make_pair(stmt_num, entry.first));
-	}
+    }
   }
   return result;
 }

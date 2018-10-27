@@ -16,7 +16,7 @@ using std::unordered_map;
 using StmtNum = int;
 using ProcIndex = int;
 using StmtType = PqlDeclarationEntity;
-using StmtMap = unordered_map <int, pair<StmtType, int>>;
+using StmtMap = unordered_map<int, pair<StmtType, int>>;
 
 // The statement table class for the PKB component
 // Used to store statement number and the corresponding statement list index

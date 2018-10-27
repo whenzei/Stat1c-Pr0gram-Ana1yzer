@@ -33,15 +33,16 @@ class VarList {
   VarIndexMap var_index_map_;
   IndexVarMap index_var_map_;
 
- private: 
-  // Temporary
-  int var_count = 0;
+ private:
+  // Internal variable to assign new variables' indices
+  int var_count_ = 0;
 
  public:
   // Returns a list of all variable names in the VarList.
   VarIndexList GetAllVarIndices();
 
-  // Returns a list of all variable names in pairs (in each pair, the same var_name is repeated)
+  // Returns a list of all variable names in pairs (in each pair, the same
+  // var_name is repeated)
   VarIndexPairList GetAllVarIndexTwin();
 
   // Inserts var_name into VarList

@@ -10,7 +10,7 @@ void FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
     followed_by_map_[stmt_num1].push_back(stmt_num2);
     if (follows_set_.insert(stmt_num2).second) {
       follows_list_.push_back(stmt_num2);
-	}
+    }
     if (followed_by_set_.insert(stmt_num1).second) {
       followed_by_list_.push_back(stmt_num1);
     }
@@ -19,7 +19,9 @@ void FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
 
 bool FollowsTable::IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2) {
   if (followed_by_map_.find(stmt_num1) != followed_by_map_.end()) {
-    return (find(followed_by_map_[stmt_num1].begin(), followed_by_map_[stmt_num1].end(), stmt_num2) != followed_by_map_[stmt_num1].end());
+    return (find(followed_by_map_[stmt_num1].begin(),
+                 followed_by_map_[stmt_num1].end(),
+                 stmt_num2) != followed_by_map_[stmt_num1].end());
   } else {
     return false;
   }
@@ -49,9 +51,7 @@ StmtNumList FollowsTable::GetFollows(StmtNum stmt_num) {
   return follows;
 }
 
-StmtNumList FollowsTable::GetAllFollows() {
-  return follows_list_;
-}
+StmtNumList FollowsTable::GetAllFollows() { return follows_list_; }
 
 StmtNumList FollowsTable::GetFollowedByT(StmtNum stmt_num) {
   StmtNumList followed_by_list;
@@ -69,13 +69,9 @@ StmtNumList FollowsTable::GetFollowedBy(StmtNum stmt_num) {
   return followed_by;
 }
 
-StmtNumList FollowsTable::GetAllFollowedBy() {
-  return followed_by_list_;
-}
+StmtNumList FollowsTable::GetAllFollowedBy() { return followed_by_list_; }
 
-bool FollowsTable::HasFollowsRelationship() {
-  return (!follows_map_.empty());
-}
+bool FollowsTable::HasFollowsRelationship() { return (!follows_map_.empty()); }
 
 StmtNumPairList FollowsTable::GetAllFollowsTPair() {
   StmtNumPairList follows_pair_t_list;

@@ -10,10 +10,10 @@ using std::pair;
 using std::string;
 
 class PqlWith : public PqlClause {
-private:
+ private:
   Parameters parameters_;
 
-public:
+ public:
   PqlWith(string, PqlDeclarationEntity, string, PqlDeclarationEntity);
 
   Parameters GetParameters();
