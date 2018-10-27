@@ -391,8 +391,6 @@ bool Validator::MatchNext(int num, vector<tt> expected_types) {
   return true;
 }
 
-// Returns index of relational symbols in given TokenList if exists.
-// Else returns -1;
 int Validator::GetIndexOfRelational(TokenList tokens) {
   for (size_t i = 0; i < tokens.size(); i++) {
     if (tokens[i].type == tt::kRelational) {
