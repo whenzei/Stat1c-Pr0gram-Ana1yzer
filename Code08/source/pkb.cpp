@@ -72,6 +72,10 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
+ProcIndex PKB::GetProcOfStmt(StmtNum stmt_num) {
+  return stmt_table_.GetProcOfStmt(stmt_num);
+}
+
 CallGraph* PKB::GetCallGraph() { return &call_graph_; }
 
 void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name,
@@ -672,13 +676,12 @@ void PKB::NotifyParseEnd() {
 ***********************************/
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmtlist_id = stmt_data->GetStmtListIndex();
+  ProcIndex proc_index = stmt_data->GetProcOfStmt();
 
   // stmt already inserted into stmt_table_, no further processing required
-  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, stmtlist_id)) {
+  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, proc_index)) {
     return false;
   }
-  stmtlist_table_.InsertStmt(stmt_num, stmtlist_id);
   stmt_type_list_.InsertStmt(stmt_num, stmt_type);
 
   return true;

@@ -24,7 +24,6 @@ class StatementData;
 #include "proc_list.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
-#include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
 // statement_data.h must be at the end due to forward declaration
@@ -37,7 +36,6 @@ class PKB {
   VarList var_list_;
   ConstList const_list_;
   StmtTable stmt_table_;
-  StmtListTable stmtlist_table_;
   StmtTypeList stmt_type_list_;
   FollowsTable follows_table_;
   ParentTable parent_table_;
@@ -116,6 +114,9 @@ class PKB {
   // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @returns the index of the procedure that the statement belongs to
+  ProcIndex GetProcOfStmt(StmtNum stmt_num);
 
   // @returns pointer to the call graph of the program
   CallGraph* GetCallGraph();
