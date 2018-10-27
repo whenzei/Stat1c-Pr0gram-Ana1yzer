@@ -14,7 +14,7 @@ using std::unordered_map;
 // StmtNum is defined as int inside the PKB,
 // for faster processing and retrieval.
 using StmtNum = int;
-using StmtListIndex = int;
+using ProcIndex = int;
 using StmtType = PqlDeclarationEntity;
 using StmtMap = unordered_map<int, pair<StmtType, int>>;
 
@@ -28,15 +28,13 @@ class StmtTable {
   // Insert a statement into the StmtTable
   // Prerequisite: The stmt_num is not an empty string
   // @param stmt_num the statement number of the statement to be inserted
-  // @param stmtlist_index the statement list index of the statement to be
-  // inserted
+  // @param proc_index the index of the procedure the statement belongs to
   // @return true if the statement is not already in StmtTable and is inserted
   // into the table, false otherwise
-  bool InsertStmt(StmtNum stmt_num, StmtType stmt_type,
-                  StmtListIndex stmtlist_index);
+  bool InsertStmt(StmtNum stmt_num, StmtType stmt_type, ProcIndex proc_index);
 
-  // @return the statement list index of a given statement
-  StmtListIndex GetStmtListIndex(StmtNum stmt_num);
+  // @return the index of the procedure the statement belongs to
+  ProcIndex GetProcOfStmt(StmtNum stmt_num);
 
   // @return the type of a given statement
   StmtType GetStmtType(StmtNum stmt_num);

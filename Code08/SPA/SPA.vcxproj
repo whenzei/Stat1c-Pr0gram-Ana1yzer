@@ -35,7 +35,6 @@
     <ClCompile Include="..\source\tokenizer.cpp" />
     <ClCompile Include="..\source\proc_list.cpp" />
     <ClCompile Include="..\source\stmt_table.cpp" />
-    <ClCompile Include="..\source\stmtlist_table.cpp" />
     <ClCompile Include="..\source\stmt_type_list.cpp" />
     <ClCompile Include="..\source\uses_table.cpp" />
     <ClCompile Include="..\source\var_list.cpp" />
@@ -73,7 +72,6 @@
     <ClInclude Include="..\source\tokenizer.h" />
     <ClInclude Include="..\source\proc_list.h" />
     <ClInclude Include="..\source\stmt_table.h" />
-    <ClInclude Include="..\source\stmtlist_table.h" />
     <ClInclude Include="..\source\stmt_type_list.h" />
     <ClInclude Include="..\source\uses_table.h" />
     <ClInclude Include="..\source\var_list.h" />
