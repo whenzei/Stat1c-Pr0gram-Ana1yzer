@@ -11,7 +11,8 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace PkbPqlExtractorTests {
 TEST_CLASS(TestPkbPqlExtractor) {
-  const string h = "h";
+  const string kProcName1 = "one";
+  const string kProcName2 = "two";
 
  public:
   TEST_METHOD(IsNextTTwoParams) {
@@ -123,14 +124,14 @@ TEST_CLASS(TestPkbPqlExtractor) {
     */
 
     PKB dummy_pkb;
-    dummy_pkb.InsertNext("one", 1, 2);
-    dummy_pkb.InsertNext("one", 1, 3);
-    dummy_pkb.InsertNext("one", 3, 4);
-    dummy_pkb.InsertNext("one", 2, 5);
-    dummy_pkb.InsertNext("one", 5, 7);
-    dummy_pkb.InsertNext("one", 4, 7);
-    dummy_pkb.InsertNext("one", 1, 6);
-    dummy_pkb.InsertNext("one", 6, 3);
+    dummy_pkb.InsertNext(kProcName1, 1, 2);
+    dummy_pkb.InsertNext(kProcName1, 1, 3);
+    dummy_pkb.InsertNext(kProcName1, 3, 4);
+    dummy_pkb.InsertNext(kProcName1, 2, 5);
+    dummy_pkb.InsertNext(kProcName1, 5, 7);
+    dummy_pkb.InsertNext(kProcName1, 4, 7);
+    dummy_pkb.InsertNext(kProcName1, 1, 6);
+    dummy_pkb.InsertNext(kProcName1, 6, 3);
 
     return dummy_pkb;
   }
@@ -144,18 +145,18 @@ TEST_CLASS(TestPkbPqlExtractor) {
      */
 
     PKB dummy_pkb;
-    dummy_pkb.InsertNext("one", 1, 2);
-    dummy_pkb.InsertNext("one", 1, 3);
-    dummy_pkb.InsertNext("one", 2, 5);
-    dummy_pkb.InsertNext("one", 5, 7);
-    dummy_pkb.InsertNext("one", 3, 4);
-    dummy_pkb.InsertNext("one", 4, 6);
-    dummy_pkb.InsertNext("one", 6, 8);
-    dummy_pkb.InsertNext("one", 9, 3);
-    dummy_pkb.InsertNext("one", 9, 10);
-    dummy_pkb.InsertNext("one", 7, 8);
-    dummy_pkb.InsertNext("one", 10, 11);
-    dummy_pkb.InsertNext("one", 11, 6);
+    dummy_pkb.InsertNext(kProcName1, 1, 2);
+    dummy_pkb.InsertNext(kProcName1, 1, 3);
+    dummy_pkb.InsertNext(kProcName1, 2, 5);
+    dummy_pkb.InsertNext(kProcName1, 5, 7);
+    dummy_pkb.InsertNext(kProcName1, 3, 4);
+    dummy_pkb.InsertNext(kProcName1, 4, 6);
+    dummy_pkb.InsertNext(kProcName1, 6, 8);
+    dummy_pkb.InsertNext(kProcName1, 9, 3);
+    dummy_pkb.InsertNext(kProcName1, 9, 10);
+    dummy_pkb.InsertNext(kProcName1, 7, 8);
+    dummy_pkb.InsertNext(kProcName1, 10, 11);
+    dummy_pkb.InsertNext(kProcName1, 11, 6);
 
     return dummy_pkb;
   }
@@ -176,17 +177,17 @@ TEST_CLASS(TestPkbPqlExtractor) {
      */
 
     PKB dummy_pkb;
-    dummy_pkb.InsertNext("one", 1, 2);
-    dummy_pkb.InsertNext("one", 1, 3);
-    dummy_pkb.InsertNext("one", 2, 5);
-    dummy_pkb.InsertNext("one", 3, 4);
-    dummy_pkb.InsertNext("one", 4, 5);
-    dummy_pkb.InsertNext("two", 9, 10);
-    dummy_pkb.InsertNext("two", 10, 6);
-    dummy_pkb.InsertNext("two", 10, 11);
-    dummy_pkb.InsertNext("two", 11, 7);
-    dummy_pkb.InsertNext("two", 11, 12);
-    dummy_pkb.InsertNext("two", 7, 8);
+    dummy_pkb.InsertNext(kProcName1, 1, 2);
+    dummy_pkb.InsertNext(kProcName1, 1, 3);
+    dummy_pkb.InsertNext(kProcName1, 2, 5);
+    dummy_pkb.InsertNext(kProcName1, 3, 4);
+    dummy_pkb.InsertNext(kProcName1, 4, 5);
+    dummy_pkb.InsertNext(kProcName2, 9, 10);
+    dummy_pkb.InsertNext(kProcName2, 10, 6);
+    dummy_pkb.InsertNext(kProcName2, 10, 11);
+    dummy_pkb.InsertNext(kProcName2, 11, 7);
+    dummy_pkb.InsertNext(kProcName2, 11, 12);
+    dummy_pkb.InsertNext(kProcName2, 7, 8);
 
     return dummy_pkb;
   }
