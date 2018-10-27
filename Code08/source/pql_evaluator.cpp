@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "pkb.h"
+#include "pql_evaluate_pattern.h"
 #include "pql_evaluate_with.h"
 #include "pql_evaluator.h"
 #include "pql_extractor.h"
@@ -39,6 +40,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
   PqlQuery user_query = GetQuery();
   PqlEvaluateWith with_evaluator;
+  PqlEvaluatePattern pattern_evaluator;
 
   // If there is no such that/pattern/with clause, then evaluator will use
   // GetSelectAllResult method
@@ -79,7 +81,9 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           GetSuchThatResult(*(PqlSuchthat*)clause_iter);
           continue;
         case PqlClauseType::kPattern:
-          GetPatternResult(*(PqlPattern*)clause_iter);
+          SetClauseFlag(pattern_evaluator.EvaluatePatternClause(
+              this, pkb, *(PqlPattern*)clause_iter));
+          // GetPatternResult(*(PqlPattern*)clause_iter);
           continue;
         case PqlClauseType::kWith:
           SetClauseFlag(with_evaluator.EvaluateWithClause(

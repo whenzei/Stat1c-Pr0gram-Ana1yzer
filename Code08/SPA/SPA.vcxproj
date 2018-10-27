@@ -44,6 +44,7 @@
     <ClCompile Include="..\source\pql_evaluator.cpp" />
     <ClCompile Include="..\source\pql_result.cpp" />
     <ClCompile Include="..\source\pql_evaluate_with.cpp" />
+    <ClCompile Include="..\source\pql_evaluate_pattern.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\call_table.h" />
@@ -83,6 +84,7 @@
     <ClInclude Include="..\source\pql_parser.h" />
     <ClInclude Include="..\source\pql_result.h" />
     <ClInclude Include="..\source\pql_evaluate_with.h" />
+    <ClInclude Include="..\source\pql_evaluate_pattern.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
