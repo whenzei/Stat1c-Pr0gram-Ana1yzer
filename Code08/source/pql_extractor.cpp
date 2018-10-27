@@ -26,12 +26,12 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
     }
 
     visited_stmts.emplace(curr_stmt);
+    if (curr_stmt == next_stmt) {
+      return true;
+    }
 
     StmtNumList curr_next_stmts = pkb_.GetNext(curr_stmt);
     for (StmtNum curr_next : curr_next_stmts) {
-      if (curr_next == next_stmt) {
-        return true;
-      }
       if (visited_stmts.count(curr_next) == 0) {
         next_stmt_queue.push(curr_next);
       }
