@@ -8,12 +8,12 @@
 #include <unordered_set>
 #include <vector>
 
-using std::string;
 using std::make_pair;
+using std::pair;
+using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
-using std::pair;
 
 // StmtNum is defined as a integers inside the PKB,
 // for faster processing and retrieval.
@@ -44,16 +44,19 @@ class ParentTable {
  public:
   // Insert a direct parent-child relationship between parent_stmt_num and
   // child_stmt_num into direct_parents_map and direct_children_map
-  void InsertDirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+  void InsertDirectParentRelationship(StmtNum parent_stmt_num,
+                                      StmtNum child_stmt_num);
 
   // Insert an indirect parent-child relationship between parent_stmt_num and
   // child_stmt_num into parents_map and children_map
-  void InsertIndirectParentRelationship(StmtNum parent_stmt_num, StmtNum child_stmt_num);
+  void InsertIndirectParentRelationship(StmtNum parent_stmt_num,
+                                        StmtNum child_stmt_num);
 
   // @returns true if parent_stmt_num is the direct parent of child_stmt_num
   bool IsParent(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
-  // @returns true if parent_stmt_num is a direct or indirect parent of child_stmt_num
+  // @returns true if parent_stmt_num is a direct or indirect parent of
+  // child_stmt_num
   bool IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num);
 
   // @returns the direct parent of child_stmt_num

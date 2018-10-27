@@ -43,8 +43,7 @@ bool ParentTable::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
   ChildrenMap::iterator iter = children_map_.find(parent_stmt_num);
   if (iter != children_map_.end()) {
     StmtNumList children = (*iter).second;
-    return find(children.begin(),
-                children.end(), child_stmt_num) !=
+    return find(children.begin(), children.end(), child_stmt_num) !=
            children.end();
   } else {
     return false;
@@ -91,9 +90,7 @@ StmtNumList ParentTable::GetChildT(StmtNum parent_stmt_num) {
 
 StmtNumList ParentTable::GetAllChild() { return children_list_; }
 
-bool ParentTable::HasParentRelationship() {
-  return !parents_map_.empty();
-}
+bool ParentTable::HasParentRelationship() { return !parents_map_.empty(); }
 
 StmtNumPairList ParentTable::GetAllParentPair() {
   StmtNumPairList parent_pair_list;

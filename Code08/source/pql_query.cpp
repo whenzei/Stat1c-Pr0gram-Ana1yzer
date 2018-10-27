@@ -16,9 +16,7 @@ void PqlQuery::AddSelection(string selection, PqlDeclarationEntity type) {
   selections_.push_back(std::make_pair(selection, type));
 }
 
-void PqlQuery::AddClause(PqlClause* clause) {
-  clauses_.push_back(clause);
-}
+void PqlQuery::AddClause(PqlClause* clause) { clauses_.push_back(clause); }
 
 void PqlQuery::SetVarName(string var_name) { this->var_name_ = var_name; }
 
@@ -26,9 +24,7 @@ void PqlQuery::AddSuchthat(PqlSuchthat suchthat) {
   suchthats_.push_back(suchthat);
 }
 
-void PqlQuery::AddPattern(PqlPattern pattern) {
-  patterns_.push_back(pattern);
-}
+void PqlQuery::AddPattern(PqlPattern pattern) { patterns_.push_back(pattern); }
 
 void PqlQuery::AddGroup(Group group) {
   groups_.push_back(group);
@@ -51,38 +47,27 @@ vector<Group> PqlQuery::GetGroups() { return groups_; }
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {
     return PqlDeclarationEntity::kStmt;
-  }
-  else if (input == "read") {
+  } else if (input == "read") {
     return PqlDeclarationEntity::kRead;
-  }
-  else if (input == "print") {
+  } else if (input == "print") {
     return PqlDeclarationEntity::kPrint;
-  }
-  else if (input == "call") {
+  } else if (input == "call") {
     return PqlDeclarationEntity::kCall;
-  }
-  else if (input == "while") {
+  } else if (input == "while") {
     return PqlDeclarationEntity::kWhile;
-  }
-  else if (input == "if") {
+  } else if (input == "if") {
     return PqlDeclarationEntity::kIf;
-  }
-  else if (input == "assign") {
+  } else if (input == "assign") {
     return PqlDeclarationEntity::kAssign;
-  }
-  else if (input == "variable") {
+  } else if (input == "variable") {
     return PqlDeclarationEntity::kVariable;
-  }
-  else if (input == "constant") {
+  } else if (input == "constant") {
     return PqlDeclarationEntity::kConstant;
-  }
-  else if (input == "prog_line") {
+  } else if (input == "prog_line") {
     return PqlDeclarationEntity::kProgline;
-  }
-  else if (input == "procedure") {
+  } else if (input == "procedure") {
     return PqlDeclarationEntity::kProcedure;
-  }
-  else {
+  } else {
     return PqlDeclarationEntity::kNone;
   }
 }

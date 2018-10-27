@@ -3,8 +3,8 @@
 #ifndef PQL_EXTRACTOR
 #define PQL_EXTRACTOR
 
-#include "pql_global.h"
 #include "pkb.h"
+#include "pql_global.h"
 
 // Helper class to extract information from PKB to evaluate:
 // Next*, Affects and Affects*
@@ -14,7 +14,7 @@ class PqlExtractor {
 
   // Helper method
   //@params start is the StmtNum that should be in the LHS of all pairs
-  //        res_list is passed by reference 
+  //        res_list is passed by reference
   void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
 
  public:
@@ -39,9 +39,8 @@ class PqlExtractor {
 
   // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
   StmtNumPairList GetAllNextTPairs();
-  
-  //*********************************************************
 
+  //*********************************************************
 };
 
 #endif

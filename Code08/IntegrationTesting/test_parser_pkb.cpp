@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "design_extractor.h"
 #include "parser.h"
 #include "pkb.h"
-#include "design_extractor.h"
 
 #include <list>
 #include <string>
@@ -14,6 +14,7 @@ using tt = Tokenizer::TokenType;
 namespace ParserPKBTests {
 TEST_CLASS(TestParserPkb) {
   const string kProcName1 = "one";
+
  public:
   // Include both Follows and Follows* tests
   TEST_METHOD(TestFollowsOfStatementsOnly) {

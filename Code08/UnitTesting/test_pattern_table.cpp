@@ -231,12 +231,12 @@ TEST_CLASS(TestPatternTable) {
     Assert::AreEqual(kVarIndex2, result4.back().second);
   }
 
-  TEST_METHOD(TestGetWhileWithPattern) { 
-	PatternTable pattern_table;
+  TEST_METHOD(TestGetWhileWithPattern) {
+    PatternTable pattern_table;
     pattern_table.InsertWhilePattern(kStmtNum1, kVarIndex1);
-        pattern_table.InsertWhilePattern(kStmtNum2, kVarIndex2);
+    pattern_table.InsertWhilePattern(kStmtNum2, kVarIndex2);
     pattern_table.InsertWhilePattern(kStmtNum3, kVarIndex1);
-        StmtNumList result1 = pattern_table.GetWhileWithPattern(kVarIndex1);
+    StmtNumList result1 = pattern_table.GetWhileWithPattern(kVarIndex1);
     Assert::IsTrue(result1.size() == 2);
     Assert::AreEqual(kStmtNum1, result1.front());
     Assert::AreEqual(kStmtNum3, result1.back());

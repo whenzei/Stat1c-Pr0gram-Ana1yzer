@@ -14,7 +14,6 @@ using std::stringstream;
 bool Util::IsValidFile(string filepath) {
   ifstream infile(filepath);
   return infile.good();
-
 }
 
 string Util::ReadContentFromFile(string filepath) {
@@ -25,7 +24,7 @@ string Util::ReadContentFromFile(string filepath) {
   // start reading file
   ifstream ifs(filepath);
   return string((istreambuf_iterator<char>(ifs)),
-    (istreambuf_iterator<char>()));
+                (istreambuf_iterator<char>()));
 }
 
 vector<string> Util::Split(const string &str, char delimiter) {
@@ -44,19 +43,18 @@ vector<string> Util::Split(const string &str, char delimiter) {
 // trim from start (in place)
 inline void Util::LTrim(string &s) {
   s.erase(s.begin(),
-    find_if(s.begin(), s.end(), [](int ch) { return !isspace(ch); }));
+          find_if(s.begin(), s.end(), [](int ch) { return !isspace(ch); }));
 }
 
 // trim from end (in place)
 inline void Util::RTrim(string &s) {
   s.erase(
-    find_if(s.rbegin(), s.rend(), [](int ch) { return !isspace(ch); }).base(),
-    s.end());
+      find_if(s.rbegin(), s.rend(), [](int ch) { return !isspace(ch); }).base(),
+      s.end());
 }
 
 // trim from both ends (in place)
 inline void Util::Trim(string &s) {
   LTrim(s);
   RTrim(s);
-
 }

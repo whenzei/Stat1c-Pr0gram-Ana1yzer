@@ -13,7 +13,11 @@ class StatementData {
   StmtNum stmt_num_;
   StmtNum stmt_num_int_;
   int stmt_list_index_;
+
+  // @returns statement number of this statement
   StmtNum GetStmtNum();
+
+  // @returns the statement list index of this statement
   int GetStmtListIndex();
 };
 
@@ -27,9 +31,17 @@ class AssignStmtData : public StatementData {
   AssignStmtData(int stmt_num, int stmt_list_index, VarName, VarNameSet,
                  ConstValueSet, TokenList);
 
+  // @returns the modified variable of this assign statement
   VarName GetModifiedVariable();
+
+  // @returns the used variables of this assign statement
   VarNameSet GetUsedVariables();
+
+  // @returns the used constants of this assign statement
   ConstValueSet GetUsedConstants();
+
+  // @returns the post-fixed expression from the expression passed in during
+  // construction
   TokenList GetPostfixedExpr();
 };
 
@@ -40,7 +52,11 @@ class IfStmtData : public StatementData {
  public:
   IfStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
              ConstValueSet used_consts);
+
+  // @returns the used variables of this if statement
   VarNameSet GetUsedVariables();
+
+  // @returns the used constants of this if statement
   ConstValueSet GetUsedConstants();
 };
 
@@ -51,7 +67,11 @@ class WhileStmtData : public StatementData {
  public:
   WhileStmtData(int stmt_num, int stmt_list_index, VarNameSet control_vars,
                 ConstValueSet used_consts);
+
+  // @returns the used variables of this while statement
   VarNameSet GetUsedVariables();
+
+  // @returns the used constants of this while statement
   ConstValueSet GetUsedConstants();
 };
 
@@ -60,6 +80,8 @@ class ReadStmtData : public StatementData {
 
  public:
   ReadStmtData(int stmt_num, int stmt_list_index, VarName modified_var);
+
+  // @returns the modified variable of this read statement
   VarName GetModifiedVariable();
 };
 
@@ -68,17 +90,23 @@ class PrintStmtData : public StatementData {
 
  public:
   PrintStmtData(int stmt_num, int stmt_list_index, VarName used_var);
+
+  // @returns the used variable of this print statement
   VarName GetUsedVariable();
 };
 
 class CallStmtData : public StatementData {
   ProcName caller_proc_name_;
   ProcName callee_proc_name_;
+
  public:
   CallStmtData(int stmt_num, int stmt_list_index, ProcName caller_proc_name,
                ProcName callee_proc_name);
 
+  // @returns the caller's procedure name of this call statement
   ProcName GetCallerProcName();
+
+  // @returns the callee's procedure name of this call statement
   ProcName GetCalleeProcName();
 };
 

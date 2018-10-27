@@ -92,7 +92,6 @@ void DesignExtractor::UpdateCallT() {
 }
 
 void DesignExtractor::PopulateDominates() {
-  unordered_map<ProcName, unordered_map<Vertex, unordered_set<int>>> dominates;
   ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto& proc : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc);
@@ -101,10 +100,9 @@ void DesignExtractor::PopulateDominates() {
 
     for (Vertex v : all_vertices) {
       VertexSet unreachables = cfg->GetUnreachableVertices(v);
-      dominates[proc][v] = unreachables;
+      pkb_->InsertDominates(v, unreachables);
     }
   }
-  // TODO: insert setter method to PKB's dominate table here
 }
 
 void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
