@@ -72,8 +72,8 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
-ProcIndex PKB::GetProcOfStmt(StmtNum stmt_num) {
-  return stmt_table_.GetProcOfStmt(stmt_num);
+ProcName PKB::GetProcOfStmt(StmtNum stmt_num) {
+  return GetProcName(stmt_table_.GetProcOfStmt(stmt_num));
 }
 
 CallGraph* PKB::GetCallGraph() { return &call_graph_; }

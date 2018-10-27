@@ -115,8 +115,8 @@ class PKB {
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
 
-  // @returns the index of the procedure that the statement belongs to
-  ProcIndex GetProcOfStmt(StmtNum stmt_num);
+  // @returns the procedure that the statement belongs to
+  ProcName GetProcOfStmt(StmtNum stmt_num);
 
   // @returns pointer to the call graph of the program
   CallGraph* GetCallGraph();
