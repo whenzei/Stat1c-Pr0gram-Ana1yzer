@@ -55,5 +55,6 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     // each result must be a string.
     results = qe.GetResultFromQuery(pql_query, pkb_);
   }
- 
+
+  delete pql_query;
 }
