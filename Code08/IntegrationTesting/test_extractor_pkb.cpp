@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "pkb.h"
 #include "pql_extractor.h"
+#include "parser.h"
 
 #include <list>
 #include <string>
@@ -113,6 +114,27 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_1 == expected_result_1);
   }
 
+  TEST_METHOD(IsAffects) { 
+    PKB test_pkb = GetTestPKBOne();
+    PqlExtractor extractor = PqlExtractor(test_pkb);
+
+    bool test_result_1 = extractor.isAffects(4, 4);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.isAffects(4, 6);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.isAffects(4, 9);
+    Assert::IsTrue(test_result_3);
+
+    bool test_result_4 = extractor.isAffects(2, 8);
+    Assert::IsFalse(test_result_4);
+
+    bool test_result_5 = extractor.isAffects(9, 11);
+    Assert::IsFalse(test_result_4);
+  }
+
+
  private:
   PKB GetDummyPKBOne() {
     /*
@@ -190,6 +212,36 @@ TEST_CLASS(TestPkbPqlExtractor) {
     dummy_pkb.InsertNext(kProcName2, 7, 8);
 
     return dummy_pkb;
+  }
+  PKB GetTestPKBOne() {
+    
+     string program =
+        " procedure one {"
+        "while(a == 1) {"      // 1
+        " a = 1;"              // 2
+        " if (x == b) then {"  // 3
+        "t = t + 1;"           // 4
+        "print x;"             // 5
+        "} else {"
+        "t = t * 2;"           // 6
+        "}"
+        "}"
+        "call two;"           // 7
+        "g = a;"                // 8
+        "f = t + a + c;"        //9
+        "read f;"              //10
+        "w = f;"                //1
+        "}"
+        "procedure two {"
+        "read a;"             //12
+        "}";
+
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+
+    return test_pkb;
   }
 };
 }  // namespace PkbPqlExtractorTests
