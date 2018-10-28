@@ -17,8 +17,30 @@ class PqlExtractor {
   //        res_list is passed by reference
   void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
 
+  // Helper method
+  // @returns true if stmt_1 and stmt_2 are in the same procedure
+  bool IsSameProcedure(StmtNum stmt_1, StmtNum stmt_2);
+
+  // Helper method
+  // @returns true if stmt is an assignment statement
+  bool IsAssignStmt(StmtNum stmt);
+
  public:
   PqlExtractor(PKB pkb);
+
+  //**************** Affects* *********************************
+  
+  // @returns true if Affects*(stmt_1, stmt_2) holds
+  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2);
+
+  // @returns a list of stmt numbers a where Affects*(stmt, a) holds
+  StmtNumList GetAffectsT(StmtNum stmt);
+
+  // @returns a list of stmt numbers a where Affects*(a, stmt) holds
+  StmtNumList GetAffectedByT(StmtNum stmt);
+
+  // @returns a list of pairs of stmt numbers a1 and a2 where Affects*(a1, a2) holds
+  StmtNumPairList GetAllAffectTPairs();
 
   //**************** Next* *********************************
 

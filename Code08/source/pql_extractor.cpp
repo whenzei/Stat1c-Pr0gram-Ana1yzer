@@ -6,6 +6,60 @@ using std::unordered_set;
 
 PqlExtractor::PqlExtractor(PKB pkb) { pkb_ = pkb; }
 
+bool PqlExtractor::IsSameProcedure(StmtNum stmt_1, StmtNum stmt_2) {
+  return true;
+}
+
+bool PqlExtractor::IsAssignStmt(StmtNum stmt) {
+  return true;
+}
+
+bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2) {
+  if (!(IsAssignStmt(stmt_1) && IsAssignStmt(stmt_2))) {
+    return false;
+  }
+  if (!IsSameProcedure(stmt_1, stmt_2)) {
+    return false;
+  }
+
+  // StmtNumList temp_list;
+  // StmtNumList affected_by_s1 = GetAffectedBy(stmt_1);
+  // Double loop, check until affected_by_s1 contains stmt_2 and return true if found
+  // Keep expanding list every loop
+
+  return false;
+}
+
+StmtNumList PqlExtractor::GetAffectsT(StmtNum stmt) {
+  //StmtList affected_stmts = GetAffectedBy(stmt);
+  StmtNumList final_stmt_list;
+  StmtNumList temp_list;
+
+  // final_stmt_list.insert(final_stmt_list.end(), affected_stmts.begin(), affected_stmts.end());
+
+  // Iterate through affected_stmts, do GetAffectedBy of each statements
+  // and store all stmts in the final_stmt_list
+  return final_stmt_list;
+}
+
+StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt) {
+  //StmtList affecting_stmts = GetAffects(stmt);
+  StmtNumList final_stmt_list;
+  StmtNumList temp_list;
+
+  // final_stmt_list.insert(final_stmt_list.end(), affecting_stmts.begin(), affecting_stmts.end());
+
+  // Iterate through affecting_stmts, do GetAffects of each statements
+  // and store all stmts in the final_stmt_list
+
+  return final_stmt_list;
+}
+
+StmtNumPairList PqlExtractor::GetAllAffectTPairs() {
+  
+  return StmtNumPairList();
+}
+
 bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
