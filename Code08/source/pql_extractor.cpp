@@ -121,19 +121,16 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-
-
-bool PqlExtractor::isAffects(StmtNum stmt_1, StmtNum stmt_2) {
-  
+bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
 
-  if (p1 == ProcName() || p2== ProcName()) {
+  if (p1 == ProcName() || p2 == ProcName()) {
     return false;
   }
 
   // Check if both stmts are assignment
-  if (pkb_.GetStmtType(stmt_1) != StmtType::kAssign &&
+  if (pkb_.GetStmtType(stmt_1) != StmtType::kAssign || 
       pkb_.GetStmtType(stmt_2) != StmtType::kAssign) {
     return false;
   }
@@ -144,21 +141,47 @@ bool PqlExtractor::isAffects(StmtNum stmt_1, StmtNum stmt_2) {
   if (!pkb_.IsUsedByS(stmt_2, pkb_.GetVarName(modified_var))) {
     return false;
   }
-  
+
   curr_affects_cfg_ = pkb_.GetCFG(p1);
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
+  VarIndex var_index = pkb_.GetModifiedVarS(stmt_1).front();
+  VarName affects_var = pkb_.GetVarName(var_index);
 
   bool flag = false;
   for (Vertex neighbour : neighbours) {
-    flag = flag || DfsAffects(neighbour, stmt_1, stmt_2);
+    flag = flag || DfsAffects(neighbour, stmt_2, affects_var);
   }
 
   ClearVisitedMap();
   return flag;
 }
 
+StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
+  ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
 
+  if (p1 == ProcName()) {
+    return StmtNumList();
+  }
+
+  if (pkb_.GetStmtType(stmt_1) != StmtType::kAssign) {
+    return StmtNumList();
+  }
+
+  curr_affects_cfg_ = pkb_.GetCFG(p1);
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
+  VarIndex var_index = pkb_.GetModifiedVarS(stmt_1).front();
+  VarName affects_var = pkb_.GetVarName(var_index);
+
+  StmtNumList res_list = StmtNumList();
+  for (Vertex neighbour : neighbours) {
+    DfsAffects(neighbour, affects_var, &res_list);
+  }
+
+  ClearVisitedMap();
+  return res_list;
+}
 
 // Helper Methods
 
@@ -192,8 +215,7 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   }
 }
 
-
-bool PqlExtractor::DfsAffects(Vertex curr, Vertex start, Vertex target) {
+bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarName affects_var) {
   if (curr_visited_.count(curr) == 1) {
     return false;
   }
@@ -205,10 +227,8 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex start, Vertex target) {
     return true;
   }
 
-  if (curr_stmt_type == StmtType::kCall || curr_stmt_type == StmtType::kRead ||
-      curr_stmt_type == StmtType::kAssign) {
-    VarIndex start_var = pkb_.GetModifiedVarS(start).front();
-    if (pkb_.IsModifiedByS(curr, pkb_.GetVarName(start_var))) {
+  if (IsModifyingType(curr_stmt_type)) {
+    if (pkb_.IsModifiedByS(curr, affects_var)) {
       return false;
     }
   }
@@ -216,7 +236,7 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex start, Vertex target) {
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
   bool flag = false;
   for (Vertex neighbour : neighbours) {
-    flag = flag || DfsAffects(neighbour, start, target);
+    flag = flag || DfsAffects(neighbour, target, affects_var);
     if (flag) {
       return flag;
     }
@@ -225,4 +245,36 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex start, Vertex target) {
   return flag;
 }
 
+void PqlExtractor::DfsAffects(Vertex curr, VarName affects_var,
+                              StmtNumList* res_list) {
+  if (curr_visited_.count(curr) == 1) {
+    return;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  if (curr_stmt_type == StmtType::kAssign) {
+    if (pkb_.IsUsedByS(curr, affects_var)) {
+      res_list->push_back(curr);
+    }
+  }
+
+  if (IsModifyingType(curr_stmt_type)) {
+    if (pkb_.IsModifiedByS(curr, affects_var)) {
+      return;
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  for (Vertex neighbour : neighbours) {
+    DfsAffects(neighbour, affects_var, res_list);
+  }
+}
+
 void PqlExtractor::ClearVisitedMap() { curr_visited_.clear(); }
+
+bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
+  return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||
+         stmt_type == StmtType::kAssign;
+}

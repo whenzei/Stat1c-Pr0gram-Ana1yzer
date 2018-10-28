@@ -25,7 +25,11 @@ class PqlExtractor {
   //        res_list is passed by reference
   void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
 
-  bool DfsAffects(Vertex curr, Vertex start, Vertex target);
+  bool DfsAffects(Vertex curr, Vertex target, VarName affects_var);
+
+  void DfsAffects(Vertex curr, VarName affects_var, StmtNumList* res_list);
+
+  bool IsModifyingType(StmtType stmt_type);
 
   void ClearVisitedMap();
 
@@ -55,8 +59,10 @@ class PqlExtractor {
   //****************** Affects* *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
-  bool isAffects(StmtNum stmt_1, StmtNum stmt_2);
+  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
+  // @returns a list of n that Affects(stmt_1, n) holds true
+  StmtNumList GetAffects(StmtNum stmt_1);
   //*********************************************************
 };
 
