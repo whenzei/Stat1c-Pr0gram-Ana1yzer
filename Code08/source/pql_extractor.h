@@ -9,14 +9,13 @@
 #include "pql_global.h"
 
 using std::stack;
-using LastModifiedMap = unordered_map<VarIndex, StmtNum>;
+using VarIndexSet = unordered_set<VarIndex>;
 
 // Helper class to extract information from PKB to evaluate:
 // Next*, Affects and Affects*
 class PqlExtractor {
  private:
   PKB pkb_;
-  stack<LastModifiedMap*> modified_vars_stack_;
   CFG* curr_affects_cfg_;
   VisitedMap curr_visited_;
 
@@ -28,6 +27,8 @@ class PqlExtractor {
   bool DfsAffects(Vertex curr, Vertex target, VarName affects_var);
 
   void DfsAffects(Vertex curr, VarName affects_var, StmtNumList* res_list);
+
+  void DfsAffects(Vertex curr, VarIndexSet rhs_vars, VarIndexSet* affected_rhs_vars, StmtNumList* res_list);
 
   bool IsModifyingType(StmtType stmt_type);
 
@@ -63,6 +64,9 @@ class PqlExtractor {
 
   // @returns a list of n that Affects(stmt_1, n) holds true
   StmtNumList GetAffects(StmtNum stmt_1);
+  
+  // @returns a list of n that Affects(n, stmt_num) holds true
+  StmtNumList GetAffectedBy(StmtNum stmt_num); 
   //*********************************************************
 };
 
