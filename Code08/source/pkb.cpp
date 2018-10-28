@@ -662,6 +662,10 @@ bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
 
 CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
+CFG* PKB::GetReverseCFG(ProcName proc_name) {
+  return next_table_.GetReverseCFG(proc_name);
+}
+
 CFG* PKB::GetCombinedCFG() { return next_table_.GetCombinedCFG(); }
 
 void PKB::NotifyParseEnd() {

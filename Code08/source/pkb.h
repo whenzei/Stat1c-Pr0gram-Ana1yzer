@@ -635,8 +635,11 @@ class PKB {
   // @returns true if Next(_, _) holds
   bool HasNextRelationship();
 
-  // @returns the cfg belonging to a specified procedure
+  // @returns the cfg belonging to the given procedure
   CFG* GetCFG(ProcName proc_name);
+
+  // @returns the reverse cfg belonging to the given procedure
+  CFG* GetReverseCFG(ProcName proc_name);
 
   // @returns the combined cfg of the program
   CFG* GetCombinedCFG();
