@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "parser.h"
 #include "pkb.h"
 #include "pql_extractor.h"
-#include "parser.h"
 
 #include <list>
 #include <string>
@@ -114,26 +114,96 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_1 == expected_result_1);
   }
 
-  TEST_METHOD(IsAffects) { 
+  TEST_METHOD(IsAffects) {
     PKB test_pkb = GetTestPKBOne();
     PqlExtractor extractor = PqlExtractor(test_pkb);
 
-    bool test_result_1 = extractor.isAffects(4, 4);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffects(4, 4);
     Assert::IsTrue(test_result_1);
 
-    bool test_result_2 = extractor.isAffects(4, 6);
+    bool test_result_2 = extractor.IsAffects(4, 6);
     Assert::IsTrue(test_result_2);
 
-    bool test_result_3 = extractor.isAffects(4, 9);
+    bool test_result_3 = extractor.IsAffects(4, 9);
     Assert::IsTrue(test_result_3);
 
-    bool test_result_4 = extractor.isAffects(2, 8);
+
+    //Negatives********************************************
+
+    // Variable of 2 is modified before reaching statement 8
+    bool test_result_4 = extractor.IsAffects(2, 8);
     Assert::IsFalse(test_result_4);
 
-    bool test_result_5 = extractor.isAffects(9, 11);
-    Assert::IsFalse(test_result_4);
+    //Encounters read statement that modifies variable of stmt 9
+    bool test_result_5 = extractor.IsAffects(9, 11);
+    Assert::IsFalse(test_result_5);
+
+    // Stmts in different procedures
+    bool test_result_6 = extractor.IsAffects(11, 12);
+    Assert::IsFalse(test_result_6);
+
+    // Both stmts are not found in the program
+    bool test_result_7 = extractor.IsAffects(22, 100);
+    Assert::IsFalse(test_result_7);
+
+    // Both statements are not assignment statements
+    bool test_result_8 = extractor.IsAffects(7, 10);
+    Assert::IsFalse(test_result_8);
+
+    // Left statement is not assignment statement
+    bool test_result_9 = extractor.IsAffects(5, 8);
+    Assert::IsFalse(test_result_9);
+
+    // Right statement is not assignment statement
+    bool test_result_10 = extractor.IsAffects(8, 10);
+    Assert::IsFalse(test_result_10);
+
+    // Modified variable in left statement is not used in right statement
+    bool test_result_11 = extractor.IsAffects(2, 4);
+    Assert::IsFalse(test_result_11);
   }
 
+  TEST_METHOD(GetAffects) {
+    PKB test_pkb = GetTestPKBTwo();
+    PqlExtractor extractor = PqlExtractor(test_pkb);
+
+    //Positives**************************************
+    StmtNumList test_result_1 = extractor.GetAffects(1);
+    StmtNumList expected_result_1 = StmtNumList{5, 6, 10};
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    StmtNumList test_result_2 = extractor.GetAffects(12);
+    StmtNumList expected_result_2 = StmtNumList{12, 13};
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    StmtNumList test_result_3 = extractor.GetAffects(10);
+    StmtNumList expected_result_3 = StmtNumList{9, 10};
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    //Negatives***************************************
+
+    // Stmt 2 is a read stmt
+    StmtNumList test_result_4 = extractor.GetAffects(2);
+    StmtNumList expected_result_4 = StmtNumList{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
+
+    // Stmt 13 is the last statement in the procedure
+    StmtNumList test_result_5 = extractor.GetAffects(13);
+    StmtNumList expected_result_5 = StmtNumList{};
+    Assert::IsTrue(test_result_5 == expected_result_5);
+
+    // Stmt 8 is a while stmt
+    StmtNumList test_result_6 = extractor.GetAffects(8);
+    StmtNumList expected_result_6 = StmtNumList{};
+    Assert::IsTrue(test_result_6 == expected_result_6);
+
+    // Stmt is not found in program
+    StmtNumList test_result_7 = extractor.GetAffects(55);
+    StmtNumList expected_result_7 = StmtNumList{};
+    Assert::IsTrue(test_result_7 == expected_result_7);
+  }
 
  private:
   PKB GetDummyPKBOne() {
@@ -214,8 +284,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     return dummy_pkb;
   }
   PKB GetTestPKBOne() {
-    
-     string program =
+    string program =
         " procedure one {"
         "while(a == 1) {"      // 1
         " a = 1;"              // 2
@@ -223,17 +292,45 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "t = t + 1;"           // 4
         "print x;"             // 5
         "} else {"
-        "t = t * 2;"           // 6
+        "t = t * 2;"  // 6
         "}"
         "}"
-        "call two;"           // 7
-        "g = a;"                // 8
-        "f = t + a + c;"        //9
-        "read f;"              //10
-        "w = f;"                //1
+        "call two;"       // 7
+        "g = a;"          // 8
+        "f = t + a + c;"  // 9
+        "read f;"         // 10
+        "w = f;"          // 11
         "}"
         "procedure two {"
-        "read a;"             //12
+        "read a;"  // 12
+        "}";
+
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+
+    return test_pkb;
+  }
+  PKB GetTestPKBTwo() {
+    string program =
+        " procedure one {"
+        "a = b;"               // 1
+        "read x;"              // 2
+        "print y;"              // 3
+        " if (x == b) then {"  // 4
+        "x = a + 2;"           // 5
+        "y = 5*a;"             // 6
+        "} else {"
+        "t = z * 2;"            // 7
+        "while(k==1) {"         //8
+        "g=z;"                 //9
+        "z=a+t+z;"                 //10
+        "read a;"                //11
+        "y =a + y;"               //12
+        "}"
+        "}"
+        "k = y;"                //13
         "}";
 
     PKB test_pkb = PKB();
