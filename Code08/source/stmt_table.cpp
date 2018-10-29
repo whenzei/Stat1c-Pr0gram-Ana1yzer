@@ -1,22 +1,23 @@
-#pragma once 
+#pragma once
 
 #include "stmt_table.h"
 
-bool StmtTable::InsertStmt(StmtNum stmt_num, StmtType stmt_type, StmtListIndex stmtlist_index) {
+bool StmtTable::InsertStmt(StmtNum stmt_num, StmtType stmt_type,
+                           ProcIndex proc_index) {
   if (stmt_map_.find(stmt_num) != stmt_map_.end()) {
     return false;
   } else {
     stmt_map_[stmt_num].first = stmt_type;
-    stmt_map_[stmt_num].second = stmtlist_index;
+    stmt_map_[stmt_num].second = proc_index;
     return true;
   }
 }
 
-StmtListIndex StmtTable::GetStmtListIndex(StmtNum stmt_num) {
+ProcIndex StmtTable::GetProcOfStmt(StmtNum stmt_num) {
   if (stmt_map_.find(stmt_num) != stmt_map_.end()) {
     return stmt_map_[stmt_num].second;
   } else {
-    return StmtListIndex();
+    return ProcIndex();
   }
 }
 

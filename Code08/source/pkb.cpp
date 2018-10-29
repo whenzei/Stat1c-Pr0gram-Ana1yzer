@@ -72,6 +72,10 @@ StmtType PKB::GetStmtType(StmtNum stmt_num) {
   return stmt_table_.GetStmtType(stmt_num);
 }
 
+ProcName PKB::GetProcOfStmt(StmtNum stmt_num) {
+  return GetProcName(stmt_table_.GetProcOfStmt(stmt_num));
+}
+
 CallGraph* PKB::GetCallGraph() { return &call_graph_; }
 
 void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name,
@@ -667,18 +671,47 @@ void PKB::NotifyParseEnd() {
   de.UpdatePkb();
 }
 
+void PKB::InsertDominates(Vertex dominating_vertex,
+                          VertexSet dominated_vertices) {
+  dominates_table_.InsertDominates(dominating_vertex, dominated_vertices);
+}
+
+bool PKB::IsDominates(StmtNum dominating_stmt, StmtNum dominated_stmt) {
+  return dominates_table_.IsDominates(dominating_stmt, dominated_stmt);
+}
+
+// every stmt dominates itself
+bool PKB::IsDominating(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
+
+bool PKB::IsDominated(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
+
+StmtNumList PKB::GetDominating(StmtNum stmt_num) {
+  return dominates_table_.GetDominating(stmt_num);
+}
+
+StmtNumList PKB::GetDominated(StmtNum stmt_num) {
+  return dominates_table_.GetDominated(stmt_num);
+}
+
+StmtNumList PKB::GetAllDominating() { return GetAllStmt(); }
+
+StmtNumList PKB::GetAllDominated() { return GetAllStmt(); }
+
+StmtNumPairList PKB::GetAllDominatesPairs() { return dominates_table_.GetAllDominatesPairs(); }
+
+bool PKB::HasDominatesRelationship() { return dominates_table_.HasDominatesRelationship(); }
+
 /***********************************
 **** Private methods begin here ****
 ***********************************/
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
-  StmtListIndex stmtlist_id = stmt_data->GetStmtListIndex();
+  ProcIndex proc_index = stmt_data->GetProcOfStmt();
 
   // stmt already inserted into stmt_table_, no further processing required
-  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, stmtlist_id)) {
+  if (!stmt_table_.InsertStmt(stmt_num, stmt_type, proc_index)) {
     return false;
   }
-  stmtlist_table_.InsertStmt(stmt_num, stmtlist_id);
   stmt_type_list_.InsertStmt(stmt_num, stmt_type);
 
   return true;

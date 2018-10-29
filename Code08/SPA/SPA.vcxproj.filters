@@ -48,6 +48,9 @@
     <ClCompile Include="..\source\const_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\dominates_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -64,9 +67,6 @@
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="..\source\proc_list.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\stmtlist_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="..\source\stmt_type_list.cpp">
@@ -155,6 +155,9 @@
     <ClInclude Include="..\source\const_list.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\dominates_table.h">
+      <Filter>Header Files\PKB</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\modifies_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
@@ -177,9 +180,6 @@
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\stmt_type_list.h">
-      <Filter>Header Files\PKB</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\stmtlist_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
     <ClInclude Include="..\source\var_list.h">

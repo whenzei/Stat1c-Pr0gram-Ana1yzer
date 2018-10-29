@@ -38,13 +38,9 @@ VarIndexList UsesTable::GetUsedVarP(ProcIndex proc_name_id) {
   return used_vars;
 }
 
-StmtNumList UsesTable::GetAllUsingStmt() {
-  return using_stmt_list_; 
-}
+StmtNumList UsesTable::GetAllUsingStmt() { return using_stmt_list_; }
 
-ProcIndexList UsesTable::GetAllUsingProc() {
-  return using_proc_list_;
-}
+ProcIndexList UsesTable::GetAllUsingProc() { return using_proc_list_; }
 
 StmtNumList UsesTable::GetUsingStmt(VarIndex var_name_id) {
   StmtNumList using_stmts;
@@ -66,9 +62,8 @@ bool UsesTable::IsUsedByS(StmtNum stmt_num, VarIndex var_name_id) {
   if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
     VarIndexList var_name_list = (*uses_s_map_.find(stmt_num)).second;
     return find(var_name_list.begin(), var_name_list.end(), var_name_id) !=
-      var_name_list.end();
-  }
-  else {
+           var_name_list.end();
+  } else {
     return false;
   }
 }

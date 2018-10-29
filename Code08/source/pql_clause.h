@@ -6,7 +6,7 @@
 #include "pql_global.h"
 
 class PqlClause {
-public:
+ public:
   virtual PqlClauseType GetClauseType() = 0;
 };
 

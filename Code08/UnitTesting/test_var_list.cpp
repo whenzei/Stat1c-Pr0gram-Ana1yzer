@@ -1,4 +1,4 @@
-#include "stdafx.h" 
+#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "var_list.h"
 

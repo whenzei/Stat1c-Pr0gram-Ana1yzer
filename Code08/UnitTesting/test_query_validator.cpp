@@ -7,7 +7,7 @@ using std::string;
 
 namespace PQLTests {
 TEST_CLASS(TestQueryValidator) {
-public:
+ public:
   TEST_METHOD(TestValidIdent) {
     string content = "abc123";
     bool result = PqlValidator::ValidateIdent(content);
@@ -59,5 +59,5 @@ public:
     result = PqlValidator::ValidateInteger(content);
     Assert::IsTrue(!result);
   }
-  };
-}
+};
+}  // namespace PQLTests

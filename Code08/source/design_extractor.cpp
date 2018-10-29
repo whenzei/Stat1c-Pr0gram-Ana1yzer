@@ -10,6 +10,7 @@ void DesignExtractor::UpdatePkb() {
   UpdateParentT();
   UpdateUsesAndModifiesWithCallGraph();
   UpdateCallT();
+  PopulateDominates();
 }
 
 void DesignExtractor::CheckCyclicCalls() {
@@ -86,6 +87,20 @@ void DesignExtractor::UpdateCallT() {
     ProcNameList callee_procs = pkb_->GetCallee(proc);
     for (auto& direct_callee : callee_procs) {
       DescentForCallee(proc, direct_callee);
+    }
+  }
+}
+
+void DesignExtractor::PopulateDominates() {
+  ProcNameList all_procs = pkb_->GetAllProcNames();
+  for (auto& proc : all_procs) {
+    CFG* cfg = pkb_->GetCFG(proc);
+    // we know a vertex dominates another if the vertex is a cut vertex
+    VertexSet all_vertices = cfg->GetAllVertices();
+
+    for (Vertex v : all_vertices) {
+      VertexSet unreachables = cfg->GetUnreachableVertices(v);
+      pkb_->InsertDominates(v, unreachables);
     }
   }
 }

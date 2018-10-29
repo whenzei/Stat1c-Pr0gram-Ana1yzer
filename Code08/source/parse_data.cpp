@@ -22,8 +22,7 @@ ParseData::ParseData(StmtNumList stmt_num_list, VarNameSet used_vars,
 }
 
 ParseData::ParseData(StmtNumList stmt_num_list, VarNameSet used_vars,
-                     VarNameSet modified_vars,
-                     StmtNumList nested_last_stmts_1,
+                     VarNameSet modified_vars, StmtNumList nested_last_stmts_1,
                      StmtNumList nested_last_stmts_2) {
   nested_last_stmts_1_ = nested_last_stmts_1;
   nested_last_stmts_2_ = nested_last_stmts_2;
@@ -31,7 +30,6 @@ ParseData::ParseData(StmtNumList stmt_num_list, VarNameSet used_vars,
   used_vars_ = used_vars;
   modified_vars_ = modified_vars;
 }
-
 
 ParseData::ParseData(StmtNum stmt_num, VarNameSet used_vars,
                      VarNameSet modified_vars, StmtNumList nested_last_stmts_1,
@@ -53,8 +51,7 @@ ParseData::ParseData(VarNameSet used_vars, VarName modified_var) {
   modified_var_ = modified_var;
 }
 
-ParseData::ParseData(VarNameSet used_vars,
-                     VarNameSet modified_vars,
+ParseData::ParseData(VarNameSet used_vars, VarNameSet modified_vars,
                      StmtNumList nested_last_stmts_1,
                      StmtNumList nested_last_stmts_2) {
   nested_last_stmts_1_ = nested_last_stmts_1;
