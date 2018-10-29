@@ -37,7 +37,7 @@ class PqlExtractor {
   void DfsAffects(Vertex curr, VarIndex affects_var, StmtNumList* res_list);
 
   // @params: curr the current vertex
-  // @params: rhs_vars the set of variables to be affected (belongs to the statement of concern)
+  // @params: rhs_vars the set of variables to be affected (contains variables used by the statement of concern)
   // @params: affected_rhs_vars the set of variables already affected in the current path
   // @params: res_list the list of all StmtNum that is affecting the rhs_vars
   // @returns true if the current vertex can reach the target vertex without

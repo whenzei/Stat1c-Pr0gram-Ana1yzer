@@ -315,6 +315,9 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   // Check potential affecting statement 
   if (curr_stmt_type == StmtType::kAssign) {
     VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
+    
+    // Check if the current assignment statement modifies a variable in the
+    // rhs_vars, that has not been modified before
     if (rhs_vars.count(curr_modified_var) &&
         (*affected_rhs_vars).count(curr_modified_var) == 0) {
       res_list->push_back(curr);
@@ -323,12 +326,14 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     }
   }
 
+  // Check if all rhs_vars are already affected
   if (rhs_vars.size() == affected_rhs_vars->size()) {
     return;
   }
 
-  // Check for modifying statements
+  // Check for modifying statements 
   if (IsModifyingType(curr_stmt_type) && !has_affects) {
+    // Check if current statement is affecting any of the rhs_vars
     // Update affected_rhs_vars
     for (VarIndex rhs_var : rhs_vars) {
       if (pkb_.IsModifiedByS(curr, rhs_var)) {
