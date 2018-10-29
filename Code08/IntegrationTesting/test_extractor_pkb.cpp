@@ -241,9 +241,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     //Positives**************************************
     StmtNumList test_result_1 = extractor.GetAffectsT(1);
-    StmtNumList expected_result_1 = StmtNumList{ 5, 6, 10, 12, 13, 9 };
-    Assert::AreEqual(test_result_1.front(), expected_result_1.front());
-    Assert::AreEqual(test_result_1.back(), expected_result_1.back());
+    StmtNumList expected_result_1 = StmtNumList{ 5, 6, 9, 10, 13 };
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     StmtNumList test_result_2 = extractor.GetAffectsT(7);
