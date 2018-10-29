@@ -395,6 +395,10 @@ bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
   return modifies_table_.IsModifiedByS(stmt_num, GetVarIndex(var_name));
 }
 
+bool PKB::IsModifiedByS(StmtNum stmt_num, VarIndex var_index) {
+  return modifies_table_.IsModifiedByS(stmt_num, var_index);
+}
+
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
   return modifies_table_.IsModifiedByP(GetProcIndex(proc_name),
                                        GetVarIndex(var_name));
@@ -462,6 +466,10 @@ ProcIndexList PKB::GetUsingProc(VarName var_name) {
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, GetVarIndex(var_name));
+}
+
+bool PKB::IsUsedByS(StmtNum stmt_num, VarIndex var_index) {
+  return uses_table_.IsUsedByS(stmt_num, var_index);
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {

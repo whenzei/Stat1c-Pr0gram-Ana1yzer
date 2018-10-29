@@ -371,6 +371,9 @@ class PKB {
 
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
+  
+  // @returns true if Modifies(stmt_num, var_index) holds
+  bool IsModifiedByS(StmtNum stmt_num, VarIndex var_index);
 
   // @returns true if Modifies(proc_name, var_name) holds
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
@@ -437,6 +440,9 @@ class PKB {
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
+
+  // @returns true if Uses(stmt_num, var_index) holds
+  bool IsUsedByS(StmtNum stmt_num, VarIndex var_index);
 
   // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
