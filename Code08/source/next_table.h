@@ -47,6 +47,8 @@ class NextTable {
 
   CFG* GetCFG(ProcName proc_name);
 
+  CFG* GetReverseCFG(ProcName proc_name);
+
   bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
 
   bool IsNext(StmtNum stmt_num);

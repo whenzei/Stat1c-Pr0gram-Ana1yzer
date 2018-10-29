@@ -28,6 +28,10 @@ void NextTable::InsertNext(ProcName proc_name, StmtNum previous_stmt,
 
 CFG* NextTable::GetCFG(ProcName proc_name) { return &(cfg_table_[proc_name]); }
 
+CFG* NextTable::GetReverseCFG(ProcName proc_name) {
+  return &(reversed_cfg_table_[proc_name]);
+}
+
 bool NextTable::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
   VertexSet neighbours = combined_cfg_.GetNeighboursSet(previous_stmt);
   return neighbours.find(next_stmt) != neighbours.end();
