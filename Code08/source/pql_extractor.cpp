@@ -139,19 +139,17 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   VarIndex modified_var = pkb_.GetModifiedVarS(stmt_1).front();
 
   // Check if variable modified in stmt_1 is used in stmt_2
-  if (!pkb_.IsUsedByS(stmt_2, pkb_.GetVarName(modified_var))) {
+  if (!pkb_.IsUsedByS(stmt_2, modified_var)) {
     return false;
   }
 
   curr_affects_cfg_ = pkb_.GetCFG(p1);
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
-  VarIndex var_index = pkb_.GetModifiedVarS(stmt_1).front();
-  VarName affects_var = pkb_.GetVarName(var_index);
 
   bool flag = false;
   for (Vertex neighbour : neighbours) {
-    flag = flag || DfsAffects(neighbour, stmt_2, affects_var);
+    flag = flag || DfsAffects(neighbour, stmt_2, modified_var);
     if (flag) {
       break;
     }
@@ -175,12 +173,11 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
   curr_affects_cfg_ = pkb_.GetCFG(p);
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
-  VarIndex var_index = pkb_.GetModifiedVarS(stmt_1).front();
-  VarName affects_var = pkb_.GetVarName(var_index);
+  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();;
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
-    DfsAffects(neighbour, affects_var, &res_list);
+    DfsAffects(neighbour, affecting_var, &res_list);
   }
 
   ClearVisitedMap();
@@ -249,7 +246,7 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   }
 }
 
-bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarName affects_var) {
+bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarIndex affects_var) {
   if (curr_visited_.count(curr)) {
     return false;
   }
@@ -277,7 +274,7 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarName affects_var) {
   return false;
 }
 
-void PqlExtractor::DfsAffects(Vertex curr, VarName affects_var,
+void PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var,
                               StmtNumList* res_list) {
   if (curr_visited_.count(curr)) {
     return;
@@ -326,19 +323,21 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     }
   }
 
+  if (rhs_vars.size() == affected_rhs_vars->size()) {
+    return;
+  }
+
   // Check for modifying statements
   if (IsModifyingType(curr_stmt_type) && !has_affects) {
     // Update affected_rhs_vars
     for (VarIndex rhs_var : rhs_vars) {
-      VarName rhs_var_name = pkb_.GetVarName(rhs_var);
-      if (pkb_.IsModifiedByS(curr, rhs_var_name)) {
+      if (pkb_.IsModifiedByS(curr, rhs_var)) {
         affected_rhs_vars->emplace(rhs_var);
       }
+      if (rhs_vars.size() == affected_rhs_vars->size()) {
+        return;
+      }
     }
-  }
-
-  if (rhs_vars.size() == affected_rhs_vars->size()) {
-    return;
   }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
