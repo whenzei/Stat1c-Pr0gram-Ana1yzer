@@ -331,9 +331,6 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     for (VarIndex rhs_var : rhs_vars) {
       VarName rhs_var_name = pkb_.GetVarName(rhs_var);
       if (pkb_.IsModifiedByS(curr, rhs_var_name)) {
-        if (affected_rhs_vars->count(rhs_var) == 1) {
-          return;
-        }
         affected_rhs_vars->emplace(rhs_var);
       }
     }
