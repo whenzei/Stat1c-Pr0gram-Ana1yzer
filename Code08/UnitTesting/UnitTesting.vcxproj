@@ -166,6 +166,8 @@
   <ItemGroup>
     <ClCompile Include="test_call_table.cpp" />
     <ClCompile Include="test_dominates_table.cpp" />
+    <ClCompile Include="test_evaluate_suchthat.cpp" />
+    <ClCompile Include="test_evaluate_with.cpp" />
     <ClCompile Include="test_expression_helper.cpp" />
     <ClCompile Include="test_follows.cpp" />
     <ClCompile Include="test_graph.cpp" />
