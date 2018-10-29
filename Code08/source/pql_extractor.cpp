@@ -49,25 +49,28 @@ StmtNumList PqlExtractor::GetAffectsT(StmtNum stmt) {
   StmtNumList final_stmt_list;
   StmtNumList temp_list;
   StmtNumList next_affected_stmts;
+  StmtNumSet visited_stmts;
 
-  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
-    return StmtNumList();
-  }
   if (affected_stmts.empty()) {
     return StmtNumList();
   }
   final_stmt_list.insert(final_stmt_list.end(), affected_stmts.begin(), affected_stmts.end());
   while (!affected_stmts.empty()) {
     for (auto& affected_stmt : affected_stmts) {
-      temp_list = GetAffects(affected_stmt);
-      final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
-        temp_list.end());
-      next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
+      if (visited_stmts.find(affected_stmt) == visited_stmts.end()) {
+        visited_stmts.emplace(affected_stmt);
+        temp_list = GetAffects(affected_stmt);
+        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
+          temp_list.end());
+        next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
+      }
     }
     affected_stmts = next_affected_stmts;
     next_affected_stmts.clear();
   }
 
+  std::sort(final_stmt_list.begin(), final_stmt_list.end());
+  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
   return final_stmt_list;
 }
 
@@ -76,10 +79,7 @@ StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt) {
   StmtNumList final_stmt_list;
   StmtNumList temp_list;
   StmtNumList next_affecting_stmts;
-
-  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
-    return StmtNumList();
-  }
+  StmtNumSet visited_stmts;
 
   if (affecting_stmts.empty()) {
     return StmtNumList();
@@ -88,15 +88,20 @@ StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt) {
   final_stmt_list.insert(final_stmt_list.end(), affecting_stmts.begin(), affecting_stmts.end());
   while (!affecting_stmts.empty()) {
     for (auto& affecting_stmt : affecting_stmts) {
-      temp_list = GetAffectedBy(affecting_stmt);
-      final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
-        temp_list.end());
-      next_affecting_stmts.insert(next_affecting_stmts.end(), temp_list.begin(), temp_list.end());
+      if (visited_stmts.find(affecting_stmt) == visited_stmts.end()) {
+        visited_stmts.emplace(affecting_stmt);
+        temp_list = GetAffectedBy(affecting_stmt);
+        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
+          temp_list.end());
+        next_affecting_stmts.insert(next_affecting_stmts.end(), temp_list.begin(), temp_list.end());
+      }
     }
     affecting_stmts = next_affecting_stmts;
     next_affecting_stmts.clear();
   }
 
+  std::sort(final_stmt_list.begin(), final_stmt_list.end());
+  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
   return final_stmt_list;
 }
  
