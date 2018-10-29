@@ -126,7 +126,7 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
 
-  if (p1 == ProcName() || p2 == ProcName()) {
+  if (p1.empty() || p2.empty() || p1 != p2) {
     return false;
   }
 
@@ -161,7 +161,7 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
 StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
   ProcName p = pkb_.GetProcOfStmt(stmt_1);
 
-  if (p == ProcName()) {
+  if (p.empty()) {
     return StmtNumList();
   }
 
@@ -247,7 +247,7 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
 }
 
 bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarName affects_var) {
-  if (curr_visited_.count(curr) == 1) {
+  if (curr_visited_.count(curr)) {
     return false;
   }
 
@@ -265,20 +265,18 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarName affects_var) {
   }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
-  bool flag = false;
   for (Vertex neighbour : neighbours) {
-    flag = flag || DfsAffects(neighbour, target, affects_var);
-    if (flag) {
-      return flag;
+    if (DfsAffects(neighbour, target, affects_var)) {
+      return true;
     }
   }
 
-  return flag;
+  return false;
 }
 
 void PqlExtractor::DfsAffects(Vertex curr, VarName affects_var,
                               StmtNumList* res_list) {
-  if (curr_visited_.count(curr) == 1) {
+  if (curr_visited_.count(curr)) {
     return;
   }
 
@@ -306,7 +304,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarName affects_var,
 void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
                               VarIndexSet* affected_rhs_vars,
                               StmtNumList* res_list) {
-  if (curr_visited_.count(curr) == 1) {
+  if (curr_visited_.count(curr)) {
     return;
   }
 

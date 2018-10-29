@@ -24,10 +24,24 @@ class PqlExtractor {
   //        res_list is passed by reference
   void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
 
+  // @params: curr the current vertex
+  // @params: target the target vertex to reach
+  // @returns true if the current vertex can reach the target vertex without
+  // being modified by the given affects_var, false otherwise
   bool DfsAffects(Vertex curr, Vertex target, VarName affects_var);
 
+  // @params: curr the current vertex
+  // @params: affects_var the LHS of an assignment statement to check if it affects other statements
+  // @params: res_list the list of all StmtNum that is affected by affects_var
+  // @return: there is no return value as pass by reference is used for res_list
   void DfsAffects(Vertex curr, VarName affects_var, StmtNumList* res_list);
 
+  // @params: curr the current vertex
+  // @params: rhs_vars the set of variables to be affected (belongs to the statement of concern)
+  // @params: affected_rhs_vars the set of variables already affected in the current path
+  // @params: res_list the list of all StmtNum that is affecting the rhs_vars
+  // @returns true if the current vertex can reach the target vertex without
+  // being modified by the given affects_var, false otherwise
   void DfsAffects(Vertex curr, VarIndexSet rhs_vars, VarIndexSet* affected_rhs_vars, StmtNumList* res_list);
 
   bool IsModifyingType(StmtType stmt_type);
