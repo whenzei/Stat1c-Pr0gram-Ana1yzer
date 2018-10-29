@@ -52,8 +52,22 @@ bool Validator::ValidateProgram() {
 
 bool Validator::IsValidProcedure() {
   // 'procedure' var_name '{'
-  if (!MatchNext(3, {tt::kName, tt::kName, tt::kOpenBrace})) {
-    cout << "[PROC SYNTAX INVALID]" << endl;
+  if (!Match(tt::kName)) {
+    return false;
+  }
+
+  // check duplicate procedure name
+  if (!Match(tt::kName)) {
+    return false;
+  } else {
+    string proc_name = curr_token_.value;
+    // duplicate procedure name detected
+    if (all_proc_names_.count(proc_name)) {
+      return false;
+    }
+    all_proc_names_.emplace(proc_name);
+  }
+  if (!Match(tt::kOpenBrace)) {
     return false;
   }
   // stmtList
@@ -69,7 +83,6 @@ bool Validator::IsValidStmtList() {
   // must have at least 1 stmt
   do {
     if (!IsValidStatement()) {
-      cout << "[STMTLIST SYNTAX INVALID]" << endl;
       return false;
     }
   } while (PeekNextToken().type != tt::kCloseBrace && !IsAtEnd());
@@ -108,7 +121,6 @@ bool Validator::IsValidStatement() {
 bool Validator::IsValidCallReadPrint() {
   // [call] variable ";"
   if (!MatchNext(2, {tt::kName, tt::kSemicolon})) {
-    cout << "[CALL/READ/PRINT INVALID]" << endl;
     return false;
   }
   return true;
@@ -142,7 +154,6 @@ bool Validator::IsValidExpression(TokenList tokens) {
     if (was_operator) {
       if (current.type != tt::kDigit && current.type != tt::kName &&
           current.type != tt::kOpenParen) {
-        cout << "[EXPR INVALID], current token: " << current.value << endl;
         return false;
       }
 
@@ -153,13 +164,11 @@ bool Validator::IsValidExpression(TokenList tokens) {
       }
     } else {
       if (current.type != tt::kCloseParen && current.type != tt::kOperator) {
-        cout << "[EXPR INVALID], current token: " << current.value << endl;
         return false;
       }
 
       if (current.type == tt::kCloseParen) {
         if (parenthesis_stack.empty()) {
-          cout << "[IMBALANCED PARENTHESIS -- INVALID]" << endl;
           return false;
         }
         parenthesis_stack.pop();
@@ -170,7 +179,6 @@ bool Validator::IsValidExpression(TokenList tokens) {
   }
 
   if (!parenthesis_stack.empty()) {
-    cout << "[STACK NOT EMPTY -- INVALID]" << endl;
     return false;
   }
 
@@ -183,7 +191,6 @@ bool Validator::IsValidExpression(TokenList tokens) {
 bool Validator::IsValidAssignment() {
   // assign: var_name ‘=’ expr ‘;’
   if (!Match(tt::kAssignment)) {
-    cout << "[ASSIGN SYNTAX INVALID]" << endl;
     return false;
   }
 
