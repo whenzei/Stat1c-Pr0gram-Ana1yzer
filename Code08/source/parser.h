@@ -86,12 +86,11 @@ class Parser {
   // constructor for Parser, takes in a PKB object
   Parser(PKB* pkb);
 
-  // parses the string contents of the file located at given filepath
+  // Parses the string contents of the file located at given filepath and
+  // populates the PKB
   // @param filepath file to be parsed
   // @throws SyntacticErrorException if parse issues encountered
-  // @return true if parse successful (meaning no syntax errors), or false if
-  // validation failed
-  bool Parse(string filepath);
+  void Parse(string filepath);
 
   // For testing purposes
   bool Parse(TokenList program_tokenized);

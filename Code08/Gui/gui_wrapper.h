@@ -10,6 +10,7 @@
 class GUIWrapper {
   PKB pkb_;
   bool exception_caught_;
+  string exception_error_;
 
  public:
   // default constructor

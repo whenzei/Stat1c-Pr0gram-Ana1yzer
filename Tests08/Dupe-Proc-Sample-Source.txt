@@ -1,0 +1,7 @@
+procedure same {
+	print x;
+}
+
+procedure same {
+	call x;
+}

@@ -15,7 +15,7 @@ void DesignExtractor::UpdatePkb() {
 
 void DesignExtractor::CheckCyclicCalls() {
   if (pkb_->GetCallGraph()->HasCycle()) {
-    throw SemanticErrorException("Cyclic call statements found, terminating.");
+    throw SemanticErrorException("Cyclic call statements found.");
   }
 }
 
