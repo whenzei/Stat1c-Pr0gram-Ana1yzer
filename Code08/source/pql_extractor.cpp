@@ -21,7 +21,7 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
     StmtNum curr_stmt = next_stmt_queue.front();
     next_stmt_queue.pop();
 
-    if (visited_stmts.count(curr_stmt) == 1) {
+    if (visited_stmts.count(curr_stmt)) {
       continue;
     }
 
@@ -62,7 +62,7 @@ StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
     StmtNum curr_stmt = next_stmt_queue.front();
     next_stmt_queue.pop();
 
-    if (visited_stmts.count(curr_stmt) == 1) {
+    if (visited_stmts.count(curr_stmt)) {
       continue;
     }
     visited_stmts.emplace(curr_stmt);
@@ -93,7 +93,7 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
     StmtNum curr_stmt = prev_stmt_queue.front();
     prev_stmt_queue.pop();
 
-    if (visited_stmts.count(curr_stmt) == 1) {
+    if (visited_stmts.count(curr_stmt)) {
       continue;
     }
 
@@ -152,6 +152,9 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   bool flag = false;
   for (Vertex neighbour : neighbours) {
     flag = flag || DfsAffects(neighbour, stmt_2, affects_var);
+    if (flag) {
+      break;
+    }
   }
 
   ClearVisitedMap();
@@ -229,7 +232,7 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
     StmtNum curr_stmt = prev_stmt_queue.front();
     prev_stmt_queue.pop();
 
-    if (visited_stmts.count(curr_stmt) == 1) {
+    if (visited_stmts.count(curr_stmt)) {
       continue;
     }
 
@@ -315,7 +318,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   // Check potential affecting statement 
   if (curr_stmt_type == StmtType::kAssign) {
     VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
-    if (rhs_vars.count(curr_modified_var) == 1 &&
+    if (rhs_vars.count(curr_modified_var) &&
         (*affected_rhs_vars).count(curr_modified_var) == 0) {
       res_list->push_back(curr);
       affected_rhs_vars->emplace(curr_modified_var);
