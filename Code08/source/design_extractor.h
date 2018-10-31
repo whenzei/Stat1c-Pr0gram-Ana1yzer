@@ -13,6 +13,14 @@ class DesignExtractor {
   void UpdateCallT();
   void PopulateDominates();
 
+  // Update the root node of all the CFGs to be the smallest vertex number in
+  // the CFG Rationale: When parser inserts a statement, it inserts the child
+  // statements before its parents due to recursive descent. Current graph root
+  // is set to the first node inserted, and not the smallest vertex number. This
+  // method solves that by getting the minimum of all vertex numbers and setting
+  // that as the root
+  void UpdateCFGRoots();
+
   //******** Helper Methods **************
 
   // Search for child of current stmt_num recursively
