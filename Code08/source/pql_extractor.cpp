@@ -208,7 +208,7 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
-    DfsAffects(neighbour, rhs_vars, &(VarIndexSet()), &res_list);
+    DfsAffects(neighbour, rhs_vars, VarIndexSet(), &res_list);
   }
 
   ClearAffectsMaps();
@@ -367,7 +367,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var,
 }
 
 void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
-                              VarIndexSet* affected_rhs_vars,
+                              VarIndexSet affected_rhs_vars,
                               StmtNumList* res_list) {
   if (curr_visited_.count(curr)) {
     return;
@@ -384,15 +384,15 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     // Check if the current assignment statement modifies a variable in the
     // rhs_vars, that has not been modified before
     if (rhs_vars.count(curr_modified_var) &&
-        (*affected_rhs_vars).count(curr_modified_var) == 0) {
+        affected_rhs_vars.count(curr_modified_var) == 0) {
       res_list->push_back(curr);
-      affected_rhs_vars->emplace(curr_modified_var);
+      affected_rhs_vars.emplace(curr_modified_var);
       has_affects = true;
     }
   }
 
   // Check if all rhs_vars are already affected
-  if (rhs_vars.size() == affected_rhs_vars->size()) {
+  if (rhs_vars.size() == affected_rhs_vars.size()) {
     return;
   }
 
@@ -402,9 +402,9 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     // Update affected_rhs_vars
     for (VarIndex rhs_var : rhs_vars) {
       if (pkb_.IsModifiedByS(curr, rhs_var)) {
-        affected_rhs_vars->emplace(rhs_var);
+        affected_rhs_vars.emplace(rhs_var);
       }
-      if (rhs_vars.size() == affected_rhs_vars->size()) {
+      if (rhs_vars.size() == affected_rhs_vars.size()) {
         return;
       }
     }
@@ -412,8 +412,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
   for (Vertex neighbour : neighbours) {
-    VarIndexSet affected_rhs_vars_clone(*affected_rhs_vars);
-    DfsAffects(neighbour, rhs_vars, &affected_rhs_vars_clone, res_list);
+    DfsAffects(neighbour, rhs_vars, affected_rhs_vars, res_list);
   }
 }
 

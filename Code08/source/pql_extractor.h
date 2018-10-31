@@ -50,7 +50,7 @@ class PqlExtractor {
   // @returns true if the current vertex can reach the target vertex without
   // being modified by the given affects_var, false otherwise
   void DfsAffects(Vertex curr, VarIndexSet rhs_vars,
-                  VarIndexSet* affected_rhs_vars, StmtNumList* res_list);
+                  VarIndexSet affected_rhs_vars, StmtNumList* res_list);
 
   bool IsModifyingType(StmtType stmt_type);
 
