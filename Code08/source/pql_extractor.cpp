@@ -222,7 +222,8 @@ AffectsTable PqlExtractor::GetAffectsTable() {
   for (auto proc_name : all_procs) {
     curr_affects_cfg_ = pkb_.GetCFG(proc_name);
     // SpecialDFS each CFG for affects
-    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap());
+    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
+                  WhileLastModMap());
   }
 
   return affects_table;
@@ -230,12 +231,12 @@ AffectsTable PqlExtractor::GetAffectsTable() {
 
 // Helper Methods
 void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                                 LastModMap lmm) {
+                                 LastModMap lmm, WhileLastModMap wlmm) {
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
   if (curr_visited_.count(v) && stmt_type == StmtType::kWhile &&
-      last_while_mod_map_.count(v) && lmm == *(last_while_mod_map_[v])) {
+      wlmm.count(v) && lmm == *(wlmm[v])) {
     return;
   }
 
@@ -269,13 +270,13 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
   }
 
   if (stmt_type == StmtType::kWhile) {
-    last_while_mod_map_[v] = std::make_shared<LastModMap>(lmm);
+    wlmm[v] = std::make_shared<LastModMap>(lmm);
   }
 
   // dfs neighbours
   VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsAllAffects(neighbour, affects_table, lmm);
+    DfsAllAffects(neighbour, affects_table, lmm, wlmm);
   }
 }
 
@@ -416,10 +417,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   }
 }
 
-void PqlExtractor::ClearAffectsMaps() {
-  curr_visited_.clear();
-  last_while_mod_map_.clear();
-}
+void PqlExtractor::ClearAffectsMaps() { curr_visited_.clear(); }
 
 bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||

@@ -3,8 +3,8 @@
 #ifndef PQL_EXTRACTOR
 #define PQL_EXTRACTOR
 
-#include <stack>
 #include <memory>
+#include <stack>
 
 #include "pkb.h"
 #include "pql_global.h"
@@ -22,7 +22,6 @@ class PqlExtractor {
   PKB pkb_;
   CFG* curr_affects_cfg_;
   VisitedMap curr_visited_;
-  WhileLastModMap last_while_mod_map_;
 
   // Helper method
   //@params start is the StmtNum that should be in the LHS of all pairs
@@ -93,7 +92,9 @@ class PqlExtractor {
 
   AffectsTable GetAffectsTable();
 
-  void DfsAllAffects(Vertex v, AffectsTable* affects_table, LastModMap last_mod_map);
+  void DfsAllAffects(Vertex v, AffectsTable* affects_table,
+                     LastModMap last_mod_map,
+                     WhileLastModMap while_last_mod_map);
   //*********************************************************
 };
 
