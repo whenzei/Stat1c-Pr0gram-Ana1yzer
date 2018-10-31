@@ -155,7 +155,7 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     }
   }
 
-  ClearVisitedMap();
+  ClearAffectsMaps();
   return flag;
 }
 
@@ -173,14 +173,15 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
   curr_affects_cfg_ = pkb_.GetCFG(p);
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
-  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();;
+  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();
+  ;
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
     DfsAffects(neighbour, affecting_var, &res_list);
   }
 
-  ClearVisitedMap();
+  ClearAffectsMaps();
   return res_list;
 }
 
@@ -210,11 +211,73 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     DfsAffects(neighbour, rhs_vars, &(VarIndexSet()), &res_list);
   }
 
-  ClearVisitedMap();
+  ClearAffectsMaps();
   return res_list;
 }
 
+AffectsTable PqlExtractor::GetAffectsTable() {
+  AffectsTable affects_table;
+
+  ProcNameList all_procs = pkb_.GetAllProcNames();
+  for (auto proc_name : all_procs) {
+    curr_affects_cfg_ = pkb_.GetCFG(proc_name);
+    // SpecialDFS each CFG for affects
+    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap());
+  }
+
+  return affects_table;
+}
+
 // Helper Methods
+void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
+                                 LastModMap lmm) {
+  StmtType stmt_type = pkb_.GetStmtType(v);
+  // only return when hit while loop a second time and last_while_mod_map_ is
+  // stable
+  if (curr_visited_.count(v) && stmt_type == StmtType::kWhile &&
+      last_while_mod_map_.count(v) && lmm == *(last_while_mod_map_[v])) {
+    return;
+  }
+
+  curr_visited_.emplace(v, true);
+  VarIndexList modified_vars = pkb_.GetModifiedVarS(v);
+
+  // add used to affects table if found in lmm
+  if (stmt_type == StmtType::kAssign) {
+    VarIndexList used_vars = pkb_.GetUsedVarS(v);
+    for (auto& used_var : used_vars) {
+      if (lmm.count(used_var)) {
+        StmtNum affecting_stmt = lmm[used_var];
+        if (!(affects_table->count(affecting_stmt))) {
+          (*affects_table)[affecting_stmt] = StmtNumSet();
+        }
+        (*affects_table)[affecting_stmt].emplace(v);
+      }
+    }
+
+    for (auto& modified_var : modified_vars) {
+      lmm.emplace(modified_var, v);
+    }
+  }
+
+  if (stmt_type != StmtType::kAssign && IsModifyingType(stmt_type)) {
+    for (auto& modified_var : modified_vars) {
+      if (lmm.count(modified_var)) {
+        lmm.erase(modified_var);
+      }
+    }
+  }
+
+  if (stmt_type == StmtType::kWhile) {
+    last_while_mod_map_[v] = std::make_shared<LastModMap>(lmm);
+  }
+
+  // dfs neighbours
+  VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
+  for (auto& neighbour : neighbours) {
+    DfsAllAffects(neighbour, affects_table, lmm);
+  }
+}
 
 void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   unordered_set<StmtNum> visited_stmts;
@@ -246,7 +309,8 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   }
 }
 
-bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarIndex affects_var) {
+bool PqlExtractor::DfsAffects(Vertex curr, Vertex target,
+                              VarIndex affects_var) {
   if (curr_visited_.count(curr)) {
     return false;
   }
@@ -312,10 +376,10 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   StmtType curr_stmt_type = pkb_.GetStmtType(curr);
   curr_visited_.emplace(curr, true);
 
-  // Check potential affecting statement 
+  // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
     VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
-    
+
     // Check if the current assignment statement modifies a variable in the
     // rhs_vars, that has not been modified before
     if (rhs_vars.count(curr_modified_var) &&
@@ -331,7 +395,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
     return;
   }
 
-  // Check for modifying statements 
+  // Check for modifying statements
   if (IsModifyingType(curr_stmt_type) && !has_affects) {
     // Check if current statement is affecting any of the rhs_vars
     // Update affected_rhs_vars
@@ -352,7 +416,10 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   }
 }
 
-void PqlExtractor::ClearVisitedMap() { curr_visited_.clear(); }
+void PqlExtractor::ClearAffectsMaps() {
+  curr_visited_.clear();
+  last_while_mod_map_.clear();
+}
 
 bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||
