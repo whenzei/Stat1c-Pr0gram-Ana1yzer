@@ -14,11 +14,17 @@ namespace PkbPqlExtractorTests {
 TEST_CLASS(TestPkbPqlExtractor) {
   const string kProcName1 = "one";
   const string kProcName2 = "two";
+  const PKB pkb1 = GetTestPKBOne();
+  const PKB pkb2 = GetTestPKBTwo();
+  const PKB pkb3 = GetTestPKBThree();
+  const PKB pkb4 = GetTestPKBFour();
+  const PKB next_pkb1 = GetNextPKBOne();
+  const PKB next_pkb2 = GetNextPKBTwo();
+  const PKB next_pkb3 = GetNextPKBThree();
 
  public:
   TEST_METHOD(IsNextTTwoParams) {
-    PKB dummy_pkb = GetDummyPKBOne();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb1);
 
     // Positives
     Assert::IsTrue(extractor.IsNextT(1, 2));
@@ -33,8 +39,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(IsNextTOneParam) {
-    PKB dummy_pkb = GetDummyPKBOne();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb1);
 
     // Positives
     Assert::IsTrue(extractor.IsNextT(3));
@@ -46,8 +51,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(IsPreviousT) {
-    PKB dummy_pkb = GetDummyPKBOne();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb1);
 
     // Positive
     Assert::IsTrue(extractor.IsPreviousT(1));
@@ -59,8 +63,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(GetNextT) {
-    PKB dummy_pkb = GetDummyPKBTwo();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb2);
 
     // GetNextT of stmt 1
     StmtNumList expected_result_1 = StmtNumList{2, 3, 5, 4, 7, 6, 8};
@@ -78,8 +81,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_3 == expected_result_3);
   }
   TEST_METHOD(GetPreviousT) {
-    PKB dummy_pkb = GetDummyPKBTwo();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb2);
 
     // GetPreviousT of stmt 8
     StmtNumList expected_result_1 = StmtNumList{6, 7, 4, 11, 5, 3, 10, 2, 1, 9};
@@ -97,8 +99,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_3 == expected_result_3);
   }
   TEST_METHOD(GetAllNextTPairs) {
-    PKB dummy_pkb = GetDummyPKBThree();
-    PqlExtractor extractor = PqlExtractor(dummy_pkb);
+    PqlExtractor extractor = PqlExtractor(next_pkb3);
 
     StmtNumPairList test_result_1 = extractor.GetAllNextTPairs();
     StmtNumPairList expected_result_1 =
@@ -115,8 +116,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(IsAffects) {
-    PKB test_pkb = GetTestPKBOne();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positives****************************************
     bool test_result_1 = extractor.IsAffects(4, 4);
@@ -164,8 +164,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(GetAffects) {
-    PKB test_pkb = GetTestPKBTwo();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(pkb2);
 
     // Positives**************************************
     StmtNumList test_result_1 = extractor.GetAffects(1);
@@ -203,8 +202,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_7 == expected_result_7);
   }
   TEST_METHOD(GetAffectedByWhileInIf) {
-    PKB test_pkb = GetTestPKBThree();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(pkb3);
 
     // Positives**************************************
     StmtNumList test_result_1 = extractor.GetAffectedBy(15);
@@ -243,8 +241,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
   TEST_METHOD(GetAllAffects) {
     // test while-if loop
-    PKB test_pkb = GetTestPKBOne();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(pkb1);
     AffectsTable actual_results_1 = extractor.GetAffectsTable();
     AffectsTable expected_results_1;
     // variable t is modified at 4 / 6, used at 4, 6, 9, 12 without being
@@ -258,8 +255,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results_1 == expected_results_1);
 
     // test if-while loop
-    test_pkb = GetTestPKBTwo();
-    extractor = PqlExtractor(test_pkb);
+    extractor = PqlExtractor(pkb2);
     AffectsTable actual_results_2 = extractor.GetAffectsTable();
     AffectsTable expected_results_2;
     expected_results_2[1] = VertexSet{5, 6, 10};
@@ -270,8 +266,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results_2 == expected_results_2);
 
     // test while-while loop
-    test_pkb = GetTestPKBFour();
-    extractor = PqlExtractor(test_pkb);
+    extractor = PqlExtractor(pkb4);
     AffectsTable actual_results_3 = extractor.GetAffectsTable();
     AffectsTable expected_results_3;
     expected_results_3[1] = VertexSet{3, 12};
@@ -282,8 +277,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
   TEST_METHOD(GetAffectedByIfInWhile) {
-    PKB test_pkb = GetTestPKBOne();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positives**************************************
     StmtNumList test_result_1 = extractor.GetAffectedBy(9);
@@ -316,8 +310,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_6 == test_result_6);
   }
 
- private:
-  PKB GetDummyPKBOne() {
+  PKB GetNextPKBOne() {
     /*
        1 -> 2 -> 5 -> 7
        \ \_          /
@@ -338,7 +331,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     return dummy_pkb;
   }
-  PKB GetDummyPKBTwo() {
+  PKB GetNextPKBTwo() {
     /*
        1 -> 2 -> 5 -> 7
         \_              \_
@@ -363,7 +356,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     return dummy_pkb;
   }
-  PKB GetDummyPKBThree() {
+  PKB GetNextPKBThree() {
     /*
       proc one
 
