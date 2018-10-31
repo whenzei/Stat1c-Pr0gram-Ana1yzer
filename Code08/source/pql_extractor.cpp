@@ -235,42 +235,37 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
-  if (curr_visited_.count(v) && stmt_type == StmtType::kWhile &&
-      wlmm.count(v) && lmm == *(wlmm[v])) {
+  if (stmt_type == StmtType::kWhile && wlmm.count(v) && lmm == wlmm[v]) {
     return;
   }
 
-  curr_visited_.emplace(v, true);
-  VarIndexList modified_vars = pkb_.GetModifiedVarS(v);
+  if (IsModifyingType(stmt_type)) {
+    // assert only 1 modified_var
+    VarIndex modified_var = pkb_.GetModifiedVarS(v).front();
 
-  // add used to affects table if found in lmm
-  if (stmt_type == StmtType::kAssign) {
-    VarIndexList used_vars = pkb_.GetUsedVarS(v);
-    for (auto& used_var : used_vars) {
-      if (lmm.count(used_var)) {
-        StmtNum affecting_stmt = lmm[used_var];
-        if (!(affects_table->count(affecting_stmt))) {
-          (*affects_table)[affecting_stmt] = StmtNumSet();
+    if (stmt_type == StmtType::kAssign) {
+      // add used to affects table if found in lmm
+      VarIndexList used_vars = pkb_.GetUsedVarS(v);
+      for (auto& used_var : used_vars) {
+        if (lmm.count(used_var)) {
+          StmtNum affecting_stmt = lmm[used_var];
+          (*affects_table)[affecting_stmt].emplace(v);
         }
-        (*affects_table)[affecting_stmt].emplace(v);
       }
-    }
 
-    for (auto& modified_var : modified_vars) {
+      // add modified to lmm
       lmm.emplace(modified_var, v);
-    }
-  }
-
-  if (stmt_type != StmtType::kAssign && IsModifyingType(stmt_type)) {
-    for (auto& modified_var : modified_vars) {
+    } else {
+      // not assign statement, but modifies something. Need to clear from lmmkd
       if (lmm.count(modified_var)) {
         lmm.erase(modified_var);
       }
     }
   }
 
+  // update wlmm
   if (stmt_type == StmtType::kWhile) {
-    wlmm[v] = std::make_shared<LastModMap>(lmm);
+    wlmm[v] = lmm;
   }
 
   // dfs neighbours

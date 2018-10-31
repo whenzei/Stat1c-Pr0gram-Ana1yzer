@@ -3,7 +3,6 @@
 #ifndef PQL_EXTRACTOR
 #define PQL_EXTRACTOR
 
-#include <memory>
 #include <stack>
 
 #include "pkb.h"
@@ -13,7 +12,7 @@ using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = unordered_map<StmtNum, StmtNumSet>;
 using LastModMap = unordered_map<Vertex, VarIndex>;
-using WhileLastModMap = unordered_map<Vertex, std::shared_ptr<LastModMap>>;
+using WhileLastModMap = unordered_map<Vertex, LastModMap>;
 
 // Helper class to extract information from PKB to evaluate:
 // Next*, Affects and Affects*
