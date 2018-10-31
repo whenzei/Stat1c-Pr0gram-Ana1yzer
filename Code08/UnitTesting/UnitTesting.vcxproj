@@ -193,6 +193,7 @@
     <ClCompile Include="test_next_table.cpp" />
     <ClCompile Include="test_query_evaluator.cpp" />
     <ClCompile Include="test_pql_result.cpp" />
+    <ClCompile Include="test_pql_projector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPA\SPA.vcxproj">
