@@ -46,10 +46,19 @@ class PqlExtractor {
   // @params: affected_rhs_vars the set of variables already affected in the
   // current path
   // @params: res_list the list of all StmtNum that is affecting the rhs_vars
-  // @returns true if the current vertex can reach the target vertex without
-  // being modified by the given affects_var, false otherwise
   void DfsAffects(Vertex curr, VarIndexSet rhs_vars,
                   VarIndexSet affected_rhs_vars, StmtNumList* res_list);
+
+  // Helper to populate the AffectsTable using DFS
+  // @params: Vertex the vertex to start from
+  // @params: AffectsTable* the table to populate
+  // @params: LastModMap the map to keep track of where each variable was last
+  // modified
+  // @params: WhileLastModMap the map to keep track of each while statement's
+  // LastModMap
+  void DfsAllAffects(Vertex v, AffectsTable* affects_table,
+                     LastModMap last_mod_map,
+                     WhileLastModMap while_last_mod_map);
 
   bool IsModifyingType(StmtType stmt_type);
 
@@ -89,11 +98,9 @@ class PqlExtractor {
   // @returns a list of n that Affects(n, stmt_num) holds true
   StmtNumList GetAffectedBy(StmtNum stmt_num);
 
+  // Get the AffectsTable of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
   AffectsTable GetAffectsTable();
-
-  void DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                     LastModMap last_mod_map,
-                     WhileLastModMap while_last_mod_map);
   //*********************************************************
 };
 
