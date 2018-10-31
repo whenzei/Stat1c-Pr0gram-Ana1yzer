@@ -144,6 +144,9 @@
     <ClCompile Include="..\source\pql_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pql_projector.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -262,6 +265,9 @@
       <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_extractor.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_projector.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
   </ItemGroup>
