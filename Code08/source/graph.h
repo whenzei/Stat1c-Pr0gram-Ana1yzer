@@ -45,6 +45,9 @@ class Graph {
   // Adds edges between the from node to the to node
   void AddEdge(const Vertex& from, const Vertex& to);
 
+  // Adds node into the graph
+  void AddNode(const Vertex& vertex);
+
   // @returns set of neighbours of given vertex v
   VertexSet GetNeighboursSet(const Vertex& v);
 

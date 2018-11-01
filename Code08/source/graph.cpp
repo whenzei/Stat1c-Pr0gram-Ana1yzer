@@ -18,17 +18,9 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
     // first vertex in graph is the root
     root_ = from;
   }
-  if (!adj_set_.count(from)) {
-    size_++;
-    adj_set_.emplace(from, VertexSet());
-    adj_list_.emplace(from, VertexList());
-  }
 
-  if (!adj_set_.count(to)) {
-    size_++;
-    adj_set_.emplace(to, VertexSet());
-    adj_list_.emplace(to, VertexList());
-  }
+  AddNode(from);
+  AddNode(to);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
