@@ -40,6 +40,11 @@ class CallTable {
       callee_twin_list_;     // stores procs called by any other proc (in pairs)
   ProcIndexSet callee_set_;  // stores procs called by any other proc
   ProcList proc_list_;
+  unordered_map<StmtNum, ProcIndex>
+      stmt_to_call_table_;  // retrieve the procedure name called at StmtNum
+
+  // @returns true if the proc_name is found in the proc_list, false otherwise
+  bool IsValidProcName(ProcName proc_name);
 
  public:
   // PROC-PROC RELATIONSHIP INSERT
@@ -61,6 +66,12 @@ class CallTable {
   // @params stmt num of statement
   // @params proc name of the procedure *being called*
   void InsertCalls(StmtNum stmt_num, ProcIndex callee_proc);
+
+  // Returns the called procedure name at given StmtNum
+  // @params: StmtNum the stmt num to retrieve the procedure name
+  // @returns procedure name called at the given statement if exists, empty
+  // string otherwise
+  ProcName GetCalledProcedure(StmtNum stmt_num);
 
   // Finds and returns a list of stmt numbers calling the given proc.
   // @params proc name of the procedure being called

@@ -371,7 +371,7 @@ class PKB {
 
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
-  
+
   // @returns true if Modifies(stmt_num, var_index) holds
   bool IsModifiedByS(StmtNum stmt_num, VarIndex var_index);
 
@@ -610,6 +610,10 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
+  // @returns procedure name called at given statement number if exists, empty
+  // string otherwise
+  ProcName GetCalledProcedure(StmtNum stmt_num);
+
   /************************
    * Next Table Functions *
    ************************/
@@ -655,10 +659,20 @@ class PKB {
   void NotifyParseEnd();
 
   /*****************************
+   * AffectsBip Table Functions *
+   *****************************/
+  // Set the given cfg as the program CFG
+  void SetProgramCFG(const CFG& program_cfg);
+
+  // @returns the program cfg
+  CFG* GetProgramCFG();
+
+  /*****************************
    * Dominates Table Functions *
    *****************************/
 
-  // inserts dominates relationships between dominating_vertex and dominated_vertices
+  // inserts dominates relationships between dominating_vertex and
+  // dominated_vertices
   void InsertDominates(Vertex dominating_vertex, VertexSet dominated_vertices);
 
   // @returns true if Dominates(dominating_stmt, dominated_stmt) holds

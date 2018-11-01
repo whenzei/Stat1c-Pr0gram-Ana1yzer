@@ -2,12 +2,17 @@
 
 #include "call_table.h"
 
+bool CallTable::IsValidProcName(ProcName proc_name) {
+  return proc_list_.GetProcIndex(proc_name) != -1;
+}
+
 bool CallTable::InsertIndirectCallRelationship(ProcName caller_proc,
                                                ProcName callee_proc) {
-  if (proc_list_.GetProcIndex(caller_proc) == -1) {
+  // add to proc_list_ if they are not already in the proc_list_
+  if (!IsValidProcName(caller_proc)) {
     proc_list_.InsertProcName(caller_proc);
   }
-  if (proc_list_.GetProcIndex(callee_proc) == -1) {
+  if (!IsValidProcName(callee_proc)) {
     proc_list_.InsertProcName(callee_proc);
   }
   int caller_proc_index = proc_list_.GetProcIndex(caller_proc);
@@ -28,10 +33,10 @@ bool CallTable::InsertIndirectCallRelationship(ProcName caller_proc,
 
 bool CallTable::InsertDirectCallRelationship(ProcName caller_proc,
                                              ProcName callee_proc) {
-  if (proc_list_.GetProcIndex(caller_proc) == -1) {
+  if (!IsValidProcName(caller_proc)) {
     proc_list_.InsertProcName(caller_proc);
   }
-  if (proc_list_.GetProcIndex(callee_proc) == -1) {
+  if (!IsValidProcName(callee_proc)) {
     proc_list_.InsertProcName(callee_proc);
   }
   int caller_proc_index = proc_list_.GetProcIndex(caller_proc);
@@ -56,6 +61,15 @@ bool CallTable::InsertDirectCallRelationship(ProcName caller_proc,
 
 void CallTable::InsertCalls(StmtNum stmt_num, ProcIndex callee_proc) {
   stmt_num_proc_table_[callee_proc].push_back(stmt_num);
+  stmt_to_call_table_[stmt_num] = callee_proc;
+}
+
+ProcName CallTable::GetCalledProcedure(StmtNum stmt_num) {
+  if (stmt_to_call_table_.count(stmt_num)) {
+    return proc_list_.GetProcName(stmt_to_call_table_[stmt_num]);
+  }
+
+  return ProcName();
 }
 
 StmtNumList CallTable::GetCallingStmts(ProcIndex callee_proc) {
