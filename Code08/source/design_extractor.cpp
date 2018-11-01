@@ -106,6 +106,14 @@ void DesignExtractor::PopulateDominates() {
   }
 }
 
+void DesignExtractor::PopulateProgramCFG() {
+  CFG program_cfg = CFG(*pkb_->GetCombinedCFG());
+  // program cfg will always have 1 as root
+  program_cfg.SetRoot(1);
+  DfsConnect(1, &program_cfg);
+  pkb_->SetProgramCFG(program_cfg);
+}
+
 void DesignExtractor::UpdateCFGRoots() {
   ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto& proc : all_procs) {
@@ -135,5 +143,51 @@ void DesignExtractor::DescentForCallee(ProcName true_caller,
   for (auto& callee : callees) {
     pkb_->InsertIndirectCallRelationship(true_caller, callee);
     DescentForCallee(true_caller, callee);
+  }
+}
+
+void DesignExtractor::DfsConnect(const Vertex vertex, CFG* cfg) {
+  VisitedMap visited;
+  for (auto& v : cfg->GetAllVertices()) {
+    visited[v] = false;
+  }
+
+  DfsConnect(vertex, cfg, &visited);
+}
+
+void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,
+                                 VisitedMap* visited) {
+  if ((*visited)[v]) {
+    return;
+  }
+
+  (*visited)[v] = true;
+
+  VertexList terminal_nodes;
+
+  // get neighbours before adding the root as neighbour
+  VertexList neighbours = cfg->GetNeighboursList(v);
+
+  StmtType stmt_type = pkb_->GetStmtType(v);
+  if (stmt_type == StmtType::kCall) {
+    ProcName proc_name = pkb_->GetCalledProcedure(v);
+    CFG* called_cfg = pkb_->GetCFG(proc_name);
+    // add root of the procedure's cfg as neighbour of call statement
+    cfg->AddEdge(v, called_cfg->GetRoot());
+    // get terminal nodes of the called cfg
+    terminal_nodes = called_cfg->GetTerminalNodes();
+  }
+
+  for (auto& neighbour : neighbours) {
+    if (stmt_type == StmtType::kCall) {
+      // remove all neighbours of the call statement
+      cfg->RemoveEdge(v, neighbour);
+
+      // add the neighbours to the terminal nodes of the procedure
+      for (auto& terminal_node : terminal_nodes) {
+        cfg->AddEdge(terminal_node, neighbour);
+      }
+    }
+    DfsConnect(neighbour, cfg, visited);
   }
 }

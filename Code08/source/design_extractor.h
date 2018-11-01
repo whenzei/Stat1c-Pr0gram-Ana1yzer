@@ -14,7 +14,8 @@ class DesignExtractor {
   void PopulateDominates();
 
   // Update the root node of all the CFGs to be the smallest vertex number in
-  // the CFG Rationale: When parser inserts a statement, it inserts the child
+  // the CFG
+  // Rationale: When parser inserts a statement, it inserts the child
   // statements before its parents due to recursive descent. Current graph root
   // is set to the first node inserted, and not the smallest vertex number. This
   // method solves that by getting the minimum of all vertex numbers and setting
@@ -35,6 +36,10 @@ class DesignExtractor {
   // Used in UpdateCallT()
   void DescentForCallee(ProcName true_caller, ProcName curr_callee);
 
+  void DfsConnect(const Vertex vertex, CFG* cfg);
+
+  void DfsConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
+
   //**************************************
  public:
   DesignExtractor(PKB* pkb);
@@ -48,6 +53,10 @@ class DesignExtractor {
   void CheckCyclicCalls();
 
   void PopulateAllNextPairs();
+
+  // Insert a program CFG into the PKB for AffectsBip relation
+  void PopulateProgramCFG();
+
 };
 
 #endif
