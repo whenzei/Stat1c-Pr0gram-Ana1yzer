@@ -12,6 +12,7 @@ void DesignExtractor::UpdatePkb() {
   UpdateUsesAndModifiesWithCallGraph();
   UpdateCallT();
   PopulateDominates();
+  PopulateProgramCFG();
 }
 
 void DesignExtractor::CheckCyclicCalls() {
@@ -165,29 +166,44 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,
 
   VertexList terminal_nodes;
 
-  // get neighbours before adding the root as neighbour
-  VertexList neighbours = cfg->GetNeighboursList(v);
-
   StmtType stmt_type = pkb_->GetStmtType(v);
   if (stmt_type == StmtType::kCall) {
+    // get neighbours before adding the root as neighbour
+    VertexList neighbours = cfg->GetNeighboursList(v);
     ProcName proc_name = pkb_->GetCalledProcedure(v);
     CFG* called_cfg = pkb_->GetCFG(proc_name);
-    // add root of the procedure's cfg as neighbour of call statement
-    cfg->AddEdge(v, called_cfg->GetRoot());
+    Vertex called_cfg_root = called_cfg->GetRoot();
+    // add root of the procedure's cfg as neighbour of call statement's
+    // previouses
+    VertexList previouses = pkb_->GetPrevious(v);
+    for (auto& previous : previouses) {
+      cfg->AddEdge(previous, called_cfg_root);
+    }
     // get terminal nodes of the called cfg
     terminal_nodes = called_cfg->GetTerminalNodes();
-  }
 
-  for (auto& neighbour : neighbours) {
-    if (stmt_type == StmtType::kCall) {
-      // remove all neighbours of the call statement
-      cfg->RemoveEdge(v, neighbour);
-
+    for (auto& neighbour : neighbours) {
       // add the neighbours to the terminal nodes of the procedure
       for (auto& terminal_node : terminal_nodes) {
         cfg->AddEdge(terminal_node, neighbour);
       }
     }
-    DfsConnect(neighbour, cfg, visited);
+
+    // remove the whole call node
+    cfg->RemoveNode(v);
+
+    // get all the neighbours of the previous node again and dfs
+    for (auto& previous : previouses) {
+      VertexList prev_neighbours = cfg->GetNeighboursList(previous);
+      for (auto& prev_neighbour : prev_neighbours) {
+        DfsConnect(prev_neighbour, cfg, visited);
+      }
+    }
+  } else {
+    // Default path for non calls: Get the neighbours
+    VertexList neighbours = cfg->GetNeighboursList(v);
+    for (auto& neighbour : neighbours) {
+      DfsConnect(neighbour, cfg, visited);
+    }
   }
 }
