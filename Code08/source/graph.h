@@ -38,6 +38,10 @@ class Graph {
  public:
   Graph();
 
+  // sets the root of the graph to the given value
+  // If the given value is not in the graph, no root change will occur
+  void SetRoot(const Vertex& new_root);
+
   // Adds edges between the from node to the to node
   void AddEdge(const Vertex& from, const Vertex& to);
 
@@ -78,6 +82,9 @@ class Graph {
 
   // @returns set of all vertices in the graph
   VertexSet GetAllVertices();
+
+  // @returns the root of the graph
+  Vertex GetRoot();
 };
 
 #endif  // !SPA_GRAPH_H

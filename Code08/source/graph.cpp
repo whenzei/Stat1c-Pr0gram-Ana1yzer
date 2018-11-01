@@ -7,6 +7,12 @@ Graph::Graph() {
   adj_set_ = AdjSet();
 }
 
+void Graph::SetRoot(const Vertex &new_root) {
+  if (adj_set_.count(new_root)) {
+    root_ = new_root;
+  }
+}
+
 void Graph::AddEdge(const Vertex &from, const Vertex &to) {
   if (size_ == 0) {
     // first vertex in graph is the root
@@ -205,3 +211,5 @@ VertexSet Graph::GetAllVertices() {
 
   return result;
 }
+
+Vertex Graph::GetRoot() { return root_; }

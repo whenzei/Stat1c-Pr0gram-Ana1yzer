@@ -6,6 +6,7 @@
 DesignExtractor::DesignExtractor(PKB* pkb) { pkb_ = pkb; }
 
 void DesignExtractor::UpdatePkb() {
+  UpdateCFGRoots();
   PopulateAllNextPairs();
   UpdateParentT();
   UpdateUsesAndModifiesWithCallGraph();
@@ -102,6 +103,21 @@ void DesignExtractor::PopulateDominates() {
       VertexSet unreachables = cfg->GetUnreachableVertices(v);
       pkb_->InsertDominates(v, unreachables);
     }
+  }
+}
+
+void DesignExtractor::UpdateCFGRoots() {
+  ProcNameList all_procs = pkb_->GetAllProcNames();
+  for (auto& proc : all_procs) {
+    CFG* cfg = pkb_->GetCFG(proc);
+    VertexSet all_vertices = cfg->GetAllVertices();
+    int min = INT_MAX;
+    for (auto& vertex : all_vertices) {
+      if (vertex < min) {
+        min = vertex;
+      }
+    }
+    cfg->SetRoot(min);
   }
 }
 
