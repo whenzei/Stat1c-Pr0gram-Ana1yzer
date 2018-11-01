@@ -110,8 +110,9 @@ void DesignExtractor::PopulateDominates() {
 void DesignExtractor::PopulateProgramCFG() {
   CFG program_cfg = CFG(*pkb_->GetCombinedCFG());
   // program cfg will always have 1 as root
-  program_cfg.SetRoot(1);
-  DfsConnect(1, &program_cfg);
+  Vertex min_vertex = GetMinVertex(&program_cfg);
+  program_cfg.SetRoot(min_vertex);
+  DfsConnect(min_vertex, &program_cfg);
   pkb_->SetProgramCFG(program_cfg);
 }
 
@@ -119,15 +120,20 @@ void DesignExtractor::UpdateCFGRoots() {
   ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto& proc : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc);
-    VertexSet all_vertices = cfg->GetAllVertices();
-    int min = INT_MAX;
-    for (auto& vertex : all_vertices) {
-      if (vertex < min) {
-        min = vertex;
-      }
-    }
-    cfg->SetRoot(min);
+    Vertex min_vertex = GetMinVertex(cfg);
+    cfg->SetRoot(min_vertex);
   }
+}
+
+int DesignExtractor::GetMinVertex(CFG* cfg) {
+  VertexSet all_vertices = cfg->GetAllVertices();
+  int min = INT_MAX;
+  for (auto& vertex : all_vertices) {
+    if (vertex < min) {
+      min = vertex;
+    }
+  }
+  return min;
 }
 
 void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {

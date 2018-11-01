@@ -23,6 +23,8 @@ class DesignExtractor {
   void UpdateCFGRoots();
 
   //******** Helper Methods **************
+  // @returns the minimum vertex number found in the given CFG
+  int GetMinVertex(CFG* cfg);
 
   // Search for child of current stmt_num recursively
   // and updates PKB follows* relation
@@ -56,7 +58,6 @@ class DesignExtractor {
 
   // Insert a program CFG into the PKB for AffectsBip relation
   void PopulateProgramCFG();
-
 };
 
 #endif
