@@ -254,7 +254,7 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
       }
 
       // add modified to lmm
-      lmm.emplace(modified_var, v);
+      lmm[modified_var] = v;
     } else {
       // not assign statement, but modifies something. Need to clear from lmm
       if (lmm.count(modified_var)) {
