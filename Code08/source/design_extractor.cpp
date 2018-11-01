@@ -113,7 +113,13 @@ void DesignExtractor::PopulateProgramCFG() {
   // is stmt#1 and removed
   Vertex min_vertex = GetMinVertex(&program_cfg);
   program_cfg.SetRoot(min_vertex);
-  DfsConnect(min_vertex, &program_cfg);
+
+  VisitedMap visited;
+  for (auto& v : program_cfg.GetAllVertices()) {
+    visited[v] = false;
+  }
+
+  DfsConnect(min_vertex, &program_cfg, &visited);
   pkb_->SetProgramCFG(program_cfg);
 }
 
@@ -152,15 +158,6 @@ void DesignExtractor::DescentForCallee(ProcName true_caller,
     pkb_->InsertIndirectCallRelationship(true_caller, callee);
     DescentForCallee(true_caller, callee);
   }
-}
-
-void DesignExtractor::DfsConnect(const Vertex vertex, CFG* cfg) {
-  VisitedMap visited;
-  for (auto& v : cfg->GetAllVertices()) {
-    visited[v] = false;
-  }
-
-  DfsConnect(vertex, cfg, &visited);
 }
 
 void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,

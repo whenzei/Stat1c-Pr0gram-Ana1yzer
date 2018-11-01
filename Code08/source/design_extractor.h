@@ -38,8 +38,6 @@ class DesignExtractor {
   // Used in UpdateCallT()
   void DescentForCallee(ProcName true_caller, ProcName curr_callee);
 
-  void DfsConnect(const Vertex vertex, CFG* cfg);
-
   void DfsConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
 
   //**************************************
