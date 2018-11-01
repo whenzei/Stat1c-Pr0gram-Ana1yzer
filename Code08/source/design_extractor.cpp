@@ -109,7 +109,8 @@ void DesignExtractor::PopulateDominates() {
 
 void DesignExtractor::PopulateProgramCFG() {
   CFG program_cfg = CFG(*pkb_->GetCombinedCFG());
-  // program cfg will always have 1 as root
+  // program cfg might not always have 1 as root, such as when a call statement
+  // is stmt#1 and removed
   Vertex min_vertex = GetMinVertex(&program_cfg);
   program_cfg.SetRoot(min_vertex);
   DfsConnect(min_vertex, &program_cfg);
