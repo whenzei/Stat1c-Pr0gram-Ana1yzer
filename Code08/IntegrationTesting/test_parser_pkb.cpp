@@ -1090,5 +1090,45 @@ TEST_CLASS(TestParserPkb) {
     Assert::AreEqual(2, (*iter).first);
     Assert::AreEqual(4, (*iter).second);
   }
+
+  TEST_METHOD(TestPopulateProgramCFG) {
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    string program =
+        " procedure one {"
+        "while(a == 1) {"      // 1
+        " a = 1;"              // 2
+        " if (x == b) then {"  // 3
+        "t = t + 1;"           // 4
+        "print x;"             // 5
+        "} else {"
+        "t = t * 2;"  // 6
+        "}"
+        "}"
+        "call two;"                 // 7
+        "g = a;"                    // 8
+        "f = t + a + c;"            // 9
+        "read f;"                   // 10
+        "w = f;"                    // 11
+        "affects = g + f + a + t;"  // 12
+        "}"
+        "procedure two {"
+        "read a;"  // 13
+        "a = b;"   // 14
+        "}";
+
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+    DesignExtractor de = DesignExtractor(&test_pkb);
+
+    de.PopulateProgramCFG();
+
+    CFG* actual_cfg = test_pkb.GetProgramCFG();
+
+    // expect stmt#7 to be linked to root of procedure two (stmt#8)
+    Assert::IsTrue(actual_cfg->GetNeighboursSet(7) == VertexSet{13});
+    // expect terminal node (stmt#14) of procedure two be to linked to stmt#9
+    Assert::IsTrue(actual_cfg->GetNeighboursSet(14) == VertexSet{8});
+  }
 };
 }  // namespace ParserPKBTests
