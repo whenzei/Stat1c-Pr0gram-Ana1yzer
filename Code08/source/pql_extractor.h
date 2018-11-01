@@ -62,7 +62,7 @@ class PqlExtractor {
 
   bool IsModifyingType(StmtType stmt_type);
 
-  void ClearAffectsMaps();
+  void ClearAffectsGlobals();
 
  public:
   PqlExtractor(PKB pkb);
@@ -87,7 +87,7 @@ class PqlExtractor {
   // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
   StmtNumPairList GetAllNextTPairs();
 
-  //****************** Affects* *******************************
+  //****************** Affects *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
@@ -102,6 +102,9 @@ class PqlExtractor {
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
   AffectsTable GetAffectsTable();
   //*********************************************************
+
+  //****************** AffectsBip *******************************
+  AffectsTable PqlExtractor::GetAffectsBipTable();
 };
 
 #endif

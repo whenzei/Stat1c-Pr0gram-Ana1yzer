@@ -155,7 +155,7 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     }
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return flag;
 }
 
@@ -181,7 +181,7 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
     DfsAffects(neighbour, affecting_var, &res_list);
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return res_list;
 }
 
@@ -211,7 +211,7 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     DfsAffects(neighbour, rhs_vars, VarIndexSet(), &res_list);
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return res_list;
 }
 
@@ -225,6 +225,18 @@ AffectsTable PqlExtractor::GetAffectsTable() {
     DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
                   WhileLastModMap());
   }
+
+  return affects_table;
+}
+
+/**********************************
+ * AffectsBip Extractor Functions *
+ **********************************/
+AffectsTable PqlExtractor::GetAffectsBipTable() {
+  AffectsTable affects_table;
+  curr_affects_cfg_ = pkb_.GetProgramCFG();
+  DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
+                WhileLastModMap());
 
   return affects_table;
 }
@@ -411,7 +423,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   }
 }
 
-void PqlExtractor::ClearAffectsMaps() { curr_visited_.clear(); }
+void PqlExtractor::ClearAffectsGlobals() { curr_visited_.clear(); }
 
 bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||

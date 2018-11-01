@@ -662,9 +662,14 @@ class PKB {
    * AffectsBip Table Functions *
    *****************************/
   // Set the given cfg as the program CFG
+  // Solely used by the Design Extractor class
   void SetProgramCFG(const CFG& program_cfg);
 
-  // @returns the program cfg
+  // Get the program CFG, with call statements removed and the call
+  // statements' previous statements connected to the called procedure's root,
+  // and the terminal nodes of the called procedure connected to the neighbours
+  // of the (removed) call statement node
+  // @returns the program CFG
   CFG* GetProgramCFG();
 
   /*****************************
