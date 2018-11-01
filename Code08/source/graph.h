@@ -51,6 +51,9 @@ class Graph {
   // Adds node into the graph
   void AddNode(const Vertex& vertex);
 
+  // Remove node from the graph
+  void RemoveNode(const Vertex& vertex);
+
   // @returns set of neighbours of given vertex v
   VertexSet GetNeighboursSet(const Vertex& v);
 
