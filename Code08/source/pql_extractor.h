@@ -34,6 +34,19 @@ class PqlExtractor {
   bool DfsAffects(Vertex curr, Vertex target, VarIndex affects_var);
 
   // @params: curr the current vertex
+  // @params: affects_var the variable (belonging to LHS of the assignment statement of concern)
+  // @returns true if affects_var affects any other assignment statements
+  bool DfsAffects(Vertex curr, VarIndex affects_var);
+
+  // @params: curr the current vertex
+  // @params: rhs_vars the set of variables to be affected (contains variables
+  // used by the statement of concern)
+  // @params: affected_rhs_vars the set of variables already affected in the
+  // current path
+  // @returns true if any of the rhs_vars is affected (vertex) by any other assignment statement
+  bool DfsAffected(Vertex curr, VarIndexSet rhs_vars, VarIndexSet affected_rhs_vars);
+
+  // @params: curr the current vertex
   // @params: affects_var the LHS of an assignment statement to check if it
   // affects other statements
   // @params: res_list the list of all StmtNum that is affected by affects_var
@@ -91,6 +104,12 @@ class PqlExtractor {
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
+
+  // @returns true if stmt affects any statement
+  bool IsAffects(StmtNum stmt);
+
+  // @returns true if stmt is affected by any statement
+  bool IsAffected(StmtNum stmt);
 
   // @returns a list of n that Affects(stmt_1, n) holds true
   StmtNumList GetAffects(StmtNum stmt_1);

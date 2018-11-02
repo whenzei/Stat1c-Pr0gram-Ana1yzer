@@ -159,6 +159,67 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   return flag;
 }
 
+bool PqlExtractor::IsAffects(StmtNum stmt) {
+  ProcName p = pkb_.GetProcOfStmt(stmt);
+
+  if (p.empty()) {
+    return false;
+  }
+
+  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+  curr_affects_cfg_ = pkb_.GetCFG(p);
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
+  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt).front();
+
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = flag || DfsAffects(neighbour, affecting_var);
+    if (flag) {
+      break;
+    }
+  }
+
+  ClearAffectsMaps();
+  return flag;
+}
+
+bool PqlExtractor::IsAffected(StmtNum stmt) {
+  ProcName p = pkb_.GetProcOfStmt(stmt);
+
+  if (p.empty()) {
+    return false;
+  }
+
+  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+  curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
+  VarIndexList var_indices = pkb_.GetUsedVarS(stmt);
+  VarIndexSet rhs_vars;
+
+  for (VarIndex var_index : var_indices) {
+    rhs_vars.emplace(var_index);
+  }
+
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = DfsAffected(neighbour, rhs_vars, VarIndexSet());
+    if (flag) {
+      break;
+    }
+  }
+
+  ClearAffectsMaps();
+  return flag;
+}
+
 StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
   ProcName p = pkb_.GetProcOfStmt(stmt_1);
 
@@ -174,7 +235,6 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
   VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();
-  ;
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
@@ -327,6 +387,82 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex target,
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
   for (Vertex neighbour : neighbours) {
     if (DfsAffects(neighbour, target, affects_var)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var) {
+  if (curr_visited_.count(curr)) {
+    return false;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  if (curr_stmt_type == StmtType::kAssign) {
+    if (pkb_.IsUsedByS(curr, affects_var)) {
+      return true;
+    }
+  }
+
+  if (IsModifyingType(curr_stmt_type)) {
+    if (pkb_.IsModifiedByS(curr, affects_var)) {
+      return false;
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  for (Vertex neighbour : neighbours) {
+    if (DfsAffects(neighbour, affects_var)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool PqlExtractor::DfsAffected(Vertex curr, VarIndexSet rhs_vars,
+                               VarIndexSet affected_rhs_vars) {
+  if (curr_visited_.count(curr)) {
+    return false;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  // Check potential affecting statement
+  if (curr_stmt_type == StmtType::kAssign) {
+    VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
+
+    // Check if the current assignment statement modifies a variable in the
+    // rhs_vars, that has not been modified before
+    if (rhs_vars.count(curr_modified_var) &&
+        affected_rhs_vars.count(curr_modified_var) == 0) {
+      return true;
+    }
+  }
+
+
+  // Check for modifying statements
+  if (IsModifyingType(curr_stmt_type)) {
+    // Check if current statement is affecting any of the rhs_vars
+    // Update affected_rhs_vars
+    for (VarIndex rhs_var : rhs_vars) {
+      if (pkb_.IsModifiedByS(curr, rhs_var)) {
+        affected_rhs_vars.emplace(rhs_var);
+      }
+      if (rhs_vars.size() == affected_rhs_vars.size()) {
+        return false;
+      }
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  for (Vertex neighbour : neighbours) {
+    if (DfsAffected(neighbour, rhs_vars, affected_rhs_vars)) {
       return true;
     }
   }
