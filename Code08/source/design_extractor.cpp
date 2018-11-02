@@ -183,6 +183,12 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,
     for (auto& previous : previouses) {
       cfg->AddEdge(previous, called_cfg_root);
     }
+
+    // remove the whole call node
+    // must be done before obtaining terminal nodes in case the call statement
+    // is a terminal node
+    cfg->RemoveNode(v);
+
     // get terminal nodes of the called cfg
     terminal_nodes = called_cfg->GetTerminalNodes();
 
@@ -192,9 +198,6 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,
         cfg->AddEdge(terminal_node, neighbour);
       }
     }
-
-    // remove the whole call node
-    cfg->RemoveNode(v);
 
     // get all the neighbours of the previous node again and dfs
     for (auto& previous : previouses) {
