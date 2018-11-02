@@ -75,7 +75,7 @@ class PqlExtractor {
 
   bool IsModifyingType(StmtType stmt_type);
 
-  void ClearAffectsMaps();
+  void ClearAffectsGlobals();
 
  public:
   PqlExtractor(PKB pkb);
@@ -100,27 +100,42 @@ class PqlExtractor {
   // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
   StmtNumPairList GetAllNextTPairs();
 
-  //****************** Affects* *******************************
+  //****************** Affects *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
-  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
+  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns true if stmt affects any statement
-  bool IsAffects(StmtNum stmt);
+  bool IsAffects(StmtNum stmt, bool is_bip = false);
 
   // @returns true if stmt is affected by any statement
-  bool IsAffected(StmtNum stmt);
+  bool IsAffected(StmtNum stmt, bool is_bip = false);
 
   // @returns a list of n that Affects(stmt_1, n) holds true
-  StmtNumList GetAffects(StmtNum stmt_1);
+  StmtNumList GetAffects(StmtNum stmt_1, bool is_bip = false);
 
   // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedBy(StmtNum stmt_num);
+  StmtNumList GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
 
   // Get the AffectsTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
   AffectsTable GetAffectsTable();
   //*********************************************************
+
+  //****************** AffectsBip *******************************
+
+  // @returns true if AffectsBip(stmt_1, stmt_2) holds, else false
+  bool IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  // @returns a list of n that AffectsBip(stmt_1, n) holds true
+  StmtNumList GetAffectsBip(StmtNum stmt_1);
+
+  // @returns a list of n that Affects(n, stmt_num) holds true
+  StmtNumList GetAffectedByBip(StmtNum stmt_num);
+
+  // Get the AffectsBipTable of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
+  AffectsTable PqlExtractor::GetAffectsBipTable();
 };
 
 #endif

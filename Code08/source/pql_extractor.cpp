@@ -122,11 +122,12 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
+bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
   ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
 
-  if (p1.empty() || p2.empty() || p1 != p2) {
+  // if is_bip, don't have to check if same procedure since its one big cfg
+  if (p1.empty() || p2.empty() || (!is_bip && p1 != p2)) {
     return false;
   }
 
@@ -143,7 +144,11 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     return false;
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p1);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetCFG(p1);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
 
@@ -155,11 +160,11 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     }
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return flag;
 }
 
-bool PqlExtractor::IsAffects(StmtNum stmt) {
+bool PqlExtractor::IsAffects(StmtNum stmt, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt);
 
   if (p.empty()) {
@@ -170,7 +175,12 @@ bool PqlExtractor::IsAffects(StmtNum stmt) {
     return false;
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p);
+
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
   VarIndex affecting_var = pkb_.GetModifiedVarS(stmt).front();
@@ -183,11 +193,11 @@ bool PqlExtractor::IsAffects(StmtNum stmt) {
     }
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return flag;
 }
 
-bool PqlExtractor::IsAffected(StmtNum stmt) {
+bool PqlExtractor::IsAffected(StmtNum stmt, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt);
 
   if (p.empty()) {
@@ -198,7 +208,11 @@ bool PqlExtractor::IsAffected(StmtNum stmt) {
     return false;
   }
 
-  curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetReverseProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
   VarIndexList var_indices = pkb_.GetUsedVarS(stmt);
@@ -216,11 +230,13 @@ bool PqlExtractor::IsAffected(StmtNum stmt) {
     }
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return flag;
 }
 
-StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
+
+// is_bip is by default false, but can be set to true by affectsBip
+StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_1);
 
   if (p.empty()) {
@@ -231,7 +247,11 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
   VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();
@@ -241,14 +261,14 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
     DfsAffects(neighbour, affecting_var, &res_list);
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return res_list;
 }
 
-StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
+StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_num);
 
-  if (p == ProcName()) {
+  if (p.empty()) {
     return StmtNumList();
   }
 
@@ -256,7 +276,11 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetReverseProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_num);
   VarIndexList var_indices = pkb_.GetUsedVarS(stmt_num);
@@ -271,7 +295,7 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     DfsAffects(neighbour, rhs_vars, VarIndexSet(), &res_list);
   }
 
-  ClearAffectsMaps();
+  ClearAffectsGlobals();
   return res_list;
 }
 
@@ -285,6 +309,30 @@ AffectsTable PqlExtractor::GetAffectsTable() {
     DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
                   WhileLastModMap());
   }
+
+  return affects_table;
+}
+
+/**********************************
+ * AffectsBip Extractor Functions *
+ **********************************/
+bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
+  return IsAffects(stmt_1, stmt_2, true);
+}
+
+StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
+  return GetAffects(stmt_1, true);
+}
+
+StmtNumList PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
+  return StmtNumList();
+}
+
+AffectsTable PqlExtractor::GetAffectsBipTable() {
+  AffectsTable affects_table;
+  curr_affects_cfg_ = pkb_.GetProgramCFG();
+  DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
+                WhileLastModMap());
 
   return affects_table;
 }
@@ -314,7 +362,7 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
       }
 
       // add modified to lmm
-      lmm.emplace(modified_var, v);
+      lmm[modified_var] = v;
     } else {
       // not assign statement, but modifies something. Need to clear from lmm
       if (lmm.count(modified_var)) {
@@ -547,7 +595,7 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   }
 }
 
-void PqlExtractor::ClearAffectsMaps() { curr_visited_.clear(); }
+void PqlExtractor::ClearAffectsGlobals() { curr_visited_.clear(); }
 
 bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||

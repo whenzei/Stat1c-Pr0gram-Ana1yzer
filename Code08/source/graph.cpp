@@ -1,4 +1,5 @@
 #include "graph.h"
+#include <algorithm>
 #include <iostream>
 
 Graph::Graph() {
@@ -18,21 +19,48 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
     // first vertex in graph is the root
     root_ = from;
   }
-  if (!adj_set_.count(from)) {
-    size_++;
-    adj_set_.emplace(from, VertexSet());
-    adj_list_.emplace(from, VertexList());
-  }
 
-  if (!adj_set_.count(to)) {
-    size_++;
-    adj_set_.emplace(to, VertexSet());
-    adj_list_.emplace(to, VertexList());
-  }
+  AddNode(from);
+  AddNode(to);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
     adj_set_[from].emplace(to);
+  }
+}
+
+void Graph::RemoveEdge(const Vertex &from, const Vertex &to) {
+  if (adj_set_[from].count(to)) {
+    // remove from adjList
+    VertexList &vec = adj_list_[from];  // use shorter name
+    VertexList::iterator position = std::find(vec.begin(), vec.end(), to);
+    if (position != vec.end()) {
+      vec.erase(std::remove(vec.begin(), vec.end(), to), vec.end());
+    }
+    adj_set_[from].erase(to);
+  }
+}
+
+void Graph::AddNode(const Vertex &vertex) {
+  if (!adj_set_.count(vertex)) {
+    size_++;
+    adj_set_.emplace(vertex, VertexSet());
+    adj_list_.emplace(vertex, VertexList());
+  }
+}
+
+void Graph::RemoveNode(const Vertex &vertex) {
+  if (adj_set_.count(vertex)) {
+    // remove edge from all vertices that has this as neighbour
+    VertexSet all_verties = GetAllVertices();
+    for (auto& v : all_verties) {
+      if (GetNeighboursSet(v).count(vertex)) {
+        RemoveEdge(v, vertex);
+      }
+    }
+    size_--;
+    adj_set_.erase(vertex);
+    adj_list_.erase(vertex);
   }
 }
 
@@ -194,6 +222,19 @@ VertexList Graph::GetNeighboursList(const Vertex &v) {
     return adj_list_[v];
   }
   return VertexList();
+}
+
+VertexList Graph::GetTerminalNodes() {
+  // retrieve all nodes with empty adj_list_
+  VertexSet all_vertices = GetAllVertices();
+  VertexList result;
+  for (auto &vertex : all_vertices) {
+    if (adj_list_[vertex].empty()) {
+      result.push_back(vertex);
+    }
+  }
+
+  return result;
 }
 
 int Graph::GetSize() { return size_; }

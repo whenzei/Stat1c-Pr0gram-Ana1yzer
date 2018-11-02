@@ -18,6 +18,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   const PKB pkb2 = GetTestPKBTwo();
   const PKB pkb3 = GetTestPKBThree();
   const PKB pkb4 = GetTestPKBFour();
+  const PKB pkb5 = GetTestPKBFive();
   const PKB pkb6 = GetTestPKBSix();
   const PKB next_pkb1 = GetNextPKBOne();
   const PKB next_pkb2 = GetNextPKBTwo();
@@ -361,6 +362,19 @@ TEST_CLASS(TestPkbPqlExtractor) {
     expected_results_3[9] = VertexSet{8};
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
+
+  TEST_METHOD(TestGetAffectsBipTable) {
+    PqlExtractor extractor = PqlExtractor(pkb5);
+    AffectsTable actual_results = extractor.GetAffectsBipTable();
+    AffectsTable expected_results;
+    expected_results[1] = VertexSet{6, 10, 11, 8, 3};
+    expected_results[3] = VertexSet{5};
+    expected_results[4] = VertexSet{5};
+    expected_results[6] = VertexSet{11, 8};
+    expected_results[10] = VertexSet{8, 3};
+    Assert::IsTrue(actual_results == expected_results);
+  }
+
   TEST_METHOD(GetAffectedByIfInWhile) {
     PqlExtractor extractor = PqlExtractor(pkb1);
 
@@ -583,6 +597,35 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     return test_pkb;
   }
+  PKB GetTestPKBFive() {
+    string program =
+        "procedure Bill {"
+        "  x=5;"        // 1
+        "  call Mary;"  // 2
+        "  y=x+6;"      // 3
+        "  x=5;"        // 4
+        "  z=x*y+2;"    // 5
+        "}"
+        "procedure Mary {"
+        "  y=x*3;"      // 6
+        "  call John;"  // 7
+        "  z=x+y;"      // 8
+        "}"
+        "procedure John {"
+        "  if (i > 0) then {"  // 9
+        "    x = x + z;"       // 10
+        "  } else {"
+        "    z = x + y;"  // 11
+        "  }"
+        "}";
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+
+    return test_pkb;
+  }
+
   PKB GetTestPKBSix() {
     string program =
         "procedure one {"
@@ -594,11 +637,12 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "  end = a + x + d; }"  // 6
         "procedure two {"
         "read d;}";             // 7
+  
+  
     PKB test_pkb = PKB();
     Parser parser = Parser(&test_pkb);
     TokenList tokenized_program = Tokenizer::Tokenize(program);
     parser.Parse(tokenized_program);
-
     return test_pkb;
   }
 };
