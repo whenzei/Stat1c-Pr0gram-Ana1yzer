@@ -18,7 +18,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   const PKB pkb2 = GetTestPKBTwo();
   const PKB pkb3 = GetTestPKBThree();
   const PKB pkb4 = GetTestPKBFour();
-  const PKB pkb5 = GetTestPKBFive();
+  const PKB pkb6 = GetTestPKBSix();
   const PKB next_pkb1 = GetNextPKBOne();
   const PKB next_pkb2 = GetNextPKBTwo();
   const PKB next_pkb3 = GetNextPKBThree();
@@ -233,7 +233,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
 
     // Load new program
-    extractor = PqlExtractor(pkb5);
+    extractor = PqlExtractor(pkb6);
 
     bool test_result_8 = extractor.IsAffected(6);
     Assert::IsFalse(test_result_8);
@@ -317,7 +317,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     // Additional test: all vars modified by non assignment statement before
     // reaching an affecting assignment statement
-    extractor = PqlExtractor(pkb5);
+    extractor = PqlExtractor(pkb6);
     StmtNumList test_result_8 = extractor.GetAffectedBy(6);
     StmtNumList expected_result_8 = StmtNumList{};
     Assert::IsTrue(expected_result_8 == test_result_8);
@@ -583,7 +583,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     return test_pkb;
   }
-  PKB GetTestPKBFive() {
+  PKB GetTestPKBSix() {
     string program =
         "procedure one {"
         "  x = c + d;"          // 1
