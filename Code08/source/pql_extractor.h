@@ -90,13 +90,13 @@ class PqlExtractor {
   //****************** Affects *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
-  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
+  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns a list of n that Affects(stmt_1, n) holds true
-  StmtNumList GetAffects(StmtNum stmt_1);
+  StmtNumList GetAffects(StmtNum stmt_1, bool is_bip = false);
 
   // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedBy(StmtNum stmt_num);
+  StmtNumList GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
 
   // Get the AffectsTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
@@ -104,6 +104,18 @@ class PqlExtractor {
   //*********************************************************
 
   //****************** AffectsBip *******************************
+
+  // @returns true if AffectsBip(stmt_1, stmt_2) holds, else false
+  bool IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  // @returns a list of n that AffectsBip(stmt_1, n) holds true
+  StmtNumList GetAffectsBip(StmtNum stmt_1);
+
+  // @returns a list of n that Affects(n, stmt_num) holds true
+  StmtNumList GetAffectedByBip(StmtNum stmt_num);
+
+  // Get the AffectsBipTable of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
   AffectsTable PqlExtractor::GetAffectsBipTable();
 };
 

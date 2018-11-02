@@ -122,11 +122,12 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
+bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
   ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
 
-  if (p1.empty() || p2.empty() || p1 != p2) {
+  // if is_bip, don't have to check if same procedure since its one big cfg
+  if (p1.empty() || p2.empty() || (!is_bip && p1 != p2)) {
     return false;
   }
 
@@ -143,7 +144,11 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     return false;
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p1);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetCFG(p1);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
 
@@ -159,7 +164,8 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   return flag;
 }
 
-StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
+// is_bip is by default false, but can be set to true by affectsBip
+StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_1);
 
   if (p.empty()) {
@@ -170,7 +176,11 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
   VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();
@@ -185,10 +195,10 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
   return res_list;
 }
 
-StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
+StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_num);
 
-  if (p == ProcName()) {
+  if (p.empty()) {
     return StmtNumList();
   }
 
@@ -196,7 +206,11 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetReverseProgramCFG();
+  } else {
+    curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_num);
   VarIndexList var_indices = pkb_.GetUsedVarS(stmt_num);
@@ -232,6 +246,18 @@ AffectsTable PqlExtractor::GetAffectsTable() {
 /**********************************
  * AffectsBip Extractor Functions *
  **********************************/
+bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
+  return IsAffects(stmt_1, stmt_2, true);
+}
+
+StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
+  return GetAffects(stmt_1, true);
+}
+
+StmtNumList PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
+  return StmtNumList();
+}
+
 AffectsTable PqlExtractor::GetAffectsBipTable() {
   AffectsTable affects_table;
   curr_affects_cfg_ = pkb_.GetProgramCFG();
