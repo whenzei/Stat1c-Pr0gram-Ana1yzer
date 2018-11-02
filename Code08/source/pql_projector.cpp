@@ -18,7 +18,7 @@ void PqlProjector::TrimIntermediateResultTables() {
     }
     for (auto& row : (*result_table)) {
       ResultRow new_row;
-	  // only keep columns that are selected
+      // only keep columns that are selected
       for (int column : selected_columns) {
         new_row.push_back(row[column]);
       }
@@ -34,7 +34,7 @@ void PqlProjector::MergeIntermediateResultTables() {
     if (final_result_table_.empty()) {
       final_result_table_ = *result_table;
     } else {
-	  // cross product
+      // cross product
       ResultTable new_table;
       for (auto& row_1 : final_result_table_) {
         for (auto& row_2 : *result_table) {
@@ -97,5 +97,10 @@ FinalResult PqlProjector::GetFinalResult(
   MergeIntermediateResultTables();
   GenerateFinalResult();
 
+  return final_result_;
+}
+
+FinalResult PqlProjector::GetFinalResult(bool result) {
+  result ? final_result_.push_back("true") : final_result_.push_back("false");
   return final_result_;
 }

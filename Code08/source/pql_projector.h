@@ -48,6 +48,8 @@ class PqlProjector {
   FinalResult GetFinalResult(ResultTableList intermediate_result_tables,
                              ResultTableColumnHeader intermediate_column_header,
                              SynonymList selections, PKB pkb);
+
+  FinalResult GetFinalResult(bool result);
 };
 
 #endif  // !PQL_PROJECTOR_H

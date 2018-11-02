@@ -35,6 +35,15 @@ TEST_CLASS(TestPqlProjector) {
                    FinalResult{"4 " + v1 + v1 + "2", "4 " + v2 + v2 + "2",
                                "8 " + v1 + v1 + "6", "8 " + v2 + v2 + "6"});
   }
+
+  TEST_METHOD(TestBooleanResult) {
+    PqlProjector pql_projector1;
+    FinalResult result1 = pql_projector1.GetFinalResult(true);
+    Assert::IsTrue(result1 == FinalResult{"true"});
+    PqlProjector pql_projector2;
+    FinalResult result2 = pql_projector2.GetFinalResult(false);
+    Assert::IsTrue(result2 == FinalResult{"false"});
+  }
   // TODO: add more tests
 };
 
