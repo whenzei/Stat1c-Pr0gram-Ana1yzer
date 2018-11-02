@@ -38,6 +38,10 @@ class DesignExtractor {
   // Used in UpdateCallT()
   void DescentForCallee(ProcName true_caller, ProcName curr_callee);
 
+  // @params: CFG* pointer to cfg to run DfsConnect on
+  // @returns the connected CFG
+  CFG ConnectProgramCFG(CFG* cfg);
+
   void DfsConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
 
   //**************************************
@@ -54,7 +58,8 @@ class DesignExtractor {
 
   void PopulateAllNextPairs();
 
-  // Insert a program CFG into the PKB for AffectsBip relation
+  // Insert both reversed and normal program CFG into the PKB for AffectsBip
+  // relation
   void PopulateProgramCFG();
 };
 

@@ -108,7 +108,15 @@ void DesignExtractor::PopulateDominates() {
 }
 
 void DesignExtractor::PopulateProgramCFG() {
-  CFG program_cfg = CFG(*pkb_->GetCombinedCFG());
+  CFG* combined_cfg = pkb_->GetCombinedCFG();
+  CFG* reversed_combined_cfg = pkb_->GetReverseCombinedCFG();
+  pkb_->SetProgramCFG(ConnectProgramCFG(combined_cfg));
+  pkb_->SetReverseProgramCFG(ConnectProgramCFG(reversed_combined_cfg));
+}
+
+CFG DesignExtractor::ConnectProgramCFG(CFG* combined_cfg) {
+  // must clone, or the combined cfg will be mutated
+  CFG program_cfg = CFG(*combined_cfg);
   // program cfg might not always have 1 as root, such as when a call statement
   // is stmt#1 and removed
   Vertex min_vertex = GetMinVertex(&program_cfg);
@@ -120,7 +128,7 @@ void DesignExtractor::PopulateProgramCFG() {
   }
 
   DfsConnect(min_vertex, &program_cfg, &visited);
-  pkb_->SetProgramCFG(program_cfg);
+  return program_cfg;
 }
 
 void DesignExtractor::UpdateCFGRoots() {
