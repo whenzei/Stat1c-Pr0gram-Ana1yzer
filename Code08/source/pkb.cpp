@@ -680,6 +680,10 @@ CFG* PKB::GetReverseCFG(ProcName proc_name) {
 
 CFG* PKB::GetCombinedCFG() { return next_table_.GetCombinedCFG(); }
 
+CFG* PKB::GetReverseCombinedCFG() {
+  return next_table_.GetReverseCombinedCFG();
+}
+
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
   // exception will be thrown if there are cycles
@@ -691,7 +695,13 @@ void PKB::SetProgramCFG(const CFG& program_cfg) {
   next_table_.SetProgramCFG(program_cfg);
 }
 
+void PKB::SetReverseProgramCFG(const CFG& reversed_program_cfg) {
+  next_table_.SetReverseProgramCFG(reversed_program_cfg);
+}
+
 CFG* PKB::GetProgramCFG() { return next_table_.GetProgramCFG(); }
+
+CFG* PKB::GetReverseProgramCFG() { return next_table_.GetReverseProgramCFG(); }
 
 void PKB::InsertDominates(Vertex dominating_vertex,
                           VertexSet dominated_vertices) {

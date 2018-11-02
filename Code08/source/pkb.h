@@ -654,6 +654,9 @@ class PKB {
   // @returns the combined cfg of the program
   CFG* GetCombinedCFG();
 
+  // @returns the reversed combined cfg of the program
+  CFG* GetReverseCombinedCFG();
+
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
@@ -665,12 +668,21 @@ class PKB {
   // Solely used by the Design Extractor class
   void SetProgramCFG(const CFG& program_cfg);
 
+  // Set the given cfg as the reversed program CFG
+  // Solely used by the Design Extractor class
+  void SetReverseProgramCFG(const CFG& reversed_program_cfg);
+
   // Get the program CFG, with call statements removed and the call
   // statements' previous statements connected to the called procedure's root,
   // and the terminal nodes of the called procedure connected to the neighbours
   // of the (removed) call statement node
   // @returns the program CFG
   CFG* GetProgramCFG();
+
+  // Similar to GetProgramCFG, with the only difference being the direction of
+  // the edges are reversed
+  // @returns the reversed program CFG
+  CFG* GetReverseProgramCFG();
 
   /*****************************
    * Dominates Table Functions *
