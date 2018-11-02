@@ -18,6 +18,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   const PKB pkb2 = GetTestPKBTwo();
   const PKB pkb3 = GetTestPKBThree();
   const PKB pkb4 = GetTestPKBFour();
+  const PKB pkb5 = GetTestPKBFive();
   const PKB next_pkb1 = GetNextPKBOne();
   const PKB next_pkb2 = GetNextPKBTwo();
   const PKB next_pkb3 = GetNextPKBThree();
@@ -115,7 +116,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_1 == expected_result_1);
   }
 
-  TEST_METHOD(IsAffects) {
+  TEST_METHOD(IsAffectsTwoParams) {
     PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positives****************************************
@@ -161,6 +162,81 @@ TEST_CLASS(TestPkbPqlExtractor) {
     // Modified variable in left statement is not used in right statement
     bool test_result_11 = extractor.IsAffects(2, 4);
     Assert::IsFalse(test_result_11);
+  }
+  TEST_METHOD(IsAffectsOneParam) {
+    PqlExtractor extractor = PqlExtractor(pkb1);
+
+    // Positives****************************************
+    bool test_result_1 = extractor.IsAffects(8);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffects(4);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffects(6);
+    Assert::IsTrue(test_result_3);
+
+    // Negatives********************************************
+
+    // While statement
+    bool test_result_4 = extractor.IsAffects(1);
+    Assert::IsFalse(test_result_4);
+
+    // If statement
+    bool test_result_5 = extractor.IsAffects(3);
+    Assert::IsFalse(test_result_5);
+
+    // Print statement
+    bool test_result_6 = extractor.IsAffects(5);
+    Assert::IsFalse(test_result_6);
+
+    //Stmt is not found in the program
+    bool test_result_7 = extractor.IsAffects(22);
+    Assert::IsFalse(test_result_7);
+
+    // Variable is modified by call stmt before reaching any assignment statements that use it
+    bool test_result_8 = extractor.IsAffects(2);
+    Assert::IsFalse(test_result_8);
+
+    // Variable is modified by read stmt before reaching any assignment statements that use it
+    bool test_result_9 = extractor.IsAffects(9);
+    Assert::IsFalse(test_result_9);
+
+
+  }
+  TEST_METHOD(IsAffected) {
+    PqlExtractor extractor = PqlExtractor(pkb3);
+
+    // Positives****************************************
+    bool test_result_1 = extractor.IsAffected(15);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffected(12);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffected(9);
+    Assert::IsTrue(test_result_3);
+
+
+    bool test_result_4 = extractor.IsAffected(14);
+    Assert::IsTrue(test_result_4);
+
+    // Negatives *******************************
+    bool test_result_5 = extractor.IsAffected(10);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffected(5);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffected(3);
+    Assert::IsFalse(test_result_7);
+
+
+    // Load new program
+    extractor = PqlExtractor(pkb5);
+
+    bool test_result_8 = extractor.IsAffected(6);
+    Assert::IsFalse(test_result_8);
   }
 
   TEST_METHOD(GetAffects) {
@@ -237,6 +313,15 @@ TEST_CLASS(TestPkbPqlExtractor) {
     StmtNumList test_result_7 = extractor.GetAffectedBy(7);
     StmtNumList expected_result_7 = StmtNumList{};
     Assert::IsTrue(expected_result_7 == test_result_7);
+
+
+    // Additional test: all vars modified by non assignment statement before
+    // reaching an affecting assignment statement
+    extractor = PqlExtractor(pkb5);
+    StmtNumList test_result_8 = extractor.GetAffectedBy(6);
+    StmtNumList expected_result_8 = StmtNumList{};
+    Assert::IsTrue(expected_result_8 == test_result_8);
+
   }
 
   TEST_METHOD(GetAllAffects) {
@@ -457,7 +542,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "} else {"
         "c = 22 + a;"    // 7
         "a = z * 2;"     // 8
-        "a = b + 100;"   // 9
+        "a = b + 100 + c;"   // 9
         "while(k==1) {"  // 10
         "b=z;"           // 11
         "z=a+t+z;"       // 12
@@ -491,6 +576,24 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "  print x;"           // 11
         "  end = a; }";        // 12
 
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+
+    return test_pkb;
+  }
+  PKB GetTestPKBFive() {
+    string program =
+        "procedure one {"
+        "  x = c + d;"          // 1
+        "  call two;"           // 2
+        "  read a;"             // 3
+        "  g = e;"              // 4
+        "  read x;"             // 5
+        "  end = a + x + d; }"  // 6
+        "procedure two {"
+        "read d;}";             // 7
     PKB test_pkb = PKB();
     Parser parser = Parser(&test_pkb);
     TokenList tokenized_program = Tokenizer::Tokenize(program);
