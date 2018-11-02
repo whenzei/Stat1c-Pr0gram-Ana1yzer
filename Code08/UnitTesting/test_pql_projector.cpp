@@ -7,33 +7,43 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PQLTests {
 TEST_CLASS(TestPqlProjector) {
  public:
-  ResultTableList kIntermediateResultTable = {{{1, 2, 3}, {3, 4, 5}},
-                                              {{2, 4}, {6, 8}}};
-  ResultTableColumnHeader kColumnHeader = {{"a1", make_pair(0, 0)},
-                                           {"v", make_pair(0, 1)},
-                                           {"s", make_pair(0, 2)},
-                                           {"w", make_pair(1, 0)},
-                                           {"a2", make_pair(1, 1)}};
-  vector<Synonym> kSelections = {
+  QueryResultPairList kResultPairList1 = {make_pair(1, 2), make_pair(3, 4)};
+  QueryResultPairList kResultPairList2 = {make_pair(5, 6), make_pair(7, 8)};
+  vector<Synonym> kSelections1 = {
       make_pair("a2", PqlDeclarationEntity::kAssign),
       make_pair("v", PqlDeclarationEntity::kVariable),
       make_pair("v", PqlDeclarationEntity::kVariable),
       make_pair("w", PqlDeclarationEntity::kWhile)};
+  vector<Synonym> kSelections2 = {
+      make_pair("a", PqlDeclarationEntity::kAssign),
+      make_pair("c", PqlDeclarationEntity::kAssign)};
   AssignStmtData kStmtData =
       AssignStmtData(1, 0, "x", {"x", "y", "z", "a", "b", "c"},
                      unordered_set<int>(), TokenList());
 
-  TEST_METHOD(TestGetFinalResult) {
+  TEST_METHOD(TestOneIntermediateResult) {
+    PqlResult pql_result;
     PqlProjector pql_projector;
     PKB pkb;
-    pkb.InsertAssignStmt(&kStmtData);
-    FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable, kColumnHeader, kSelections, pkb);
-    VarName v1 = pkb.GetVarName(2) + " ";
-    VarName v2 = pkb.GetVarName(4) + " ";
-    Assert::IsTrue(result ==
-                   FinalResult{"4 " + v1 + v1 + "2", "4 " + v2 + v2 + "2",
-                               "8 " + v1 + v1 + "6", "8 " + v2 + v2 + "6"});
+    pql_result.InitTable(kResultPairList1, "a", "b");
+    pql_result.MergeResults(kResultPairList2, kNoConflict, -1, -1, "c", "d");
+    FinalResult result = pql_projector.GetFinalResult(PqlResultList{pql_result},
+                                                      kSelections2, pkb);
+    Assert::IsTrue(
+        result ==
+        FinalResult{"1 5", "1 7", "3 5", "3 7"});
+  }
+
+  TEST_METHOD(TestTwoIntermediateResults) {
+    PqlResult pql_result1;
+    PqlResult pql_result2;
+    PqlProjector pql_projector;
+    PKB pkb;
+    pql_result1.InitTable(kResultPairList1, "a", "b");
+    pql_result2.InitTable(kResultPairList2, "c", "d");
+    FinalResult result = pql_projector.GetFinalResult(PqlResultList{pql_result1, pql_result2},
+                                                      kSelections2, pkb);
+    Assert::IsTrue(result == FinalResult{"1 5", "1 7", "3 5", "3 7"});
   }
   // TODO: add more tests
 };

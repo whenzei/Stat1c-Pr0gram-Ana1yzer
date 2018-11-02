@@ -18,7 +18,7 @@ void PqlProjector::TrimIntermediateResultTables() {
     }
     for (auto& row : (*result_table)) {
       ResultRow new_row;
-	  // only keep columns that are selected
+      // only keep columns that are selected
       for (int column : selected_columns) {
         new_row.push_back(row[column]);
       }
@@ -78,20 +78,25 @@ void PqlProjector::GenerateFinalResult() {
   }
 }
 
-FinalResult PqlProjector::GetFinalResult(
-    ResultTableList intermediate_result_tables,
-    ResultTableColumnHeader intermediate_column_header, SynonymList selections,
-    PKB pkb) {
-  intermediate_result_tables_ = intermediate_result_tables;
-  intermediate_column_header_ = intermediate_column_header;
+FinalResult PqlProjector::GetFinalResult(PqlResultList intermediate_results,
+                                         SynonymList selections, PKB pkb) {
   selections_list_ = selections;
   pkb_ = pkb;
   column_count_ = 0;
 
+  for (int i = 0; i < intermediate_results.size(); i++) {
+    intermediate_result_tables_.push_back(
+        intermediate_results[i].GetResultTable());
+    ColumnHeader column_header = intermediate_results[i].GetColumnHeader();
+    for (auto& entry : column_header) {
+      intermediate_column_header_[entry.first] = make_pair(i, entry.second);
+    }
+  }
+
   for (Synonym& syn : selections_list_) {
     selections_set_.insert(syn.first);
   }
-
+  
   SortSelections();
   TrimIntermediateResultTables();
   MergeIntermediateResultTables();
