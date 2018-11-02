@@ -8,7 +8,6 @@
 #include "pql_query.h"
 #include "pql_result.h"
 
-using PqlResultList = vector<PqlResult>;
 using ResultTableList = vector<ResultTable>;
 // first int represents the result table, second int represents the column
 using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
@@ -18,7 +17,7 @@ using SynonymList = vector<Synonym>;
 // This class generates the final result from intermediate result tables
 class PqlProjector {
  private:
-  // one PqlResult for each group
+  // one result table for each group
   ResultTableList intermediate_result_tables_;
   ResultTableColumnHeader intermediate_column_header_;
   SynonymList selections_list_;
@@ -46,7 +45,8 @@ class PqlProjector {
 
  public:
   // @returns the final result of the query
-  FinalResult GetFinalResult(PqlResultList intermediate_results,
+  FinalResult GetFinalResult(ResultTableList intermediate_result_tables,
+                             ResultTableColumnHeader intermediate_column_header,
                              SynonymList selections, PKB pkb);
 };
 
