@@ -5,10 +5,12 @@
 #include "pql_extractor.h"
 
 #include <list>
+#include <set>
 #include <string>
 #include <vector>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using std::pair;
 
 namespace PkbPqlExtractorTests {
 TEST_CLASS(TestPkbPqlExtractor) {
@@ -20,101 +22,127 @@ TEST_CLASS(TestPkbPqlExtractor) {
   const PKB pkb4 = GetTestPKBFour();
   const PKB pkb5 = GetTestPKBFive();
   const PKB pkb6 = GetTestPKBSix();
-  const PKB next_pkb1 = GetNextPKBOne();
-  const PKB next_pkb2 = GetNextPKBTwo();
-  const PKB next_pkb3 = GetNextPKBThree();
+  const PKB pkb7 = GetTestPKBSeven();
 
  public:
   TEST_METHOD(IsNextTTwoParams) {
-    PqlExtractor extractor = PqlExtractor(next_pkb1);
+    PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positives
-    Assert::IsTrue(extractor.IsNextT(1, 2));
     Assert::IsTrue(extractor.IsNextT(1, 7));
-    Assert::IsTrue(extractor.IsNextT(6, 3));
-    Assert::IsTrue(extractor.IsNextT(6, 7));
+    Assert::IsTrue(extractor.IsNextT(1, 4));
+    Assert::IsTrue(extractor.IsNextT(1, 6));
+    Assert::IsTrue(extractor.IsNextT(1, 1));
 
     // Negatives
-    Assert::IsFalse(extractor.IsNextT(1, 1));
-    Assert::IsFalse(extractor.IsNextT(1, 8));
-    Assert::IsFalse(extractor.IsNextT(3, 5));
+    Assert::IsFalse(extractor.IsNextT(12, 13));
+    Assert::IsFalse(extractor.IsNextT(9, 8));
+    Assert::IsFalse(extractor.IsNextT(11, 11));
+    Assert::IsFalse(extractor.IsNextT(11, 222));
+    Assert::IsFalse(extractor.IsNextT(222, 11));
+    Assert::IsFalse(extractor.IsNextT(222, 222));
   }
 
   TEST_METHOD(IsNextTOneParam) {
-    PqlExtractor extractor = PqlExtractor(next_pkb1);
+    PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positives
-    Assert::IsTrue(extractor.IsNextT(3));
-    Assert::IsTrue(extractor.IsNextT(7));
+    Assert::IsTrue(extractor.IsNextT(12));
+    Assert::IsTrue(extractor.IsNextT(6));
+    Assert::IsTrue(extractor.IsNextT(4));
 
     // Negatives
-    Assert::IsFalse(extractor.IsNextT(1));
-    Assert::IsFalse(extractor.IsNextT(10));
+    Assert::IsFalse(extractor.IsNextT(13));
+    Assert::IsFalse(extractor.IsNextT(2222));
   }
 
   TEST_METHOD(IsPreviousT) {
-    PqlExtractor extractor = PqlExtractor(next_pkb1);
+    PqlExtractor extractor = PqlExtractor(pkb1);
 
     // Positive
     Assert::IsTrue(extractor.IsPreviousT(1));
     Assert::IsTrue(extractor.IsPreviousT(3));
+    Assert::IsTrue(extractor.IsPreviousT(4));
+    Assert::IsTrue(extractor.IsPreviousT(6));
 
     // Negatives
-    Assert::IsFalse(extractor.IsPreviousT(7));
-    Assert::IsFalse(extractor.IsPreviousT(8));
+    Assert::IsFalse(extractor.IsPreviousT(12));
+    Assert::IsFalse(extractor.IsPreviousT(1000));
+    Assert::IsFalse(extractor.IsPreviousT(13));
+  }
+
+  TEST_METHOD(GetPreviousT) {
+    PqlExtractor extractor = PqlExtractor(pkb2);
+
+    // Positive
+    StmtNumList test_result_1 = extractor.GetPreviousT(8);
+    StmtNumList expected_result_1 =
+        StmtNumList{12, 7, 11, 4, 10, 3, 9, 2, 8, 1};
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    StmtNumList test_result_2 = extractor.GetPreviousT(6);
+    StmtNumList expected_result_2 = StmtNumList{5, 4, 3, 2, 1};
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    // Negative
+    StmtNumList test_result_3 = extractor.GetPreviousT(1);
+    StmtNumList expected_result_3 = StmtNumList{};
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    StmtNumList test_result_4 = extractor.GetPreviousT(222);
+    StmtNumList expected_result_4 = StmtNumList{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
   TEST_METHOD(GetNextT) {
-    PqlExtractor extractor = PqlExtractor(next_pkb2);
+    PqlExtractor extractor = PqlExtractor(pkb2);
 
-    // GetNextT of stmt 1
-    StmtNumList expected_result_1 = StmtNumList{2, 3, 5, 4, 7, 6, 8};
-    StmtNumList test_result_1 = extractor.GetNextT(1);
+    // Positive
+    StmtNumList test_result_1 = extractor.GetNextT(9);
+    StmtNumList expected_result_1 = StmtNumList{10, 11, 12, 8, 9, 13};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
-    // GetNextT of stmt 9
-    StmtNumList expected_result_2 = StmtNumList{3, 10, 4, 11, 6, 8};
-    StmtNumList test_result_2 = extractor.GetNextT(9);
+    StmtNumList test_result_2 = extractor.GetNextT(5);
+    StmtNumList expected_result_2 = StmtNumList{6, 13};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
-    // GetNextT of stmt 8
+    // Negative
+    StmtNumList test_result_3 = extractor.GetNextT(13);
     StmtNumList expected_result_3 = StmtNumList{};
-    StmtNumList test_result_3 = extractor.GetNextT(8);
     Assert::IsTrue(test_result_3 == expected_result_3);
+
+    StmtNumList test_result_4 = extractor.GetNextT(222);
+    StmtNumList expected_result_4 = StmtNumList{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
   }
-  TEST_METHOD(GetPreviousT) {
-    PqlExtractor extractor = PqlExtractor(next_pkb2);
 
-    // GetPreviousT of stmt 8
-    StmtNumList expected_result_1 = StmtNumList{6, 7, 4, 11, 5, 3, 10, 2, 1, 9};
-    StmtNumList test_result_1 = extractor.GetPreviousT(8);
-    Assert::IsTrue(test_result_1 == expected_result_1);
+  TEST_METHOD(GetNextTPair) {
+    PqlExtractor extractor = PqlExtractor(pkb7);
 
-    // GetPreviousT of stmt 8
-    StmtNumList expected_result_2 = StmtNumList{5, 2, 1};
-    StmtNumList test_result_2 = extractor.GetPreviousT(7);
-    Assert::IsTrue(test_result_2 == expected_result_2);
-
-    // GetPreviousT of stmt 9
-    StmtNumList expected_result_3 = StmtNumList{};
-    StmtNumList test_result_3 = extractor.GetPreviousT(9);
-    Assert::IsTrue(test_result_3 == expected_result_3);
-  }
-  TEST_METHOD(GetAllNextTPairs) {
-    PqlExtractor extractor = PqlExtractor(next_pkb3);
-
+    // Positive
     StmtNumPairList test_result_1 = extractor.GetAllNextTPairs();
-    StmtNumPairList expected_result_1 =
-        StmtNumPairList{make_pair(1, 2),   make_pair(1, 3),  make_pair(1, 5),
-                        make_pair(1, 4),   make_pair(2, 5),  make_pair(3, 4),
-                        make_pair(3, 5),   make_pair(4, 5),  make_pair(9, 10),
-                        make_pair(9, 6),   make_pair(9, 11), make_pair(9, 7),
-                        make_pair(9, 12),  make_pair(9, 8),  make_pair(10, 6),
-                        make_pair(10, 11), make_pair(10, 7), make_pair(10, 12),
-                        make_pair(10, 8),  make_pair(11, 7), make_pair(11, 12),
-                        make_pair(11, 8),  make_pair(7, 8)};
+    std::set<pair<int, int>> test_result_1_set;
+    for (pair<int, int> res : test_result_1) {
+      test_result_1_set.emplace(res);
+    }
 
-    Assert::IsTrue(test_result_1 == expected_result_1);
+    StmtNumPairList expected_result_1 = StmtNumPairList{
+        make_pair(1, 2), make_pair(1, 3), make_pair(1, 4), make_pair(1, 5),
+        make_pair(1, 1), make_pair(1, 6), make_pair(2, 3), make_pair(2, 4),
+        make_pair(2, 5), make_pair(2, 1), make_pair(2, 2), make_pair(2, 6),
+        make_pair(3, 3), make_pair(3, 2), make_pair(3, 4), make_pair(3, 5),
+        make_pair(3, 1), make_pair(3, 6), make_pair(4, 4), make_pair(4, 5),
+        make_pair(4, 6), make_pair(4, 1), make_pair(4, 2), make_pair(4, 3),
+        make_pair(5, 5), make_pair(5, 1), make_pair(5, 2), make_pair(5, 3),
+        make_pair(5, 4), make_pair(5, 6)};
+
+    std::set<pair<int, int>> expected_result_1_set;
+
+    for (pair<int, int> res : expected_result_1) {
+      expected_result_1_set.emplace(res);
+    }
+
+    Assert::IsTrue(expected_result_1_set == test_result_1_set);
   }
 
   TEST_METHOD(IsAffectsTwoParams) {
@@ -191,19 +219,19 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_6 = extractor.IsAffects(5);
     Assert::IsFalse(test_result_6);
 
-    //Stmt is not found in the program
+    // Stmt is not found in the program
     bool test_result_7 = extractor.IsAffects(22);
     Assert::IsFalse(test_result_7);
 
-    // Variable is modified by call stmt before reaching any assignment statements that use it
+    // Variable is modified by call stmt before reaching any assignment
+    // statements that use it
     bool test_result_8 = extractor.IsAffects(2);
     Assert::IsFalse(test_result_8);
 
-    // Variable is modified by read stmt before reaching any assignment statements that use it
+    // Variable is modified by read stmt before reaching any assignment
+    // statements that use it
     bool test_result_9 = extractor.IsAffects(9);
     Assert::IsFalse(test_result_9);
-
-
   }
   TEST_METHOD(IsAffected) {
     PqlExtractor extractor = PqlExtractor(pkb3);
@@ -218,7 +246,6 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_3 = extractor.IsAffected(9);
     Assert::IsTrue(test_result_3);
 
-
     bool test_result_4 = extractor.IsAffected(14);
     Assert::IsTrue(test_result_4);
 
@@ -231,7 +258,6 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     bool test_result_7 = extractor.IsAffected(3);
     Assert::IsFalse(test_result_7);
-
 
     // Load new program
     extractor = PqlExtractor(pkb6);
@@ -315,14 +341,12 @@ TEST_CLASS(TestPkbPqlExtractor) {
     StmtNumList expected_result_7 = StmtNumList{};
     Assert::IsTrue(expected_result_7 == test_result_7);
 
-
     // Additional test: all vars modified by non assignment statement before
     // reaching an affecting assignment statement
     extractor = PqlExtractor(pkb6);
     StmtNumList test_result_8 = extractor.GetAffectedBy(6);
     StmtNumList expected_result_8 = StmtNumList{};
     Assert::IsTrue(expected_result_8 == test_result_8);
-
   }
 
   TEST_METHOD(GetAllAffects) {
@@ -370,9 +394,93 @@ TEST_CLASS(TestPkbPqlExtractor) {
     expected_results[1] = VertexSet{6, 10, 11, 8, 3};
     expected_results[3] = VertexSet{5};
     expected_results[4] = VertexSet{5};
-    expected_results[6] = VertexSet{11, 8};
+    expected_results[6] = VertexSet{11, 8, 10};
     expected_results[10] = VertexSet{8, 3};
     Assert::IsTrue(actual_results == expected_results);
+  }
+
+  TEST_METHOD(IsAffectsBipTwoParam) {
+    PqlExtractor extractor = PqlExtractor(pkb5);
+
+    bool test_result_1 = extractor.IsAffectsBip(1, 6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBip(10, 8);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectsBip(6, 10);
+    Assert::IsTrue(test_result_3);
+
+    bool test_result_4 = extractor.IsAffectsBip(1, 3);
+    Assert::IsTrue(test_result_4);
+
+    bool test_result_5 = extractor.IsAffectsBip(1, 2);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffectsBip(7, 8);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffectsBip(10, 11);
+    Assert::IsFalse(test_result_7);
+  }
+
+  TEST_METHOD(IsAffectsBipOneParam) {
+    PqlExtractor extractor = PqlExtractor(pkb5);
+
+    bool test_result_1 = extractor.IsAffectsBip(1);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBip(10);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectsBip(6);
+    Assert::IsTrue(test_result_3);
+
+    bool test_result_4 = extractor.IsAffectsBip(1);
+    Assert::IsTrue(test_result_4);
+
+    bool test_result_5 = extractor.IsAffectsBip(8);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffectsBip(11);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffectsBip(22);
+    Assert::IsFalse(test_result_7);
+
+    bool test_result_8 = extractor.IsAffectsBip(5);
+    Assert::IsFalse(test_result_8);
+  }
+
+  TEST_METHOD(IsAffectedBip) {
+    /* PqlExtractor extractor = PqlExtractor(pkb5);
+
+      // Positives***********************************
+     bool test_result_1 = extractor.IsAffectedBip(11);
+     Assert::IsTrue(test_result_1);
+
+     bool test_result_2 = extractor.IsAffectedBip(10);
+     Assert::IsTrue(test_result_2);
+
+     bool test_result_3 = extractor.IsAffectedBip(6);
+     Assert::IsTrue(test_result_3);
+
+     bool test_result_4 = extractor.IsAffectedBip(5);
+     Assert::IsTrue(test_result_4);
+
+     //Negatives***********************************
+     bool test_result_5 = extractor.IsAffectedBip(2);
+     Assert::IsFalse(test_result_5);
+
+     bool test_result_6 = extractor.IsAffectedBip(1);
+     Assert::IsFalse(test_result_6);
+
+     bool test_result_7 = extractor.IsAffectedBip(6);
+     Assert::IsFalse(test_result_7);
+
+     bool test_result_8 = extractor.IsAffectedBip(4);
+     Assert::IsFalse(test_result_8);
+   */
   }
 
   TEST_METHOD(GetAffectedByIfInWhile) {
@@ -409,83 +517,6 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_6 == test_result_6);
   }
 
-  PKB GetNextPKBOne() {
-    /*
-       1 -> 2 -> 5 -> 7
-       \ \_          /
-        \   3  -->  4
-         \_ ^/
-          6
-    */
-
-    PKB dummy_pkb;
-    dummy_pkb.InsertNext(kProcName1, 1, 2);
-    dummy_pkb.InsertNext(kProcName1, 1, 3);
-    dummy_pkb.InsertNext(kProcName1, 3, 4);
-    dummy_pkb.InsertNext(kProcName1, 2, 5);
-    dummy_pkb.InsertNext(kProcName1, 5, 7);
-    dummy_pkb.InsertNext(kProcName1, 4, 7);
-    dummy_pkb.InsertNext(kProcName1, 1, 6);
-    dummy_pkb.InsertNext(kProcName1, 6, 3);
-
-    return dummy_pkb;
-  }
-  PKB GetNextPKBTwo() {
-    /*
-       1 -> 2 -> 5 -> 7
-        \_              \_
-          3 -> 4 -> 6 -> 8
-        ^/          /^
-        9 -> 10 -> 11
-     */
-
-    PKB dummy_pkb;
-    dummy_pkb.InsertNext(kProcName1, 1, 2);
-    dummy_pkb.InsertNext(kProcName1, 1, 3);
-    dummy_pkb.InsertNext(kProcName1, 2, 5);
-    dummy_pkb.InsertNext(kProcName1, 5, 7);
-    dummy_pkb.InsertNext(kProcName1, 3, 4);
-    dummy_pkb.InsertNext(kProcName1, 4, 6);
-    dummy_pkb.InsertNext(kProcName1, 6, 8);
-    dummy_pkb.InsertNext(kProcName1, 9, 3);
-    dummy_pkb.InsertNext(kProcName1, 9, 10);
-    dummy_pkb.InsertNext(kProcName1, 7, 8);
-    dummy_pkb.InsertNext(kProcName1, 10, 11);
-    dummy_pkb.InsertNext(kProcName1, 11, 6);
-
-    return dummy_pkb;
-  }
-  PKB GetNextPKBThree() {
-    /*
-      proc one
-
-       1 ->   2 ->  5
-        \_         /^
-          3  ->   4
-
-
-      proc two
-
-        9 -> 10 -> 11 -> 12
-              \_    \_
-                6     7 -> 8
-     */
-
-    PKB dummy_pkb;
-    dummy_pkb.InsertNext(kProcName1, 1, 2);
-    dummy_pkb.InsertNext(kProcName1, 1, 3);
-    dummy_pkb.InsertNext(kProcName1, 2, 5);
-    dummy_pkb.InsertNext(kProcName1, 3, 4);
-    dummy_pkb.InsertNext(kProcName1, 4, 5);
-    dummy_pkb.InsertNext(kProcName2, 9, 10);
-    dummy_pkb.InsertNext(kProcName2, 10, 6);
-    dummy_pkb.InsertNext(kProcName2, 10, 11);
-    dummy_pkb.InsertNext(kProcName2, 11, 7);
-    dummy_pkb.InsertNext(kProcName2, 11, 12);
-    dummy_pkb.InsertNext(kProcName2, 7, 8);
-
-    return dummy_pkb;
-  }
   PKB GetTestPKBOne() {
     string program =
         " procedure one {"
@@ -554,14 +585,14 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "a = a + 2;"           // 5
         "y = 5*a;"             // 6
         "} else {"
-        "c = 22 + a;"    // 7
-        "a = z * 2;"     // 8
-        "a = b + 100 + c;"   // 9
-        "while(k==1) {"  // 10
-        "b=z;"           // 11
-        "z=a+t+z;"       // 12
-        "read a;"        // 13
-        "y =a + y;"      // 14
+        "c = 22 + a;"       // 7
+        "a = z * 2;"        // 8
+        "a = b + 100 + c;"  // 9
+        "while(k==1) {"     // 10
+        "b=z;"              // 11
+        "z=a+t+z;"          // 12
+        "read a;"           // 13
+        "y =a + y;"         // 14
         "}"
         "}"
         "g = a+ b+ c + y;"  // 15
@@ -613,7 +644,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "}"
         "procedure John {"
         "  if (i > 0) then {"  // 9
-        "    x = x + z;"       // 10
+        "    x = x + z + y;"   // 10
         "  } else {"
         "    z = x + y;"  // 11
         "  }"
@@ -636,9 +667,28 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "  read x;"             // 5
         "  end = a + x + d; }"  // 6
         "procedure two {"
-        "read d;}";             // 7
-  
-  
+        "read d;}";  // 7
+
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+    return test_pkb;
+  }
+
+  PKB GetTestPKBSeven() {
+    string program =
+        "procedure one {"
+        "  while (a == b) {"  // 1
+        "  if (a==1) then {"  // 2
+        "  read a;"           // 3
+        "  } else {"
+        "  read x;"            // 4
+        "  end = a + x + d;}"  // 5
+        "}"
+        "a = a+1;"  // 6
+        "}";
+
     PKB test_pkb = PKB();
     Parser parser = Parser(&test_pkb);
     TokenList tokenized_program = Tokenizer::Tokenize(program);

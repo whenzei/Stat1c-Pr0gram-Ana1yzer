@@ -11,6 +11,17 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
 
+  ProcName p1 = pkb_.GetProcOfStmt(previous_stmt);
+  ProcName p2 = pkb_.GetProcOfStmt(next_stmt);
+
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  if (p1 != p2) {
+    return false;
+  }
+
   StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
   for (auto& temp_next_stmt : temp_next_stmts) {
     next_stmt_queue.push(temp_next_stmt);
@@ -41,17 +52,22 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
 }
 
 bool PqlExtractor::IsNextT(StmtNum stmt_num) {
-  return !(pkb_.GetPrevious(stmt_num)).empty();
+  return pkb_.IsNext(stmt_num);
 }
 
 bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
-  return !(pkb_.GetNext(stmt_num)).empty();
+  return pkb_.IsPrevious(stmt_num);
 }
 
 StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
+
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetNext(stmt_num)) {
     next_stmt_queue.push(next_stmt);
@@ -83,6 +99,13 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
+
+  
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetPrevious(stmt_num)) {
     prev_stmt_queue.push(next_stmt);
@@ -307,7 +330,7 @@ AffectsTable PqlExtractor::GetAffectsTable() {
     curr_affects_cfg_ = pkb_.GetCFG(proc_name);
     // SpecialDFS each CFG for affects
     DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                  WhileLastModMap());
+                  WhileLastModMap(), WhileLastModMap());
   }
 
   return affects_table;
@@ -318,6 +341,14 @@ AffectsTable PqlExtractor::GetAffectsTable() {
  **********************************/
 bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
   return IsAffects(stmt_1, stmt_2, true);
+}
+
+bool PqlExtractor::IsAffectsBip(StmtNum stmt) {
+  return IsAffects(stmt, true);
+}
+
+bool PqlExtractor::IsAffectedBip(StmtNum stmt) {
+  return IsAffected(stmt, true);
 }
 
 StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
@@ -332,14 +363,14 @@ AffectsTable PqlExtractor::GetAffectsBipTable() {
   AffectsTable affects_table;
   curr_affects_cfg_ = pkb_.GetProgramCFG();
   DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                WhileLastModMap());
+                WhileLastModMap(), WhileLastModMap());
 
   return affects_table;
 }
 
 // Helper Methods
 void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                                 LastModMap lmm, WhileLastModMap wlmm) {
+                                 LastModMap lmm, WhileLastModMap wlmm, WhileLastModMap pwlmm) {
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
@@ -373,13 +404,19 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
 
   // update wlmm
   if (stmt_type == StmtType::kWhile) {
+    LastModMap temp = wlmm[v];
     wlmm[v] = lmm;
+    if (wlmm.count(v) && pwlmm.count(v) && pwlmm[v] == wlmm[v]) {
+      return;
+    }
+    pwlmm[v] = temp;
   }
+
 
   // dfs neighbours
   VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsAllAffects(neighbour, affects_table, lmm, wlmm);
+    DfsAllAffects(neighbour, affects_table, lmm, wlmm, pwlmm);
   }
 }
 
