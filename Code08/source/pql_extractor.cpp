@@ -343,7 +343,7 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
-  if (stmt_type == StmtType::kWhile && wlmm.count(v) && pwlmm.count(v) && pwlmm[v] == wlmm[v]) {
+  if (stmt_type == StmtType::kWhile && wlmm.count(v) && wlmm[v] == lmm) {
     return;
   }
 
