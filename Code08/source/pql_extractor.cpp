@@ -11,6 +11,17 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
 
+  ProcName p1 = pkb_.GetProcOfStmt(previous_stmt);
+  ProcName p2 = pkb_.GetProcOfStmt(next_stmt);
+
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  if (p1 != p2) {
+    return false;
+  }
+
   StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
   for (auto& temp_next_stmt : temp_next_stmts) {
     next_stmt_queue.push(temp_next_stmt);
@@ -41,17 +52,22 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
 }
 
 bool PqlExtractor::IsNextT(StmtNum stmt_num) {
-  return !(pkb_.GetPrevious(stmt_num)).empty();
+  return pkb_.IsNext(stmt_num);
 }
 
 bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
-  return !(pkb_.GetNext(stmt_num)).empty();
+  return pkb_.IsPrevious(stmt_num);
 }
 
 StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
+
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetNext(stmt_num)) {
     next_stmt_queue.push(next_stmt);
@@ -83,6 +99,13 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
+
+  
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetPrevious(stmt_num)) {
     prev_stmt_queue.push(next_stmt);
