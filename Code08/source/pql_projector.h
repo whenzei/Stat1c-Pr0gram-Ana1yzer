@@ -30,6 +30,8 @@ class PqlProjector {
   FinalResult final_result_;
   unordered_set<int> selected_groups_;
   int column_count_;
+  IndexToVarProcMap index_to_var_map_;
+  IndexToVarProcMap index_to_proc_map_;
  
   // sort selected synonyms into groups (according to which intermediate result table they belong to)
   void SortSelections();
@@ -42,6 +44,16 @@ class PqlProjector {
 
   // generate final_result from final_result_table
   void GenerateFinalResult();
+
+  // @returns a ResultTable that contains the result for select all select_type
+  // used when a selected synonym does not appear in any clause
+  ResultTable GetSelectAllResult(Synonym selected_syn);
+
+  // @returns the corresponding variable name
+  VarName GetVarName(VarIndex var_id);
+
+  // @returns the corresponding procedure name
+  ProcName GetProcName(ProcIndex proc_id);
 
  public:
   // @returns the final result of the query
