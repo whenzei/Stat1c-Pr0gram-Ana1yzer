@@ -307,7 +307,7 @@ AffectsTable PqlExtractor::GetAffectsTable() {
     curr_affects_cfg_ = pkb_.GetCFG(proc_name);
     // SpecialDFS each CFG for affects
     DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                  WhileLastModMap());
+                  WhileLastModMap(), WhileLastModMap());
   }
 
   return affects_table;
@@ -340,14 +340,14 @@ AffectsTable PqlExtractor::GetAffectsBipTable() {
   AffectsTable affects_table;
   curr_affects_cfg_ = pkb_.GetProgramCFG();
   DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                WhileLastModMap());
+                WhileLastModMap(), WhileLastModMap());
 
   return affects_table;
 }
 
 // Helper Methods
 void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                                 LastModMap lmm, WhileLastModMap wlmm) {
+                                 LastModMap lmm, WhileLastModMap wlmm, WhileLastModMap pwlmm) {
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
@@ -381,13 +381,19 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
 
   // update wlmm
   if (stmt_type == StmtType::kWhile) {
+    LastModMap temp = wlmm[v];
     wlmm[v] = lmm;
+    if (wlmm.count(v) && pwlmm.count(v) && pwlmm[v] == wlmm[v]) {
+      return;
+    }
+    pwlmm[v] = temp;
   }
+
 
   // dfs neighbours
   VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsAllAffects(neighbour, affects_table, lmm, wlmm);
+    DfsAllAffects(neighbour, affects_table, lmm, wlmm, pwlmm);
   }
 }
 
