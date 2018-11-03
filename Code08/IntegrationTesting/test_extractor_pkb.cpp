@@ -370,7 +370,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     expected_results[1] = VertexSet{6, 10, 11, 8, 3};
     expected_results[3] = VertexSet{5};
     expected_results[4] = VertexSet{5};
-    expected_results[6] = VertexSet{11, 8};
+    expected_results[6] = VertexSet{11, 8, 10};
     expected_results[10] = VertexSet{8, 3};
     Assert::IsTrue(actual_results == expected_results);
   }
