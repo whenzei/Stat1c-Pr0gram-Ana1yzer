@@ -570,7 +570,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-		//TODO
+      // TODO
       result_list;
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -583,14 +583,13 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       result_list = pqle.GetAffects(stoi(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything"
-             << endl;
+        cout << left_name << " is not affecting anything" << endl;
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-		//TODO
+      // TODO
       result_list;
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -600,7 +599,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-		//TODO
+      // TODO
       result_pair_list;
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
@@ -616,6 +615,22 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
 void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
                                            PqlSuchthat suchthat,
                                            SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
+                                             PqlSuchthat suchthat,
+                                             SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
+                                              PqlSuchthat suchthat,
+                                              SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
+                                            PqlSuchthat suchthat,
+                                            SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateDominatesT(PqlEvaluator* pql_eval,
+                                             PqlSuchthat suchthat,
+                                             SuchthatParamType arrangement) {}
 
 void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
                                           PqlSuchthat suchthat,
