@@ -7,8 +7,10 @@
 
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 using std::vector;
 using std::unordered_map;
+using std::unordered_set;
 
 class PqlGroup {
 private:
@@ -21,7 +23,7 @@ private:
   /* true if any clauses in group uses a synonym that is selected */
   bool uses_selection_;
 
-  unordered_map<string, vector<int>> synonym_map_;
+  unordered_map<string, unordered_set<int>> synonym_map_;
 
 public:
   PqlGroup();
