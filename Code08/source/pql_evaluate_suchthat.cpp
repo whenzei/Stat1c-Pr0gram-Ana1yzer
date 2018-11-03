@@ -520,7 +520,98 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
 
 void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
                                           PqlSuchthat suchthat,
-                                          SuchthatParamType arrangement) {}
+                                          SuchthatParamType arrangement) {
+  PqlExtractor pqle = PqlExtractor(this->pkb_);
+  // Getting parameter of such that
+  Parameters such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating Affects" << endl;
+
+  switch (arrangement) {
+    case kNoSynonym:
+      if (!pqle.IsAffects(stoi(left_name), stoi(right_name))) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting " << right_name << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreLeft:
+      if (pqle.GetAffectedBy(stoi(right_name)).empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not affected by anything " << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreRight:
+      if (pqle.GetAffects(stoi(left_name)).empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting anything " << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreBoth:
+      if (pqle.GetAffectsTable().empty()) {
+        SetClauseFlag(false);
+        cout << " no affects relationship found " << endl;
+      }
+      return;
+    case kOneSynonymLeft:
+      result_list = pqle.GetAffectedBy(stoi(right_name));
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not affected by anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymLeftUnderscoreRight:
+		//TODO
+      result_list;
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << "left is not affecting anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymRight:
+      result_list = pqle.GetAffects(stoi(left_name));
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting anything"
+             << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kOneSynonymRightUnderscoreLeft:
+		//TODO
+      result_list;
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " right is not affected by anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kTwoSynonym:
+		//TODO
+      result_pair_list;
+      if (result_pair_list.empty()) {
+        SetClauseFlag(false);
+        cout << " no pair of Next*(left,right)" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
+                                           right_name);
+      }
+      return;
+  }
+}
 
 void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
                                            PqlSuchthat suchthat,
