@@ -375,6 +375,63 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results == expected_results);
   }
 
+  TEST_METHOD(IsAffectsBipTwoParam) {
+    PqlExtractor extractor = PqlExtractor(pkb5);
+
+    bool test_result_1 = extractor.IsAffectsBip(1, 6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBip(10, 8);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectsBip(6, 10);
+    Assert::IsTrue(test_result_3);
+    
+    bool test_result_4 = extractor.IsAffectsBip(1, 3);
+    Assert::IsTrue(test_result_4);
+
+    bool test_result_5 = extractor.IsAffectsBip(1, 2);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffectsBip(7, 8);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffectsBip(10, 11);
+    Assert::IsFalse(test_result_7);
+  }
+
+  TEST_METHOD(IsAffectsBipOneParam) {
+    PqlExtractor extractor = PqlExtractor(pkb5);
+
+    bool test_result_1 = extractor.IsAffectsBip(1);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBip(10);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectsBip(6);
+    Assert::IsTrue(test_result_3);
+    
+    bool test_result_4 = extractor.IsAffectsBip(1);
+    Assert::IsTrue(test_result_4);
+
+    bool test_result_5 = extractor.IsAffectsBip(8);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffectsBip(11);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffectsBip(22);
+    Assert::IsFalse(test_result_7);
+
+    bool test_result_8 = extractor.IsAffectsBip(5);
+    Assert::IsFalse(test_result_8);
+  }
+
+  TEST_METHOD(IsAffectedBip) {
+
+  }
+
   TEST_METHOD(GetAffectedByIfInWhile) {
     PqlExtractor extractor = PqlExtractor(pkb1);
 
@@ -613,7 +670,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "}"
         "procedure John {"
         "  if (i > 0) then {"  // 9
-        "    x = x + z;"       // 10
+        "    x = x + z + y;"    // 10
         "  } else {"
         "    z = x + y;"  // 11
         "  }"
