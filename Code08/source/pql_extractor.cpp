@@ -320,6 +320,14 @@ bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
   return IsAffects(stmt_1, stmt_2, true);
 }
 
+bool PqlExtractor::IsAffectsBip(StmtNum stmt) {
+  return IsAffects(stmt, true);
+}
+
+bool PqlExtractor::IsAffectedBip(StmtNum stmt) {
+  return IsAffected(stmt, true);
+}
+
 StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
   return GetAffects(stmt_1, true);
 }

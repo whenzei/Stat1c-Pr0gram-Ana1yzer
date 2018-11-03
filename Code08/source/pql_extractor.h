@@ -127,6 +127,12 @@ class PqlExtractor {
   // @returns true if AffectsBip(stmt_1, stmt_2) holds, else false
   bool IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
 
+  // @returns true if there is any AffectsBip(stmt, _ ) relation that holds, else false
+  bool IsAffectsBip(StmtNum stmt);
+
+  // @returns true if there is any AffectsBip(_,stmt ) relation that holds, else false
+  bool IsAffectedBip(StmtNum stmt);
+
   // @returns a list of n that AffectsBip(stmt_1, n) holds true
   StmtNumList GetAffectsBip(StmtNum stmt_1);
 
