@@ -429,7 +429,34 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(IsAffectedBip) {
+   /* PqlExtractor extractor = PqlExtractor(pkb5);
 
+     // Positives***********************************
+    bool test_result_1 = extractor.IsAffectedBip(11);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectedBip(10);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectedBip(6);
+    Assert::IsTrue(test_result_3);
+
+    bool test_result_4 = extractor.IsAffectedBip(5);
+    Assert::IsTrue(test_result_4);
+
+    //Negatives***********************************
+    bool test_result_5 = extractor.IsAffectedBip(2);
+    Assert::IsFalse(test_result_5);
+
+    bool test_result_6 = extractor.IsAffectedBip(1);
+    Assert::IsFalse(test_result_6);
+
+    bool test_result_7 = extractor.IsAffectedBip(6);
+    Assert::IsFalse(test_result_7);
+
+    bool test_result_8 = extractor.IsAffectedBip(4);
+    Assert::IsFalse(test_result_8);
+  */
   }
 
   TEST_METHOD(GetAffectedByIfInWhile) {
