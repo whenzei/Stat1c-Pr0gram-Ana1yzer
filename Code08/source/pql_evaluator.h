@@ -21,8 +21,8 @@ using std::vector;
 using FinalResult = list<string>;
 using QueryResultList = vector<int>;
 using QueryResultPairList = vector<pair<int, int>>;
-using VarProcToIndexMap = unordered_map<string, int>;
-using IndexToVarProcMap = unordered_map<int, string>;
+using ResultTableList = vector<ResultTable>;
+using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
 
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluator {
@@ -30,10 +30,8 @@ class PqlEvaluator {
   bool clause_flag_;      // to determine if clauses are true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
-  IndexToVarProcMap index_to_var;
-  IndexToVarProcMap index_to_proc;
-  VarProcToIndexMap var_to_index;
-  VarProcToIndexMap proc_to_index;
+  ResultTableList result_t_list_;
+  ResultTableColumnHeader result_c_header;
 
  public:
   /* Contructor */
@@ -42,14 +40,9 @@ class PqlEvaluator {
   /* Setter */
   void SetClauseFlag(bool);
   void SetPqlResult(PqlResult);
-  void SetIndexToVar(IndexToVarProcMap);
-  void SetIndexToProc(IndexToVarProcMap);
 
   /* Getter */
   bool IsValidClause();
-  PqlResult GetPqlResult();
-  IndexToVarProcMap GetIndexToVar();
-  IndexToVarProcMap GetIndexToProc();
 
   /**
    * Called by the GUI. Use the Query provided by user
@@ -59,36 +52,6 @@ class PqlEvaluator {
    * or an empty list otherwise
    */
   FinalResult GetResultFromQuery(PqlQuery* query, PKB pkb);
-
-  /**
-   * Get the results from table
-   * @param the select synonym
-   * @returns a vector<int> if there is result,
-   * or an empty list otherwise
-   */
-  QueryResultList GetResultFromTable(Synonym, PKB);
-
-  /**
-   * Return a list of all the result of a certain type
-   * @param declaration entity type
-   * @returns a vector<int> if there is result,
-   * or an empty list otherwise
-   */
-  QueryResultList GetSelectAllResult(PqlDeclarationEntity, PKB);
-
-  /**
-   * Take in the list of results and do a cross product for tuple
-   * @param List of results of each select clause
-   */
-  void TupleCrossProduct(FinalResult& final_result, string& temp_result,
-                         vector<FinalResult>::iterator curr,
-                         vector<FinalResult>::iterator end);
-
-  /**
-   * Convert the results from int to string using pkb mapping
-   * @param the vector<int> of results and synonym type
-   */
-  FinalResult ConvertListIntToString(QueryResultList, PqlDeclarationEntity);
 
   /**
    * Stores the list of results into the PqlResult table
@@ -101,9 +64,6 @@ class PqlEvaluator {
    * @param the vector<int> of pairs and the pair's synonym-variable name
    */
   void StoreClauseResultInTable(QueryResultPairList, string, string);
-
-  /* Helper function to trim a string */
-  string Trim(const string&);
 };
 
 #endif  // !QUERY_EVALUATOR_H
