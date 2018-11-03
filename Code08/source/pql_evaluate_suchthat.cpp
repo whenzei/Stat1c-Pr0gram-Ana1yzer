@@ -531,7 +531,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  AffectsTable result_table;
 
   cout << "Evaluating Affects" << endl;
 
@@ -600,13 +600,12 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       // TODO
-      result_pair_list;
-      if (result_pair_list.empty()) {
+      result_table = pqle.GetAffectsTable();
+      if (result_table.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Next*(left,right)" << endl;
+        cout << " no pair of Affects(left,right)" << endl;
       } else {
-        pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
-                                           right_name);
+        pql_eval->StoreClauseResultInTable(result_table, left_name, right_name);
       }
       return;
   }

@@ -10,6 +10,7 @@
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
 #include "pql_result.h"
@@ -101,6 +102,13 @@ class PqlEvaluator {
    * @param the vector<int> of pairs and the pair's synonym-variable name
    */
   void StoreClauseResultInTable(QueryResultPairList, string, string);
+
+  /**
+   * Stores the list of results into the PqlResult table
+   * @param the hashmap<int,set> of results and left & right synonym-variable
+   * name
+   */
+  void StoreClauseResultInTable(AffectsTable, string, string);
 
   /* Helper function to trim a string */
   string Trim(const string&);

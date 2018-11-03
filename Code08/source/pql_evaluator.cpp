@@ -308,6 +308,49 @@ void PqlEvaluator::StoreClauseResultInTable(
   SetPqlResult(pql_result);
 }
 
+void PqlEvaluator::StoreClauseResultInTable(AffectsTable affects_table,
+                                            string header_name_left,
+                                            string header_name_right) {
+  PqlResult pql_result = GetPqlResult();
+
+  if (pql_result.GetResultTable().empty()) {
+    pql_result.InitTable(affects_table, header_name_left, header_name_right);
+  } else {
+    ColumnHeader col_header = pql_result.GetColumnHeader();
+    // Two conflict found
+    if (col_header.find(header_name_left) != col_header.end() &&
+        col_header.find(header_name_right) != col_header.end()) {
+      pql_result.MergeResults(affects_table, kTwoConflict,
+                              col_header.find(header_name_left)->second,
+                              col_header.find(header_name_right)->second,
+                              header_name_left, header_name_right);
+    }
+    // One conflict Left
+    else if (col_header.find(header_name_left) != col_header.end()) {
+      pql_result.MergeResults(affects_table, kOneConflictLeft,
+                              col_header.find(header_name_left)->second, -1,
+                              header_name_left, header_name_right);
+    }
+    // One conflict Right
+    else if (col_header.find(header_name_right) != col_header.end()) {
+      pql_result.MergeResults(affects_table, kOneConflictRight, -1,
+                              col_header.find(header_name_right)->second,
+                              header_name_left, header_name_right);
+    }
+    // No conflict
+    else {
+      pql_result.MergeResults(affects_table, kNoConflict, -1, -1,
+                              header_name_left, header_name_right);
+    }
+  }
+
+  // If after merging result, result table is empty
+  if (pql_result.GetResultTable().empty()) {
+    SetClauseFlag(false);
+  }
+  SetPqlResult(pql_result);
+}
+
 FinalResult PqlEvaluator::ConvertListIntToString(
     QueryResultList result_list, PqlDeclarationEntity select_type) {
   FinalResult string_list;
