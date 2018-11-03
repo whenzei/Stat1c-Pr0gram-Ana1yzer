@@ -1,4 +1,4 @@
-#include "stdafx.h" 
+#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "stmt_type_list.h"
 
@@ -99,7 +99,7 @@ TEST_CLASS(TestStmtTypeList) {
     Assert::AreEqual(kStmtNum2, result1.back().second);
   }
 
- TEST_METHOD(TestGetAllPrintStmt) {
+  TEST_METHOD(TestGetAllPrintStmt) {
     StmtTypeList stmt_type_list;
     stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kPrint);
     stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kPrint);

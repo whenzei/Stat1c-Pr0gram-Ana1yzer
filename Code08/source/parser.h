@@ -10,10 +10,6 @@
 #include "pkb.h"
 #include "tokenizer.h"
 
-using std::string;
-using std::unordered_set;
-using ProcName = std::string;
-
 class Parser {
  private:
   PKB* pkb_;
@@ -21,9 +17,9 @@ class Parser {
   Token current_token_;
   CFG* current_cfg_;
   ProcName current_proc_name_;
+  ProcIndex current_proc_index_;
   int current_index_;
   int stmt_num_;
-  int stmt_list_num_;
 
   bool IsAtEnd();
   Token ReadNextToken();
@@ -36,42 +32,42 @@ class Parser {
   bool IsNextTokenKeyword();
   bool IsCurrentTokenKeyword();
 
-  void ProcessProcedure(int given_stmt_list_index);
+  void ProcessProcedure();
 
   // @returns ParseData consisting of list of statement numbers, set of Used
   // variable names, and set of Modified variable names
-  ParseData ProcessStatementList(int given_stmt_list_index);
+  ParseData ProcessStatementList();
 
   // @returns ParseData consisting of statement num, set of Used variable names,
   // and set of Modified variable names
-  ParseData ProcessStatement(int given_stmt_list_index);
+  ParseData ProcessStatement();
 
   // @returns ParseData consisting of set of Used variable names, and set of
   // Modified variable names
-  ParseData ProcessKeyword(int given_stmt_list_index);
+  ParseData ProcessKeyword();
 
   // @returns ParseData consisting of set of Used variable names, and a Modified
   // variable name
-  ParseData ProcessAssignment(int given_stmt_list_index);
+  ParseData ProcessAssignment();
 
   // Process the if block with its counterpart else block
   // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
-  ParseData ProcessIfBlock(int given_stmt_list_index);
+  ParseData ProcessIfBlock();
 
   // Process the while block with its counterpart else block
   // @returns ParseData consisting of set of Used variable names, and a set of
   // Modified variable names
-  ParseData ProcessWhileBlock(int given_stmt_list_index);
+  ParseData ProcessWhileBlock();
 
   // @returns parse data with the modified variable name
-  ParseData ProcessRead(int given_stmt_list_index);
+  ParseData ProcessRead();
 
   // @returns parse data with the used variable name
-  ParseData ProcessPrint(int given_stmt_list_index);
+  ParseData ProcessPrint();
 
   // @returns empty parse data, since DE will populate uses and modifies later
-  ParseData ProcessCall(int given_stmt_list_index);
+  ParseData ProcessCall();
 
   pair<VarNameSet, ConstValueSet> ProcessConditional();
 
@@ -90,12 +86,11 @@ class Parser {
   // constructor for Parser, takes in a PKB object
   Parser(PKB* pkb);
 
-  // parses the string contents of the file located at given filepath
+  // Parses the string contents of the file located at given filepath and
+  // populates the PKB
   // @param filepath file to be parsed
   // @throws SyntacticErrorException if parse issues encountered
-  // @return true if parse successful (meaning no syntax errors), or false if
-  // validation failed
-  bool Parse(string filepath);
+  void Parse(string filepath);
 
   // For testing purposes
   bool Parse(TokenList program_tokenized);

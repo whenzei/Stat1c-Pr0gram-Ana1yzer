@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "tokenizer.h"
 #include "syntactic_error_exception.h"
+#include "tokenizer.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -346,7 +346,9 @@ TEST_CLASS(TestTokenizer) {
     Assert::IsTrue(actual_tokens == expected_tokens);
 
     // expect exception to be thrown if unknown token found
-    auto func = [this] { Tokenizer::Tokenize("so far so good until this token is found: ^"); };
+    auto func = [this] {
+      Tokenizer::Tokenize("so far so good until this token is found: ^");
+    };
     Assert::ExpectException<SyntacticErrorException>(func);
   }
 };

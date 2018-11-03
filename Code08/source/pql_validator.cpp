@@ -1,13 +1,13 @@
 #include "pql_validator.h"
 
+#include <iostream>
 #include <regex>
 #include <stack>
-#include <iostream>
+using std::cout;
+using std::endl;
 using std::regex;
 using std::regex_match;
 using std::stack;
-using std::cout;
-using std::endl;
 using tt = Tokenizer::TokenType;
 
 /* Use Regex to check if a given string is of IDENT format. */
@@ -34,7 +34,7 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
   stack<tt> parenthesis_stack;
   Token current = tokens[0];
   if (current.type != tt::kOpenParen && current.type != tt::kName &&
-    current.type != tt::kDigit) {
+      current.type != tt::kDigit) {
     return false;
   }
 
@@ -48,19 +48,17 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
     current = tokens[i];
     if (was_operator) {
       if (current.type != tt::kDigit && current.type != tt::kName &&
-        current.type != tt::kOpenParen) {
+          current.type != tt::kOpenParen) {
         cout << "[EXPR INVALID], current token: " << current.value << endl;
         return false;
       }
 
       if (current.type == tt::kOpenParen) {
         parenthesis_stack.push(tt::kOpenParen);
-      }
-      else {
+      } else {
         was_operator = false;
       }
-    }
-    else {
+    } else {
       if (current.type != tt::kCloseParen && current.type != tt::kOperator) {
         cout << "[EXPR INVALID], current token: " << current.value << endl;
         return false;
@@ -72,8 +70,7 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
           return false;
         }
         parenthesis_stack.pop();
-      }
-      else {
+      } else {
         was_operator = true;
       }
     }
@@ -89,7 +86,7 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
 
 /* Check if an attribute is compatible with a certain entity type. */
 bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
-  switch(type) {
+  switch (type) {
     case PqlDeclarationEntity::kStmt:
     case PqlDeclarationEntity::kRead:
     case PqlDeclarationEntity::kPrint:

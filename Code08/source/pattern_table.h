@@ -30,7 +30,7 @@ class PatternTable {
   ExprStmtMap assign_sub_expr_map_;
   VarStmtMap while_var_stmt_map_;
   VarStmtMap if_var_stmt_map_;
-  
+
  public:
   // add the stmt_num and var_name to assign_var_stmt_map_ and
   // assign_stmt_var_map_
@@ -39,7 +39,7 @@ class PatternTable {
   void InsertAssignPattern(StmtNum stmt_num, VarIndex var_index,
                            TokenList token_list);
 
-  // add the stmt_num and var_name to while_var_stmt_map_ 
+  // add the stmt_num and var_name to while_var_stmt_map_
   void InsertWhilePattern(StmtNum stmt_num, VarIndex var_index);
 
   // add the stmt_num and var_name to if_var_stmt_map_
@@ -49,22 +49,23 @@ class PatternTable {
   // variable
   StmtNumList GetAssignWithLfsVar(VarIndex var_index);
 
-  // @returns a list of assign statements that contain the given sub-expression on
-  // the right hand side
+  // @returns a list of assign statements that contain the given sub-expression
+  // on the right hand side
   StmtNumList GetAssignWithSubExpr(TokenList sub_expr_tokenlist);
 
   // @returns a list of assign statements that have the given expression on
   // the right hand side
   StmtNumList GetAssignWithExactExpr(TokenList exact_expr_tokenlist);
 
-  // @returns a list of assign statements that have var_name as the left hand side
-  // variable and contain the given sub-expression on the right hand side
+  // @returns a list of assign statements that have var_name as the left hand
+  // side variable and contain the given sub-expression on the right hand side
   StmtNumList GetAssignWithPattern(VarIndex var_index,
                                    TokenList sub_expr_tokenlist);
 
-  // @returns a list of assign statements that have var_name as the left hand side
-  // variable and have the given expression on the right hand side
-  StmtNumList GetAssignWithExactPattern(VarIndex var_index, TokenList exact_expr_tokenlist);
+  // @returns a list of assign statements that have var_name as the left hand
+  // side variable and have the given expression on the right hand side
+  StmtNumList GetAssignWithExactPattern(VarIndex var_index,
+                                        TokenList exact_expr_tokenlist);
 
   // @returns a list of all pairs of assign statements and their corresponding
   // lfs var_name that contain the given sub-expression on the right hand side
@@ -90,7 +91,7 @@ class PatternTable {
   // variables
   StmtVarPairList GetAllIfPatternPair();
 
-private:
+ private:
   Expr ToString(TokenList token_list);
 };
 

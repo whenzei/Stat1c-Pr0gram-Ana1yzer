@@ -12,7 +12,7 @@ const int PRIORITY_NORMAL = 7;
 const int PRIORITY_AFFECTS = 6;
 
 class PqlClause {
-public:
+ public:
   virtual PqlClauseType GetClauseType() = 0;
 
   int GetPriority();

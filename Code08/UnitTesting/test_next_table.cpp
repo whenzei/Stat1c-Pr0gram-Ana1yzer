@@ -12,7 +12,7 @@ TEST_CLASS(TestNextTable) {
   const StmtNum kStmtNum3 = 3;
   const StmtNum kStmtNum4 = 4;
   const ProcName kProcName1 = "One";
-  
+
   TEST_METHOD(TestIsNextRelationship) {
     NextTable next_table;
     next_table.InsertCFG(kProcName1);
@@ -126,4 +126,4 @@ TEST_CLASS(TestNextTable) {
     Assert::IsTrue(next_table.HasNextRelationship());
   }
 };
-}  // namespace UnitTesting
+}  // namespace PKBTests

@@ -24,6 +24,7 @@ void GUIWrapper::parse(std::string filename) {
     std::cout << "parsed " << filename << std::endl;
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
+    exception_error_ = e.what();
     exception_caught_ = true;
   }
 }
@@ -33,8 +34,7 @@ void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
   // call your evaluator to evaluate the query here
   // ...code to evaluate query...
   if (exception_caught_) {
-    results.push_back(
-        "Invalid SIMPLE syntax detected, no queries can be performed.");
+    results.push_back("Error detected: " + exception_error_);
     return;
   }
 
@@ -55,4 +55,6 @@ void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
     error.push_back(pql_parser.GetErrorMessage());
     results = error;
   }
+
+    delete pql_query;
 }

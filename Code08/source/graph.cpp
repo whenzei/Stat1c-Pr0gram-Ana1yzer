@@ -33,7 +33,7 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
 bool Graph::IsEmpty() { return size_ == 0; }
 
 void Graph::Toposort(const Vertex &v, VisitedMap *visited,
-                     queue<int> *topoqueue) {
+                     queue<Vertex> *topoqueue) {
   if (size_ == 0) {
     // only single procedure
     return;
@@ -54,7 +54,7 @@ void Graph::Toposort(const Vertex &v, VisitedMap *visited,
 }
 
 VertexList Graph::Toposort() {
-  queue<int> topoqueue;
+  queue<Vertex> topoqueue;
   VertexList toposorted;
   // mark all the vertices as not visited
   VisitedMap visited;

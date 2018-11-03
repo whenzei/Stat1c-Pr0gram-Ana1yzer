@@ -70,7 +70,7 @@ TokenList Tokenizer::Tokenize(string input,
     // unknown token, since none of the tokenizers can recognize it. Throw
     // exception
     if (!is_done) {
-      throw SyntacticErrorException("Unknown token encountered. Terminating.");
+      throw SyntacticErrorException("Unknown token encountered.");
     }
   }
 

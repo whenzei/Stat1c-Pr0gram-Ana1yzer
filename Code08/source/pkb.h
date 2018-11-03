@@ -14,6 +14,7 @@ class StatementData;
 
 #include "call_table.h"
 #include "const_list.h"
+#include "dominates_table.h"
 #include "follows_table.h"
 #include "graph.h"
 #include "modifies_table.h"
@@ -24,7 +25,6 @@ class StatementData;
 #include "proc_list.h"
 #include "stmt_table.h"
 #include "stmt_type_list.h"
-#include "stmtlist_table.h"
 #include "uses_table.h"
 #include "var_list.h"
 // statement_data.h must be at the end due to forward declaration
@@ -37,7 +37,6 @@ class PKB {
   VarList var_list_;
   ConstList const_list_;
   StmtTable stmt_table_;
-  StmtListTable stmtlist_table_;
   StmtTypeList stmt_type_list_;
   FollowsTable follows_table_;
   ParentTable parent_table_;
@@ -47,6 +46,7 @@ class PKB {
   NextTable next_table_;
   CallGraph call_graph_;
   CallTable call_table_;
+  DominatesTable dominates_table_;
 
  private:
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
@@ -116,6 +116,9 @@ class PKB {
   // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
   StmtType GetStmtType(StmtNum stmt_num);
+
+  // @returns the procedure that the statement belongs to
+  ProcName GetProcOfStmt(StmtNum stmt_num);
 
   // @returns pointer to the call graph of the program
   CallGraph* GetCallGraph();
@@ -446,6 +449,10 @@ class PKB {
   // Uses(proc_name, var_name)
   ProcVarPairList GetAllUsesPairP();
 
+  /***************************
+   * Pattern Table Functions *
+   ***************************/
+
   // @returns a list of a's that satisfy pattern a(var_name, _sub_expr_)
   // var_name can be an empty string, sub_expr can be an empty TokenList (to
   // represent underscore)
@@ -597,6 +604,10 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
+  /************************
+   * Next Table Functions *
+   ************************/
+
   // @returns true if Next(previous_stmt, next_stmt) holds
   bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
 
@@ -633,6 +644,40 @@ class PKB {
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
+
+  /*****************************
+   * Dominates Table Functions *
+   *****************************/
+
+  // inserts dominates relationships between dominating_vertex and dominated_vertices
+  void InsertDominates(Vertex dominating_vertex, VertexSet dominated_vertices);
+
+  // @returns true if Dominates(dominating_stmt, dominated_stmt) holds
+  bool IsDominates(StmtNum dominating_stmt, StmtNum dominated_stmt);
+
+  // @returns true if Dominates(stmt_num, _) holds
+  bool IsDominating(StmtNum stmt_num);
+
+  // @returns true if Dominates(_, stmt_num) holds
+  bool IsDominated(StmtNum stmt_num);
+
+  // @returns a list of all s's that satisfy Dominates(s, stmt_num)
+  StmtNumList GetDominating(StmtNum stmt_num);
+
+  // @returns a list of all s's that satisfy Dominates(stmt_num, s)
+  StmtNumList GetDominated(StmtNum stmt_num);
+
+  // @returns a list of all s's that satisfy Dominates(s, _)
+  StmtNumList GetAllDominating();
+
+  // @returns a list of all s's that satisfy Dominates(_, s)
+  StmtNumList GetAllDominated();
+
+  // @returns a list of all pairs of <s1, s1> that satisfy Dominates(s1, s2)
+  StmtNumPairList GetAllDominatesPairs();
+
+  // @returns true if Dominates(_, _) holds
+  bool HasDominatesRelationship();
 };
 
 #endif  // !SPA_PKB_H

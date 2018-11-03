@@ -9,7 +9,7 @@ using std::string;
 using std::vector;
 
 class Util {
-public:
+ public:
   // Checks whether the file located at given filepath exists
   // @param filepath path to file to check
   // @returns true if file exists, false otherwise
@@ -31,9 +31,8 @@ public:
   // Trims whitespace from both ends of a given string in place
   static inline void Trim(string &s);
 
-private:
+ private:
   static inline void LTrim(string &s);
   static inline void RTrim(string &s);
-
 };
-#endif // !SPA_UTIL_H
+#endif  // !SPA_UTIL_H

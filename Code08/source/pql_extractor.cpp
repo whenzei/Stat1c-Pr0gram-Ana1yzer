@@ -7,15 +7,14 @@ using std::unordered_set;
 PqlExtractor::PqlExtractor(PKB pkb) { pkb_ = pkb; }
 
 bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
-
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
-  
+
   StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
   for (auto& temp_next_stmt : temp_next_stmts) {
     next_stmt_queue.push(temp_next_stmt);
   }
-   
+
   // BFS
   while (!next_stmt_queue.empty()) {
     StmtNum curr_stmt = next_stmt_queue.front();
@@ -26,12 +25,12 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
     }
 
     visited_stmts.emplace(curr_stmt);
+    if (curr_stmt == next_stmt) {
+      return true;
+    }
 
     StmtNumList curr_next_stmts = pkb_.GetNext(curr_stmt);
     for (StmtNum curr_next : curr_next_stmts) {
-      if (curr_next == next_stmt) {
-        return true;
-      }
       if (visited_stmts.count(curr_next) == 0) {
         next_stmt_queue.push(curr_next);
       }
@@ -122,7 +121,7 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list ) {
+void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
 

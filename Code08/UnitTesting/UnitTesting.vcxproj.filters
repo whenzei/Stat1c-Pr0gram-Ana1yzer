@@ -41,6 +41,9 @@
     <ClCompile Include="test_const_list.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
+    <ClCompile Include="test_dominates_table.cpp">
+      <Filter>Source Files\PKB</Filter>
+    </ClCompile>
     <ClCompile Include="test_parent_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
@@ -60,9 +63,6 @@
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="test_stmt_type_list.cpp">
-      <Filter>Source Files\PKB</Filter>
-    </ClCompile>
-    <ClCompile Include="test_stmtlist_table.cpp">
       <Filter>Source Files\PKB</Filter>
     </ClCompile>
     <ClCompile Include="test_var_list.cpp">
@@ -97,6 +97,12 @@
     </ClCompile>
     <ClCompile Include="test_graph.cpp">
       <Filter>Source Files\Frontend</Filter>
+    </ClCompile>
+    <ClCompile Include="test_evaluate_suchthat.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="test_evaluate_with.cpp">
+      <Filter>Source Files\PQL</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
