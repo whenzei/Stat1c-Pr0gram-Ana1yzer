@@ -32,9 +32,6 @@ class PqlParser {
   // Stores error message if parsing fail at some stage
   string error_message_;
 
-  unordered_map<string, int> synonym_group_;
-  unordered_map<int, int> group_ref_;
-
   /**
   Parses a single statement. A statement is a single declaration, or the select clause
   @string the statement in string form
@@ -111,9 +108,6 @@ class PqlParser {
   // attribute type in
   // @returns true if parse success, false otherwise
   bool ParseAttribute(TokenList, int*, PqlDeclarationEntity*);
-
-  void PreprocessGroup(PqlClause*, string, PqlDeclarationEntity, string = "", PqlDeclarationEntity = PqlDeclarationEntity::kNone);
-  void GenerateGroups();
 };
 
 #endif

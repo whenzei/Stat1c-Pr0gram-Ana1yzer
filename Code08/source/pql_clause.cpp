@@ -4,12 +4,8 @@ int PqlClause::GetPriority() { return priority_; }
 
 void PqlClause::SetPriority(int priority) { priority_ = priority; }
 
-string PqlClause::GetSynonym() { return synonym_; }
+pair<string, string> PqlClause::GetSynonyms() { return synonyms_; }
 
-void PqlClause::SetSynonym(string syn) {
-  synonym_= syn;
-}
-
-bool PqlClause::Compare(PqlClause* a, PqlClause* b) {
-  return a->GetPriority() > b->GetPriority();
+void PqlClause::SetSynonyms(string syn1, string syn2) {
+  synonyms_= std::make_pair(syn1, syn2);
 }
