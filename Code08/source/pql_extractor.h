@@ -71,7 +71,7 @@ class PqlExtractor {
   // LastModMap
   void DfsAllAffects(Vertex v, AffectsTable* affects_table,
                      LastModMap last_mod_map,
-                     WhileLastModMap while_last_mod_map);
+                     WhileLastModMap while_last_mod_map, WhileLastModMap prev_while_last_mod_map);
 
   bool IsModifyingType(StmtType stmt_type);
 
