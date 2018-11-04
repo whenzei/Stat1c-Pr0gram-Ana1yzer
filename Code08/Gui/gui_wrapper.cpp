@@ -13,6 +13,9 @@ GUIWrapper::GUIWrapper() {
   // as well as any initialization required for your spa program
   pkb_ = PKB();
   exception_caught_ = false;
+
+  // Set level of debug to the level we want
+  Debug::SetLevel(Debug::kAll);
 }
 
 // method for parsing the SIMPLE source
