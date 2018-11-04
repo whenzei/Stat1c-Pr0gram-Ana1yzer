@@ -11,6 +11,7 @@
 #include "pql_evaluate_with.h"
 #include "pql_evaluator.h"
 #include "pql_global.h"
+#include "pql_projector.h"
 #include "pql_query.h"
 
 using std::cout;
@@ -35,14 +36,17 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   PqlEvaluateWith with_evaluator;
   PqlEvaluatePattern pattern_evaluator;
   PqlEvaluateSuchthat suchthat_evaluator;
+  PqlProjector pql_projector;
   int groupcount = 1;
 
   if (query->GetGroups().empty()) {
     // Means no extra clause, straight go to projector
+    final_results = pql_projector.GetFinalResult(
+        result_t_list_, result_c_header_, query->GetSelections(), pkb);
   } else {
-    // Iterate through the groups
+    // Iterate through all the groups
     for (auto& group : query->GetGroups()) {
-      // Iterate through the clauses
+      // Iterate through all the clauses
       vector<PqlClause*> clauses = group.GetClauses();
       for (auto& clause : clauses) {
         // Code for processing clauses
@@ -66,7 +70,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         }
       }  // end one group iteration
 
-      if (!pql_result_.GetResultTable().empty()) {
+      if (!pql_result_.GetResultTable().empty() && group.GetUsesSelection()) {
         // Get the result table and column info
         result_t_list_.push_back(pql_result_.GetResultTable());
         // Get column headers
@@ -83,6 +87,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
       }
     }  // end all group iteration
        // Go to projector here
+    final_results = pql_projector.GetFinalResult(
+        result_t_list_, result_c_header_, query->GetSelections(), pkb);
   }
 
   cout << "Result size: " << final_results.size() << endl;
