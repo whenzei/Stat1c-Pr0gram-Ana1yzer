@@ -24,6 +24,7 @@ bool PqlEvaluateSuchthat::EvaluateSuchthatClause(PqlEvaluator* pql_eval,
                                                  PKB pkb,
                                                  PqlSuchthat suchthat) {
   SetPKB(pkb);
+  SetClauseFlag(true);
   SuchthatParamType arrangement =
       CheckSuchthatParamType(suchthat.GetParameters());
 

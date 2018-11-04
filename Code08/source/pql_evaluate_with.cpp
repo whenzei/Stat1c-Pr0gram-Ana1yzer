@@ -22,6 +22,7 @@ PqlEvaluateWith::PqlEvaluateWith() {}
 bool PqlEvaluateWith::EvaluateWithClause(PqlEvaluator* pql_eval, PKB pkb,
                                          PqlWith with) {
   SetPKB(pkb);
+  SetClauseFlag(true);
   WithParamType arrangement = CheckWithParamType(with.GetParameters());
   Parameters with_param = with.GetParameters();
   Synonym left_param = with_param.first;

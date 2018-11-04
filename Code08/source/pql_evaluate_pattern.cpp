@@ -22,6 +22,7 @@ PqlEvaluatePattern::PqlEvaluatePattern() {}
 bool PqlEvaluatePattern::EvaluatePatternClause(PqlEvaluator* pql_eval, PKB pkb,
                                                PqlPattern pattern) {
   SetPKB(pkb);
+  SetClauseFlag(true);
   PqlPatternType pattern_type = pattern.GetType().second;
 
   switch (pattern_type) {
