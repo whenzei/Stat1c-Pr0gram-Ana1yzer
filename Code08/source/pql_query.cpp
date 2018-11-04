@@ -8,6 +8,13 @@ using std::endl;
 
 PqlQuery::PqlQuery() {}
 
+PqlQuery::~PqlQuery() {
+  for(int i = 0; i < clauses_.size(); i++) {
+    delete clauses_[i];
+    clauses_[i] = nullptr;
+  }
+}
+
 bool PqlQuery::AddDeclaration(PqlDeclarationEntity entity, string var_name) {
   return declarations_.insert(std::make_pair(var_name, entity)).second;
 }
@@ -45,10 +52,6 @@ void PqlQuery::AddSuchthat(PqlSuchthat suchthat) {
 
 void PqlQuery::AddPattern(PqlPattern pattern) { patterns_.push_back(pattern); }
 
-void PqlQuery::AddGroup(Group group) {
-  groups_.push_back(group);
-}
-
 Declarations PqlQuery::GetDeclarations() { return declarations_; }
 
 vector<Synonym> PqlQuery::GetSelections() { return selections_; }
@@ -61,7 +64,7 @@ vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
 
 vector<PqlClause*> PqlQuery::GetClauses() { return clauses_; }
 
-vector<Group> PqlQuery::GetGroups() { return groups_; }
+vector<PqlGroup> PqlQuery::GetGroups() { return groups_; }
 
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {
@@ -91,4 +94,4 @@ PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   }
 }
 
-vector<PqlGroup> PqlQuery::Optimize() { return optimizer_.Optimize(); }
+void PqlQuery::Optimize() { groups_ = optimizer_.Optimize(); }

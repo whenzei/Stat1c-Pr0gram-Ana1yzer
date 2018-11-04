@@ -30,8 +30,8 @@ class PqlProjector {
   FinalResult final_result_;
   unordered_set<int> selected_groups_;
   int column_count_;
-  IndexToVarProcMap index_to_var_map_;
-  IndexToVarProcMap index_to_proc_map_;
+  IndexVarMap index_to_var_map_;
+  IndexProcMap index_to_proc_map_;
  
   // sort selected synonyms into groups (according to which intermediate result table they belong to)
   void SortSelections();

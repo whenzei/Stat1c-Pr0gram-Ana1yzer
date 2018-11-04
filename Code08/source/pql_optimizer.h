@@ -17,11 +17,17 @@ using std::string;
 
 class PqlOptimizer {
 private:
+  // Union find of the clauses
   unordered_map<string, int> union_;
   unordered_map<int, int> find_;
+
+  // Collection of clauses
   vector<PqlClause*> clauses_;
+
+  // Collection of selected synonyms
   unordered_set<string> selections_;
 
+  // @return true if a clause uses a synonym that is selected
   bool ClauseUsesSelection(PqlClause*);
 
 public:

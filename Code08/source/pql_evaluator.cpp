@@ -43,7 +43,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     // Iterate through the groups
     for (auto& group : query->GetGroups()) {
       // Iterate through the clauses
-      for (auto& clause : group) {
+      vector<PqlClause*> clauses = group.GetClauses();
+      for (auto& clause : clauses) {
         // Code for processing clauses
         switch (clause->GetClauseType()) {
           case PqlClauseType::kSuchthat:

@@ -266,10 +266,10 @@ class PqlQuery {
   vector<Synonym> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
-  /* collection of group of clauses */
-  vector<Group> groups_;
   /* does the optimization of clauses */
   PqlOptimizer optimizer_;
+  /* collection of groups of clauses from optimization */
+  vector<PqlGroup> groups_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;
@@ -281,18 +281,21 @@ class PqlQuery {
   /* Constructor */
   PqlQuery();
 
+  /* Deconstructor */
+  ~PqlQuery();
+
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
   void AddClause(PqlClause*);
-  void AddGroup(Group);
 
   /* Getters */
   Declarations GetDeclarations();
   vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
-  vector<Group> GetGroups();
-  vector<PqlGroup> Optimize();
+  vector<PqlGroup> GetGroups();
+
+  void Optimize();
 
   static PqlDeclarationEntity DeclarationStringToType(string);
 

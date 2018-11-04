@@ -9,6 +9,13 @@ PqlGroup::PqlGroup() {
   uses_selection_ = false;
 }
 
+PqlGroup::~PqlGroup() {
+  for(int i = 0; i < clauses_.size(); i++) {
+    delete clauses_[i];
+    clauses_[i] = nullptr;
+  }
+}
+
 void PqlGroup::SortClauses() {
   int max_priority = 0;
   int max_index;
