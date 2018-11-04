@@ -1,4 +1,3 @@
-
 #include <unordered_set>
 
 #include "pql_extractor.h"
@@ -7,112 +6,20 @@ using std::unordered_set;
 
 PqlExtractor::PqlExtractor(PKB pkb) { pkb_ = pkb; }
 
-bool PqlExtractor::IsSameProcedure(StmtNum stmt_1, StmtNum stmt_2) {
-  return (pkb_.GetProcOfStmt(stmt_1) == pkb_.GetProcOfStmt(stmt_2));
-}
-
-bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2) {
-  if (!(pkb_.GetStmtType(stmt_1) == StmtType::kAssign && 
-    pkb_.GetStmtType(stmt_2) == StmtType::kAssign)) {
-    return false;
-  }
-  if (!IsSameProcedure(stmt_1, stmt_2)) {
-    return false;
-  }
-  if (IsAffects(stmt_1, stmt_2)) {
-    return true;
-  }
-
-  StmtNumList affected_by_s1 = GetAffects(stmt_1);
-  StmtNumList next_affected_stmts;
-  StmtNumList temp_list;
-  if (affected_by_s1.empty()) {
-    false;
-  }
-  while (!affected_by_s1.empty()) {
-    for (auto& affected_stmt : affected_by_s1) {
-      if (affected_stmt == stmt_2) {
-        return true;
-      }
-      temp_list = GetAffects(affected_stmt);
-      affected_by_s1.insert(affected_by_s1.end(), temp_list.begin(), temp_list.end());
-      next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
-    }
-    affected_by_s1 = next_affected_stmts;
-    next_affected_stmts.clear();
-  }
-  return false;
-}
-
-StmtNumList PqlExtractor::GetAffectsT(StmtNum stmt) {
-  StmtNumList affected_stmts = GetAffects(stmt);
-  StmtNumList final_stmt_list;
-  StmtNumList temp_list;
-  StmtNumList next_affected_stmts;
-  StmtNumSet visited_stmts;
-
-  if (affected_stmts.empty()) {
-    return StmtNumList();
-  }
-  final_stmt_list.insert(final_stmt_list.end(), affected_stmts.begin(), affected_stmts.end());
-  while (!affected_stmts.empty()) {
-    for (auto& affected_stmt : affected_stmts) {
-      if (visited_stmts.find(affected_stmt) == visited_stmts.end()) {
-        visited_stmts.emplace(affected_stmt);
-        temp_list = GetAffects(affected_stmt);
-        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
-          temp_list.end());
-        next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
-      }
-    }
-    affected_stmts = next_affected_stmts;
-    next_affected_stmts.clear();
-  }
-
-  std::sort(final_stmt_list.begin(), final_stmt_list.end());
-  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
-  return final_stmt_list;
-}
-
-StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt) {
-  StmtNumList affecting_stmts = GetAffectedBy(stmt);
-  StmtNumList final_stmt_list;
-  StmtNumList temp_list;
-  StmtNumList next_affecting_stmts;
-  StmtNumSet visited_stmts;
-
-  if (affecting_stmts.empty()) {
-    return StmtNumList();
-  }
-
-  final_stmt_list.insert(final_stmt_list.end(), affecting_stmts.begin(), affecting_stmts.end());
-  while (!affecting_stmts.empty()) {
-    for (auto& affecting_stmt : affecting_stmts) {
-      if (visited_stmts.find(affecting_stmt) == visited_stmts.end()) {
-        visited_stmts.emplace(affecting_stmt);
-        temp_list = GetAffectedBy(affecting_stmt);
-        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
-          temp_list.end());
-        next_affecting_stmts.insert(next_affecting_stmts.end(), temp_list.begin(), temp_list.end());
-      }
-    }
-    affecting_stmts = next_affecting_stmts;
-    next_affecting_stmts.clear();
-  }
-
-  std::sort(final_stmt_list.begin(), final_stmt_list.end());
-  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
-  return final_stmt_list;
-}
- 
-StmtNumPairList PqlExtractor::GetAllAffectTPairs() {
-  
-  return StmtNumPairList();
-}
-
 bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
+
+  ProcName p1 = pkb_.GetProcOfStmt(previous_stmt);
+  ProcName p2 = pkb_.GetProcOfStmt(next_stmt);
+
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  if (p1 != p2) {
+    return false;
+  }
 
   StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
   for (auto& temp_next_stmt : temp_next_stmts) {
@@ -144,17 +51,22 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
 }
 
 bool PqlExtractor::IsNextT(StmtNum stmt_num) {
-  return !(pkb_.GetPrevious(stmt_num)).empty();
+  return pkb_.IsNext(stmt_num);
 }
 
 bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
-  return !(pkb_.GetNext(stmt_num)).empty();
+  return pkb_.IsPrevious(stmt_num);
 }
 
 StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
+
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetNext(stmt_num)) {
     next_stmt_queue.push(next_stmt);
@@ -186,6 +98,13 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   StmtNumList res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
+
+
+  ProcName p = pkb_.GetProcOfStmt(stmt_num);
+
+  if (p.empty()) {
+    return StmtNumList();
+  }
 
   for (auto& next_stmt : pkb_.GetPrevious(stmt_num)) {
     prev_stmt_queue.push(next_stmt);
@@ -225,17 +144,18 @@ StmtNumPairList PqlExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
+bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
   ProcName p1 = pkb_.GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_.GetProcOfStmt(stmt_2);
 
-  if (p1.empty() || p2.empty() || p1 != p2) {
+  // if is_bip, don't have to check if same procedure since its one big cfg
+  if (p1.empty() || p2.empty() || (!is_bip && p1 != p2)) {
     return false;
   }
 
   // Check if both stmts are assignment
   if (pkb_.GetStmtType(stmt_1) != StmtType::kAssign ||
-      pkb_.GetStmtType(stmt_2) != StmtType::kAssign) {
+    pkb_.GetStmtType(stmt_2) != StmtType::kAssign) {
     return false;
   }
 
@@ -246,7 +166,12 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     return false;
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p1);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  }
+  else {
+    curr_affects_cfg_ = pkb_.GetCFG(p1);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
 
@@ -258,11 +183,85 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
     }
   }
 
-  ClearVisitedMap();
+  ClearAffectsGlobals();
   return flag;
 }
 
-StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
+bool PqlExtractor::IsAffects(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_.GetProcOfStmt(stmt);
+
+  if (p.empty()) {
+    return false;
+  }
+
+  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  }
+  else {
+    curr_affects_cfg_ = pkb_.GetCFG(p);
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
+  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt).front();
+
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = flag || DfsAffects(neighbour, affecting_var);
+    if (flag) {
+      break;
+    }
+  }
+
+  ClearAffectsGlobals();
+  return flag;
+}
+
+bool PqlExtractor::IsAffected(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_.GetProcOfStmt(stmt);
+
+  if (p.empty()) {
+    return false;
+  }
+
+  if (pkb_.GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetReverseProgramCFG();
+  }
+  else {
+    curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt);
+  VarIndexList var_indices = pkb_.GetUsedVarS(stmt);
+  VarIndexSet rhs_vars;
+
+  for (VarIndex var_index : var_indices) {
+    rhs_vars.emplace(var_index);
+  }
+
+  bool flag = false;
+  for (Vertex neighbour : neighbours) {
+    flag = DfsAffected(neighbour, rhs_vars, VarIndexSet());
+    if (flag) {
+      break;
+    }
+  }
+
+  ClearAffectsGlobals();
+  return flag;
+}
+
+
+// is_bip is by default false, but can be set to true by affectsBip
+StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_1);
 
   if (p.empty()) {
@@ -273,24 +272,29 @@ StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetProgramCFG();
+  }
+  else {
+    curr_affects_cfg_ = pkb_.GetCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_1);
-  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();;
+  VarIndex affecting_var = pkb_.GetModifiedVarS(stmt_1).front();
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
     DfsAffects(neighbour, affecting_var, &res_list);
   }
 
-  ClearVisitedMap();
+  ClearAffectsGlobals();
   return res_list;
 }
 
-StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
+StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num, bool is_bip) {
   ProcName p = pkb_.GetProcOfStmt(stmt_num);
 
-  if (p == ProcName()) {
+  if (p.empty()) {
     return StmtNumList();
   }
 
@@ -298,7 +302,12 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
     return StmtNumList();
   }
 
-  curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  if (is_bip) {
+    curr_affects_cfg_ = pkb_.GetReverseProgramCFG();
+  }
+  else {
+    curr_affects_cfg_ = pkb_.GetReverseCFG(p);
+  }
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(stmt_num);
   VarIndexList var_indices = pkb_.GetUsedVarS(stmt_num);
@@ -310,14 +319,279 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
 
   StmtNumList res_list = StmtNumList();
   for (Vertex neighbour : neighbours) {
-    DfsAffects(neighbour, rhs_vars, &(VarIndexSet()), &res_list);
+    DfsAffects(neighbour, rhs_vars, VarIndexSet(), &res_list);
   }
 
-  ClearVisitedMap();
+  ClearAffectsGlobals();
   return res_list;
 }
 
+AffectsTable PqlExtractor::GetAffectsTable() {
+  AffectsTable affects_table;
+
+  ProcNameList all_procs = pkb_.GetAllProcNames();
+  for (auto proc_name : all_procs) {
+    curr_affects_cfg_ = pkb_.GetCFG(proc_name);
+    // SpecialDFS each CFG for affects
+    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
+      WhileLastModMap(), WhileLastModMap());
+  }
+
+  return affects_table;
+}
+
+/**********************************
+ * AffectsT Extractor Functions *
+ **********************************/
+
+bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
+  if (!(pkb_.GetStmtType(stmt_1) == StmtType::kAssign &&
+    pkb_.GetStmtType(stmt_2) == StmtType::kAssign)) {
+    return false;
+  }
+  if (!(pkb_.GetProcOfStmt(stmt_1) == pkb_.GetProcOfStmt(stmt_2))) {
+    return false;
+  }
+  if (IsAffects(stmt_1, stmt_2, is_bip)) {
+    return true;
+  }
+
+  StmtNumList affected_by_s1 = GetAffects(stmt_1, is_bip);
+  StmtNumList next_affected_stmts;
+  StmtNumList temp_list;
+  if (affected_by_s1.empty()) {
+    false;
+  }
+  while (!affected_by_s1.empty()) {
+    for (auto& affected_stmt : affected_by_s1) {
+      if (affected_stmt == stmt_2) {
+        return true;
+      }
+      temp_list = GetAffects(affected_stmt, is_bip);
+      affected_by_s1.insert(affected_by_s1.end(), temp_list.begin(), temp_list.end());
+      next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
+    }
+    affected_by_s1 = next_affected_stmts;
+    next_affected_stmts.clear();
+  }
+  return false;
+}
+
+StmtNumList PqlExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
+  StmtNumList affected_stmts = GetAffects(stmt, is_bip);
+  StmtNumList final_stmt_list;
+  StmtNumList temp_list;
+  StmtNumList next_affected_stmts;
+  StmtNumSet visited_stmts;
+
+  if (affected_stmts.empty()) {
+    return StmtNumList();
+  }
+  final_stmt_list.insert(final_stmt_list.end(), affected_stmts.begin(), affected_stmts.end());
+  while (!affected_stmts.empty()) {
+    for (auto& affected_stmt : affected_stmts) {
+      if (visited_stmts.find(affected_stmt) == visited_stmts.end()) {
+        visited_stmts.emplace(affected_stmt);
+        temp_list = GetAffects(affected_stmt, is_bip);
+        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
+          temp_list.end());
+        next_affected_stmts.insert(next_affected_stmts.end(), temp_list.begin(), temp_list.end());
+      }
+    }
+    affected_stmts = next_affected_stmts;
+    next_affected_stmts.clear();
+  }
+
+  std::sort(final_stmt_list.begin(), final_stmt_list.end());
+  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
+  return final_stmt_list;
+}
+
+StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
+  StmtNumList affecting_stmts = GetAffectedBy(stmt, is_bip);
+  StmtNumList final_stmt_list;
+  StmtNumList temp_list;
+  StmtNumList next_affecting_stmts;
+  StmtNumSet visited_stmts;
+
+  if (affecting_stmts.empty()) {
+    return StmtNumList();
+  }
+
+  final_stmt_list.insert(final_stmt_list.end(), affecting_stmts.begin(), affecting_stmts.end());
+  while (!affecting_stmts.empty()) {
+    for (auto& affecting_stmt : affecting_stmts) {
+      if (visited_stmts.find(affecting_stmt) == visited_stmts.end()) {
+        visited_stmts.emplace(affecting_stmt);
+        temp_list = GetAffectedBy(affecting_stmt, is_bip);
+        final_stmt_list.insert(final_stmt_list.end(), temp_list.begin(),
+          temp_list.end());
+        next_affecting_stmts.insert(next_affecting_stmts.end(), temp_list.begin(), temp_list.end());
+      }
+    }
+    affecting_stmts = next_affecting_stmts;
+    next_affecting_stmts.clear();
+  }
+
+  std::sort(final_stmt_list.begin(), final_stmt_list.end());
+  final_stmt_list.erase(std::unique(final_stmt_list.begin(), final_stmt_list.end()), final_stmt_list.end());
+  return final_stmt_list;
+}
+
+AffectsTable PqlExtractor::GetAffectsTTable() {
+  AffectsTable affects_table = GetAffectsTable();
+  AffectsTable affects_t_table;
+
+  StmtNumSet affected_stmts_set;
+  StmtNumSet checked_stmts;
+  StmtNumSet temp_set;
+
+  for (auto& affects_entry : affects_table) {
+    affected_stmts_set.insert(affects_entry.second.begin(), affects_entry.second.end());
+    while (!affected_stmts_set.empty()) {
+      for (auto& affected_stmt : affected_stmts_set) {
+        if (checked_stmts.find(affected_stmt) == checked_stmts.end()) {
+          if (affects_table.find(affected_stmt) != affects_table.end()) {
+            temp_set.insert(affects_table[affected_stmt].begin(), affects_table[affected_stmt].end());
+          }
+          checked_stmts.emplace(affected_stmt);
+        }
+      }
+      affected_stmts_set.insert(temp_set.begin(), temp_set.end());
+    }
+    affects_t_table[affects_entry.first] = affected_stmts_set;
+    affected_stmts_set.clear();
+  }
+  return affects_t_table;
+}
+
+/**********************************
+ * AffectsBip Extractor Functions *
+ **********************************/
+bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
+  return IsAffects(stmt_1, stmt_2, true);
+}
+
+bool PqlExtractor::IsAffectsBip(StmtNum stmt) {
+  return IsAffects(stmt, true);
+}
+
+bool PqlExtractor::IsAffectedBip(StmtNum stmt) {
+  return IsAffected(stmt, true);
+}
+
+StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
+  return GetAffects(stmt_1, true);
+}
+
+StmtNumList PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
+  return StmtNumList();
+}
+
+AffectsTable PqlExtractor::GetAffectsBipTable() {
+  AffectsTable affects_table;
+  curr_affects_cfg_ = pkb_.GetProgramCFG();
+  DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
+    WhileLastModMap(), WhileLastModMap());
+
+  return affects_table;
+}
+
+/**********************************
+ * AffectsBip* Extractor Functions *
+ **********************************/
+
+bool PqlExtractor::IsAffectsTBip(StmtNum stmt_1, StmtNum stmt_2) {
+  return IsAffectsT(stmt_1, stmt_2, true);
+}
+
+StmtNumList PqlExtractor::GetAffectsTBip(StmtNum stmt_1) {
+  return GetAffectsT(stmt_1, true);
+}
+
+StmtNumList PqlExtractor::GetAffectedByTBip(StmtNum stmt_num) {
+  return StmtNumList();
+}
+
+AffectsTable PqlExtractor::GetAffectsTBipTable() {
+  AffectsTable affects_table = GetAffectsBipTable();
+  AffectsTable affects_t_table;
+
+  StmtNumSet affected_stmts_set;
+  StmtNumSet checked_stmts;
+  StmtNumSet temp_set;
+
+  for (auto& affects_entry : affects_table) {
+    affected_stmts_set.insert(affects_entry.second.begin(), affects_entry.second.end());
+    while (!affected_stmts_set.empty()) {
+      for (auto& affected_stmt : affected_stmts_set) {
+        if (checked_stmts.find(affected_stmt) == checked_stmts.end()) {
+          if (affects_table.find(affected_stmt) != affects_table.end()) {
+            temp_set.insert(affects_table[affected_stmt].begin(), affects_table[affected_stmt].end());
+          }
+          checked_stmts.emplace(affected_stmt);
+        }
+      }
+      affected_stmts_set.insert(temp_set.begin(), temp_set.end());
+    }
+    affects_t_table[affects_entry.first] = affected_stmts_set;
+    affected_stmts_set.clear();
+  }
+  return affects_t_table;
+}
+
 // Helper Methods
+void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
+  LastModMap lmm, WhileLastModMap wlmm, WhileLastModMap pwlmm) {
+  StmtType stmt_type = pkb_.GetStmtType(v);
+  // only return when hit while loop a second time and last_while_mod_map_ is
+  // stable
+  if (stmt_type == StmtType::kWhile && wlmm.count(v) && lmm == wlmm[v]) {
+    return;
+  }
+
+  if (IsModifyingType(stmt_type)) {
+    // assert only 1 modified_var
+    VarIndex modified_var = pkb_.GetModifiedVarS(v).front();
+
+    if (stmt_type == StmtType::kAssign) {
+      // add used to affects table if found in lmm
+      VarIndexList used_vars = pkb_.GetUsedVarS(v);
+      for (auto& used_var : used_vars) {
+        if (lmm.count(used_var)) {
+          StmtNum affecting_stmt = lmm[used_var];
+          (*affects_table)[affecting_stmt].emplace(v);
+        }
+      }
+
+      // add modified to lmm
+      lmm[modified_var] = v;
+    }
+    else {
+      // not assign statement, but modifies something. Need to clear from lmm
+      if (lmm.count(modified_var)) {
+        lmm.erase(modified_var);
+      }
+    }
+  }
+
+  // update wlmm
+  if (stmt_type == StmtType::kWhile) {
+    LastModMap temp = wlmm[v];
+    wlmm[v] = lmm;
+    if (wlmm.count(v) && pwlmm.count(v) && pwlmm[v] == wlmm[v]) {
+      return;
+    }
+    pwlmm[v] = temp;
+  }
+
+
+  // dfs neighbours
+  VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
+  for (auto& neighbour : neighbours) {
+    DfsAllAffects(neighbour, affects_table, lmm, wlmm, pwlmm);
+  }
+}
 
 void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   unordered_set<StmtNum> visited_stmts;
@@ -349,7 +623,8 @@ void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
   }
 }
 
-bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarIndex affects_var) {
+bool PqlExtractor::DfsAffects(Vertex curr, Vertex target,
+  VarIndex affects_var) {
   if (curr_visited_.count(curr)) {
     return false;
   }
@@ -377,8 +652,84 @@ bool PqlExtractor::DfsAffects(Vertex curr, Vertex target, VarIndex affects_var) 
   return false;
 }
 
+bool PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var) {
+  if (curr_visited_.count(curr)) {
+    return false;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  if (curr_stmt_type == StmtType::kAssign) {
+    if (pkb_.IsUsedByS(curr, affects_var)) {
+      return true;
+    }
+  }
+
+  if (IsModifyingType(curr_stmt_type)) {
+    if (pkb_.IsModifiedByS(curr, affects_var)) {
+      return false;
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  for (Vertex neighbour : neighbours) {
+    if (DfsAffects(neighbour, affects_var)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool PqlExtractor::DfsAffected(Vertex curr, VarIndexSet rhs_vars,
+  VarIndexSet affected_rhs_vars) {
+  if (curr_visited_.count(curr)) {
+    return false;
+  }
+
+  StmtType curr_stmt_type = pkb_.GetStmtType(curr);
+  curr_visited_.emplace(curr, true);
+
+  // Check potential affecting statement
+  if (curr_stmt_type == StmtType::kAssign) {
+    VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
+
+    // Check if the current assignment statement modifies a variable in the
+    // rhs_vars, that has not been modified before
+    if (rhs_vars.count(curr_modified_var) &&
+      affected_rhs_vars.count(curr_modified_var) == 0) {
+      return true;
+    }
+  }
+
+
+  // Check for modifying statements
+  if (IsModifyingType(curr_stmt_type)) {
+    // Check if current statement is affecting any of the rhs_vars
+    // Update affected_rhs_vars
+    for (VarIndex rhs_var : rhs_vars) {
+      if (pkb_.IsModifiedByS(curr, rhs_var)) {
+        affected_rhs_vars.emplace(rhs_var);
+      }
+      if (rhs_vars.size() == affected_rhs_vars.size()) {
+        return false;
+      }
+    }
+  }
+
+  VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
+  for (Vertex neighbour : neighbours) {
+    if (DfsAffected(neighbour, rhs_vars, affected_rhs_vars)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var,
-                              StmtNumList* res_list) {
+  StmtNumList* res_list) {
   if (curr_visited_.count(curr)) {
     return;
   }
@@ -405,8 +756,8 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndex affects_var,
 }
 
 void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
-                              VarIndexSet* affected_rhs_vars,
-                              StmtNumList* res_list) {
+  VarIndexSet affected_rhs_vars,
+  StmtNumList* res_list) {
   if (curr_visited_.count(curr)) {
     return;
   }
@@ -415,34 +766,34 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
   StmtType curr_stmt_type = pkb_.GetStmtType(curr);
   curr_visited_.emplace(curr, true);
 
-  // Check potential affecting statement 
+  // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
     VarIndex curr_modified_var = pkb_.GetModifiedVarS(curr).front();
-    
+
     // Check if the current assignment statement modifies a variable in the
     // rhs_vars, that has not been modified before
     if (rhs_vars.count(curr_modified_var) &&
-        (*affected_rhs_vars).count(curr_modified_var) == 0) {
+      affected_rhs_vars.count(curr_modified_var) == 0) {
       res_list->push_back(curr);
-      affected_rhs_vars->emplace(curr_modified_var);
+      affected_rhs_vars.emplace(curr_modified_var);
       has_affects = true;
     }
   }
 
   // Check if all rhs_vars are already affected
-  if (rhs_vars.size() == affected_rhs_vars->size()) {
+  if (rhs_vars.size() == affected_rhs_vars.size()) {
     return;
   }
 
-  // Check for modifying statements 
+  // Check for modifying statements
   if (IsModifyingType(curr_stmt_type) && !has_affects) {
     // Check if current statement is affecting any of the rhs_vars
     // Update affected_rhs_vars
     for (VarIndex rhs_var : rhs_vars) {
       if (pkb_.IsModifiedByS(curr, rhs_var)) {
-        affected_rhs_vars->emplace(rhs_var);
+        affected_rhs_vars.emplace(rhs_var);
       }
-      if (rhs_vars.size() == affected_rhs_vars->size()) {
+      if (rhs_vars.size() == affected_rhs_vars.size()) {
         return;
       }
     }
@@ -450,14 +801,13 @@ void PqlExtractor::DfsAffects(Vertex curr, VarIndexSet rhs_vars,
 
   VertexList neighbours = curr_affects_cfg_->GetNeighboursList(curr);
   for (Vertex neighbour : neighbours) {
-    VarIndexSet affected_rhs_vars_clone(*affected_rhs_vars);
-    DfsAffects(neighbour, rhs_vars, &affected_rhs_vars_clone, res_list);
+    DfsAffects(neighbour, rhs_vars, affected_rhs_vars, res_list);
   }
 }
 
-void PqlExtractor::ClearVisitedMap() { curr_visited_.clear(); }
+void PqlExtractor::ClearAffectsGlobals() { curr_visited_.clear(); }
 
 bool PqlExtractor::IsModifyingType(StmtType stmt_type) {
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||
-         stmt_type == StmtType::kAssign;
+    stmt_type == StmtType::kAssign;
 }

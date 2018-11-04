@@ -38,14 +38,30 @@ class Graph {
  public:
   Graph();
 
+  // sets the root of the graph to the given value
+  // If the given value is not in the graph, no root change will occur
+  void SetRoot(const Vertex& new_root);
+
   // Adds edges between the from node to the to node
   void AddEdge(const Vertex& from, const Vertex& to);
+
+  // Remove edges between the from node and the to node
+  void RemoveEdge(const Vertex& from, const Vertex& to);
+
+  // Adds node into the graph
+  void AddNode(const Vertex& vertex);
+
+  // Remove node from the graph
+  void RemoveNode(const Vertex& vertex);
 
   // @returns set of neighbours of given vertex v
   VertexSet GetNeighboursSet(const Vertex& v);
 
   // @returns vertex of neighbours of given vertex v
   VertexList GetNeighboursList(const Vertex& v);
+
+  // @returns a list of all nodes without neighbours
+  VertexList GetTerminalNodes();
 
   // @returns true if graph is empty, false otherwise
   bool IsEmpty();
@@ -78,6 +94,9 @@ class Graph {
 
   // @returns set of all vertices in the graph
   VertexSet GetAllVertices();
+
+  // @returns the root of the graph
+  Vertex GetRoot();
 };
 
 #endif  // !SPA_GRAPH_H

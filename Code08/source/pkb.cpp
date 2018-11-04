@@ -642,6 +642,10 @@ bool PKB::IsCalledProc(ProcIndex callee_proc_id) {
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
+ProcName PKB::GetCalledProcedure(StmtNum stmt_num) {
+  return call_table_.GetCalledProcedure(stmt_num);
+}
+
 bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
   return next_table_.IsNext(previous_stmt, next_stmt);
 }
@@ -676,12 +680,28 @@ CFG* PKB::GetReverseCFG(ProcName proc_name) {
 
 CFG* PKB::GetCombinedCFG() { return next_table_.GetCombinedCFG(); }
 
+CFG* PKB::GetReverseCombinedCFG() {
+  return next_table_.GetReverseCombinedCFG();
+}
+
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
   // exception will be thrown if there are cycles
   de.CheckCyclicCalls();
   de.UpdatePkb();
 }
+
+void PKB::SetProgramCFG(const CFG& program_cfg) {
+  next_table_.SetProgramCFG(program_cfg);
+}
+
+void PKB::SetReverseProgramCFG(const CFG& reversed_program_cfg) {
+  next_table_.SetReverseProgramCFG(reversed_program_cfg);
+}
+
+CFG* PKB::GetProgramCFG() { return next_table_.GetProgramCFG(); }
+
+CFG* PKB::GetReverseProgramCFG() { return next_table_.GetReverseProgramCFG(); }
 
 void PKB::InsertDominates(Vertex dominating_vertex,
                           VertexSet dominated_vertices) {
@@ -709,9 +729,13 @@ StmtNumList PKB::GetAllDominating() { return GetAllStmt(); }
 
 StmtNumList PKB::GetAllDominated() { return GetAllStmt(); }
 
-StmtNumPairList PKB::GetAllDominatesPairs() { return dominates_table_.GetAllDominatesPairs(); }
+StmtNumPairList PKB::GetAllDominatesPairs() {
+  return dominates_table_.GetAllDominatesPairs();
+}
 
-bool PKB::HasDominatesRelationship() { return dominates_table_.HasDominatesRelationship(); }
+bool PKB::HasDominatesRelationship() {
+  return dominates_table_.HasDominatesRelationship();
+}
 
 /***********************************
 **** Private methods begin here ****
@@ -719,6 +743,9 @@ bool PKB::HasDominatesRelationship() { return dominates_table_.HasDominatesRelat
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
   ProcIndex proc_index = stmt_data->GetProcOfStmt();
+
+  // add stmt as node into CFG
+  next_table_.InsertStatement(GetProcName(proc_index), stmt_num);
 
   // stmt already inserted into stmt_table_, no further processing required
   if (!stmt_table_.InsertStmt(stmt_num, stmt_type, proc_index)) {
