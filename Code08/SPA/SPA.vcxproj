@@ -49,6 +49,7 @@
     <ClCompile Include="..\source\pql_evaluate_with.cpp" />
     <ClCompile Include="..\source\pql_evaluate_pattern.cpp" />
     <ClCompile Include="..\source\pql_evaluate_suchthat.cpp" />
+    <ClCompile Include="..\source\pql_projector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\call_table.h" />
@@ -87,11 +88,12 @@
     <ClInclude Include="..\source\parent_table.h" />
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\pql_evaluator.h" />
+    <ClInclude Include="..\source\pql_parser.h" />
+    <ClInclude Include="..\source\pql_result.h" />
     <ClInclude Include="..\source\pql_evaluate_with.h" />
     <ClInclude Include="..\source\pql_evaluate_pattern.h" />
     <ClInclude Include="..\source\pql_evaluate_suchthat.h" />
-    <ClInclude Include="..\source\pql_parser.h" />
-    <ClInclude Include="..\source\pql_result.h" />
+    <ClInclude Include="..\source\pql_projector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
