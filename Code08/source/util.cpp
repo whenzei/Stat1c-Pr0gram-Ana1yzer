@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "debug.h"
+
 using std::find_if;
 using std::ifstream;
 using std::isspace;
@@ -18,7 +20,8 @@ bool Util::IsValidFile(string filepath) {
 
 string Util::ReadContentFromFile(string filepath) {
   if (!IsValidFile(filepath)) {
-    std::cout << "File not found! Content is set to empty string" << std::endl;
+    Debug::PrintLn(Debug::kError,
+                   "File not found! Content is set to empty string");
     return string();
   }
   // start reading file

@@ -1,11 +1,10 @@
 #include "validator.h"
 #include "tokenizer.h"
+#include "debug.h"
 
 #include <stack>
 #include <unordered_set>
 
-using std::cout;
-using std::endl;
 using std::stack;
 
 using KeywordSet = std::unordered_set<string>;
@@ -35,18 +34,18 @@ void Validator::ResetTokenList(TokenList tokens) {
 bool Validator::ValidateProgram() {
   do {
     if (!IsValidProcedure()) {
-      cout << "Validation failed, invalid procedure detected" << endl;
+      Debug::PrintLn(Debug::kError, "Validation failed, invalid procedure detected");
       return false;
     }
   } while (PeekNextToken().subtype == ts::kProcedure);
 
   // last token should be kEOF if everything is processed
   if (!IsAtEnd()) {
-    cout << "Validation failed, stream not fully consumed" << endl;
+    Debug::PrintLn(Debug::kError, "Validation failed, stream not fully consumed");
     return false;
   }
 
-  cout << "Validation passed" << endl;
+  Debug::PrintLn(Debug::kLog, "Validation passed");
   return true;
 }
 
