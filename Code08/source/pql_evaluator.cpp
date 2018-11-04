@@ -24,13 +24,13 @@ PqlEvaluator::PqlEvaluator() {}
 
 FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   // Initialise new result table class
-  PqlResult* pql_result = new PqlResult();
-  SetPqlResult(*pql_result);
+  SetPqlResult(PqlResult());
+  SetResultTableList(ResultTableList());
+  SetResultTableColumnHeader(ResultTableColumnHeader());
 
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
-  vector<FinalResult> tuple_results;
 
   PqlEvaluateWith with_evaluator;
   PqlEvaluatePattern pattern_evaluator;
@@ -65,27 +65,24 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         }
       }  // end one group iteration
 
-      if (!this->pql_result_.GetResultTable().empty()) {
+      if (!pql_result_.GetResultTable().empty()) {
         // Get the result table and column info
-        this->result_t_list_.push_back(this->pql_result_.GetResultTable());
+        result_t_list_.push_back(pql_result_.GetResultTable());
         // Get column headers
-        for (auto& header : this->pql_result_.GetColumnHeader()) {
-          this->result_c_header.emplace(header.first,
-                                        make_pair(groupcount, header.second));
+        for (auto& header : pql_result_.GetColumnHeader()) {
+          this->result_c_header_.emplace(header.first,
+                                         make_pair(groupcount, header.second));
         }
         // Reset the result table, clear everything
         ResultTable new_table;
-        this->pql_result_.SetResultTable(new_table);
-        this->pql_result_.SetColumnCount(0);
-        this->pql_result_.ClearColumnHeader();
+        pql_result_.SetResultTable(new_table);
+        pql_result_.SetColumnCount(0);
+        pql_result_.ClearColumnHeader();
         groupcount++;
       }
     }  // end all group iteration
-	//Go to projector here
+       // Go to projector here
   }
-
-  // Destroy pql result object
-  delete pql_result;
 
   cout << "Result size: " << final_results.size() << endl;
 
@@ -94,25 +91,24 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
 void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
                                             string new_header_name) {
-  if (this->pql_result_.GetResultTable().empty()) {
-    this->pql_result_.InitTable(result_list, new_header_name);
+  if (pql_result_.GetResultTable().empty()) {
+    pql_result_.InitTable(result_list, new_header_name);
   } else {
-    ColumnHeader col_header = this->pql_result_.GetColumnHeader();
+    ColumnHeader col_header = pql_result_.GetColumnHeader();
     // Conflict found
     if (col_header.find(new_header_name) != col_header.end()) {
-      this->pql_result_.MergeResults(result_list, kConflict,
-                                     col_header.find(new_header_name)->second,
-                                     new_header_name);
+      pql_result_.MergeResults(result_list, kConflict,
+                               col_header.find(new_header_name)->second,
+                               new_header_name);
     }
     // No conflict
     else {
-      this->pql_result_.MergeResults(result_list, kNoConflict, -1,
-                                     new_header_name);
+      pql_result_.MergeResults(result_list, kNoConflict, -1, new_header_name);
     }
   }
 
   // If after merging result, result table is empty
-  if (this->pql_result_.GetResultTable().empty()) {
+  if (pql_result_.GetResultTable().empty()) {
     SetClauseFlag(false);
   }
 }
@@ -120,40 +116,40 @@ void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
 void PqlEvaluator::StoreClauseResultInTable(
     QueryResultPairList result_pair_list, string header_name_left,
     string header_name_right) {
-  if (this->pql_result_.GetResultTable().empty()) {
-    this->pql_result_.InitTable(result_pair_list, header_name_left,
-                                header_name_right);
+  if (pql_result_.GetResultTable().empty()) {
+    pql_result_.InitTable(result_pair_list, header_name_left,
+                          header_name_right);
   } else {
-    ColumnHeader col_header = this->pql_result_.GetColumnHeader();
+    ColumnHeader col_header = pql_result_.GetColumnHeader();
     // Two conflict found
     if (col_header.find(header_name_left) != col_header.end() &&
         col_header.find(header_name_right) != col_header.end()) {
-      this->pql_result_.MergeResults(result_pair_list, kTwoConflict,
-                                     col_header.find(header_name_left)->second,
-                                     col_header.find(header_name_right)->second,
-                                     header_name_left, header_name_right);
+      pql_result_.MergeResults(result_pair_list, kTwoConflict,
+                               col_header.find(header_name_left)->second,
+                               col_header.find(header_name_right)->second,
+                               header_name_left, header_name_right);
     }
     // One conflict Left
     else if (col_header.find(header_name_left) != col_header.end()) {
-      this->pql_result_.MergeResults(result_pair_list, kOneConflictLeft,
-                                     col_header.find(header_name_left)->second,
-                                     -1, header_name_left, header_name_right);
+      pql_result_.MergeResults(result_pair_list, kOneConflictLeft,
+                               col_header.find(header_name_left)->second, -1,
+                               header_name_left, header_name_right);
     }
     // One conflict Right
     else if (col_header.find(header_name_right) != col_header.end()) {
-      this->pql_result_.MergeResults(result_pair_list, kOneConflictRight, -1,
-                                     col_header.find(header_name_right)->second,
-                                     header_name_left, header_name_right);
+      pql_result_.MergeResults(result_pair_list, kOneConflictRight, -1,
+                               col_header.find(header_name_right)->second,
+                               header_name_left, header_name_right);
     }
     // No conflict
     else {
-      this->pql_result_.MergeResults(result_pair_list, kNoConflict, -1, -1,
-                                     header_name_left, header_name_right);
+      pql_result_.MergeResults(result_pair_list, kNoConflict, -1, -1,
+                               header_name_left, header_name_right);
     }
   }
 
   // If after merging result, result table is empty
-  if (this->pql_result_.GetResultTable().empty()) {
+  if (pql_result_.GetResultTable().empty()) {
     SetClauseFlag(false);
   }
 }
@@ -168,4 +164,13 @@ bool PqlEvaluator::IsValidClause() { return clause_flag_; }
 
 void PqlEvaluator::SetPqlResult(PqlResult pql_result) {
   this->pql_result_ = pql_result;
+}
+
+void PqlEvaluator::SetResultTableList(ResultTableList result_t_list) {
+  this->result_t_list_ = result_t_list;
+}
+
+void PqlEvaluator::SetResultTableColumnHeader(
+    ResultTableColumnHeader result_c_header) {
+  this->result_c_header_ = result_c_header;
 }

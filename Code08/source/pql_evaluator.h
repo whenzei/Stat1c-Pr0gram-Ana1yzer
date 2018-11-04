@@ -31,7 +31,7 @@ class PqlEvaluator {
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
   ResultTableList result_t_list_;
-  ResultTableColumnHeader result_c_header;
+  ResultTableColumnHeader result_c_header_;
 
  public:
   /* Contructor */
@@ -40,6 +40,8 @@ class PqlEvaluator {
   /* Setter */
   void SetClauseFlag(bool);
   void SetPqlResult(PqlResult);
+  void SetResultTableList(ResultTableList);
+  void SetResultTableColumnHeader(ResultTableColumnHeader);
 
   /* Getter */
   bool IsValidClause();
