@@ -79,25 +79,21 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
             this->result_c_header_.emplace(
                 header.first, make_pair(groupcount, header.second));
           }
-          // Reset the result table, clear everything
-          ResultTable new_table;
-          pql_result_.SetResultTable(new_table);
-          pql_result_.SetColumnCount(0);
-          pql_result_.ClearColumnHeader();
           groupcount++;
         }
+        // Reset the result table, clear everything
+        ResultTable new_table;
+        pql_result_.SetResultTable(new_table);
+        pql_result_.SetColumnCount(0);
+        pql_result_.ClearColumnHeader();
       } else {
         SetQueryFlag(false);
       }
     }  // end all group iteration
        // Go to projector here
-    if (IsValidQuery()) {
-      final_results = pql_projector.GetFinalResult(
-          result_t_list_, result_c_header_, query->GetSelections(), pkb, true);
-    } else {
-      final_results = pql_projector.GetFinalResult(
-          result_t_list_, result_c_header_, query->GetSelections(), pkb, false);
-    }
+    final_results = pql_projector.GetFinalResult(
+        result_t_list_, result_c_header_, query->GetSelections(), pkb,
+        IsValidQuery());
   }
 
   cout << "Result size: " << final_results.size() << endl;
