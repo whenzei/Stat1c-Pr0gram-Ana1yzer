@@ -47,7 +47,6 @@ class PqlEvaluator {
 
   /* Getter */
   bool IsValidClause();
-  PqlResult GetPqlResult();
   IndexToVarProcMap GetIndexToVar();
   IndexToVarProcMap GetIndexToProc();
 

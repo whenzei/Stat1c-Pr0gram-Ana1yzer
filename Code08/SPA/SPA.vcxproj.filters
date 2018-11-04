@@ -203,13 +203,13 @@
     <ClInclude Include="..\source\pql_evaluator.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_evaluate_with.h">
+    <ClInclude Include="..\source\pql_evaluate_suchthat.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_evaluate_pattern.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_evaluate_suchthat.h">
+    <ClInclude Include="..\source\pql_evaluate_with.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_result.h">

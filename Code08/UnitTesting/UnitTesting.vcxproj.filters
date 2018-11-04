@@ -98,7 +98,7 @@
     <ClCompile Include="test_graph.cpp">
       <Filter>Source Files\Frontend</Filter>
     </ClCompile>
-    <ClCompile Include="test_evaluate_suchthat.cpp">
+     <ClCompile Include="test_evaluate_suchthat.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
     <ClCompile Include="test_evaluate_with.cpp">
