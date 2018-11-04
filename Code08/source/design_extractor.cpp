@@ -50,8 +50,8 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
     // get all call statement numbers that calls the proc_name
     StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_id);
     for (StmtNum call_stmt : calling_stmts) {
-      // get the procedures that has this call statement
-      ProcIndexList caller_procs = pkb_->GetCaller(proc_id);
+      ProcIndex proc_of_stmt =
+          pkb_->GetProcIndex(pkb_->GetProcOfStmt(call_stmt));
       // get all ParentT of call statement
       StmtNumList parent_stmts = pkb_->GetParentT(call_stmt);
 
@@ -61,23 +61,18 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
         for (StmtNum parent : parent_stmts) {
           pkb_->InsertUsesS(parent, used_var);
         }
-
         // update the procedure that contains this call statement
-        for (ProcIndex caller_proc : caller_procs) {
-          pkb_->InsertUsesP(caller_proc, used_var);
-        }
+        pkb_->InsertUsesP(proc_of_stmt, used_var);
       }
 
       // update modifies for call statement AND its Parent(T)
       for (VarIndex modified_var : pkb_->GetModifiedVarP(proc_id)) {
         pkb_->InsertModifiesS(call_stmt, modified_var);
         for (StmtNum parent : parent_stmts) {
-          pkb_->InsertUsesS(parent, modified_var);
+          pkb_->InsertModifiesS(parent, modified_var);
         }
         // update the procedure that contains this call statement
-        for (ProcIndex caller_proc : caller_procs) {
-          pkb_->InsertModifiesP(caller_proc, modified_var);
-        }
+        pkb_->InsertModifiesP(proc_of_stmt, modified_var);
       }
     }
   }
