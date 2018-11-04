@@ -31,9 +31,6 @@ public:
   // Constructor
   PqlGroup();
 
-  // Destructor
-  ~PqlGroup();
-
   // Sorts the clauses by linking clauses with common synonyms
   void SortClauses();
 

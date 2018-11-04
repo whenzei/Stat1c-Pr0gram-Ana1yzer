@@ -18,10 +18,9 @@ vector<PqlGroup> PqlOptimizer::Optimize() {
       int root = union_.at(clauses_[i]->GetSynonyms().first);
       while (find_.at(root) != -1) root = find_.at(root);
       if (group_map.find(root) == group_map.end()) { // if group don't exist
-        PqlGroup group;
-        group.AddClause(clauses_[i]);
-        if (ClauseUsesSelection(clauses_[i])) group.UsesSelectionTrue();
-        group_map.insert({ root, group });
+        group_map.insert({ root, PqlGroup() });
+        group_map.at(root).AddClause(clauses_[i]);
+        if (ClauseUsesSelection(clauses_[i])) group_map.at(root).UsesSelectionTrue();
       }
       else {
         group_map.at(root).AddClause(clauses_[i]);
@@ -30,10 +29,9 @@ vector<PqlGroup> PqlOptimizer::Optimize() {
     }
     else { // if there are no synonyms
       if (group_map.find(-1) == group_map.end()) { // if group don't exist
-        PqlGroup group;
-        group.AddClause(clauses_[i]);
-        if (ClauseUsesSelection(clauses_[i])) group.UsesSelectionTrue();
-        group_map.insert({ -1, group });
+        group_map.insert({ -1, PqlGroup() });
+        group_map.at(-1).AddClause(clauses_[i]);
+        if (ClauseUsesSelection(clauses_[i])) group_map.at(-1).UsesSelectionTrue();
       }
       else {
         group_map.at(-1).AddClause(clauses_[i]);
