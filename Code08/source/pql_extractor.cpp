@@ -51,9 +51,7 @@ bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   return false;
 }
 
-bool PqlExtractor::IsNextT(StmtNum stmt_num) {
-  return pkb_.IsNext(stmt_num);
-}
+bool PqlExtractor::IsNextT(StmtNum stmt_num) { return pkb_.IsNext(stmt_num); }
 
 bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
   return pkb_.IsPrevious(stmt_num);
@@ -100,7 +98,6 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
 
-  
   ProcName p = pkb_.GetProcOfStmt(stmt_num);
 
   if (p.empty()) {
@@ -198,7 +195,6 @@ bool PqlExtractor::IsAffects(StmtNum stmt, bool is_bip) {
     return false;
   }
 
-
   if (is_bip) {
     curr_affects_cfg_ = pkb_.GetProgramCFG();
   } else {
@@ -256,7 +252,6 @@ bool PqlExtractor::IsAffected(StmtNum stmt, bool is_bip) {
   ClearAffectsGlobals();
   return flag;
 }
-
 
 // is_bip is by default false, but can be set to true by affectsBip
 StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1, bool is_bip) {
@@ -322,6 +317,16 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num, bool is_bip) {
   return res_list;
 }
 
+VertexSet PqlExtractor::GetAllAffects() {
+  AffectsTable affects_table = GetAffectsTable();
+  return affects_table.GetAllVertices();
+}
+
+VertexSet PqlExtractor::GetAllAffectedBy() {
+  AffectsTable affected_by_table = GetAffectedByTable();
+  return affected_by_table.GetAllVertices();
+}
+
 AffectsTable PqlExtractor::GetAffectsTable() {
   AffectsTable affects_table;
 
@@ -329,11 +334,26 @@ AffectsTable PqlExtractor::GetAffectsTable() {
   for (auto proc_name : all_procs) {
     curr_affects_cfg_ = pkb_.GetCFG(proc_name);
     // SpecialDFS each CFG for affects
-    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                  WhileLastModMap(), WhileLastModMap());
+    DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, &AffectsTable(),
+                  LastModMap(), WhileLastModMap(), WhileLastModMap());
   }
 
   return affects_table;
+}
+
+AffectsTable PqlExtractor::GetAffectedByTable() {
+  AffectsTable affected_by_table;
+
+  ProcNameList all_procs = pkb_.GetAllProcNames();
+  for (auto proc_name : all_procs) {
+    curr_affects_cfg_ = pkb_.GetCFG(proc_name);
+    // SpecialDFS each CFG for affects
+    DfsAllAffects(curr_affects_cfg_->GetRoot(), &AffectsTable(),
+                  &affected_by_table, LastModMap(), WhileLastModMap(),
+                  WhileLastModMap());
+  }
+
+  return affected_by_table;
 }
 
 /**********************************
@@ -343,9 +363,7 @@ bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
   return IsAffects(stmt_1, stmt_2, true);
 }
 
-bool PqlExtractor::IsAffectsBip(StmtNum stmt) {
-  return IsAffects(stmt, true);
-}
+bool PqlExtractor::IsAffectsBip(StmtNum stmt) { return IsAffects(stmt, true); }
 
 bool PqlExtractor::IsAffectedBip(StmtNum stmt) {
   return IsAffected(stmt, true);
@@ -362,15 +380,17 @@ StmtNumList PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
 AffectsTable PqlExtractor::GetAffectsBipTable() {
   AffectsTable affects_table;
   curr_affects_cfg_ = pkb_.GetProgramCFG();
-  DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, LastModMap(),
-                WhileLastModMap(), WhileLastModMap());
+  DfsAllAffects(curr_affects_cfg_->GetRoot(), &affects_table, &AffectsTable(),
+                LastModMap(), WhileLastModMap(), WhileLastModMap());
 
   return affects_table;
 }
 
 // Helper Methods
 void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                                 LastModMap lmm, WhileLastModMap wlmm, WhileLastModMap pwlmm) {
+                                 AffectsTable* affected_by_table,
+                                 LastModMap lmm, WhileLastModMap wlmm,
+                                 WhileLastModMap pwlmm) {
   StmtType stmt_type = pkb_.GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
@@ -388,7 +408,8 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
       for (auto& used_var : used_vars) {
         if (lmm.count(used_var)) {
           StmtNum affecting_stmt = lmm[used_var];
-          (*affects_table).AddEdge(affecting_stmt, v);
+          affects_table->AddEdge(affecting_stmt, v);
+          affected_by_table->AddEdge(v, affecting_stmt);
         }
       }
 
@@ -412,11 +433,11 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
     pwlmm[v] = temp;
   }
 
-
   // dfs neighbours
   VertexSet neighbours = curr_affects_cfg_->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsAllAffects(neighbour, affects_table, lmm, wlmm, pwlmm);
+    DfsAllAffects(neighbour, affects_table, affected_by_table, lmm, wlmm,
+                  pwlmm);
   }
 }
 
@@ -529,7 +550,6 @@ bool PqlExtractor::DfsAffected(Vertex curr, VarIndexSet rhs_vars,
       return true;
     }
   }
-
 
   // Check for modifying statements
   if (IsModifyingType(curr_stmt_type)) {

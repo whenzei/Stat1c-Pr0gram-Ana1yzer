@@ -34,7 +34,8 @@ class PqlExtractor {
   bool DfsAffects(Vertex curr, Vertex target, VarIndex affects_var);
 
   // @params: curr the current vertex
-  // @params: affects_var the variable (belonging to LHS of the assignment statement of concern)
+  // @params: affects_var the variable (belonging to LHS of the assignment
+  // statement of concern)
   // @returns true if affects_var affects any other assignment statements
   bool DfsAffects(Vertex curr, VarIndex affects_var);
 
@@ -43,8 +44,10 @@ class PqlExtractor {
   // used by the statement of concern)
   // @params: affected_rhs_vars the set of variables already affected in the
   // current path
-  // @returns true if any of the rhs_vars is affected (vertex) by any other assignment statement
-  bool DfsAffected(Vertex curr, VarIndexSet rhs_vars, VarIndexSet affected_rhs_vars);
+  // @returns true if any of the rhs_vars is affected (vertex) by any other
+  // assignment statement
+  bool DfsAffected(Vertex curr, VarIndexSet rhs_vars,
+                   VarIndexSet affected_rhs_vars);
 
   // @params: curr the current vertex
   // @params: affects_var the LHS of an assignment statement to check if it
@@ -62,16 +65,18 @@ class PqlExtractor {
   void DfsAffects(Vertex curr, VarIndexSet rhs_vars,
                   VarIndexSet affected_rhs_vars, StmtNumList* res_list);
 
-  // Helper to populate the AffectsTable using DFS
+  // Helper to populate the AffectsTable and AffectedByTable using DFS
   // @params: Vertex the vertex to start from
-  // @params: AffectsTable* the table to populate
+  // @params: AffectsTable* affects_table the AffectsTable to populate
+  // @params: AffectsTable* affected_by_table the AffectedByTable to populate
   // @params: LastModMap the map to keep track of where each variable was last
   // modified
   // @params: WhileLastModMap the map to keep track of each while statement's
   // LastModMap
   void DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                     LastModMap last_mod_map,
-                     WhileLastModMap while_last_mod_map, WhileLastModMap prev_while_last_mod_map);
+                     AffectsTable* affected_by_table, LastModMap last_mod_map,
+                     WhileLastModMap while_last_mod_map,
+                     WhileLastModMap prev_while_last_mod_map);
 
   bool IsModifyingType(StmtType stmt_type);
 
@@ -117,9 +122,19 @@ class PqlExtractor {
   // @returns a list of n that Affects(n, stmt_num) holds true
   StmtNumList GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
 
+  // @returns set of all statements stmt such that Affects(stmt, _) holds true
+  VertexSet GetAllAffects();
+
+  // @returns set of all statements stmt such that Affects(_, stmt) holds true
+  VertexSet GetAllAffectedBy();
+
   // Get the AffectsTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
   AffectsTable GetAffectsTable();
+
+  // Get the AffectedByTable of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all affecting StmtNums
+  AffectsTable GetAffectedByTable();
   //*********************************************************
 
   //****************** AffectsBip *******************************
@@ -127,10 +142,12 @@ class PqlExtractor {
   // @returns true if AffectsBip(stmt_1, stmt_2) holds, else false
   bool IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns true if there is any AffectsBip(stmt, _ ) relation that holds, else false
+  // @returns true if there is any AffectsBip(stmt, _ ) relation that holds,
+  // else false
   bool IsAffectsBip(StmtNum stmt);
 
-  // @returns true if there is any AffectsBip(_,stmt ) relation that holds, else false
+  // @returns true if there is any AffectsBip(_,stmt ) relation that holds, else
+  // false
   bool IsAffectedBip(StmtNum stmt);
 
   // @returns a list of n that AffectsBip(stmt_1, n) holds true
