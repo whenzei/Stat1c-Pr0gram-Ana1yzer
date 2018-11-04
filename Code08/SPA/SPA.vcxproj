@@ -43,6 +43,9 @@
     <ClCompile Include="..\source\pql_query.cpp" />
     <ClCompile Include="..\source\pql_evaluator.cpp" />
     <ClCompile Include="..\source\pql_result.cpp" />
+    <ClCompile Include="..\source\pql_evaluate_with.cpp" />
+    <ClCompile Include="..\source\pql_evaluate_pattern.cpp" />
+    <ClCompile Include="..\source\pql_evaluate_suchthat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\call_table.h" />
@@ -79,6 +82,9 @@
     <ClInclude Include="..\source\parent_table.h" />
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\pql_evaluator.h" />
+    <ClInclude Include="..\source\pql_evaluate_with.h" />
+    <ClInclude Include="..\source\pql_evaluate_pattern.h" />
+    <ClInclude Include="..\source\pql_evaluate_suchthat.h" />
     <ClInclude Include="..\source\pql_parser.h" />
     <ClInclude Include="..\source\pql_result.h" />
   </ItemGroup>
