@@ -33,11 +33,18 @@ TEST_CLASS(TestQueryParser) {
     Assert::IsFalse(parser.Parse());
   }
 
-  TEST_METHOD(TestSelectOnly) {
+  TEST_METHOD(TestSelectOnlySynonym) {
     string content = "Select a";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSelectOnlyBoolean) {
+    string content = "Select BOOLEAN";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
   }
 
   TEST_METHOD(TestSelectBoolean) {
@@ -527,6 +534,249 @@ TEST_CLASS(TestQueryParser) {
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());
   };
+
+  TEST_METHOD(TestSuchthatCalls) {
+    string content = "procedure p1, p2; Select p1 such that Calls(p1,p2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["p1"] ==
+      PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(query->GetDeclarations()["p2"] ==
+      PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(query->GetSelections()[0].first == "p1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kProcedure);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kCalls);
+    Assert::IsTrue(clause1->GetParameters().first.first == "p1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(clause1->GetParameters().second.first == "p2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kProcedure);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatCalls) {
+    string content = "procedure p; assign a; Select p1 such that Calls(p,a)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatCallsT) {
+    string content = "procedure p1, p2; Select p1 such that Calls*(p1,p2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["p1"] ==
+      PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(query->GetDeclarations()["p2"] ==
+      PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(query->GetSelections()[0].first == "p1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kProcedure);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kCallsT);
+    Assert::IsTrue(clause1->GetParameters().first.first == "p1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kProcedure);
+    Assert::IsTrue(clause1->GetParameters().second.first == "p2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kProcedure);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatCallsT) {
+    string content = "procedure p; assign a; Select p1 such that Calls*(p,a)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatNext) {
+    string content = "stmt s1, s2; Select s1 such that Next(s1,s2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["s1"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetDeclarations()["s2"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetSelections()[0].first == "s1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kStmt);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kNext);
+    Assert::IsTrue(clause1->GetParameters().first.first == "s1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(clause1->GetParameters().second.first == "s2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kStmt);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatNext) {
+    string content = "stmt s; variable v; Select s such that Next(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatNextT) {
+    string content = "stmt s1, s2; Select s1 such that Next*(s1,s2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["s1"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetDeclarations()["s2"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetSelections()[0].first == "s1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kStmt);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kNextT);
+    Assert::IsTrue(clause1->GetParameters().first.first == "s1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(clause1->GetParameters().second.first == "s2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kStmt);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatNextT) {
+    string content = "stmt s; variable v; Select s such that Next*(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatAffects) {
+    string content = "assign a1,a2; Select a1 such that Affects(a1,a2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a1"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetDeclarations()["a2"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetSelections()[0].first == "a1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kAssign);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kAffects);
+    Assert::IsTrue(clause1->GetParameters().first.first == "a1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(clause1->GetParameters().second.first == "a2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kAssign);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatAffects) {
+    string content = "stmt s; variable v; Select s such that Affects(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatAffectsT) {
+    string content = "assign a1,a2; Select a1 such that Affects*(a1,a2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a1"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetDeclarations()["a2"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetSelections()[0].first == "a1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kAssign);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kAffectsT);
+    Assert::IsTrue(clause1->GetParameters().first.first == "a1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(clause1->GetParameters().second.first == "a2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kAssign);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatAffectsT) {
+    string content = "stmt s; variable v; Select s such that Affects*(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatAffectsB) {
+    string content = "assign a1,a2; Select a1 such that AffectsBip(a1,a2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a1"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetDeclarations()["a2"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetSelections()[0].first == "a1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kAssign);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kAffectsB);
+    Assert::IsTrue(clause1->GetParameters().first.first == "a1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(clause1->GetParameters().second.first == "a2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kAssign);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatAffectsB) {
+    string content = "stmt s; variable v; Select s such that AffectsBip(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatAffectsBT) {
+    string content = "assign a1,a2; Select a1 such that AffectsBip*(a1,a2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["a1"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetDeclarations()["a2"] ==
+      PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(query->GetSelections()[0].first == "a1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kAssign);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kAffectsBT);
+    Assert::IsTrue(clause1->GetParameters().first.first == "a1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kAssign);
+    Assert::IsTrue(clause1->GetParameters().second.first == "a2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kAssign);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatAffectsBT) {
+    string content = "stmt s; variable v; Select s such that AffectsBip*(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
+
+  TEST_METHOD(TestSuchthatDominates) {
+    string content = "stmt s1, s2; Select s1 such that Dominates(s1,s2)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsTrue(parser.Parse());
+    Assert::IsTrue(query->GetDeclarations()["s1"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetDeclarations()["s2"] ==
+      PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(query->GetSelections()[0].first == "s1");
+    Assert::IsTrue(query->GetSelections()[0].second ==
+      PqlDeclarationEntity::kStmt);
+    PqlSuchthat* clause1 = (PqlSuchthat*)query->GetClauses()[0];
+    Assert::IsTrue(clause1->GetType() == PqlSuchthatType::kDominates);
+    Assert::IsTrue(clause1->GetParameters().first.first == "s1");
+    Assert::IsTrue(clause1->GetParameters().first.second == PqlDeclarationEntity::kStmt);
+    Assert::IsTrue(clause1->GetParameters().second.first == "s2");
+    Assert::IsTrue(clause1->GetParameters().second.second == PqlDeclarationEntity::kStmt);
+  }
+
+  TEST_METHOD(TestInvalidSuchthatDominates) {
+    string content = "stmt s; variable v; Select s such that Dominates(s,v)";
+    PqlQuery* query = new PqlQuery();
+    PqlParser parser(content, query);
+    Assert::IsFalse(parser.Parse());
+  }
 
   TEST_METHOD(TestSuchthatAnd) {
     string content =

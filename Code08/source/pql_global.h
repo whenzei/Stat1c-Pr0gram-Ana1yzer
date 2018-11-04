@@ -11,7 +11,9 @@ using std::string;
 enum class PqlDeclarationEntity {
   kStmt = 0,
   kRead,
+  kReadName,
   kPrint,
+  kPrintName,
   kCall,
   kCallName,
   kWhile,
@@ -50,6 +52,9 @@ enum class PqlSuchthatType {
   kNextT,
   kAffects,
   kAffectsT,
+  kAffectsB,
+  kAffectsBT,
+  kDominates,
   kNone  // only used for parsing
 };
 

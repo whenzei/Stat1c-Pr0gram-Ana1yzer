@@ -88,8 +88,6 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
 bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
   switch (type) {
     case PqlDeclarationEntity::kStmt:
-    case PqlDeclarationEntity::kRead:
-    case PqlDeclarationEntity::kPrint:
     case PqlDeclarationEntity::kWhile:
     case PqlDeclarationEntity::kIf:
     case PqlDeclarationEntity::kAssign:
@@ -103,6 +101,10 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
       break;
     case PqlDeclarationEntity::kProcedure:
       if (attr == "procName") return true;
+      break;
+    case PqlDeclarationEntity::kRead:
+    case PqlDeclarationEntity::kPrint:
+      if (attr == "stmt" || attr == "varName") return true;
       break;
     case PqlDeclarationEntity::kCall:
       if (attr == "stmt" || attr == "procName") return true;
