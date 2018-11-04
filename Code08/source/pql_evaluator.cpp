@@ -70,20 +70,22 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           break;
         }
       }  // end one group iteration
-      if (!pql_result_.GetResultTable().empty() && group.GetUsesSelection()) {
-        // Get the result table and column info
-        result_t_list_.push_back(pql_result_.GetResultTable());
-        // Get column headers
-        for (auto& header : pql_result_.GetColumnHeader()) {
-          this->result_c_header_.emplace(header.first,
-                                         make_pair(groupcount, header.second));
+      if (!pql_result_.GetResultTable().empty()) {
+        if (group.GetUsesSelection()) {
+          // Get the result table and column info
+          result_t_list_.push_back(pql_result_.GetResultTable());
+          // Get column headers
+          for (auto& header : pql_result_.GetColumnHeader()) {
+            this->result_c_header_.emplace(
+                header.first, make_pair(groupcount, header.second));
+          }
+          // Reset the result table, clear everything
+          ResultTable new_table;
+          pql_result_.SetResultTable(new_table);
+          pql_result_.SetColumnCount(0);
+          pql_result_.ClearColumnHeader();
+          groupcount++;
         }
-        // Reset the result table, clear everything
-        ResultTable new_table;
-        pql_result_.SetResultTable(new_table);
-        pql_result_.SetColumnCount(0);
-        pql_result_.ClearColumnHeader();
-        groupcount++;
       } else {
         SetQueryFlag(false);
       }

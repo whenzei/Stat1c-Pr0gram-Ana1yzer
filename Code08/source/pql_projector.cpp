@@ -162,13 +162,20 @@ FinalResult PqlProjector::GetFinalResult(
     ResultTableList intermediate_result_tables,
     ResultTableColumnHeader intermediate_column_header, SynonymList selections,
     PKB pkb, bool bool_result_so_far) {
-
   if (!bool_result_so_far) {
     if (selections.empty()) {
+	  // case 1: select boolean and the query evaluates to false
       final_result_.push_back("false");
     }
+	// case 2: select synonym and the query has empty result (return empty final result list)
+    return final_result_;
+  } else if (selections.empty()) {
+	// case 3: select boolean and the query evaluates to true
+    final_result_.push_back("true");
     return final_result_;
   }
+
+  // case 4: select synonym and the query has non-empty result
 
   intermediate_result_tables_ = intermediate_result_tables;
   intermediate_column_header_ = intermediate_column_header;
@@ -191,19 +198,10 @@ FinalResult PqlProjector::GetFinalResult(
     }
   }
 
-  if (selections_list_.empty()) {
-    // select boolean
-    if (intermediate_result_tables_.empty()) {
-      final_result_.push_back("false");
-    } else {
-      final_result_.push_back("true");
-    }
-  } else {
-    SortSelections();
-    TrimIntermediateResultTables();
-    MergeIntermediateResultTables();
-    GenerateFinalResult();
-  }
-
+  SortSelections();
+  TrimIntermediateResultTables();
+  MergeIntermediateResultTables();
+  GenerateFinalResult();
+  
   return final_result_;
 }
