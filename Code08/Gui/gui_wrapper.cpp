@@ -55,6 +55,4 @@ void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
     error.push_back(pql_parser.GetErrorMessage());
     results = error;
   }
-
-    delete pql_query;
 }
