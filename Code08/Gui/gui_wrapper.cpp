@@ -15,7 +15,7 @@ GUIWrapper::GUIWrapper() {
   exception_caught_ = false;
 
   // Set level of debug to the level we want
-  Debug::SetLevel(Debug::kAll);
+  Debug::SetLevel(Debug::kLog);
 }
 
 // method for parsing the SIMPLE source
