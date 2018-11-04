@@ -6,6 +6,13 @@ Graph::Graph() {
   size_ = 0;
   adj_list_ = AdjList();
   adj_set_ = AdjSet();
+  all_vertices_ = VertexSet();
+}
+
+bool Graph::operator==(const Graph &other_graph) {
+  return adj_set_ == other_graph.adj_set_ &&
+         all_vertices_ == other_graph.all_vertices_ &&
+         size_ == other_graph.size_;
 }
 
 void Graph::SetRoot(const Vertex &new_root) {
@@ -46,14 +53,14 @@ void Graph::AddNode(const Vertex &vertex) {
     size_++;
     adj_set_.emplace(vertex, VertexSet());
     adj_list_.emplace(vertex, VertexList());
+    all_vertices_.emplace(vertex);
   }
 }
 
 void Graph::RemoveNode(const Vertex &vertex) {
   if (adj_set_.count(vertex)) {
     // remove edge from all vertices that has this as neighbour
-    VertexSet all_verties = GetAllVertices();
-    for (auto& v : all_verties) {
+    for (auto &v : all_vertices_) {
       if (GetNeighboursSet(v).count(vertex)) {
         RemoveEdge(v, vertex);
       }
@@ -61,6 +68,7 @@ void Graph::RemoveNode(const Vertex &vertex) {
     size_--;
     adj_set_.erase(vertex);
     adj_list_.erase(vertex);
+    all_vertices_.erase(vertex);
   }
 }
 
@@ -226,9 +234,8 @@ VertexList Graph::GetNeighboursList(const Vertex &v) {
 
 VertexList Graph::GetTerminalNodes() {
   // retrieve all nodes with empty adj_list_
-  VertexSet all_vertices = GetAllVertices();
   VertexList result;
-  for (auto &vertex : all_vertices) {
+  for (auto &vertex : all_vertices_) {
     if (adj_list_[vertex].empty()) {
       result.push_back(vertex);
     }
@@ -243,14 +250,6 @@ AdjList Graph::GetAdjList() { return adj_list_; }
 
 AdjSet Graph::GetAdjSet() { return adj_set_; }
 
-VertexSet Graph::GetAllVertices() {
-  VertexSet result;
-  for (auto &kv : adj_set_) {
-    // return all keys (meaning the vertex itself)
-    result.emplace(kv.first);
-  }
-
-  return result;
-}
+VertexSet Graph::GetAllVertices() { return all_vertices_; }
 
 Vertex Graph::GetRoot() { return root_; }

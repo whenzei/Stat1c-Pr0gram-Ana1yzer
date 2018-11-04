@@ -27,6 +27,7 @@ class Graph {
   Vertex root_;
   AdjList adj_list_;
   AdjSet adj_set_;
+  VertexSet all_vertices_;
   int size_;
 
   void Toposort(const Vertex& v, VisitedMap* visited, queue<Vertex>* topoqueue);
@@ -37,6 +38,8 @@ class Graph {
 
  public:
   Graph();
+
+  bool operator== (const Graph& other_graph);
 
   // sets the root of the graph to the given value
   // If the given value is not in the graph, no root change will occur

@@ -388,7 +388,7 @@ void PqlExtractor::DfsAllAffects(Vertex v, AffectsTable* affects_table,
       for (auto& used_var : used_vars) {
         if (lmm.count(used_var)) {
           StmtNum affecting_stmt = lmm[used_var];
-          (*affects_table)[affecting_stmt].emplace(v);
+          (*affects_table).AddEdge(affecting_stmt, v);
         }
       }
 

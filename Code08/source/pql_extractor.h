@@ -10,7 +10,7 @@
 
 using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
-using AffectsTable = unordered_map<StmtNum, StmtNumSet>;
+using AffectsTable = Graph;
 using LastModMap = unordered_map<Vertex, VarIndex>;
 using WhileLastModMap = unordered_map<Vertex, LastModMap>;
 

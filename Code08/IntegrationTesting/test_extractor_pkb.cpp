@@ -356,10 +356,17 @@ TEST_CLASS(TestPkbPqlExtractor) {
     AffectsTable expected_results_1;
     // variable t is modified at 4 / 6, used at 4, 6, 9, 12 without being
     // modified again
-    expected_results_1[4] = VertexSet{4, 6, 9, 12};
-    expected_results_1[6] = VertexSet{4, 6, 9, 12};
+    expected_results_1.AddEdge(4, 4);
+    expected_results_1.AddEdge(4, 6);
+    expected_results_1.AddEdge(4, 9);
+    expected_results_1.AddEdge(4, 12);
+
+    expected_results_1.AddEdge(6, 4);
+    expected_results_1.AddEdge(6, 6);
+    expected_results_1.AddEdge(6, 9);
+    expected_results_1.AddEdge(6, 12);
     // variable g is modified at 8 and used at 12 without being modified again
-    expected_results_1[8] = VertexSet{12};
+    expected_results_1.AddEdge(8, 12);
     // variable a and f are both modified again by non-assign statements and
     // thus have no results
     Assert::IsTrue(actual_results_1 == expected_results_1);
@@ -368,22 +375,38 @@ TEST_CLASS(TestPkbPqlExtractor) {
     extractor = PqlExtractor(pkb2);
     AffectsTable actual_results_2 = extractor.GetAffectsTable();
     AffectsTable expected_results_2;
-    expected_results_2[1] = VertexSet{5, 6, 10};
-    expected_results_2[6] = VertexSet{13};
-    expected_results_2[7] = VertexSet{10};
-    expected_results_2[10] = VertexSet{9, 10};
-    expected_results_2[12] = VertexSet{12, 13};
+    expected_results_2.AddEdge(1, 5);
+    expected_results_2.AddEdge(1, 6);
+    expected_results_2.AddEdge(1, 10);
+
+    expected_results_2.AddEdge(6, 13);
+    expected_results_2.AddEdge(7, 10);
+
+    expected_results_2.AddEdge(10, 9);
+    expected_results_2.AddEdge(10, 10);
+
+    expected_results_2.AddEdge(12, 12);
+    expected_results_2.AddEdge(12, 13);
     Assert::IsTrue(actual_results_2 == expected_results_2);
 
     // test while-while loop
     extractor = PqlExtractor(pkb4);
     AffectsTable actual_results_3 = extractor.GetAffectsTable();
     AffectsTable expected_results_3;
-    expected_results_3[1] = VertexSet{3, 12};
-    expected_results_3[5] = VertexSet{3, 12};
-    expected_results_3[7] = VertexSet{5, 9};
-    expected_results_3[8] = VertexSet{7};
-    expected_results_3[9] = VertexSet{8};
+
+    expected_results_3.AddEdge(1, 3);
+    expected_results_3.AddEdge(1, 12);
+
+    expected_results_3.AddEdge(5, 3);
+    expected_results_3.AddEdge(5, 12);
+
+    expected_results_3.AddEdge(7, 5);
+    expected_results_3.AddEdge(7, 9);
+
+    expected_results_3.AddEdge(8, 7);
+
+    expected_results_3.AddEdge(9, 8);
+
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
 
@@ -391,11 +414,23 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(pkb5);
     AffectsTable actual_results = extractor.GetAffectsBipTable();
     AffectsTable expected_results;
-    expected_results[1] = VertexSet{6, 10, 11, 8, 3};
-    expected_results[3] = VertexSet{5};
-    expected_results[4] = VertexSet{5};
-    expected_results[6] = VertexSet{11, 8, 10};
-    expected_results[10] = VertexSet{8, 3};
+
+    expected_results.AddEdge(1, 6);
+    expected_results.AddEdge(1, 10);
+    expected_results.AddEdge(1, 11);
+    expected_results.AddEdge(1, 8);
+    expected_results.AddEdge(1, 3);
+
+    expected_results.AddEdge(3, 5);
+
+    expected_results.AddEdge(4, 5);
+
+    expected_results.AddEdge(6, 11);
+    expected_results.AddEdge(6, 8);
+    expected_results.AddEdge(6, 10);
+
+    expected_results.AddEdge(10, 8);
+    expected_results.AddEdge(10, 3);
     Assert::IsTrue(actual_results == expected_results);
   }
 
