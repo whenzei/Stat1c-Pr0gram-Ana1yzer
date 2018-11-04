@@ -63,21 +63,21 @@ TEST_CLASS(TestPqlProjector) {
   TEST_METHOD(TestOneGroupSelectOne) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable1, kColumnHeader1, kSelections1, pkb);
+        kIntermediateResultTable1, kColumnHeader1, kSelections1, pkb, true);
     Assert::IsTrue(result == FinalResult{"2", "5"});
   }
 
   TEST_METHOD(TestOneGroupSelectMultiple) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable1, kColumnHeader1, kSelections2, pkb);
+        kIntermediateResultTable1, kColumnHeader1, kSelections2, pkb, true);
     Assert::IsTrue(result == FinalResult{"3 1 2", "6 4 5"});
   }
 
   TEST_METHOD(TestOneGroupSelectRepeat) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable1, kColumnHeader1, kSelections3, pkb);
+        kIntermediateResultTable1, kColumnHeader1, kSelections3, pkb, true);
     Assert::IsTrue(result == FinalResult{"3 1 2 1", "6 4 5 4"});
   }
 
@@ -91,7 +91,7 @@ TEST_CLASS(TestPqlProjector) {
     pkb.InsertProcName(kProcName5);
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable1, kColumnHeader1, kSelections4, pkb);
+        kIntermediateResultTable1, kColumnHeader1, kSelections4, pkb, true);
     VarName v3 = pkb.GetVarName(3);
     VarName v6 = pkb.GetVarName(6);
     Assert::IsTrue(result == FinalResult{v3 + " 1 two 1", v6 + " 4 five 4"});
@@ -101,7 +101,7 @@ TEST_CLASS(TestPqlProjector) {
     pkb.InsertAssignStmt(&kStmtData);
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable1, kColumnHeader1, kSelections5, pkb);
+        kIntermediateResultTable1, kColumnHeader1, kSelections5, pkb, true);
     Assert::IsTrue(result.size() == 2);
     Assert::IsTrue(result == FinalResult{"3 1 2 100", "6 4 5 100"});
   }
@@ -109,14 +109,14 @@ TEST_CLASS(TestPqlProjector) {
   TEST_METHOD(TestMultipleGroupSelectOne) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable2, kColumnHeader2, kSelections1, pkb);
+        kIntermediateResultTable2, kColumnHeader2, kSelections1, pkb, true);
     Assert::IsTrue(result == FinalResult{"2", "5"});
   }
 
   TEST_METHOD(TestMultipleGroupSelectMultiple) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable2, kColumnHeader2, kSelections6, pkb);
+        kIntermediateResultTable2, kColumnHeader2, kSelections6, pkb, true);
     Assert::IsTrue(result == FinalResult{"2 22 12 3", "2 22 14 3", "2 22 16 3",
                                          "5 22 12 6", "5 22 14 6",
                                          "5 22 16 6"});
@@ -125,7 +125,7 @@ TEST_CLASS(TestPqlProjector) {
   TEST_METHOD(TestMultipleGroupSelectRepeat) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable2, kColumnHeader2, kSelections7, pkb);
+        kIntermediateResultTable2, kColumnHeader2, kSelections7, pkb, true);
     Assert::IsTrue(result == FinalResult{"2 22 12 3 2", "2 22 14 3 2",
                                          "2 22 16 3 2", "5 22 12 6 5",
                                          "5 22 14 6 5", "5 22 16 6 5"});
@@ -141,7 +141,7 @@ TEST_CLASS(TestPqlProjector) {
     pkb.InsertProcName(kProcName4);
     pkb.InsertProcName(kProcName5);
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable2, kColumnHeader2, kSelections8, pkb);
+        kIntermediateResultTable2, kColumnHeader2, kSelections8, pkb, true);
     ProcName p2 = pkb.GetProcName(2);
     ProcName p5 = pkb.GetProcName(5);
     VarName v3 = pkb.GetVarName(3);
@@ -161,7 +161,7 @@ TEST_CLASS(TestPqlProjector) {
     pkb.InsertProcName(kProcName2);
     pkb.InsertProcName(kProcName3);
     FinalResult result = pql_projector.GetFinalResult(
-        kIntermediateResultTable2, kColumnHeader2, kSelections9, pkb);
+        kIntermediateResultTable2, kColumnHeader2, kSelections9, pkb, true);
     Assert::IsTrue(result == FinalResult{"11 " + kProcName0, "11 " + kProcName1,
                                          "11 " + kProcName2, "11 " + kProcName3,
                                          "13 " + kProcName0, "13 " + kProcName1,
@@ -169,15 +169,6 @@ TEST_CLASS(TestPqlProjector) {
                                          "15 " + kProcName0, "15 " + kProcName1,
                                          "15 " + kProcName2,
                                          "15 " + kProcName3});
-  }
-
-  TEST_METHOD(TestBooleanResult) {
-    PqlProjector pql_projector1;
-    FinalResult result1 = pql_projector1.GetFinalResult(true);
-    Assert::IsTrue(result1 == FinalResult{"true"});
-    PqlProjector pql_projector2;
-    FinalResult result2 = pql_projector2.GetFinalResult(false);
-    Assert::IsTrue(result2 == FinalResult{"false"});
   }
 };
 

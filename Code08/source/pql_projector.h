@@ -59,9 +59,7 @@ class PqlProjector {
   // @returns the final result of the query
   FinalResult GetFinalResult(ResultTableList intermediate_result_tables,
                              ResultTableColumnHeader intermediate_column_header,
-                             SynonymList selections, PKB pkb);
-
-  FinalResult GetFinalResult(bool result);
+                             SynonymList selections, PKB pkb, bool bool_result_so_far);
 };
 
 #endif  // !PQL_PROJECTOR_H
