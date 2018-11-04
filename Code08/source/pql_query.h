@@ -18,12 +18,14 @@ using std::vector;
 #include "pql_pattern.h"
 #include "pql_suchthat.h"
 #include "pql_with.h"
+#include "pql_optimizer.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
 using WithTable = unordered_map<PqlDeclarationEntity, EntitySet>;
+using Group = vector<PqlClause*>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -264,6 +266,10 @@ class PqlQuery {
   vector<Synonym> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
+  /* does the optimization of clauses */
+  PqlOptimizer optimizer_;
+  /* collection of groups of clauses from optimization */
+  vector<PqlGroup> groups_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;
@@ -275,6 +281,9 @@ class PqlQuery {
   /* Constructor */
   PqlQuery();
 
+  /* Deconstructor */
+  ~PqlQuery();
+
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
@@ -284,6 +293,9 @@ class PqlQuery {
   Declarations GetDeclarations();
   vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
+  vector<PqlGroup> GetGroups();
+
+  void Optimize();
 
   static PqlDeclarationEntity DeclarationStringToType(string);
 

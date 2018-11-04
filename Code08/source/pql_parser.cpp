@@ -3,6 +3,7 @@
 #include "pql_clause.h"
 #include "pql_validator.h"
 #include "util.h"
+using std::sort;
 
 const bool DEBUG_FLAG = false;
 
@@ -154,7 +155,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         current_index--;  // step back because ParseAttribute step forward
                           // internally
       }
-      // append extra 'p' for call.procName
+      // append infront extra '0' for call.procName
       if (type == PqlDeclarationEntity::kCallName) {
         selection = "0" + selection;
       }
@@ -378,8 +379,30 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
 
   // 9. Create such that object
-  query_->AddClause(
-      new PqlSuchthat(suchthat_type, first, first_type, second, second_type));
+  PqlClause* clause = new PqlSuchthat(suchthat_type, first, first_type, second, second_type);
+  if (first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger || 
+  first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) {
+    clause->SetPriority(PRIORITY_CONSTANT_AND_SYNONYM);
+  }
+  else if (suchthat_type == PqlSuchthatType::kFollows) {
+    clause->SetPriority(PRIORITY_FOLLOWS);
+  }
+  else if (suchthat_type == PqlSuchthatType::kFollowsT) {
+    clause->SetPriority(PRIORITY_FOLLOWS_T);
+  }
+  else if (suchthat_type == PqlSuchthatType::kModifiesP || suchthat_type == PqlSuchthatType::kModifiesS) {
+    clause->SetPriority(PRIORITY_MODIFIES);
+  }
+  else if (suchthat_type == PqlSuchthatType::kAffects) {
+    clause->SetPriority(PRIORITY_AFFECTS);
+  }
+  else if (suchthat_type == PqlSuchthatType::kAffectsT) {
+    clause->SetPriority(PRIORITY_AFFECTS_T);
+  }
+  else {
+    clause->SetPriority(PRIORITY_NORMAL);
+  }
+  query_->AddClause(clause);
 
   /* LEGACY: TO BE DELETED */
   query_->AddSuchthat(
@@ -532,9 +555,10 @@ bool PqlParser::ParsePatternAssign(TokenList tokens, int* current_index,
   } else {
     expression_type = PqlPatternExpressionType::kExpression;
   }
-  pattern->SetAssignExpression(expression_type,
-                               ExpressionHelper::ToPostfix(expression));
-  query_->AddClause(pattern);
+  pattern->SetAssignExpression(expression_type, ExpressionHelper::ToPostfix(expression));
+  PqlClause* clause = pattern;
+  clause->SetPriority(PRIORITY_NORMAL);
+  query_->AddClause(clause);
 
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(*pattern);
@@ -605,8 +629,9 @@ bool PqlParser::ParsePatternWhile(TokenList tokens, int* current_index,
   }
 
   // 7. Create pattern object
-  query_->AddClause(
-      new PqlPattern(type_name, PqlPatternType::kWhile, first, first_type));
+  PqlClause* clause = new PqlPattern(type_name, PqlPatternType::kWhile, first, first_type);
+  clause->SetPriority(PRIORITY_NORMAL);
+  query_->AddClause(clause);
 
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(
@@ -694,8 +719,9 @@ bool PqlParser::ParsePatternIf(TokenList tokens, int* current_index,
   }
 
   // 9. Create pattern object
-  query_->AddClause(
-      new PqlPattern(type_name, PqlPatternType::kIf, first, first_type));
+  PqlClause* clause = new PqlPattern(type_name, PqlPatternType::kIf, first, first_type);
+  clause->SetPriority(PRIORITY_NORMAL);
+  query_->AddClause(clause);
 
   /* LEGACY: TO BE DELETED */
   query_->AddPattern(
@@ -820,10 +846,11 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   if (left == right && left_type == right_type) return true;
 
   // 10. Create with clause
-  query_->AddClause(new PqlWith(left, left_type, right, right_type));
+  PqlClause* clause = new PqlWith(left, left_type, right, right_type);
+  clause->SetPriority(PRIORITY_WITH);
+  query_->AddClause(clause);
 
-  --*current_index;  // move back 1 step because ParseParameter and
-                     // ParseAttribute took a step forward at the end
+  --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end
   return true;
 }
 

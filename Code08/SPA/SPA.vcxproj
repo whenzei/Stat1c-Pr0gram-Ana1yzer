@@ -23,7 +23,10 @@
     <ClCompile Include="..\source\parse_data.cpp" />
     <ClCompile Include="..\source\pattern_table.cpp" />
     <ClCompile Include="..\source\pkb.cpp" />
+    <ClCompile Include="..\source\pql_clause.cpp" />
     <ClCompile Include="..\source\pql_extractor.cpp" />
+    <ClCompile Include="..\source\pql_group.cpp" />
+    <ClCompile Include="..\source\pql_optimizer.cpp" />
     <ClCompile Include="..\source\pql_parser.cpp" />
     <ClCompile Include="..\source\pql_pattern.cpp" />
     <ClCompile Include="..\source\pql_suchthat.cpp" />
@@ -64,6 +67,8 @@
     <ClInclude Include="..\source\pql_clause.h" />
     <ClInclude Include="..\source\pql_extractor.h" />
     <ClInclude Include="..\source\pql_global.h" />
+    <ClInclude Include="..\source\pql_group.h" />
+    <ClInclude Include="..\source\pql_optimizer.h" />
     <ClInclude Include="..\source\pql_pattern.h" />
     <ClInclude Include="..\source\pql_suchthat.h" />
     <ClInclude Include="..\source\pql_validator.h" />
@@ -83,12 +88,12 @@
     <ClInclude Include="..\source\parent_table.h" />
     <ClInclude Include="..\source\pql_query.h" />
     <ClInclude Include="..\source\pql_evaluator.h" />
+    <ClInclude Include="..\source\pql_parser.h" />
+    <ClInclude Include="..\source\pql_result.h" />
     <ClInclude Include="..\source\pql_evaluate_with.h" />
     <ClInclude Include="..\source\pql_evaluate_pattern.h" />
     <ClInclude Include="..\source\pql_evaluate_suchthat.h" />
-    <ClInclude Include="..\source\pql_parser.h" />
-    <ClInclude Include="..\source\pql_result.h" />
-    <ClCompile Include="..\source\pql_projector.h" />
+    <ClInclude Include="..\source\pql_projector.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

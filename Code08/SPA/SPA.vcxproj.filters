@@ -144,6 +144,15 @@
     <ClCompile Include="..\source\pql_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pql_clause.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_optimizer.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_group.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pql_projector.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -257,7 +266,6 @@
     <ClInclude Include="..\source\call_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
-
     <ClInclude Include="..\source\semantic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
@@ -267,8 +275,14 @@
     <ClInclude Include="..\source\pql_extractor.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\pql_projector.h">
+    <ClInclude Include="..\source\pql_optimizer.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\pql_group.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClCompile Include="..\source\pql_projector.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

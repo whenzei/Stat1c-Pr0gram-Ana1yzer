@@ -8,15 +8,41 @@ using std::endl;
 
 PqlQuery::PqlQuery() {}
 
+PqlQuery::~PqlQuery() {
+  for(int i = 0; i < clauses_.size(); i++) {
+    delete clauses_[i];
+    clauses_[i] = nullptr;
+  }
+}
+
 bool PqlQuery::AddDeclaration(PqlDeclarationEntity entity, string var_name) {
   return declarations_.insert(std::make_pair(var_name, entity)).second;
 }
 
 void PqlQuery::AddSelection(string selection, PqlDeclarationEntity type) {
   selections_.push_back(std::make_pair(selection, type));
+  optimizer_.AddSelection(selection);
 }
 
-void PqlQuery::AddClause(PqlClause* clause) { clauses_.push_back(clause); }
+void PqlQuery::AddClause(PqlClause* clause) { 
+  clauses_.push_back(clause);
+  Synonym syn;
+  Parameters param;
+  switch(clause->GetClauseType()) {
+    case PqlClauseType::kPattern:
+      syn = ((PqlPattern*)clause)->GetFirstParameter();
+      optimizer_.AddUnion(clause, syn.first, syn.second);
+      break;
+    case PqlClauseType::kSuchthat:
+      param = ((PqlSuchthat*)clause)->GetParameters();
+      optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
+      break;
+    case PqlClauseType::kWith:
+      param = ((PqlWith*)clause)->GetParameters();
+      optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
+      break;
+  }
+}
 
 void PqlQuery::SetVarName(string var_name) { this->var_name_ = var_name; }
 
@@ -37,6 +63,8 @@ vector<PqlSuchthat> PqlQuery::GetSuchThats() { return suchthats_; }
 vector<PqlPattern> PqlQuery::GetPatterns() { return patterns_; }
 
 vector<PqlClause*> PqlQuery::GetClauses() { return clauses_; }
+
+vector<PqlGroup> PqlQuery::GetGroups() { return groups_; }
 
 PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
   if (input == "stmt") {
@@ -65,3 +93,5 @@ PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
     return PqlDeclarationEntity::kNone;
   }
 }
+
+void PqlQuery::Optimize() { groups_ = optimizer_.Optimize(); }

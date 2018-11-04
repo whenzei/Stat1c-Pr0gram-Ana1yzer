@@ -31,6 +31,7 @@ class PqlValidator {
   // @returns true if the given string can have the given PqlDeclarationEntity
   // type, false otherwise
   static bool ValidateAttribute(PqlDeclarationEntity, string);
+  static bool IsSynonym(PqlDeclarationEntity);
 };
 
 #endif
