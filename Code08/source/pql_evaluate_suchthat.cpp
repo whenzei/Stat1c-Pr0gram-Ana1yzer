@@ -161,6 +161,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
+  VarProcToIndexMap proc_to_index = this->pkb_.GetProcToIndexMapping();
 
   cout << "Evaluating Calls" << endl;
 
@@ -208,7 +209,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = this->pkb_.GetCallee(stoi(left_name));
+      result_list = this->pkb_.GetCallee(proc_to_index[left_name]);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not caller " << endl;
