@@ -173,15 +173,23 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreLeft:
-      if (this->pkb_.GetCaller(right_name).empty()) {
+      if (this->pkb_.GetProcIndex(right_name) != -1) {
+        if (this->pkb_.GetCaller(proc_to_index[right_name]).empty()) {
+          SetClauseFlag(false);
+          cout << right_name << " is not called " << endl;
+        }
+      } else {
         SetClauseFlag(false);
-        cout << right_name << " is not called " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (this->pkb_.GetCallee(left_name).empty()) {
+      if (this->pkb_.GetProcIndex(left_name) != -1) {
+        if (this->pkb_.GetCallee(proc_to_index[left_name]).empty()) {
+          SetClauseFlag(false);
+          cout << left_name << " is not caller " << endl;
+        }
+      } else {
         SetClauseFlag(false);
-        cout << left_name << " is not caller " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
@@ -191,12 +199,16 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeft:
-      result_list = this->pkb_.GetCaller(right_name);
-      if (result_list.empty()) {
-        SetClauseFlag(false);
-        cout << right_name << " is not called " << endl;
+      if (this->pkb_.GetProcIndex(right_name) != -1) {
+        result_list = this->pkb_.GetCaller(proc_to_index[right_name]);
+        if (result_list.empty()) {
+          SetClauseFlag(false);
+          cout << right_name << " is not called " << endl;
+        } else {
+          pql_eval->StoreClauseResultInTable(result_list, left_name);
+        }
       } else {
-        pql_eval->StoreClauseResultInTable(result_list, left_name);
+        SetClauseFlag(false);
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
@@ -209,12 +221,16 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = this->pkb_.GetCallee(proc_to_index[left_name]);
-      if (result_list.empty()) {
-        SetClauseFlag(false);
-        cout << left_name << " is not caller " << endl;
+      if (this->pkb_.GetProcIndex(left_name) != -1) {
+        result_list = this->pkb_.GetCallee(proc_to_index[left_name]);
+        if (result_list.empty()) {
+          SetClauseFlag(false);
+          cout << left_name << " is not caller " << endl;
+        } else {
+          pql_eval->StoreClauseResultInTable(result_list, right_name);
+        }
       } else {
-        pql_eval->StoreClauseResultInTable(result_list, right_name);
+        SetClauseFlag(false);
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
