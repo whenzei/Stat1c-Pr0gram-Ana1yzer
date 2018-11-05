@@ -1,11 +1,11 @@
 #include "gui_wrapper.h"
+#include "../source/debug.h"
 #include "../source/parser.h"
 #include "../source/pql_evaluator.h"
 #include "../source/pql_parser.h"
 #include "../source/pql_query.h"
 
 #include <exception>
-#include <iostream>
 
 // a default constructor
 GUIWrapper::GUIWrapper() {
@@ -13,6 +13,9 @@ GUIWrapper::GUIWrapper() {
   // as well as any initialization required for your spa program
   pkb_ = PKB();
   exception_caught_ = false;
+
+  // Set level of debug to the level we want
+  Debug::SetLevel(Debug::kLog);
 }
 
 // method for parsing the SIMPLE source
@@ -21,7 +24,7 @@ void GUIWrapper::parse(std::string filename) {
   Parser parser_(&pkb_);
   try {
     parser_.Parse(filename);
-    std::cout << "parsed " << filename << std::endl;
+    Debug::PrintLn(Debug::kLog, "parsed " + filename);
   } catch (const std::exception& e) {
     std::cerr << e.what() << std::endl;
     exception_error_ = e.what();

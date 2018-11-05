@@ -1,9 +1,9 @@
 #pragma once
 
 #include <fstream>
-#include <iostream>
 #include <stack>
 
+#include "debug.h"
 #include "expression_helper.h"
 #include "parse_data.h"
 #include "parser.h"
@@ -14,11 +14,8 @@
 #include "util.h"
 #include "validator.h"
 
-const bool DEBUG_FLAG = false;
-
-using std::cout;
-using std::endl;
 using std::stack;
+using std::to_string;
 
 using tt = Tokenizer::TokenType;
 using ts = Tokenizer::TokenSubtype;
@@ -42,7 +39,7 @@ void Parser::Parse(string filepath) {
   // validate tokens for syntax errors
   Validator validator = Validator(tokens_);
   if (!validator.ValidateProgram()) {
-    cout << "Validation failed" << endl;
+    Debug::PrintLn(Debug::kError, "Validation of SIMPLE source failed.");
     throw SyntacticErrorException("Validation of SIMPLE source failed.");
   }
 
@@ -70,12 +67,16 @@ void Parser::ParseProgram() {
     ProcessProcedure();
   } while (!IsAtEnd());
 
-  /****** Debug Call graph ******/
-  // DFS call graph
-  pkb_->GetCallGraph();
-  VertexList traverse = pkb_->GetCallGraph()->Toposort();
-  for (auto id : traverse) {
-    cout << pkb_->GetProcName(id) << endl;
+  if (Debug::IsLogLevelAbove(Debug::kInfo)) {
+    Debug::PrintLn(Debug::kInfo, "Printing Call Graph Order: ");
+    /****** Debug Call graph ******/
+    // DFS call graph
+    pkb_->GetCallGraph();
+    VertexList traverse = pkb_->GetCallGraph()->Toposort();
+    for (auto id : traverse) {
+      Debug::Print(Debug::kInfo, pkb_->GetProcName(id) + " ");
+    }
+    Debug::PrintLn(Debug::kInfo);
   }
 }
 
@@ -268,7 +269,7 @@ ParseData Parser::ProcessAssignment() {
   PopulatePkbModifies(stmt_num_, lhs_var);
   PopulatePkbUses(stmt_num_, rhs_vars);
 
-  if (DEBUG_FLAG) {
+  if (Debug::IsLogLevelAbove(Debug::kInfo)) {
     //**************** DEBUG********************
     string rhsvar = string();
     for (VarName var : rhs_vars) {
@@ -276,12 +277,12 @@ ParseData Parser::ProcessAssignment() {
     }
     string rhsconst = string();
     for (int var : rhs_consts) {
-      rhsconst = rhsconst + " " + std::to_string(var);
+      rhsconst = rhsconst + " " + to_string(var);
     }
 
-    cout << "Assignment statement#" << stmt_num_
-         << " added, lhs: " << lhs_var
-         << ", rhs_vars: " << rhsvar << ", rhs_consts: " << rhsconst << endl;
+    Debug::PrintLn(Debug::kInfo, "Assignment statement#" + to_string(stmt_num_) +
+                                   " added, lhs: " + lhs_var + ", rhs_vars: " +
+                                   rhsvar + ", rhs_consts: " + rhsconst);
     //***********************************************
   }
 
@@ -292,32 +293,31 @@ ParseData Parser::ProcessIfBlock() {
   int if_stmt_num = stmt_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditionals = ProcessConditional();
 
-  if (DEBUG_FLAG) {
+  if (Debug::IsLogLevelAbove(Debug::kInfo)) {
     //************* DEBUG******************
     string control_var_str = string();
     for (VarName var : used_set_conditionals.first) {
       control_var_str = control_var_str + " " + var;
     }
-    cout << "If statement#" << if_stmt_num
-         << " added, control_variable: " << control_var_str << endl;
+    Debug::PrintLn(Debug::kInfo,
+                 "If statement#" + to_string(if_stmt_num) +
+                     " added, control_variable: " + control_var_str);
     //*************************************
   }
 
   // eat 'then {' tokens
   EatNumTokens(2);
 
-  if (DEBUG_FLAG) {
-    cout << "[inside then block]" << endl;
-  }
+  Debug::PrintLn(Debug::kInfo, "[inside then block]");
+
   // Process everything inside the if block
   ParseData then_stmt_info = ProcessStatementList();
 
   // eat "} else {" tokens
   EatNumTokens(3);
 
-  if (DEBUG_FLAG) {
-    cout << "[inside else block]" << endl;
-  }
+  Debug::PrintLn(Debug::kInfo, "[inside else block]");
+
   // Process everything inside the counterpart else block
   ParseData else_stmt_info = ProcessStatementList();
 
@@ -360,9 +360,7 @@ ParseData Parser::ProcessIfBlock() {
   // eat closing brace
   ReadNextToken();
 
-  if (DEBUG_FLAG) {
-    cout << "[leaving if block]" << endl;
-  }
+  Debug::PrintLn(Debug::kInfo, "[leaving if block]");
 
   // Update PKB of the 'if' block
   pkb_->InsertIfStmt(&IfStmtData(if_stmt_num, current_proc_index_,
@@ -408,23 +406,22 @@ ParseData Parser::ProcessWhileBlock() {
   int while_stmt_num = stmt_num_;
   pair<VarNameSet, ConstValueSet> used_set_conditional = ProcessConditional();
 
-  if (DEBUG_FLAG) {
+  if (Debug::IsLogLevelAbove(Debug::kInfo)) {
     //************* DEBUG******************
     string control_var_str = string();
     for (VarName var : used_set_conditional.first) {
       control_var_str = control_var_str + " " + var;
     }
-    cout << "While statement#" << while_stmt_num
-         << " added, control_variable: " << control_var_str << endl;
+    Debug::PrintLn(Debug::kInfo,
+                 "While statement#" + to_string(while_stmt_num) +
+                     " added, control_variable: " + control_var_str);
     //*************************************
   }
 
   // eat open brace
   ReadNextToken();
 
-  if (DEBUG_FLAG) {
-    cout << "[inside while block]" << endl;
-  }
+  Debug::PrintLn(Debug::kInfo, "[inside while block]");
 
   ParseData children_stmt_info = ProcessStatementList();
   StmtNumList children_stmt_nums = children_stmt_info.GetStmtNumList();
@@ -462,9 +459,7 @@ ParseData Parser::ProcessWhileBlock() {
   // eat close brace
   ReadNextToken();
 
-  if (DEBUG_FLAG) {
-    cout << "[leaving while block]" << endl;
-  }
+  Debug::PrintLn(Debug::kInfo, "[leaving while block]");
 
   // Update PKB of the 'while' block
   pkb_->InsertWhileStmt(&WhileStmtData(while_stmt_num, current_proc_index_,

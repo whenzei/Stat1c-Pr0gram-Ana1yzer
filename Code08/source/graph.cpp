@@ -1,5 +1,4 @@
 #include "graph.h"
-#include <iostream>
 
 Graph::Graph() {
   size_ = 0;
@@ -135,9 +134,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
   visited[v] = true;
 
   VertexList path;  // don't need this, just here for reusability
-  std::cout << "At vertex " << v << std::endl;
   DFS(root_, &visited, &path);
-  std::cout << std::endl;
 
   VertexSet result;
 
@@ -163,7 +160,6 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
   (*visited)[v] = true;
 
   // add saving of path here if want pre-order traversal
-  std::cout << v << " ";
   path->push_back(v);
 
   VertexSet *neighbours = &adj_set_[v];

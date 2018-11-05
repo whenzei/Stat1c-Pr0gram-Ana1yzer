@@ -144,6 +144,9 @@
     <ClCompile Include="..\source\pql_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\debug.cpp">
+      <Filter>Source Files\General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -254,7 +257,6 @@
     <ClInclude Include="..\source\call_table.h">
       <Filter>Header Files\PKB</Filter>
     </ClInclude>
-
     <ClInclude Include="..\source\semantic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
@@ -263,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="..\source\pql_extractor.h">
       <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\debug.h">
+      <Filter>Header Files\General</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

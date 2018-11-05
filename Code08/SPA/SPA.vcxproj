@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\call_table.cpp" />
+    <ClCompile Include="..\source\debug.cpp" />
     <ClCompile Include="..\source\design_extractor.cpp" />
     <ClCompile Include="..\source\dominates_table.cpp" />
     <ClCompile Include="..\source\expression_helper.cpp" />
@@ -49,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\call_table.h" />
+    <ClInclude Include="..\source\debug.h" />
     <ClInclude Include="..\source\design_extractor.h" />
     <ClInclude Include="..\source\dominates_table.h" />
     <ClInclude Include="..\source\expression_helper.h" />
