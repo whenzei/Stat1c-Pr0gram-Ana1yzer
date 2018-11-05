@@ -9,8 +9,8 @@ void DesignExtractor::UpdatePkb() {
   UpdateCFGRoots();
   PopulateAllNextPairs();
   UpdateParentT();
-  UpdateUsesAndModifiesWithCallGraph();
   UpdateCallT();
+  UpdateUsesAndModifiesWithCallGraph();
   PopulateDominates();
   PopulateProgramCFG();
 }
