@@ -44,11 +44,11 @@ class PqlExtractor {
   // @returns true if stmt_num is affected by any statement
   bool IsAffected(StmtNum stmt_num);
 
-  // @returns a list of n that Affects(stmt_1, n) holds true
-  StmtNumList GetAffects(StmtNum stmt_1);
+  // @returns a set of n that Affects(stmt_1, n) holds true
+  VertexSet GetAffects(StmtNum stmt_1);
 
-  // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedBy(StmtNum stmt_num);
+  // @returns a set of n that Affects(n, stmt_num) holds true
+  VertexSet GetAffectedBy(StmtNum stmt_num);
 
   // @returns set of all statements stmt_num such that Affects(stmt_num, _)
   // holds true
@@ -80,11 +80,11 @@ class PqlExtractor {
   // else false
   bool IsAffectedBip(StmtNum stmt_num);
 
-  // @returns a list of n that AffectsBip(stmt_1, n) holds true
-  StmtNumList GetAffectsBip(StmtNum stmt_1);
+  // @returns a set of n that AffectsBip(stmt_1, n) holds true
+  VertexSet GetAffectsBip(StmtNum stmt_1);
 
-  // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedByBip(StmtNum stmt_num);
+  // @returns a set of n that Affects(n, stmt_num) holds true
+  VertexSet GetAffectedByBip(StmtNum stmt_num);
 
   // Get the AffectsBipTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectedBip StmtNums

@@ -41,11 +41,11 @@ bool PqlExtractor::IsAffected(StmtNum stmt_num) {
   return ae_.IsAffected(stmt_num);
 }
 
-StmtNumList PqlExtractor::GetAffects(StmtNum stmt_1) {
+VertexSet PqlExtractor::GetAffects(StmtNum stmt_1) {
   return ae_.GetAffects(stmt_1);
 }
 
-StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
+VertexSet PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
   return ae_.GetAffectedBy(stmt_num);
 }
 
@@ -77,11 +77,11 @@ bool PqlExtractor::IsAffectedBip(StmtNum stmt_num) {
   return ae_.IsAffected(stmt_num, true);
 }
 
-StmtNumList PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
+VertexSet PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
   return ae_.GetAffects(stmt_1, true);
 }
 
-StmtNumList PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
+VertexSet PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
   return ae_.GetAffectedBy(stmt_num, true);
 }
 

@@ -270,82 +270,82 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positives**************************************
-    StmtNumList test_result_1 = extractor.GetAffects(1);
-    StmtNumList expected_result_1 = StmtNumList{5, 6, 10};
+    VertexSet test_result_1 = extractor.GetAffects(1);
+    VertexSet expected_result_1 = VertexSet{5, 6, 10};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
-    StmtNumList test_result_2 = extractor.GetAffects(12);
-    StmtNumList expected_result_2 = StmtNumList{12, 13};
+    VertexSet test_result_2 = extractor.GetAffects(12);
+    VertexSet expected_result_2 = VertexSet{12, 13};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
-    StmtNumList test_result_3 = extractor.GetAffects(10);
-    StmtNumList expected_result_3 = StmtNumList{9, 10};
+    VertexSet test_result_3 = extractor.GetAffects(10);
+    VertexSet expected_result_3 = VertexSet{9, 10};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
     // Negatives***************************************
 
     // Stmt 2 is a read stmt
-    StmtNumList test_result_4 = extractor.GetAffects(2);
-    StmtNumList expected_result_4 = StmtNumList{};
+    VertexSet test_result_4 = extractor.GetAffects(2);
+    VertexSet expected_result_4 = VertexSet{};
     Assert::IsTrue(test_result_4 == expected_result_4);
 
     // Stmt 9 rhs var is modified
-    StmtNumList test_result_5 = extractor.GetAffects(9);
-    StmtNumList expected_result_5 = StmtNumList{};
+    VertexSet test_result_5 = extractor.GetAffects(9);
+    VertexSet expected_result_5 = VertexSet{};
     Assert::IsTrue(test_result_5 == expected_result_5);
 
     // Stmt 8 is a while stmt
-    StmtNumList test_result_6 = extractor.GetAffects(8);
-    StmtNumList expected_result_6 = StmtNumList{};
+    VertexSet test_result_6 = extractor.GetAffects(8);
+    VertexSet expected_result_6 = VertexSet{};
     Assert::IsTrue(test_result_6 == expected_result_6);
 
     // Stmt is not found in program
-    StmtNumList test_result_7 = extractor.GetAffects(55);
-    StmtNumList expected_result_7 = StmtNumList{};
+    VertexSet test_result_7 = extractor.GetAffects(55);
+    VertexSet expected_result_7 = VertexSet{};
     Assert::IsTrue(test_result_7 == expected_result_7);
   }
   TEST_METHOD(GetAffectedByWhileInIf) {
     PqlExtractor extractor = PqlExtractor(&pkb3);
 
     // Positives**************************************
-    StmtNumList test_result_1 = extractor.GetAffectedBy(15);
-    StmtNumList expected_result_1 = StmtNumList{6, 5, 3, 1, 14, 11, 9, 7};
+    VertexSet test_result_1 = extractor.GetAffectedBy(15);
+    VertexSet expected_result_1 = VertexSet{6, 5, 3, 1, 14, 11, 9, 7};
     Assert::IsTrue(expected_result_1 == test_result_1);
 
-    StmtNumList test_result_2 = extractor.GetAffectedBy(12);
-    StmtNumList expected_result_2 = StmtNumList{12, 9};
+    VertexSet test_result_2 = extractor.GetAffectedBy(12);
+    VertexSet expected_result_2 = VertexSet{12, 9};
     Assert::IsTrue(expected_result_2 == test_result_2);
 
-    StmtNumList test_result_3 = extractor.GetAffectedBy(6);
-    StmtNumList expected_result_3 = StmtNumList{5};
+    VertexSet test_result_3 = extractor.GetAffectedBy(6);
+    VertexSet expected_result_3 = VertexSet{5};
     Assert::IsTrue(expected_result_3 == test_result_3);
 
-    StmtNumList test_result_4 = extractor.GetAffectedBy(11);
-    StmtNumList expected_result_4 = StmtNumList{12};
+    VertexSet test_result_4 = extractor.GetAffectedBy(11);
+    VertexSet expected_result_4 = VertexSet{12};
     Assert::IsTrue(expected_result_4 == test_result_4);
 
     // Negatives**************************************
 
     // First statement is not affected by any other statement
-    StmtNumList test_result_5 = extractor.GetAffectedBy(1);
-    StmtNumList expected_result_5 = StmtNumList{};
+    VertexSet test_result_5 = extractor.GetAffectedBy(1);
+    VertexSet expected_result_5 = VertexSet{};
     Assert::IsTrue(expected_result_5 == test_result_5);
 
     // If statement
-    StmtNumList test_result_6 = extractor.GetAffectedBy(4);
-    StmtNumList expected_result_6 = StmtNumList{};
+    VertexSet test_result_6 = extractor.GetAffectedBy(4);
+    VertexSet expected_result_6 = VertexSet{};
     Assert::IsTrue(expected_result_6 == test_result_6);
 
     // Stmt 7 not affected by any other statement
-    StmtNumList test_result_7 = extractor.GetAffectedBy(7);
-    StmtNumList expected_result_7 = StmtNumList{};
+    VertexSet test_result_7 = extractor.GetAffectedBy(7);
+    VertexSet expected_result_7 = VertexSet{};
     Assert::IsTrue(expected_result_7 == test_result_7);
 
     // Additional test: all vars modified by non assignment statement before
     // reaching an affecting assignment statement
     extractor = PqlExtractor(&pkb6);
-    StmtNumList test_result_8 = extractor.GetAffectedBy(6);
-    StmtNumList expected_result_8 = StmtNumList{};
+    VertexSet test_result_8 = extractor.GetAffectedBy(6);
+    VertexSet expected_result_8 = VertexSet{};
     Assert::IsTrue(expected_result_8 == test_result_8);
   }
 
@@ -522,33 +522,33 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives**************************************
-    StmtNumList test_result_1 = extractor.GetAffectedBy(9);
-    StmtNumList expected_result_1 = StmtNumList{4, 6};
+    VertexSet test_result_1 = extractor.GetAffectedBy(9);
+    VertexSet expected_result_1 = VertexSet{4, 6};
     Assert::IsTrue(expected_result_1 == test_result_1);
 
-    StmtNumList test_result_2 = extractor.GetAffectedBy(12);
-    StmtNumList expected_result_2 = StmtNumList{8, 4, 6};
+    VertexSet test_result_2 = extractor.GetAffectedBy(12);
+    VertexSet expected_result_2 = VertexSet{8, 4, 6};
     Assert::IsTrue(expected_result_2 == test_result_2);
 
-    StmtNumList test_result_3 = extractor.GetAffectedBy(4);
-    StmtNumList expected_result_3 = StmtNumList{4, 6};
+    VertexSet test_result_3 = extractor.GetAffectedBy(4);
+    VertexSet expected_result_3 = VertexSet{4, 6};
     Assert::IsTrue(expected_result_3 == test_result_3);
 
     // Negatives**************************************
 
     // Print statement
-    StmtNumList test_result_4 = extractor.GetAffectedBy(5);
-    StmtNumList expected_result_4 = StmtNumList{};
+    VertexSet test_result_4 = extractor.GetAffectedBy(5);
+    VertexSet expected_result_4 = VertexSet{};
     Assert::IsTrue(expected_result_4 == test_result_4);
 
     // RHS var of stmt 8 is modified by statement before
-    StmtNumList test_result_5 = extractor.GetAffectedBy(8);
-    StmtNumList expected_result_5 = StmtNumList{};
+    VertexSet test_result_5 = extractor.GetAffectedBy(8);
+    VertexSet expected_result_5 = VertexSet{};
     Assert::IsTrue(expected_result_5 == test_result_5);
 
     // While statement
-    StmtNumList test_result_6 = extractor.GetAffectedBy(1);
-    StmtNumList expected_result_6 = StmtNumList{};
+    VertexSet test_result_6 = extractor.GetAffectedBy(1);
+    VertexSet expected_result_6 = VertexSet{};
     Assert::IsTrue(expected_result_6 == test_result_6);
   }
 

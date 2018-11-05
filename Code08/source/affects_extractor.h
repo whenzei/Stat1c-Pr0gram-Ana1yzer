@@ -26,9 +26,9 @@ class AffectsExtractor {
 
   bool EvaluateIsAffected(StmtNum stmt, bool is_bip);
 
-  StmtNumList EvaluateGetAffects(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
 
-  StmtNumList EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
 
   /* SETTER METHODS */
   // Sets the affects_table_ and affected_by_table_ of this class
@@ -73,11 +73,11 @@ class AffectsExtractor {
   // @params: curr the current vertex
   // @params: affects_var the LHS of an assignment statement to check if it
   // affects other statements
-  // @params: res_list the list of all StmtNum that is affected by affects_var
+  // @params: res_list the set of all StmtNum that is affected by affects_var
   // @params: CFG* the pointer to the CFG to run DFS on
   // @params: VisitedMap* the map to keep track of visited vertices
   // @return: there is no return value as pass by reference is used for res_list
-  void DfsGetAffects(Vertex curr, VarIndex affects_var, StmtNumList* res_list,
+  void DfsGetAffects(Vertex curr, VarIndex affects_var, VertexSet* res_list,
                      CFG* cfg, VisitedMap* visited);
 
   // @params: curr the current vertex
@@ -85,12 +85,12 @@ class AffectsExtractor {
   // used by the statement of concern)
   // @params: affected_used_vars the set of variables already affected in the
   // current path
-  // @params: res_list the list of all StmtNum that is affecting the rhs_vars
+  // @params: res_list the set of all StmtNum that is affecting the rhs_vars
   // @params: CFG* the pointer to the CFG to run DFS on
   // @params: VisitedMap* the map to keep track of visited vertices
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
-                        VarIndexSet affected_used_vars, StmtNumList* res_list,
+                        VarIndexSet affected_used_vars, VertexSet* res_list,
                         CFG* cfg, VisitedMap* visited);
 
   // Helper to populate the AffectsTable and AffectedByTable using DFS
@@ -125,10 +125,10 @@ class AffectsExtractor {
   bool IsAffected(StmtNum stmt, bool is_bip = false);
 
   // @returns a list of n that Affects(stmt_1, n) holds true
-  StmtNumList GetAffects(StmtNum stmt_1, bool is_bip = false);
+  VertexSet GetAffects(StmtNum stmt_1, bool is_bip = false);
 
   // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
+  VertexSet GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
 
   // @returns set of all statements stmt such that Affects(stmt, _) holds true
   VertexSet GetAllAffects(bool is_bip = false);

@@ -246,25 +246,25 @@ bool AffectsExtractor::DfsIsAffected(Vertex curr, VarIndexSet used_vars,
 
 /**** Affects(const, syn) methods ****/
 
-StmtNumList AffectsExtractor::GetAffects(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::GetAffects(StmtNum stmt, bool is_bip) {
   // already pre-cached
   if (!is_bip && has_set_affects_tables_) {
-    return affects_table_.GetNeighboursList(stmt);
+    return affects_table_.GetNeighboursSet(stmt);
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetNeighboursList(stmt);
+    return affects_bip_table_.GetNeighboursSet(stmt);
   }
 
   // not pre-cached, faster to run dfs rather than retrieve table
   return EvaluateGetAffects(stmt, is_bip);
 }
 
-StmtNumList AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
-    return StmtNumList();
+    return VertexSet();
   }
 
   CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p);
@@ -272,7 +272,7 @@ StmtNumList AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
   VertexList neighbours = cfg->GetNeighboursList(stmt);
   VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
 
-  StmtNumList res_list = StmtNumList();
+  VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
     DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &VisitedMap());
   }
@@ -281,7 +281,7 @@ StmtNumList AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
 }
 
 void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
-                                     StmtNumList* res_list, CFG* cfg,
+                                     VertexSet* res_list, CFG* cfg,
                                      VisitedMap* visited) {
   if (visited->count(curr)) {
     return;
@@ -292,7 +292,7 @@ void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
 
   if (curr_stmt_type == StmtType::kAssign) {
     if (pkb_->IsUsedByS(curr, affects_var)) {
-      res_list->push_back(curr);
+      res_list->emplace(curr);
     }
   }
 
@@ -310,25 +310,25 @@ void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
 
 /**** Affects(syn, const) methods ****/
 
-StmtNumList AffectsExtractor::GetAffectedBy(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::GetAffectedBy(StmtNum stmt, bool is_bip) {
   // already pre-cached
   if (!is_bip && has_set_affects_tables_) {
-    return affected_by_table_.GetNeighboursList(stmt);
+    return affected_by_table_.GetNeighboursSet(stmt);
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetNeighboursList(stmt);
+    return affected_by_bip_table_.GetNeighboursSet(stmt);
   }
 
   // not pre-cached, faster to run dfs rather than retrieve table
   return EvaluateGetAffectedBy(stmt, is_bip);
 }
 
-StmtNumList AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
-    return StmtNumList();
+    return VertexSet();
   }
 
   CFG* cfg = is_bip ? pkb_->GetReverseProgramCFG() : pkb_->GetReverseCFG(p);
@@ -337,7 +337,7 @@ StmtNumList AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
   VarIndexSet used_vars = VarIndexSet(var_indices.begin(), var_indices.end());
 
-  StmtNumList res_list = StmtNumList();
+  VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
     DfsGetAffectedBy(neighbour, used_vars, VarIndexSet(), &res_list, cfg,
                      &VisitedMap());
@@ -348,7 +348,7 @@ StmtNumList AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
 
 void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                                         VarIndexSet affected_used_vars,
-                                        StmtNumList* res_list, CFG* cfg,
+                                        VertexSet* res_list, CFG* cfg,
                                         VisitedMap* visited) {
   if (visited->count(curr)) {
     return;
@@ -367,7 +367,7 @@ void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
     // used_vars, that has not been modified before
     if (used_vars.count(curr_modified_var) &&
         affected_used_vars.count(curr_modified_var) == 0) {
-      res_list->push_back(curr);
+      res_list->emplace(curr);
       affected_used_vars.emplace(curr_modified_var);
       has_affects = true;
     }
