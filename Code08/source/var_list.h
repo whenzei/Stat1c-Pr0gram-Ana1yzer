@@ -8,6 +8,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "pql_global.h"
+
 using std::make_pair;
 using std::pair;
 using std::string;
@@ -18,20 +20,29 @@ using std::vector;
 using VarName = string;
 using VarIndex = int;
 using VarIndexList = vector<VarIndex>;
+using VarIndexSet = unordered_set<VarIndex>;
 using VarIndexPairList = vector<pair<VarIndex, VarIndex>>;
 using VarNameSet = unordered_set<VarName>;
 using VarIndexMap = unordered_map<VarName, VarIndex>;
 using IndexVarMap = unordered_map<VarIndex, VarName>;
+using StmtNum = int;
+using StmtVarMap = unordered_map<StmtNum, VarIndex>;
 
 // The variable list class for the PKB component
 // Used to store variable names that are passed into PKB from the parser
 class VarList {
   VarIndexList var_index_list_;
   VarIndexPairList var_index_twin_list_;
-  // TODO: Depending on PQL's preferences, might have to add below
-  // a list of Proc Indices and just return the entire list.
   VarIndexMap var_index_map_;
   IndexVarMap index_var_map_;
+  StmtVarMap read_var_map_;
+  VarIndexList read_var_list_;
+  VarIndexPairList read_var_twin_list_;
+  VarIndexSet read_var_set_;
+  StmtVarMap print_var_map_;
+  VarIndexList print_var_list_;
+  VarIndexSet print_var_set_;
+  VarIndexPairList print_var_twin_list_;
 
  private:
   // Internal variable to assign new variables' indices
@@ -50,6 +61,8 @@ class VarList {
   // @return -1 if variable name already exists in the variable list
   int InsertVarName(VarName var_name);
 
+  void InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type, StmtNum stmt_num);
+
   // @return true if var_id is in the var list
   bool IsVarIndex(VarIndex var_id);
 
@@ -67,6 +80,32 @@ class VarList {
 
   // @returns the corresponding var name index
   VarIndex GetVarIndex(VarName var_name);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  VarIndex GetReadVar(StmtNum stmt_num);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  VarIndex GetPrintVar(StmtNum stmt_num);
+
+  // @returns true if var_name is modified in any read stmt
+  bool IsReadVar(VarIndex var_id);
+
+  // @returns true if var_name is used in any print stmt
+  bool IsPrintVar(VarIndex var_id);
+
+  // @returns a list of all variables modified in some read stmt
+  VarIndexList GetAllReadVar();
+
+  // @returns a list of all variables used in some print stmt
+  VarIndexList GetAllPrintVar();
+
+  // @returns a list of all variables modified in some read stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllReadVarTwin();
+
+  // @returns a list of all variables used in some print stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllPrintVarTwin();
 };
 
 #endif !SPA_VAR_LIST_H

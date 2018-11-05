@@ -60,6 +60,34 @@ VarIndex PKB::GetVarIndex(VarName var_name) {
   return var_list_.GetVarIndex(var_name);
 }
 
+VarIndex PKB::GetReadVar(StmtNum stmt_num) {
+  return var_list_.GetReadVar(stmt_num);
+}
+
+VarIndex PKB::GetPrintVar(StmtNum stmt_num) {
+  return var_list_.GetPrintVar(stmt_num);
+}
+
+bool PKB::IsReadVar(VarName var_name) {
+  return var_list_.IsReadVar(GetVarIndex(var_name));
+}
+
+bool PKB::IsPrintVar(VarName var_name) {
+  return var_list_.IsPrintVar(GetVarIndex(var_name));
+}
+
+VarIndexList PKB::GetAllReadVar() { return var_list_.GetAllReadVar(); }
+
+VarIndexList PKB::GetAllPrintVar() { return var_list_.GetAllPrintVar(); }
+
+VarIndexPairList PKB::GetAllReadVarTwin() {
+  return var_list_.GetAllReadVarTwin();
+}
+
+VarIndexPairList PKB::GetAllPrintVarTwin() {
+  return var_list_.GetAllPrintVarTwin();
+}
+
 ConstValueList PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
 }
@@ -127,14 +155,15 @@ void PKB::InsertIfStmt(IfStmtData* stmt_data) {
 void PKB::InsertReadStmt(ReadStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kRead)) {
     VarName modified_var = stmt_data->GetModifiedVariable();
-    HandleInsertVariable(modified_var);
+    HandleInsertVariable(modified_var, StmtType::kRead,
+                         stmt_data->GetStmtNum());
   }
 }
 
 void PKB::InsertPrintStmt(PrintStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kPrint)) {
     VarName used_var = stmt_data->GetUsedVariable();
-    HandleInsertVariable(used_var);
+    HandleInsertVariable(used_var, StmtType::kPrint, stmt_data->GetStmtNum());
   }
 }
 
@@ -732,8 +761,8 @@ void PKB::HandleInsertVariables(VarNameSet var_set) {
 }
 
 // just a single variable
-void PKB::HandleInsertVariable(VarName variable) {
-  var_list_.InsertVarName(variable);
+void PKB::HandleInsertVariable(VarName variable, StmtType stmt_type, StmtNum stmt_num) {
+  var_list_.InsertVarName(variable, stmt_type, stmt_num);
 }
 
 void PKB::HandleInsertConstants(ConstValueSet constants) {

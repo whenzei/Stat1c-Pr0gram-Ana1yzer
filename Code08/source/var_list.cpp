@@ -14,6 +14,30 @@ int VarList::InsertVarName(VarName var_name) {
   return -1;
 }
 
+void VarList::InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type,
+                           StmtNum stmt_num) {
+  VarIndex var_id = InsertVarName(var_name);
+  if (var_id == -1) {
+    var_id = GetVarIndex(var_name);
+  }
+  switch (stmt_type) {
+    case PqlDeclarationEntity::kRead:
+      read_var_map_[stmt_num] = var_id;
+      if (read_var_set_.insert(var_id).second) {
+        read_var_list_.push_back(var_id);
+        read_var_twin_list_.push_back(make_pair(var_id, var_id));
+      }
+      break;
+    case PqlDeclarationEntity::kPrint:
+      print_var_map_[stmt_num] = var_id;
+      if (print_var_set_.insert(var_id).second) {
+        print_var_list_.push_back(var_id);
+        print_var_twin_list_.push_back(make_pair(var_id, var_id));
+      }
+      break;
+  }
+}
+
 VarIndexList VarList::GetAllVarIndices() { return var_index_list_; }
 
 bool VarList::IsVarIndex(VarIndex var_id) {
@@ -47,3 +71,37 @@ VarIndex VarList::GetVarIndex(VarName var_name) {
     return VarIndex();
   }
 }
+
+VarIndex VarList::GetReadVar(StmtNum stmt_num) {
+  StmtVarMap::iterator iter = read_var_map_.find(stmt_num);
+  if (iter != read_var_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarIndex();
+  }
+}
+
+VarIndex VarList::GetPrintVar(StmtNum stmt_num) {
+  StmtVarMap::iterator iter = print_var_map_.find(stmt_num);
+  if (iter != print_var_map_.end()) {
+    return (*iter).second;
+  } else {
+    return VarIndex();
+  }
+}
+
+bool VarList::IsReadVar(VarIndex var_id) {
+  return read_var_set_.find(var_id) != read_var_set_.end();
+}
+
+bool VarList::IsPrintVar(VarIndex var_id) {
+  return print_var_set_.find(var_id) != print_var_set_.end();
+}
+
+VarIndexList VarList::GetAllReadVar() { return read_var_list_; }
+
+VarIndexList VarList::GetAllPrintVar() { return print_var_list_; }
+
+VarIndexPairList VarList::GetAllReadVarTwin() { return read_var_twin_list_; }
+
+VarIndexPairList VarList::GetAllPrintVarTwin() { return print_var_twin_list_; }

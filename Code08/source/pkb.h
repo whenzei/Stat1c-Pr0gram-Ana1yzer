@@ -52,7 +52,7 @@ class PKB {
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
   void HandleInsertVariables(VarNameSet var_set);
-  void HandleInsertVariable(VarName variable);
+  void HandleInsertVariable(VarName variable, StmtType stmt_type, StmtNum stmt_num);
   void HandleInsertConstants(ConstValueSet constants);
   void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 
@@ -105,6 +105,32 @@ class PKB {
 
   // @returns the corresponding var name index
   VarIndex GetVarIndex(VarName var_name);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  VarIndex GetReadVar(StmtNum stmt_num);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  VarIndex GetPrintVar(StmtNum stmt_num);
+
+  // @returns true if var_name is modified in any read stmt
+  bool IsReadVar(VarName var_name);
+
+  // @returns true if var_name is used in any print stmt
+  bool IsPrintVar(VarName var_name);
+
+  // @returns a list of all variables modified in some read stmt
+  VarIndexList GetAllReadVar();
+
+  // @returns a list of all variables used in some print stmt
+  VarIndexList GetAllPrintVar();
+
+  // @returns a list of all variables modified in some read stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllReadVarTwin();
+
+  // @returns a list of all variables used in some print stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllPrintVarTwin();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
