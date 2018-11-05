@@ -535,12 +535,6 @@ class PKB {
   // empty)
   ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
 
-  // Finds and returns all indices of callees for given procedure.
-  // @params caller procedure name
-  // @returns a list containing all callees' indices for given proc (can be
-  // empty)
-  ProcIndexList GetCalleeT(ProcName caller_proc);
-
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure index
   // @returns a list containing all direct callers' indices for given proc (can

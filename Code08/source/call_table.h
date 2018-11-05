@@ -38,7 +38,6 @@ class CallTable {
   ProcIndexPairList
       callee_twin_list_;     // stores procs called by any other proc (in pairs)
   ProcIndexSet callee_set_;  // stores procs called by any other proc
-  ProcList proc_list_;
 
  public:
   // PROC-PROC RELATIONSHIP INSERT

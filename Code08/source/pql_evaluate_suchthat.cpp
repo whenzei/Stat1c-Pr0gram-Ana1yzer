@@ -285,7 +285,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (pkb_->GetCalleeT(left_name).empty()) {
+      if (pkb_->GetCalleeT(pkb_->GetProcIndex(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirect caller " << endl;
       }
@@ -315,7 +315,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = pkb_->GetCalleeT(left_name);
+      result_list = pkb_->GetCalleeT(pkb_->GetProcIndex(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirect caller " << endl;

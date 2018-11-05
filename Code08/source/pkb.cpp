@@ -528,15 +528,22 @@ StmtVarPairList PKB::GetAllIfPatternPair() {
 
 bool PKB::InsertIndirectCallRelationship(ProcName caller_proc,
                                          ProcName callee_proc) {
-  return call_table_.InsertIndirectCallRelationship(caller_proc, callee_proc);
+  proc_list_.InsertProcName(caller_proc);
+  proc_list_.InsertProcName(callee_proc);
+  return call_table_.InsertIndirectCallRelationship(GetProcIndex(caller_proc),
+                                                    GetProcIndex(callee_proc));
 }
 
 bool PKB::InsertDirectCallRelationship(ProcName caller_proc,
                                        ProcName callee_proc) {
-  return call_table_.InsertDirectCallRelationship(caller_proc, callee_proc);
+  proc_list_.InsertProcName(caller_proc);
+  proc_list_.InsertProcName(callee_proc);
+  return call_table_.InsertDirectCallRelationship(GetProcIndex(caller_proc),
+                                                  GetProcIndex(callee_proc));
 }
 
 void PKB::InsertCalls(StmtNum stmt_num, ProcName callee_proc) {
+  proc_list_.InsertProcName(callee_proc);
   call_table_.InsertCalls(stmt_num, GetProcIndex(callee_proc));
 }
 
@@ -553,11 +560,11 @@ ProcIndexList PKB::GetCallee(ProcIndex caller_proc_id) {
 }
 
 ProcNameList PKB::GetCallee(ProcName caller_proc) {
-  return call_table_.GetCallee(caller_proc);
-}
-
-ProcIndexList PKB::GetCalleeT(ProcName caller_proc) {
-  return call_table_.GetCalleeT(GetProcIndex(caller_proc));
+  ProcNameList proc_name_list;
+  for (ProcIndex& proc_id : call_table_.GetCallee(GetProcIndex(caller_proc))) {
+    proc_name_list.push_back(GetProcName(proc_id));
+  }
+  return proc_name_list;
 }
 
 ProcIndexList PKB::GetCalleeT(ProcIndex caller_proc_id) {
@@ -697,9 +704,13 @@ StmtNumList PKB::GetAllDominating() { return GetAllStmt(); }
 
 StmtNumList PKB::GetAllDominated() { return GetAllStmt(); }
 
-StmtNumPairList PKB::GetAllDominatesPairs() { return dominates_table_.GetAllDominatesPairs(); }
+StmtNumPairList PKB::GetAllDominatesPairs() {
+  return dominates_table_.GetAllDominatesPairs();
+}
 
-bool PKB::HasDominatesRelationship() { return dominates_table_.HasDominatesRelationship(); }
+bool PKB::HasDominatesRelationship() {
+  return dominates_table_.HasDominatesRelationship();
+}
 
 /***********************************
 **** Private methods begin here ****
