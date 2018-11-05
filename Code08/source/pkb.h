@@ -398,6 +398,9 @@ class PKB {
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
+  // @returns true if Modifies(stmt_num, var_index) holds
+  bool IsModifiedByS(StmtNum stmt_num, VarIndex var_index);
+
   // @returns true if Modifies(proc_name, var_name) holds
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
@@ -463,6 +466,9 @@ class PKB {
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
+
+  // @returns true if Uses(stmt_num, var_index) holds
+  bool IsUsedByS(StmtNum stmt_num, VarIndex var_index);
 
   // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
@@ -631,6 +637,10 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
+  // @returns procedure name called at given statement number if exists, empty
+  // string otherwise
+  ProcName GetCalledProcedure(StmtNum stmt_num);
+
   /************************
    * Next Table Functions *
    ************************/
@@ -662,21 +672,51 @@ class PKB {
   // @returns true if Next(_, _) holds
   bool HasNextRelationship();
 
-  // @returns the cfg belonging to a specified procedure
+  // @returns the cfg belonging to the given procedure
   CFG* GetCFG(ProcName proc_name);
+
+  // @returns the reverse cfg belonging to the given procedure
+  CFG* GetReverseCFG(ProcName proc_name);
 
   // @returns the combined cfg of the program
   CFG* GetCombinedCFG();
+
+  // @returns the reversed combined cfg of the program
+  CFG* GetReverseCombinedCFG();
 
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
 
   /*****************************
+   * AffectsBip Table Functions *
+   *****************************/
+  // Set the given cfg as the program CFG
+  // Solely used by the Design Extractor class
+  void SetProgramCFG(const CFG& program_cfg);
+
+  // Set the given cfg as the reversed program CFG
+  // Solely used by the Design Extractor class
+  void SetReverseProgramCFG(const CFG& reversed_program_cfg);
+
+  // Get the program CFG, with call statements removed and the call
+  // statements' previous statements connected to the called procedure's root,
+  // and the terminal nodes of the called procedure connected to the neighbours
+  // of the (removed) call statement node
+  // @returns the program CFG
+  CFG* GetProgramCFG();
+
+  // Similar to GetProgramCFG, with the only difference being the direction of
+  // the edges are reversed
+  // @returns the reversed program CFG
+  CFG* GetReverseProgramCFG();
+
+  /*****************************
    * Dominates Table Functions *
    *****************************/
 
-  // inserts dominates relationships between dominating_vertex and dominated_vertices
+  // inserts dominates relationships between dominating_vertex and
+  // dominated_vertices
   void InsertDominates(Vertex dominating_vertex, VertexSet dominated_vertices);
 
   // @returns true if Dominates(dominating_stmt, dominated_stmt) holds

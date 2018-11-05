@@ -424,6 +424,10 @@ bool PKB::IsModifiedByS(StmtNum stmt_num, VarName var_name) {
   return modifies_table_.IsModifiedByS(stmt_num, GetVarIndex(var_name));
 }
 
+bool PKB::IsModifiedByS(StmtNum stmt_num, VarIndex var_index) {
+  return modifies_table_.IsModifiedByS(stmt_num, var_index);
+}
+
 bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
   return modifies_table_.IsModifiedByP(GetProcIndex(proc_name),
                                        GetVarIndex(var_name));
@@ -491,6 +495,10 @@ ProcIndexList PKB::GetUsingProc(VarName var_name) {
 
 bool PKB::IsUsedByS(StmtNum stmt_num, VarName var_name) {
   return uses_table_.IsUsedByS(stmt_num, GetVarIndex(var_name));
+}
+
+bool PKB::IsUsedByS(StmtNum stmt_num, VarIndex var_index) {
+  return uses_table_.IsUsedByS(stmt_num, var_index);
 }
 
 bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
@@ -674,6 +682,10 @@ bool PKB::IsCalledProc(ProcIndex callee_proc_id) {
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
+ProcName PKB::GetCalledProcedure(StmtNum stmt_num) {
+  return call_table_.GetCalledProcedure(stmt_num);
+}
+
 bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
   return next_table_.IsNext(previous_stmt, next_stmt);
 }
@@ -702,7 +714,15 @@ bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
 
 CFG* PKB::GetCFG(ProcName proc_name) { return next_table_.GetCFG(proc_name); }
 
+CFG* PKB::GetReverseCFG(ProcName proc_name) {
+  return next_table_.GetReverseCFG(proc_name);
+}
+
 CFG* PKB::GetCombinedCFG() { return next_table_.GetCombinedCFG(); }
+
+CFG* PKB::GetReverseCombinedCFG() {
+  return next_table_.GetReverseCombinedCFG();
+}
 
 void PKB::NotifyParseEnd() {
   DesignExtractor de = DesignExtractor(this);
@@ -710,6 +730,18 @@ void PKB::NotifyParseEnd() {
   de.CheckCyclicCalls();
   de.UpdatePkb();
 }
+
+void PKB::SetProgramCFG(const CFG& program_cfg) {
+  next_table_.SetProgramCFG(program_cfg);
+}
+
+void PKB::SetReverseProgramCFG(const CFG& reversed_program_cfg) {
+  next_table_.SetReverseProgramCFG(reversed_program_cfg);
+}
+
+CFG* PKB::GetProgramCFG() { return next_table_.GetProgramCFG(); }
+
+CFG* PKB::GetReverseProgramCFG() { return next_table_.GetReverseProgramCFG(); }
 
 void PKB::InsertDominates(Vertex dominating_vertex,
                           VertexSet dominated_vertices) {
@@ -751,6 +783,9 @@ bool PKB::HasDominatesRelationship() {
 bool PKB::HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type) {
   StmtNum stmt_num = stmt_data->GetStmtNum();
   ProcIndex proc_index = stmt_data->GetProcOfStmt();
+
+  // add stmt as node into CFG
+  next_table_.InsertStatement(GetProcName(proc_index), stmt_num);
 
   // stmt already inserted into stmt_table_, no further processing required
   if (!stmt_table_.InsertStmt(stmt_num, stmt_type, proc_index)) {
