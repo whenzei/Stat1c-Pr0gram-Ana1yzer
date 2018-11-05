@@ -123,7 +123,7 @@ public:
 
   //**************** Affects* *********************************
 
-// @returns true if Affects*(stmt_1, stmt_2) holds
+  // @returns true if Affects*(stmt_1, stmt_2) holds
   bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns a list of stmt numbers a where Affects*(stmt, a) holds
@@ -161,16 +161,16 @@ public:
   //****************** AffectsBip* *******************************
 
   // @returns true if stmt_1 affects* stmt_2 across procedures
-  bool IsAffectsTBip(StmtNum stmt_1, StmtNum stmt_2);
+  bool IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2);
 
   // @returns a list of stmts n that make Affects*(stmt, n) true across procedures
-  StmtNumList GetAffectsTBip(StmtNum stmt);
+  StmtNumList GetAffectsBipT(StmtNum stmt);
 
   // @returns a list of stmts n that make Affects*(n, stmt) true across procedures
-  StmtNumList GetAffectedByTBip(StmtNum stmt);
+  StmtNumList GetAffectedByBipT(StmtNum stmt);
 
   // @returns a hashmap of <key> StmtNum <value> set of all affected* StmtNums 
-  AffectsTable GetAffectsTBipTable();
+  AffectsTable GetAffectsBipTTable();
 };
 
 #endif

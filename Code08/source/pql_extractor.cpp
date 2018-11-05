@@ -501,19 +501,19 @@ AffectsTable PqlExtractor::GetAffectsBipTable() {
  * AffectsBip* Extractor Functions *
  **********************************/
 
-bool PqlExtractor::IsAffectsTBip(StmtNum stmt_1, StmtNum stmt_2) {
+bool PqlExtractor::IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2) {
   return IsAffectsT(stmt_1, stmt_2, true);
 }
 
-StmtNumList PqlExtractor::GetAffectsTBip(StmtNum stmt_1) {
+StmtNumList PqlExtractor::GetAffectsBipT(StmtNum stmt_1) {
   return GetAffectsT(stmt_1, true);
 }
 
-StmtNumList PqlExtractor::GetAffectedByTBip(StmtNum stmt_num) {
+StmtNumList PqlExtractor::GetAffectedByBipT(StmtNum stmt_num) {
   return StmtNumList();
 }
 
-AffectsTable PqlExtractor::GetAffectsTBipTable() {
+AffectsTable PqlExtractor::GetAffectsBipTTable() {
   AffectsTable affects_table = GetAffectsBipTable();
   AffectsTable affects_t_table;
 
