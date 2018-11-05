@@ -70,7 +70,7 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
       for (VarIndex modified_var : pkb_->GetModifiedVarP(proc_id)) {
         pkb_->InsertModifiesS(call_stmt, modified_var);
         for (StmtNum parent : parent_stmts) {
-          pkb_->InsertUsesS(parent, modified_var);
+          pkb_->InsertModifiesS(parent, modified_var);
         }
         // update the procedure that contains this call statement
         for (ProcIndex caller_proc : caller_procs) {
