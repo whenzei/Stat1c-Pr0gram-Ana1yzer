@@ -31,7 +31,6 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
-  SetQueryFlag(true);
   FinalResult final_results;
 
   PqlEvaluateWith with_evaluator;
@@ -84,6 +83,10 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           break;
         }
       }  // end one group iteration
+      // If the clause is false already, no need to continue evaluating
+      if (!IsValidClause()) {
+        break;
+      }
       if (!pql_result_.GetResultTable().empty()) {
         if (group.GetUsesSelection()) {
           // Get the result table and column info
@@ -100,8 +103,6 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         pql_result_.SetResultTable(new_table);
         pql_result_.SetColumnCount(0);
         pql_result_.ClearColumnHeader();
-      } else {
-        SetQueryFlag(false);
       }
     }  // end all group iteration
        // Go to projector here
@@ -186,13 +187,7 @@ void PqlEvaluator::SetClauseFlag(bool clause_flag) {
   this->clause_flag_ = clause_flag;
 }
 
-void PqlEvaluator::SetQueryFlag(bool query_flag) {
-  this->query_flag_ = query_flag;
-}
-
 bool PqlEvaluator::IsValidClause() { return clause_flag_; }
-
-bool PqlEvaluator::IsValidQuery() { return query_flag_; }
 
 void PqlEvaluator::SetPqlResult(PqlResult pql_result) {
   this->pql_result_ = pql_result;
