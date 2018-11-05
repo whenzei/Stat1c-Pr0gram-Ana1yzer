@@ -29,6 +29,7 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
 
   AddNode(from);
   AddNode(to);
+  parent_vertices_.emplace(from);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
@@ -69,8 +70,11 @@ void Graph::RemoveNode(const Vertex &vertex) {
     adj_set_.erase(vertex);
     adj_list_.erase(vertex);
     all_vertices_.erase(vertex);
+    parent_vertices_.erase(vertex);
   }
 }
+
+VertexSet Graph::GetParentVertices() { return parent_vertices_; }
 
 bool Graph::IsEmpty() { return size_ == 0; }
 
