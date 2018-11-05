@@ -43,12 +43,11 @@ void CallTable::InsertCalls(StmtNum stmt_num, ProcIndex callee_proc) {
   stmt_to_call_table_[stmt_num] = callee_proc;
 }
 
-ProcName CallTable::GetCalledProcedure(StmtNum stmt_num) {
+ProcIndex CallTable::GetCalledProcedure(StmtNum stmt_num) {
   if (stmt_to_call_table_.count(stmt_num)) {
-    return proc_list_.GetProcName(stmt_to_call_table_[stmt_num]);
+    return stmt_to_call_table_[stmt_num];
   }
-
-  return ProcName();
+  return -1;
 }
 
 StmtNumList CallTable::GetCallingStmts(ProcIndex callee_proc) {

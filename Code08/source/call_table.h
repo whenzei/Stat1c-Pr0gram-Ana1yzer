@@ -66,7 +66,7 @@ class CallTable {
   // @params: StmtNum the stmt num to retrieve the procedure name
   // @returns procedure name called at the given statement if exists, empty
   // string otherwise
-  ProcName GetCalledProcedure(StmtNum stmt_num);
+  ProcIndex GetCalledProcedure(StmtNum stmt_num);
 
   // Finds and returns a list of stmt numbers calling the given proc.
   // @params proc name of the procedure being called
