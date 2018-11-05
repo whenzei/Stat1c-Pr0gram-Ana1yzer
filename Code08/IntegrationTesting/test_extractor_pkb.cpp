@@ -352,6 +352,88 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(GetAllAffects) {
     // test while-if loop
     PqlExtractor extractor = PqlExtractor(pkb1);
+    VertexSet actual_results_1 = extractor.GetAllAffects();
+
+    VertexSet expected_results_1;
+    expected_results_1.emplace(4);
+    expected_results_1.emplace(6);
+    expected_results_1.emplace(8);
+
+    Assert::IsTrue(expected_results_1 == actual_results_1);
+
+    // test if-while
+    extractor = PqlExtractor(pkb2);
+    VertexSet actual_results_2 = extractor.GetAllAffects();
+
+    VertexSet expected_results_2;
+    expected_results_2.emplace(1);
+    expected_results_2.emplace(6);
+    expected_results_2.emplace(7);
+    expected_results_2.emplace(10);
+    expected_results_2.emplace(12);
+
+    Assert::IsTrue(expected_results_2 == actual_results_2);
+
+    // test while-while loop
+    extractor = PqlExtractor(pkb4);
+    VertexSet actual_results_3 = extractor.GetAllAffects();
+
+    VertexSet expected_results_3;
+    expected_results_3.emplace(1);
+    expected_results_3.emplace(5);
+    expected_results_3.emplace(7);
+    expected_results_3.emplace(8);
+    expected_results_3.emplace(9);
+
+    Assert::IsTrue(expected_results_3 == actual_results_3);
+
+  }
+
+  TEST_METHOD(GetAllAffectedBy) {
+    // test while-if loop
+    PqlExtractor extractor = PqlExtractor(pkb1);
+    VertexSet actual_results_1 = extractor.GetAllAffectedBy();
+
+    VertexSet expected_results_1;
+    expected_results_1.emplace(12);
+    expected_results_1.emplace(9);
+    expected_results_1.emplace(6);
+    expected_results_1.emplace(4);
+
+    Assert::IsTrue(expected_results_1 == actual_results_1);
+
+    // test if-while
+    extractor = PqlExtractor(pkb2);
+    VertexSet actual_results_2 = extractor.GetAllAffectedBy();
+
+    VertexSet expected_results_2;
+    expected_results_2.emplace(12);
+    expected_results_2.emplace(13);
+    expected_results_2.emplace(10);
+    expected_results_2.emplace(9);
+    expected_results_2.emplace(6);
+    expected_results_2.emplace(5);
+
+    Assert::IsTrue(expected_results_2 == actual_results_2);
+
+    // test while-while loop
+    extractor = PqlExtractor(pkb4);
+    VertexSet actual_results_3 = extractor.GetAllAffectedBy();
+
+    VertexSet expected_results_3;
+    expected_results_3.emplace(12);
+    expected_results_3.emplace(5);
+    expected_results_3.emplace(7);
+    expected_results_3.emplace(8);
+    expected_results_3.emplace(9);
+    expected_results_3.emplace(3);
+
+    Assert::IsTrue(expected_results_3 == actual_results_3);
+
+  }
+  TEST_METHOD(GetAffectsTable) {
+    // test while-if loop
+    PqlExtractor extractor = PqlExtractor(pkb1);
     AffectsTable actual_results_1 = extractor.GetAffectsTable();
     AffectsTable expected_results_1;
     // variable t is modified at 4 / 6, used at 4, 6, 9, 12 without being
