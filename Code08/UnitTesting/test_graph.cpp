@@ -189,9 +189,14 @@ TEST_CLASS(TestGraph) {
     int result5 = graph.CanReach(kVertex5, kVertex6);
     Assert::IsFalse(result5);
 
+    graph.AddEdge(kVertex2, kVertex1);
+    int result6 = graph.CanReach(kVertex2, kVertex1);
+    Assert::IsTrue(result6);
+
     graph.RemoveEdge(kVertex2, kVertex5);
-    int result6 = graph.CanReach(kVertex2, kVertex3);
-    Assert::IsFalse(result6);
+    graph.RemoveEdge(kVertex2, kVertex1);
+    int result7 = graph.CanReach(kVertex2, kVertex3);
+    Assert::IsFalse(result7);
   }
 };
 }  // namespace FrontendTests

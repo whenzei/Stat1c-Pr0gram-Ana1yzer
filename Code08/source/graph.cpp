@@ -241,6 +241,11 @@ void Graph::DFS(const Vertex &start, const Vertex &to_find, VisitedMap *visited,
     return;
   }
 
+  // Base case: If already found
+  if (is_found) {
+    return;
+  }
+
   // Base case: If already visited
   if ((*visited)[start] == true) {
     return;
