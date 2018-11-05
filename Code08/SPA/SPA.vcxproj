@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\affects_extractor.cpp" />
     <ClCompile Include="..\source\call_table.cpp" />
     <ClCompile Include="..\source\design_extractor.cpp" />
     <ClCompile Include="..\source\dominates_table.cpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="..\source\pql_result.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\affects_extractor.h" />
     <ClInclude Include="..\source\call_table.h" />
     <ClInclude Include="..\source\design_extractor.h" />
     <ClInclude Include="..\source\dominates_table.h" />
