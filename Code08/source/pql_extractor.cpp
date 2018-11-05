@@ -319,12 +319,12 @@ StmtNumList PqlExtractor::GetAffectedBy(StmtNum stmt_num, bool is_bip) {
 
 VertexSet PqlExtractor::GetAllAffects() {
   AffectsTable affects_table = GetAffectsTable();
-  return affects_table.GetAllVertices();
+  return affects_table.GetParentVertices();
 }
 
 VertexSet PqlExtractor::GetAllAffectedBy() {
   AffectsTable affected_by_table = GetAffectedByTable();
-  return affected_by_table.GetAllVertices();
+  return affected_by_table.GetParentVertices();
 }
 
 AffectsTable PqlExtractor::GetAffectsTable() {
