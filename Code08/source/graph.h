@@ -85,6 +85,9 @@ class Graph {
   // @returns true if cycle exists, false otherwise
   bool HasCycle();
 
+  // @returns true if vertex 'to' can be reached from vertex 'from'
+  bool CanReach(Vertex from, Vertex to);
+
   /* GETTERS */
   // @returns size of graph
   int GetSize();

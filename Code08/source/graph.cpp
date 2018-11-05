@@ -157,6 +157,11 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
   return false;
 }
 
+bool Graph::CanReach(Vertex from, Vertex to) {
+  VertexList reachable_nodes = DFS(from);
+  return (find(reachable_nodes.begin(), reachable_nodes.end(), to) != reachable_nodes.end());
+}
+
 VertexList Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
