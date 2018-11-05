@@ -82,11 +82,21 @@ QueryResultList PqlEvaluateWith::GetSelectAllResult(
       // list
       cout << "Select all read statement." << endl;
       return pkb_->GetAllReadStmt();
+    case PqlDeclarationEntity::kReadName:
+      // Get all read stmt var from PKB and store into results
+      // list
+      cout << "Select all read var." << endl;
+      return pkb_->GetAllReadVar();
     case PqlDeclarationEntity::kPrint:
       // Get all print stmt from PKB and store into results
       // list
       cout << "Select all print statement." << endl;
       return pkb_->GetAllPrintStmt();
+    case PqlDeclarationEntity::kPrintName:
+      // Get all print var from PKB and store into results
+      // list
+      cout << "Select all print var." << endl;
+      return pkb_->GetAllPrintVar();
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
       // list
@@ -143,9 +153,15 @@ QueryResultPairList PqlEvaluateWith::GetSelectAllTwinResult(
     case PqlDeclarationEntity::kRead:
       cout << "Select all twin read statement." << endl;
       return pkb_->GetAllReadStmtTwin();
+    case PqlDeclarationEntity::kReadName:
+      cout << "Select all twin read var." << endl;
+      return pkb_->GetAllReadVarTwin();
     case PqlDeclarationEntity::kPrint:
       cout << "Select all twin print statement." << endl;
       return pkb_->GetAllPrintStmtTwin();
+    case PqlDeclarationEntity::kPrintName:
+      cout << "Select all twin print var." << endl;
+      return pkb_->GetAllPrintVarTwin();
     case PqlDeclarationEntity::kCall:
       cout << "Select all twin call statement." << endl;
       return pkb_->GetAllCallStmtTwin();
@@ -268,8 +284,33 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kRead:
       cout << "Is read?" << endl;
       if (pkb_->IsReadStmt(stoi(comparison_val))) {
-        result_list.push_back(stoi(comparison_val));
-        pql_eval->StoreClauseResultInTable(result_list, syn_name);
+        // Pair result contraint
+        QueryResultPairList result_pair;
+        // Get the related variable
+        int varindex = pkb_->GetReadVar(stoi(comparison_val));
+        // Set the related variable name by appending 0 in front
+        string var_syn_name = "0" + syn_name;
+        // Set the read stmt and it's related variable
+        result_pair.push_back(make_pair(stoi(comparison_val), varindex));
+        pql_eval->StoreClauseResultInTable(result_pair, syn_name, var_syn_name);
+      } else {
+        SetClauseFlag(false);
+      }
+      return;
+    case PqlDeclarationEntity::kReadName:
+      cout << "Is read var?" << endl;
+      if (pkb_->IsReadVar(comparison_val)) {
+        // Pair result contraint
+        QueryResultPairList result_pair;
+        // Get the related print statment
+        result_list = pkb_->GetReadStmt(comparison_val);
+        // Set the read var and it's related stmt
+        for (auto& readstmt : result_list) {
+          result_pair.push_back(
+              make_pair(var_to_index[comparison_val], readstmt));
+        }
+        pql_eval->StoreClauseResultInTable(result_pair, syn_name,
+                                           syn_name.substr(1));
       } else {
         SetClauseFlag(false);
       }
@@ -277,8 +318,33 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kPrint:
       cout << "Is print?" << endl;
       if (pkb_->IsPrintStmt(stoi(comparison_val))) {
-        result_list.push_back(stoi(comparison_val));
-        pql_eval->StoreClauseResultInTable(result_list, syn_name);
+        // Pair result contraint
+        QueryResultPairList result_pair;
+        // Get the related variable
+        int varindex = pkb_->GetPrintVar(stoi(comparison_val));
+        // Set the related variable name by appending 0 in front
+        string var_syn_name = "0" + syn_name;
+        // Set the print stmt and it's related variable
+        result_pair.push_back(make_pair(stoi(comparison_val), varindex));
+        pql_eval->StoreClauseResultInTable(result_pair, syn_name, var_syn_name);
+      } else {
+        SetClauseFlag(false);
+      }
+      return;
+    case PqlDeclarationEntity::kPrintName:
+      cout << "Is print var?" << endl;
+      if (pkb_->IsPrintVar(comparison_val)) {
+        // Pair result contraint
+        QueryResultPairList result_pair;
+        // Get the related print statment
+        result_list = pkb_->GetPrintStmt(comparison_val);
+        // Set the print var and it's related stmt
+        for (auto& printstmt : result_list) {
+          result_pair.push_back(
+              make_pair(var_to_index[comparison_val], printstmt));
+        }
+        pql_eval->StoreClauseResultInTable(result_pair, syn_name,
+                                           syn_name.substr(1));
       } else {
         SetClauseFlag(false);
       }
@@ -286,13 +352,17 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kCall:
       cout << "Is call?" << endl;
       if (pkb_->IsCallStmt(stoi(comparison_val))) {
-        string proc_name = pkb_->GetProcOfStmt(stoi(comparison_val));
+        // Pair result contraint
         QueryResultPairList result_pair;
+        // Get the related proc name
+        string proc_name = pkb_->GetProcOfStmt(stoi(comparison_val));
+        // Set the related proc name by appending 0 in front
         string proc_syn_name = "0" + syn_name;
+        // Set the call stmt and it's related proc
         result_pair.push_back(
-            make_pair(proc_to_index[proc_name], stoi(comparison_val)));
-        pql_eval->StoreClauseResultInTable(result_pair, proc_syn_name,
-                                           syn_name);
+            make_pair(stoi(comparison_val), proc_to_index[proc_name]));
+        pql_eval->StoreClauseResultInTable(result_pair, syn_name,
+                                           proc_syn_name);
       } else {
         SetClauseFlag(false);
       }
@@ -301,9 +371,12 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       cout << "Is call procname?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
         if (pkb_->IsCalledProc(proc_to_index[comparison_val])) {
-          result_list = pkb_->GetCallingStmts(proc_to_index[comparison_val]);
+          // Pair result contraint
           QueryResultPairList result_pair;
+          // Get all related call stmt
+          result_list = pkb_->GetCallingStmts(proc_to_index[comparison_val]);
           for (auto& callstmt : result_list) {
+            // Set the proc and it's related stmt
             result_pair.push_back(
                 make_pair(proc_to_index[comparison_val], callstmt));
           }
@@ -358,6 +431,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
 QueryResultPairList PqlEvaluateWith::FilterWithResult(
     QueryResultList unfiltered_result, PqlDeclarationEntity entity_type) {
   QueryResultPairList filtered_result;
+  IndexToVarProcMap index_to_var = pkb_->GetIndexToVarMapping();
 
   switch (entity_type) {
     case PqlDeclarationEntity::kProcedure:
@@ -400,11 +474,31 @@ QueryResultPairList PqlEvaluateWith::FilterWithResult(
         }
       }
       break;
+    case PqlDeclarationEntity::kReadName:
+      cout << "Filter Read var" << endl;
+      for (auto& iter : unfiltered_result) {
+        if (index_to_var.find(iter) != index_to_var.end()) {
+          if (pkb_->IsReadVar(index_to_var[iter])) {
+            filtered_result.push_back(std::make_pair(iter, iter));
+          }
+        }
+      }
+      break;
     case PqlDeclarationEntity::kPrint:
       cout << "Filter Print" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsPrintStmt(iter)) {
           filtered_result.push_back(std::make_pair(iter, iter));
+        }
+      }
+      break;
+    case PqlDeclarationEntity::kPrintName:
+      cout << "Filter Print var" << endl;
+      for (auto& iter : unfiltered_result) {
+        if (index_to_var.find(iter) != index_to_var.end()) {
+          if (pkb_->IsPrintVar(index_to_var[iter])) {
+            filtered_result.push_back(std::make_pair(iter, iter));
+          }
         }
       }
       break;
