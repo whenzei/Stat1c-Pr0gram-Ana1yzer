@@ -1,89 +1,17 @@
 #pragma once
 
-#ifndef PQL_EXTRACTOR
-#define PQL_EXTRACTOR
+#ifndef PQL_EXTRACTOR_H
+#define PQL_EXTRACTOR_H
 
-#include <stack>
+#include "affects_extractor.h"
+#include "next_extractor.h"
 
-#include "pkb.h"
-#include "pql_global.h"
-
-using std::stack;
-using VarIndexSet = unordered_set<VarIndex>;
-using AffectsTable = Graph;
-using LastModMap = unordered_map<Vertex, VarIndex>;
-using WhileLastModMap = unordered_map<Vertex, LastModMap>;
-
-// Helper class to extract information from PKB to evaluate:
-// Next*, Affects and Affects*
 class PqlExtractor {
- private:
-  PKB pkb_;
-  CFG* curr_affects_cfg_;
-  VisitedMap curr_visited_;
-
-  // Helper method
-  //@params start is the StmtNum that should be in the LHS of all pairs
-  //        res_list is passed by reference
-  void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
-
-  // @params: curr the current vertex
-  // @params: target the target vertex to reach
-  // @returns true if the current vertex can reach the target vertex without
-  // being modified by the given affects_var, false otherwise
-  bool DfsAffects(Vertex curr, Vertex target, VarIndex affects_var);
-
-  // @params: curr the current vertex
-  // @params: affects_var the variable (belonging to LHS of the assignment
-  // statement of concern)
-  // @returns true if affects_var affects any other assignment statements
-  bool DfsAffects(Vertex curr, VarIndex affects_var);
-
-  // @params: curr the current vertex
-  // @params: rhs_vars the set of variables to be affected (contains variables
-  // used by the statement of concern)
-  // @params: affected_rhs_vars the set of variables already affected in the
-  // current path
-  // @returns true if any of the rhs_vars is affected (vertex) by any other
-  // assignment statement
-  bool DfsAffected(Vertex curr, VarIndexSet rhs_vars,
-                   VarIndexSet affected_rhs_vars);
-
-  // @params: curr the current vertex
-  // @params: affects_var the LHS of an assignment statement to check if it
-  // affects other statements
-  // @params: res_list the list of all StmtNum that is affected by affects_var
-  // @return: there is no return value as pass by reference is used for res_list
-  void DfsAffects(Vertex curr, VarIndex affects_var, StmtNumList* res_list);
-
-  // @params: curr the current vertex
-  // @params: rhs_vars the set of variables to be affected (contains variables
-  // used by the statement of concern)
-  // @params: affected_rhs_vars the set of variables already affected in the
-  // current path
-  // @params: res_list the list of all StmtNum that is affecting the rhs_vars
-  void DfsAffects(Vertex curr, VarIndexSet rhs_vars,
-                  VarIndexSet affected_rhs_vars, StmtNumList* res_list);
-
-  // Helper to populate the AffectsTable and AffectedByTable using DFS
-  // @params: Vertex the vertex to start from
-  // @params: AffectsTable* affects_table the AffectsTable to populate
-  // @params: AffectsTable* affected_by_table the AffectedByTable to populate
-  // @params: LastModMap the map to keep track of where each variable was last
-  // modified
-  // @params: WhileLastModMap the map to keep track of each while statement's
-  // LastModMap
-  void DfsAllAffects(Vertex v, AffectsTable* affects_table,
-                     AffectsTable* affected_by_table, LastModMap last_mod_map,
-                     WhileLastModMap while_last_mod_map,
-                     WhileLastModMap prev_while_last_mod_map);
-
-  bool IsModifyingType(StmtType stmt_type);
-
-  void ClearAffectsGlobals();
+  AffectsExtractor ae_;
+  NextExtractor ne_;
 
  public:
-  PqlExtractor(PKB pkb);
+  PqlExtractor(PKB* pkb);
 
   //**************** Next* *********************************
 
@@ -108,24 +36,26 @@ class PqlExtractor {
   //****************** Affects *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
-  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
+  bool IsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns true if stmt affects any statement
-  bool IsAffects(StmtNum stmt, bool is_bip = false);
+  // @returns true if stmt_num affects any statement
+  bool IsAffects(StmtNum stmt_num);
 
-  // @returns true if stmt is affected by any statement
-  bool IsAffected(StmtNum stmt, bool is_bip = false);
+  // @returns true if stmt_num is affected by any statement
+  bool IsAffected(StmtNum stmt_num);
 
   // @returns a list of n that Affects(stmt_1, n) holds true
-  StmtNumList GetAffects(StmtNum stmt_1, bool is_bip = false);
+  StmtNumList GetAffects(StmtNum stmt_1);
 
   // @returns a list of n that Affects(n, stmt_num) holds true
-  StmtNumList GetAffectedBy(StmtNum stmt_num, bool is_bip = false);
+  StmtNumList GetAffectedBy(StmtNum stmt_num);
 
-  // @returns set of all statements stmt such that Affects(stmt, _) holds true
+  // @returns set of all statements stmt_num such that Affects(stmt_num, _)
+  // holds true
   VertexSet GetAllAffects();
 
-  // @returns set of all statements stmt such that Affects(_, stmt) holds true
+  // @returns set of all statements stmt_num such that Affects(_, stmt_num)
+  // holds true
   VertexSet GetAllAffectedBy();
 
   // Get the AffectsTable of the whole program
@@ -142,13 +72,13 @@ class PqlExtractor {
   // @returns true if AffectsBip(stmt_1, stmt_2) holds, else false
   bool IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns true if there is any AffectsBip(stmt, _ ) relation that holds,
+  // @returns true if there is any AffectsBip(stmt_num, _ ) relation that holds,
   // else false
-  bool IsAffectsBip(StmtNum stmt);
+  bool IsAffectsBip(StmtNum stmt_num);
 
-  // @returns true if there is any AffectsBip(_,stmt ) relation that holds, else
-  // false
-  bool IsAffectedBip(StmtNum stmt);
+  // @returns true if there is any AffectsBip(_,stmt_num ) relation that holds,
+  // else false
+  bool IsAffectedBip(StmtNum stmt_num);
 
   // @returns a list of n that AffectsBip(stmt_1, n) holds true
   StmtNumList GetAffectsBip(StmtNum stmt_1);
@@ -157,8 +87,12 @@ class PqlExtractor {
   StmtNumList GetAffectedByBip(StmtNum stmt_num);
 
   // Get the AffectsBipTable of the whole program
-  // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
-  AffectsTable PqlExtractor::GetAffectsBipTable();
+  // @returns a hashmap of <key> StmtNum <value> set of all affectedBip StmtNums
+  AffectsTable GetAffectsBipTable();
+
+  // Get the AffectedByBipTable of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all affectingBip StmtNums
+  AffectsTable GetAffectedByBipTable();
 };
 
-#endif
+#endif  // !PQL_EXTRACTOR_H
