@@ -23,7 +23,7 @@ class PqlProjector {
   SynonymList selections_list_;
   // eliminate duplicates
   VarNameSet selections_set_;
-  PKB pkb_;
+  PKB* pkb_;
   SelectionGroupTable selection_group_table_;
   ResultTable final_result_table_;
   ColumnHeader final_column_header_;
@@ -59,7 +59,7 @@ class PqlProjector {
   // @returns the final result of the query
   FinalResult GetFinalResult(ResultTableList intermediate_result_tables,
                              ResultTableColumnHeader intermediate_column_header,
-                             SynonymList selections, PKB pkb, bool bool_result_so_far);
+                             SynonymList selections, PKB* pkb, bool bool_result_so_far);
 };
 
 #endif  // !PQL_PROJECTOR_H

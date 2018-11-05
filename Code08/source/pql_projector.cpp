@@ -95,54 +95,54 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
     case PqlDeclarationEntity::kProcedure:
       // Get all procedures name from PKB and store into
       // query_result_list
-      query_result_list = pkb_.GetAllProcIndices();
+      query_result_list = pkb_->GetAllProcIndices();
       break;
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
       // query_result_list
-      query_result_list = pkb_.GetAllVarIndices();
+      query_result_list = pkb_->GetAllVarIndices();
       break;
     case PqlDeclarationEntity::kAssign:
       // Get all statement number of statement which
       // contains assignment from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllAssignStmt();
+      query_result_list = pkb_->GetAllAssignStmt();
       break;
     case PqlDeclarationEntity::kStmt:
       // Get all stmt number from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllStmt();
+      query_result_list = pkb_->GetAllStmt();
       break;
     case PqlDeclarationEntity::kRead:
       // Get all read stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllReadStmt();
+      query_result_list = pkb_->GetAllReadStmt();
       break;
     case PqlDeclarationEntity::kPrint:
       // Get all print stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllPrintStmt();
+      query_result_list = pkb_->GetAllPrintStmt();
       break;
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllCallStmt();
+      query_result_list = pkb_->GetAllCallStmt();
       break;
     case PqlDeclarationEntity::kCallName:
       // Get all call stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllCallee();
+      query_result_list = pkb_->GetAllCallee();
       break;
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllWhileStmt();
+      query_result_list = pkb_->GetAllWhileStmt();
       break;
     case PqlDeclarationEntity::kIf:
       // Get all if stmt from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllIfStmt();
+      query_result_list = pkb_->GetAllIfStmt();
       break;
     case PqlDeclarationEntity::kConstant:
       // Get all constant from PKB and store into query_result_list
-      query_result_list = pkb_.GetAllConstValue();
+      query_result_list = pkb_->GetAllConstValue();
       break;
     case PqlDeclarationEntity::kProgline:
       // Get all program line from PKB and store into
       // query_result_list
-      query_result_list = pkb_.GetAllStmt();
+      query_result_list = pkb_->GetAllStmt();
       break;
   }
 
@@ -161,7 +161,7 @@ ProcName PqlProjector::GetProcName(ProcIndex proc_id) {
 FinalResult PqlProjector::GetFinalResult(
     ResultTableList intermediate_result_tables,
     ResultTableColumnHeader intermediate_column_header, SynonymList selections,
-    PKB pkb, bool bool_result_so_far) {
+    PKB* pkb, bool bool_result_so_far) {
   if (!bool_result_so_far) {
     if (selections.empty()) {
 	  // case 1: select boolean and the query evaluates to false
@@ -182,8 +182,8 @@ FinalResult PqlProjector::GetFinalResult(
   selections_list_ = selections;
   pkb_ = pkb;
   column_count_ = 0;
-  index_to_var_map_ = pkb_.GetIndexToVarMapping();
-  index_to_proc_map_ = pkb_.GetIndexToProcMapping();
+  index_to_var_map_ = pkb_->GetIndexToVarMapping();
+  index_to_proc_map_ = pkb_->GetIndexToProcMapping();
 
   for (Synonym& syn : selections_list_) {
     // use a set to eliminate duplicates

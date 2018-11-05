@@ -43,7 +43,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   if (query->GetGroups().empty()) {
     // Means no extra clause, straight go to projector
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb,
+        result_t_list_, result_c_header_, query->GetSelections(), &pkb,
         IsValidClause());
   } else {
     // Iterate through all the groups
@@ -107,7 +107,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
     }  // end all group iteration
        // Go to projector here
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb,
+        result_t_list_, result_c_header_, query->GetSelections(), &pkb,
         IsValidClause());
   }
 
