@@ -26,21 +26,19 @@ void PqlQuery::AddSelection(string selection, PqlDeclarationEntity type) {
 
 void PqlQuery::AddClause(PqlClause* clause) { 
   clauses_.push_back(clause);
-  Synonym syn;
-  Parameters param;
-  switch(clause->GetClauseType()) {
-    case PqlClauseType::kPattern:
-      syn = ((PqlPattern*)clause)->GetFirstParameter();
-      optimizer_.AddUnion(clause, syn.first, syn.second);
-      break;
-    case PqlClauseType::kSuchthat:
-      param = ((PqlSuchthat*)clause)->GetParameters();
-      optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
-      break;
-    case PqlClauseType::kWith:
-      param = ((PqlWith*)clause)->GetParameters();
-      optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
-      break;
+  if (clause->GetClauseType() == PqlClauseType::kPattern) {
+    PqlPattern* pattern = (PqlPattern*)clause;
+    PqlDeclarationEntity type;
+    if (pattern->GetType().second == PqlPatternType::kAssign) type = PqlDeclarationEntity::kAssign;
+    else if (pattern->GetType().second == PqlPatternType::kWhile) type = PqlDeclarationEntity::kWhile;
+    else if (pattern->GetType().second == PqlPatternType::kIf) type = PqlDeclarationEntity::kIf;
+    optimizer_.AddUnion(clause, pattern->GetType().first, type, pattern->GetFirstParameter().first, pattern->GetFirstParameter().second);
+  } else if (clause->GetClauseType() == PqlClauseType::kSuchthat) {
+    Parameters param = ((PqlSuchthat*)clause)->GetParameters();
+    optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
+  } else if (clause->GetClauseType() == PqlClauseType::kWith) {
+    Parameters param = ((PqlWith*)clause)->GetParameters();
+    optimizer_.AddUnion(clause, param.first.first, param.first.second, param.second.first, param.second.second);
   }
 }
 

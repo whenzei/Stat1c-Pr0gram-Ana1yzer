@@ -664,7 +664,7 @@ TEST_CLASS(TestQueryParser) {
   }
 
   TEST_METHOD(TestInvalidSuchthatAffects) {
-    string content = "stmt s; variable v; Select s such that Affects(s,v)";
+    string content = "procedure p; assign a; Select p such that Affects(p,a)";
     PqlQuery* query = new PqlQuery();
     PqlParser parser(content, query);
     Assert::IsFalse(parser.Parse());

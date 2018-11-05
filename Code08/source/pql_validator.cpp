@@ -119,7 +119,9 @@ bool PqlValidator::IsSynonym(PqlDeclarationEntity type) {
   switch(type) {
       case PqlDeclarationEntity::kStmt:
       case PqlDeclarationEntity::kRead:
+      case PqlDeclarationEntity::kReadName:
       case PqlDeclarationEntity::kPrint:
+      case PqlDeclarationEntity::kPrintName:
       case PqlDeclarationEntity::kCall:
       case PqlDeclarationEntity::kCallName:
       case PqlDeclarationEntity::kWhile:
