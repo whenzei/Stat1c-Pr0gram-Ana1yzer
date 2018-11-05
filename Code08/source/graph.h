@@ -36,6 +36,8 @@ class Graph {
 
   void DFS(const Vertex& v, VisitedMap*, VertexList* path);
 
+  void DFS(const Vertex& start, const Vertex& to_find, VisitedMap*, bool *is_found);
+
  public:
   Graph();
 
@@ -76,6 +78,10 @@ class Graph {
   // Performs a DFS of all vertices reachable from given vertex v
   // @returns vector of vertices in DFS
   VertexList DFS(const Vertex v);
+
+  // Performs DFS from given vertex start until it finds vertex to_find
+  // @returns true if found, false otherwise
+  bool DFS(Vertex start, Vertex to_find);
 
   // Get all unreachable vertices when the given vertex v is removed
   // @returns set of all non-visited vertices

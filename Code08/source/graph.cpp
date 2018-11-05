@@ -158,8 +158,7 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
 }
 
 bool Graph::CanReach(Vertex from, Vertex to) {
-  VertexList reachable_nodes = DFS(from);
-  return (find(reachable_nodes.begin(), reachable_nodes.end(), to) != reachable_nodes.end());
+  return DFS(from, to);
 }
 
 VertexList Graph::DFS(const Vertex from) {
@@ -171,6 +170,18 @@ VertexList Graph::DFS(const Vertex from) {
 
   DFS(from, &visited, &path);
   return path;
+}
+
+bool Graph::DFS(Vertex start, Vertex to_find) {
+  bool is_found = false;
+  VisitedMap visited_nodes;
+
+  for (auto &kv : adj_set_) {
+    visited_nodes[kv.first] = false;
+  }
+  
+  DFS(start, to_find, &visited_nodes, &is_found);
+  return is_found;
 }
 
 VertexSet Graph::GetUnreachableVertices(Vertex v) {
@@ -221,6 +232,29 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
     }
   }
   // add saving of path here if post-order traversal
+}
+
+void Graph::DFS(const Vertex &start, const Vertex &to_find, VisitedMap *visited, bool *is_found) {
+  // Base case: If start node is same as node we are looking for
+  if (start == to_find) {
+    (*is_found) = true;
+    return;
+  }
+
+  // Base case: If already visited
+  if ((*visited)[start] == true) {
+    return;
+  }
+
+  (*visited)[start] = true;
+
+  VertexSet *neighbours = &adj_set_[start];
+
+  for (auto &neighbour : *neighbours) {
+    if (!(*visited)[neighbour]) {
+      DFS(neighbour, to_find, visited, is_found);
+    }
+  }
 }
 
 VertexSet Graph::GetNeighboursSet(const Vertex &v) {
