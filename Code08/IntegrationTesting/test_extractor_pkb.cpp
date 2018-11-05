@@ -527,7 +527,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   }
 
   TEST_METHOD(IsAffectedBip) {
-    /* PqlExtractor extractor = PqlExtractor(pkb5);
+     PqlExtractor extractor = PqlExtractor(&pkb5);
 
       // Positives***********************************
      bool test_result_1 = extractor.IsAffectedBip(11);
@@ -549,12 +549,8 @@ TEST_CLASS(TestPkbPqlExtractor) {
      bool test_result_6 = extractor.IsAffectedBip(1);
      Assert::IsFalse(test_result_6);
 
-     bool test_result_7 = extractor.IsAffectedBip(6);
+     bool test_result_7 = extractor.IsAffectedBip(4);
      Assert::IsFalse(test_result_7);
-
-     bool test_result_8 = extractor.IsAffectedBip(4);
-     Assert::IsFalse(test_result_8);
-   */
   }
 
   TEST_METHOD(GetAffectedByIfInWhile) {
