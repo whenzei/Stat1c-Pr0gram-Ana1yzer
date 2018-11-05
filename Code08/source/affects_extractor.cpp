@@ -55,8 +55,9 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
   CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p1);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt_1);
+  VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
-    if (DfsIsAffects(neighbour, stmt_2, modified_var, cfg, &VisitedMap())) {
+    if (DfsIsAffects(neighbour, stmt_2, modified_var, cfg, &visited)) {
       return true;
     }
   }
@@ -120,9 +121,9 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt, bool is_bip) {
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
   VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
-
+  VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
-    if (DfsIsAffects(neighbour, affecting_var, cfg, &VisitedMap())) {
+    if (DfsIsAffects(neighbour, affecting_var, cfg, &visited)) {
       return true;
     }
   }
@@ -188,9 +189,9 @@ bool AffectsExtractor::EvaluateIsAffected(StmtNum stmt, bool is_bip) {
   VertexList neighbours = cfg->GetNeighboursList(stmt);
   VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
   VarIndexSet rhs_vars = VarIndexSet(var_indices.begin(), var_indices.end());
-
+  VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
-    if (DfsIsAffected(neighbour, rhs_vars, VarIndexSet(), cfg, &VisitedMap())) {
+    if (DfsIsAffected(neighbour, rhs_vars, VarIndexSet(), cfg, &visited)) {
       return true;
     }
   }
@@ -271,10 +272,10 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
   VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
-
+  VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
-    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &VisitedMap());
+    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &visited);
   }
 
   return res_list;
@@ -336,11 +337,11 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   VertexList neighbours = cfg->GetNeighboursList(stmt);
   VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
   VarIndexSet used_vars = VarIndexSet(var_indices.begin(), var_indices.end());
-
+  VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
     DfsGetAffectedBy(neighbour, used_vars, VarIndexSet(), &res_list, cfg,
-                     &VisitedMap());
+                     &visited);
   }
 
   return res_list;
