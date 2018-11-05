@@ -286,8 +286,13 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kCall:
       cout << "Is call?" << endl;
       if (this->pkb_.IsCallStmt(stoi(comparison_val))) {
-        result_list.push_back(stoi(comparison_val));
-        pql_eval->StoreClauseResultInTable(result_list, syn_name);
+        string proc_name = pkb_.GetProcOfStmt(stoi(comparison_val));
+        QueryResultPairList result_pair;
+        string proc_syn_name = "0" + syn_name;
+        result_pair.push_back(
+            make_pair(proc_to_index[proc_name], stoi(comparison_val)));
+        pql_eval->StoreClauseResultInTable(result_pair, proc_syn_name,
+                                           syn_name);
       } else {
         SetClauseFlag(false);
       }
@@ -296,8 +301,14 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       cout << "Is call procname?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
         if (this->pkb_.IsCalledProc(proc_to_index[comparison_val])) {
-          result_list.push_back(proc_to_index[comparison_val]);
-          pql_eval->StoreClauseResultInTable(result_list, syn_name);
+          result_list = pkb_.GetCallingStmts(proc_to_index[comparison_val]);
+          QueryResultPairList result_pair;
+          for (auto& callstmt : result_list) {
+            result_pair.push_back(
+                make_pair(proc_to_index[comparison_val], callstmt));
+          }
+          pql_eval->StoreClauseResultInTable(result_pair, syn_name,
+                                             syn_name.substr(1));
         } else {
           SetClauseFlag(false);
         }
