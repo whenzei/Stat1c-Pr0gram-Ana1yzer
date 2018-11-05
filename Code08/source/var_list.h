@@ -26,7 +26,9 @@ using VarNameSet = unordered_set<VarName>;
 using VarIndexMap = unordered_map<VarName, VarIndex>;
 using IndexVarMap = unordered_map<VarIndex, VarName>;
 using StmtNum = int;
+using StmtNumList = vector<StmtNum>;
 using StmtVarMap = unordered_map<StmtNum, VarIndex>;
+using VarStmtMap = unordered_map<VarIndex, vector<StmtNum>>;
 
 // The variable list class for the PKB component
 // Used to store variable names that are passed into PKB from the parser
@@ -36,10 +38,12 @@ class VarList {
   VarIndexMap var_index_map_;
   IndexVarMap index_var_map_;
   StmtVarMap read_var_map_;
+  VarStmtMap var_read_map_;
   VarIndexList read_var_list_;
   VarIndexPairList read_var_twin_list_;
   VarIndexSet read_var_set_;
   StmtVarMap print_var_map_;
+  VarStmtMap var_print_map_;
   VarIndexList print_var_list_;
   VarIndexSet print_var_set_;
   VarIndexPairList print_var_twin_list_;
@@ -86,6 +90,12 @@ class VarList {
 
   // @returns the variable used in stmt_num if it is a print stmt
   VarIndex GetPrintVar(StmtNum stmt_num);
+
+  // @returns a list of all read stmts that modifies the given variable
+  StmtNumList GetReadStmt(VarIndex var_id);
+
+  // @returns a list of all print stmts that uses the given variable
+  StmtNumList GetPrintStmt(VarIndex var_id);
 
   // @returns true if var_name is modified in any read stmt
   bool IsReadVar(VarIndex var_id);

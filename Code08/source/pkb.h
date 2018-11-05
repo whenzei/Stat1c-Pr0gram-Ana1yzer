@@ -112,6 +112,12 @@ class PKB {
   // @returns the variable used in stmt_num if it is a print stmt
   VarIndex GetPrintVar(StmtNum stmt_num);
 
+  // @returns the variable modified in stmt_num if it is a read stmt
+  StmtNumList GetReadStmt(VarName var_name);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  StmtNumList GetPrintStmt(VarName var_name);
+
   // @returns true if var_name is modified in any read stmt
   bool IsReadVar(VarName var_name);
 

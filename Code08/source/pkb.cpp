@@ -68,6 +68,14 @@ VarIndex PKB::GetPrintVar(StmtNum stmt_num) {
   return var_list_.GetPrintVar(stmt_num);
 }
 
+StmtNumList PKB::GetReadStmt(VarName var_name) {
+  return var_list_.GetReadStmt(GetVarIndex(var_name));
+}
+
+StmtNumList PKB::GetPrintStmt(VarName var_name) {
+  return var_list_.GetPrintStmt(GetVarIndex(var_name));
+}
+
 bool PKB::IsReadVar(VarName var_name) {
   return var_list_.IsReadVar(GetVarIndex(var_name));
 }

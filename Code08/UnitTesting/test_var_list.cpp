@@ -110,6 +110,34 @@ TEST_CLASS(TestVarList) {
     Assert::AreEqual(VarIndex(), var_list.GetReadVar(0));
   }
 
+  TEST_METHOD(TestGetReadPrintStmt) {
+    VarList var_list;
+    var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 3);
+    var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kPrint, 5);
+    var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 6);
+    var_list.InsertVarName(kSampleVar3);
+    StmtNumList result =
+        var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar1));
+    Assert::IsTrue(result.size() == 2);
+    Assert::AreEqual(3, result.front());
+    Assert::AreEqual(6, result.back());
+    result = var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar2));
+    Assert::IsTrue(result.empty());
+    result = var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar3));
+    Assert::IsTrue(result.empty());
+    result = var_list.GetReadStmt(var_list.GetVarIndex("non existent"));
+    Assert::IsTrue(result.empty());
+    result = var_list.GetPrintStmt(var_list.GetVarIndex(kSampleVar1));
+    Assert::IsTrue(result.empty());
+    result = var_list.GetPrintStmt(var_list.GetVarIndex(kSampleVar2));
+    Assert::IsTrue(result.size() == 1);
+    Assert::AreEqual(5, result.front());
+    result = var_list.GetPrintStmt(var_list.GetVarIndex(kSampleVar3));
+    Assert::IsTrue(result.empty());
+    result = var_list.GetPrintStmt(var_list.GetVarIndex("non existent"));
+    Assert::IsTrue(result.empty());
+  }
+
   TEST_METHOD(TestIsReadPrintVar) {
     VarList var_list;
     var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 3);
