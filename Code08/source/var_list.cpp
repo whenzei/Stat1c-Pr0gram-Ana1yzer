@@ -68,7 +68,7 @@ VarIndex VarList::GetVarIndex(VarName var_name) {
   if (iter != var_index_map_.end()) {
     return (*iter).second;
   } else {
-    return VarIndex();
+    return -1;
   }
 }
 

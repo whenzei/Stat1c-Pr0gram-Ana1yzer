@@ -25,7 +25,7 @@ using IndexToVarProcMap = unordered_map<int, string>;
 /*A class to evaluate the pql with clause*/
 class PqlEvaluateWith {
  private:
-  PKB pkb_;                         // pkb database
+  PKB* pkb_;                         // pkb database
   bool clause_flag_;                // to determine if clauses are true/false
   VarProcToIndexMap var_to_index;   // Mapping of pkb's variable to index
   VarProcToIndexMap proc_to_index;  // Mapping of pkb's proc to index
@@ -35,7 +35,7 @@ class PqlEvaluateWith {
   PqlEvaluateWith();
 
   /* Setter */
-  void SetPKB(PKB);
+  void SetPKB(PKB*);
   void SetClauseFlag(bool);
 
   /* Getter */
@@ -47,7 +47,7 @@ class PqlEvaluateWith {
    * @param The evaluator, pkb and pattern clause in the Query
    * @return boolean of whether the clause is true/false
    */
-  bool EvaluateWithClause(PqlEvaluator*, PKB, PqlWith);
+  bool EvaluateWithClause(PqlEvaluator*, PKB*, PqlWith);
 
   /**
    * Return a list of all the result of a certain type

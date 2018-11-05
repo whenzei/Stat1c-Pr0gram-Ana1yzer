@@ -121,7 +121,7 @@ void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
 }
 
 bool PqlOptimizer::ClauseUsesSelection(PqlClause* clause) {
-  return (selections_.find(clause->GetSynonyms().first) != selections_.end() || selections_.find(clause->GetSynonyms().first) != selections_.end());
+  return (selections_.find(clause->GetSynonyms().first) != selections_.end() || selections_.find(clause->GetSynonyms().second) != selections_.end());
 }
 
 void PqlOptimizer::AddSelection(string selection) {

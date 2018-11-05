@@ -59,5 +59,33 @@ TEST_CLASS(TestQueryValidator) {
     result = PqlValidator::ValidateInteger(content);
     Assert::IsTrue(!result);
   }
+
+  TEST_METHOD(TestValidAttribute) {
+    bool result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kVariable, "varName");
+    Assert::IsTrue(result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kRead, "varName");
+    Assert::IsTrue(result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kCall, "procName");
+    Assert::IsTrue(result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kPrint, "varName");
+    Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestInvalidAttribute) {
+    bool result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kVariable, "stmt");
+    Assert::IsTrue(!result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kRead, "value");
+    Assert::IsTrue(!result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kProcedure, "stmt");
+    Assert::IsTrue(!result);
+
+    result = PqlValidator::ValidateAttribute(PqlDeclarationEntity::kConstant, "varName");
+    Assert::IsTrue(!result);
+  }
 };
 }  // namespace PQLTests

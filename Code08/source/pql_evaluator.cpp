@@ -31,7 +31,6 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
-  SetQueryFlag(true);
   FinalResult final_results;
 
   PqlEvaluateWith with_evaluator;
@@ -39,11 +38,13 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   PqlEvaluateSuchthat suchthat_evaluator;
   PqlProjector pql_projector;
   int groupcount = 0;
+  bool tempbool = true;
 
   if (query->GetGroups().empty()) {
     // Means no extra clause, straight go to projector
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb, true);
+        result_t_list_, result_c_header_, query->GetSelections(), &pkb,
+        IsValidClause());
   } else {
     // Iterate through all the groups
     for (auto& group : query->GetGroups()) {
@@ -53,16 +54,28 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         // Code for processing clauses
         switch (clause->GetClauseType()) {
           case PqlClauseType::kSuchthat:
-            SetClauseFlag(suchthat_evaluator.EvaluateSuchthatClause(
-                this, pkb, *(PqlSuchthat*)clause));
+            tempbool = suchthat_evaluator.EvaluateSuchthatClause(
+                this, &pkb, *(PqlSuchthat*)clause);
+            // If valid then set boolean, if not dont change the invalidity
+            if (IsValidClause()) {
+              SetClauseFlag(tempbool);
+            }
             continue;
           case PqlClauseType::kPattern:
-            SetClauseFlag(pattern_evaluator.EvaluatePatternClause(
-                this, pkb, *(PqlPattern*)clause));
+            tempbool = pattern_evaluator.EvaluatePatternClause(
+                this, &pkb, *(PqlPattern*)clause);
+            // If valid then set boolean, if not dont change the invalidity
+            if (IsValidClause()) {
+              SetClauseFlag(tempbool);
+            }
             continue;
           case PqlClauseType::kWith:
-            SetClauseFlag(with_evaluator.EvaluateWithClause(this, pkb,
-                                                            *(PqlWith*)clause));
+            tempbool =
+                with_evaluator.EvaluateWithClause(this, &pkb, *(PqlWith*)clause);
+            // If valid then set boolean, if not dont change the invalidity
+            if (IsValidClause()) {
+              SetClauseFlag(tempbool);
+            }
             continue;
         }
         // If the clause is false already, no need to continue evaluating
@@ -70,6 +83,10 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           break;
         }
       }  // end one group iteration
+      // If the clause is false already, no need to continue evaluating
+      if (!IsValidClause()) {
+        break;
+      }
       if (!pql_result_.GetResultTable().empty()) {
         if (group.GetUsesSelection()) {
           // Get the result table and column info
@@ -86,14 +103,12 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         pql_result_.SetResultTable(new_table);
         pql_result_.SetColumnCount(0);
         pql_result_.ClearColumnHeader();
-      } else {
-        SetQueryFlag(false);
       }
     }  // end all group iteration
        // Go to projector here
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb,
-        IsValidQuery());
+        result_t_list_, result_c_header_, query->GetSelections(), &pkb,
+        IsValidClause());
   }
 
   cout << "Result size: " << final_results.size() << endl;
@@ -172,13 +187,7 @@ void PqlEvaluator::SetClauseFlag(bool clause_flag) {
   this->clause_flag_ = clause_flag;
 }
 
-void PqlEvaluator::SetQueryFlag(bool query_flag) {
-  this->query_flag_ = query_flag;
-}
-
 bool PqlEvaluator::IsValidClause() { return clause_flag_; }
-
-bool PqlEvaluator::IsValidQuery() { return query_flag_; }
 
 void PqlEvaluator::SetPqlResult(PqlResult pql_result) {
   this->pql_result_ = pql_result;

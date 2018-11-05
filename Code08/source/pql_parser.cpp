@@ -21,13 +21,6 @@ bool PqlParser::Parse() {
   // 1. Split up individual statements by semicolon
   vector<string> statements = Util::Split(query_text_, ';');
 
-  // should have at least 2 statements - a SYN declaration stmt and a clause
-  // stmt early return if less than 2
-  if (statements.size() < 2) {
-    error_message_ = "Incomplete or invalid query.";
-    return false;
-  }
-
   // 2. Process each statement
   for (vector<string>::const_iterator i = statements.begin();
        i != statements.end(); ++i) {
@@ -75,6 +68,12 @@ bool PqlParser::ParseStatement(string statement, bool isLast) {
   }
   // 2. Check if it's a declaration and process it
   else {
+    // If this is the last statement but is not a select clause
+    if (isLast) {
+      error_message_ = "Missing select statement.";
+      return false;
+    }
+
     TokenizerFunc tokenizer_functions[] = {&Tokenizer::SkipWhitespace,
                                            &Tokenizer::TokenizeWords,
                                            &Tokenizer::TokenizeComma};
@@ -155,8 +154,8 @@ bool PqlParser::ParseSelect(TokenList tokens) {
         current_index--;  // step back because ParseAttribute step forward
                           // internally
       }
-      // append infront extra '0' for call.procName
-      if (type == PqlDeclarationEntity::kCallName) {
+      // append infront extra '0' for call.procName, read.varName, print.varName
+      if (type == PqlDeclarationEntity::kCallName || type == PqlDeclarationEntity::kReadName || type == PqlDeclarationEntity::kPrintName) {
         selection = "0" + selection;
       }
       query_->AddSelection(selection, type);
@@ -191,8 +190,8 @@ bool PqlParser::ParseSelect(TokenList tokens) {
             current_index--;  // step back because ParseAttribute step forward
                               // internally
           }
-          // append '0' infront for call.procName
-          if (type == PqlDeclarationEntity::kCallName) {
+          // append infront extra '0' for call.procName, read.varName, print.varName
+          if (type == PqlDeclarationEntity::kCallName || type == PqlDeclarationEntity::kReadName || type == PqlDeclarationEntity::kPrintName) {
             selection = "0" + selection;
           }
           query_->AddSelection(selection, type);
@@ -393,10 +392,10 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   else if (suchthat_type == PqlSuchthatType::kModifiesP || suchthat_type == PqlSuchthatType::kModifiesS) {
     clause->SetPriority(PRIORITY_MODIFIES);
   }
-  else if (suchthat_type == PqlSuchthatType::kAffects) {
+  else if (suchthat_type == PqlSuchthatType::kAffects || suchthat_type == PqlSuchthatType::kAffectsB) {
     clause->SetPriority(PRIORITY_AFFECTS);
   }
-  else if (suchthat_type == PqlSuchthatType::kAffectsT) {
+  else if (suchthat_type == PqlSuchthatType::kAffectsT || suchthat_type == PqlSuchthatType::kAffectsBT) {
     clause->SetPriority(PRIORITY_AFFECTS_T);
   }
   else {
@@ -772,8 +771,8 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
       // 3.1. Handle attribute
       if (!ParseAttribute(tokens, current_index, &left_type)) return false;
 
-      // append extra 'p' for call.procName
-      if (left_type == PqlDeclarationEntity::kCallName) {
+      // append infront extra '0' for call.procName, read.varName, print.varName
+      if (left_type == PqlDeclarationEntity::kCallName || left_type == PqlDeclarationEntity::kReadName || left_type == PqlDeclarationEntity::kPrintName) {
         left = "0" + left;
       }
     } else {
@@ -824,8 +823,8 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
       // 7.1. Handle attribute
       if (!ParseAttribute(tokens, current_index, &right_type)) return false;
 
-      // append extra 'p' for call.procName
-      if (right_type == PqlDeclarationEntity::kCallName) {
+      // append infront extra '0' for call.procName, read.varName, print.varName
+      if (right_type == PqlDeclarationEntity::kCallName || right_type == PqlDeclarationEntity::kReadName || right_type == PqlDeclarationEntity::kPrintName) {
         right = "0" + right;
       }
     } else {
@@ -924,9 +923,13 @@ bool PqlParser::ParseAttribute(TokenList tokens, int* current_index,
     return false;
   }
 
-  // 3. Handle procedure name
+  // 3. Handle procedure.procName, print,varName, read.varName
   if (*type == PqlDeclarationEntity::kCall && attr == "procName") {
     *type = PqlDeclarationEntity::kCallName;
+  } else if (*type == PqlDeclarationEntity::kRead && attr == "varName") {
+    *type = PqlDeclarationEntity::kReadName;
+  } else if (*type == PqlDeclarationEntity::kPrint && attr == "varName") {
+    *type = PqlDeclarationEntity::kPrintName;
   }
 
   ++*current_index;

@@ -180,6 +180,20 @@ const EntitySet affects_t_second = {PqlDeclarationEntity::kAssign,
                                     PqlDeclarationEntity::kUnderscore,
                                     PqlDeclarationEntity::kInteger};
 
+// Dominates
+const EntitySet dominates_first = {
+    PqlDeclarationEntity::kStmt,    PqlDeclarationEntity::kRead,
+    PqlDeclarationEntity::kPrint,   PqlDeclarationEntity::kCall,
+    PqlDeclarationEntity::kWhile,   PqlDeclarationEntity::kIf,
+    PqlDeclarationEntity::kAssign,  PqlDeclarationEntity::kProgline,
+    PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore };
+const EntitySet dominates_second = {
+    PqlDeclarationEntity::kStmt,    PqlDeclarationEntity::kRead,
+    PqlDeclarationEntity::kPrint,   PqlDeclarationEntity::kCall,
+    PqlDeclarationEntity::kWhile,   PqlDeclarationEntity::kIf,
+    PqlDeclarationEntity::kAssign,  PqlDeclarationEntity::kProgline,
+    PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore };
+
 // Group all the sets into a map for easy access
 const SuchthatTable suchthat_table = {
     {PqlSuchthatType::kFollows, std::make_pair(follows_first, follows_second)},
@@ -199,8 +213,10 @@ const SuchthatTable suchthat_table = {
     {PqlSuchthatType::kNext, std::make_pair(next_first, next_second)},
     {PqlSuchthatType::kNextT, std::make_pair(next_t_first, next_t_second)},
     {PqlSuchthatType::kAffects, std::make_pair(affects_first, affects_second)},
-    {PqlSuchthatType::kAffectsT,
-     std::make_pair(affects_t_first, affects_t_second)}};
+    {PqlSuchthatType::kAffectsT, std::make_pair(affects_t_first, affects_t_second)},
+    {PqlSuchthatType::kAffectsB, std::make_pair(affects_first, affects_second)},
+    {PqlSuchthatType::kAffectsBT, std::make_pair(affects_t_first, affects_t_second)},
+    {PqlSuchthatType::kDominates, std::make_pair(dominates_first, dominates_second)} };
 
 /*
 SELECT PATTERN CLAUSE
@@ -239,7 +255,8 @@ const EntitySet number = {
 
 const EntitySet name = {
     PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kProcedure,
-    PqlDeclarationEntity::kCallName, PqlDeclarationEntity::kIdent};
+    PqlDeclarationEntity::kCallName, PqlDeclarationEntity::kReadName, 
+    PqlDeclarationEntity::kPrintName, PqlDeclarationEntity::kIdent};
 
 const WithTable with_table = {{PqlDeclarationEntity::kProgline, number},
                               {PqlDeclarationEntity::kStmt, number},
@@ -252,7 +269,11 @@ const WithTable with_table = {{PqlDeclarationEntity::kProgline, number},
                               {PqlDeclarationEntity::kConstant, number},
                               {PqlDeclarationEntity::kVariable, name},
                               {PqlDeclarationEntity::kCallName, name},
-                              {PqlDeclarationEntity::kProcedure, name}};
+                              {PqlDeclarationEntity::kReadName, name},
+                              {PqlDeclarationEntity::kPrintName, name},
+                              {PqlDeclarationEntity::kProcedure, name},
+                              {PqlDeclarationEntity::kInteger, number},
+                              {PqlDeclarationEntity::kIdent, name} };
 
 /*
 This class stores the PQL query, including the declarations and
