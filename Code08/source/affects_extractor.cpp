@@ -34,7 +34,12 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
   ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
 
   // if is_bip, don't have to check if same procedure since its one big cfg
-  if (p1.empty() || p2.empty() || (!is_bip && p1 != p2)) {
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  // if is_bip, check if Call*(p1, p2) is true. If not, return false
+  if ((!is_bip && p1 != p2) || (is_bip && !pkb_->IsCallT(p1, p2))) {
     return false;
   }
 
