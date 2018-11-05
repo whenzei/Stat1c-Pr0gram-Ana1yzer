@@ -19,6 +19,7 @@
     <ClCompile Include="..\source\follows_table.cpp" />
     <ClCompile Include="..\source\graph.cpp" />
     <ClCompile Include="..\source\modifies_table.cpp" />
+    <ClCompile Include="..\source\next_extractor.cpp" />
     <ClCompile Include="..\source\next_table.cpp" />
     <ClCompile Include="..\source\parser.cpp" />
     <ClCompile Include="..\source\parse_data.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="..\source\follows_table.h" />
     <ClInclude Include="..\source\graph.h" />
     <ClInclude Include="..\source\modifies_table.h" />
+    <ClInclude Include="..\source\next_extractor.h" />
     <ClInclude Include="..\source\next_table.h" />
     <ClInclude Include="..\source\parser.h" />
     <ClInclude Include="..\source\parse_data.h" />

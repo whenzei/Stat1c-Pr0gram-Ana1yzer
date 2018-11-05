@@ -135,6 +135,9 @@
     <ClCompile Include="..\source\affects_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\next_extractor.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pql_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -246,6 +249,9 @@
       <Filter>Header Files\General</Filter>
     </ClInclude>
     <ClInclude Include="..\source\affects_extractor.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\next_extractor.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_extractor.h">
