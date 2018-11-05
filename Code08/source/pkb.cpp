@@ -559,6 +559,10 @@ ProcIndexList PKB::GetCallee(ProcIndex caller_proc_id) {
   return call_table_.GetCallee(caller_proc_id);
 }
 
+ProcIndexList PKB::GetCalleeT(ProcName caller_proc) {
+  return call_table_.GetCalleeT(GetProcIndex(caller_proc));
+}
+
 ProcNameList PKB::GetCallee(ProcName caller_proc) {
   ProcNameList proc_name_list;
   for (ProcIndex& proc_id : call_table_.GetCallee(GetProcIndex(caller_proc))) {
