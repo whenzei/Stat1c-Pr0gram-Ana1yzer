@@ -7,18 +7,17 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include "proc_list.h"
 
 using std::make_pair;
 using std::pair;
-using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
 using ProcIndex = int;
-using ProcName = string;
+using ProcIndexList = vector<ProcIndex>;
+using ProcIndexPairList = vector<pair<ProcIndex, ProcIndex>>;
 // int can be StmtNum or ProcIndex.
 using CallMap = unordered_map<int, vector<ProcIndex>>;
 using StmtNumProcPairList = vector<pair<StmtNum, ProcIndex>>;
@@ -47,14 +46,14 @@ class CallTable {
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertIndirectCallRelationship(ProcName caller_proc,
-                                      ProcName callee_proc);
+  bool InsertIndirectCallRelationship(ProcIndex caller_proc,
+                                      ProcIndex callee_proc);
 
   // Inserts a DIRECT caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertDirectCallRelationship(ProcName caller_proc, ProcName callee_proc);
+  bool InsertDirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
 
   // STATEMENT-PROC RELATIONSHIP INSERT
   // Inserts a calls relationship to the call table.
@@ -76,8 +75,6 @@ class CallTable {
   // @returns a list containing one direct callee (can be empty)
   // @params caller procedure name
   ProcIndexList GetCallee(ProcIndex caller_proc);
-
-  ProcNameList GetCallee(ProcName caller_proc);
 
   // Finds and returns all callees for given procedure.
   // @returns a list containing all callees for given proc (can be empty)
