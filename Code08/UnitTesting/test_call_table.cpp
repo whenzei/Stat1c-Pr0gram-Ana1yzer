@@ -228,10 +228,13 @@ TEST_CLASS(TestCallTable) {
     CallTable call_table;
     call_table.InsertDirectCallRelationship(kProcName1, kProcName2);
     call_table.InsertDirectCallRelationship(kProcName2, kProcName3);
+    call_table.InsertDirectCallRelationship(kProcName1, kProcName4);
     call_table.InsertIndirectCallRelationship(kProcName1, kProcName3);
     int result = call_table.IsCall(kProcIndex1, kProcIndex2);
     Assert::IsTrue(result);
-    result = call_table.IsCallT(kProcIndex2, kProcIndex3);
+    result = call_table.IsCall(kProcIndex1, kProcIndex4);
+    Assert::IsTrue(result);
+    result = call_table.IsCall(kProcIndex2, kProcIndex3);
     Assert::IsTrue(result);
     result = call_table.IsCall(kProcIndex1, kProcIndex3);
     Assert::IsFalse(result);

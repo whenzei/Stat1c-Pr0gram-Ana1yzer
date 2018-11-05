@@ -128,8 +128,9 @@ ProcIndexPairList CallTable::GetAllCallPairs() {
   ProcIndexPairList call_pair_list;
   for (auto entry : direct_call_table_) {
     if (direct_call_table_.find(entry.first) != direct_call_table_.end()) {
-      call_pair_list.push_back(
-          make_pair(entry.first, direct_call_table_[entry.first].front()));
+      for (auto callee : direct_call_table_[entry.first]) {
+        call_pair_list.push_back(make_pair(entry.first, callee));
+      }
     }
   }
   return call_pair_list;
@@ -149,7 +150,9 @@ ProcIndexPairList CallTable::GetAllCallTPairs() {
 
 bool CallTable::IsCall(ProcIndex caller_proc, ProcIndex callee_proc) {
   if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
-    return (direct_call_table_[caller_proc].front() == callee_proc);
+    ProcIndexList direct_callee_list = direct_call_table_[caller_proc];
+    return (find(direct_callee_list.begin(), direct_callee_list.end(), callee_proc)
+        != direct_callee_list.end());
   }
   return false;
 }
