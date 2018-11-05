@@ -31,18 +31,19 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
 
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
+  SetQueryFlag(true);
   FinalResult final_results;
 
   PqlEvaluateWith with_evaluator;
   PqlEvaluatePattern pattern_evaluator;
   PqlEvaluateSuchthat suchthat_evaluator;
   PqlProjector pql_projector;
-  int groupcount = 1;
+  int groupcount = 0;
 
   if (query->GetGroups().empty()) {
     // Means no extra clause, straight go to projector
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb);
+        result_t_list_, result_c_header_, query->GetSelections(), pkb, true);
   } else {
     // Iterate through all the groups
     for (auto& group : query->GetGroups()) {
@@ -69,26 +70,30 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
           break;
         }
       }  // end one group iteration
-
-      if (!pql_result_.GetResultTable().empty() && group.GetUsesSelection()) {
-        // Get the result table and column info
-        result_t_list_.push_back(pql_result_.GetResultTable());
-        // Get column headers
-        for (auto& header : pql_result_.GetColumnHeader()) {
-          this->result_c_header_.emplace(header.first,
-                                         make_pair(groupcount, header.second));
+      if (!pql_result_.GetResultTable().empty()) {
+        if (group.GetUsesSelection()) {
+          // Get the result table and column info
+          result_t_list_.push_back(pql_result_.GetResultTable());
+          // Get column headers
+          for (auto& header : pql_result_.GetColumnHeader()) {
+            this->result_c_header_.emplace(
+                header.first, make_pair(groupcount, header.second));
+          }
+          groupcount++;
         }
         // Reset the result table, clear everything
         ResultTable new_table;
         pql_result_.SetResultTable(new_table);
         pql_result_.SetColumnCount(0);
         pql_result_.ClearColumnHeader();
-        groupcount++;
+      } else {
+        SetQueryFlag(false);
       }
     }  // end all group iteration
        // Go to projector here
     final_results = pql_projector.GetFinalResult(
-        result_t_list_, result_c_header_, query->GetSelections(), pkb);
+        result_t_list_, result_c_header_, query->GetSelections(), pkb,
+        IsValidQuery());
   }
 
   cout << "Result size: " << final_results.size() << endl;
@@ -167,7 +172,13 @@ void PqlEvaluator::SetClauseFlag(bool clause_flag) {
   this->clause_flag_ = clause_flag;
 }
 
+void PqlEvaluator::SetQueryFlag(bool query_flag) {
+  this->query_flag_ = query_flag;
+}
+
 bool PqlEvaluator::IsValidClause() { return clause_flag_; }
+
+bool PqlEvaluator::IsValidQuery() { return query_flag_; }
 
 void PqlEvaluator::SetPqlResult(PqlResult pql_result) {
   this->pql_result_ = pql_result;

@@ -12,7 +12,7 @@ void PqlProjector::TrimIntermediateResultTables() {
   for (int group : selected_groups_) {
     ResultTable* result_table = &intermediate_result_tables_[group];
     vector<VarName> selected_synonyms = selection_group_table_[group];
-	// trim result table if not all columns are selected
+    // trim result table if not all columns are selected
     if (selected_synonyms.size() != (*result_table).front().size()) {
       vector<int> selected_columns;
       for (VarName& syn : selected_synonyms) {
@@ -99,7 +99,7 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
       break;
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
-      // query_result_list 
+      // query_result_list
       query_result_list = pkb_.GetAllVarIndices();
       break;
     case PqlDeclarationEntity::kAssign:
@@ -150,14 +150,33 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
   return pql_result.GetResultTable();
 }
 
-VarName PqlProjector::GetVarName(VarIndex var_id) { return index_to_var_map_[var_id]; }
+VarName PqlProjector::GetVarName(VarIndex var_id) {
+  return index_to_var_map_[var_id];
+}
 
-ProcName PqlProjector::GetProcName(ProcIndex proc_id) { return index_to_proc_map_[proc_id]; }
+ProcName PqlProjector::GetProcName(ProcIndex proc_id) {
+  return index_to_proc_map_[proc_id];
+}
 
 FinalResult PqlProjector::GetFinalResult(
     ResultTableList intermediate_result_tables,
     ResultTableColumnHeader intermediate_column_header, SynonymList selections,
-    PKB pkb) {
+    PKB pkb, bool bool_result_so_far) {
+  if (!bool_result_so_far) {
+    if (selections.empty()) {
+	  // case 1: select boolean and the query evaluates to false
+      final_result_.push_back("false");
+    }
+	// case 2: select synonym and the query has empty result (return empty final result list)
+    return final_result_;
+  } else if (selections.empty()) {
+	// case 3: select boolean and the query evaluates to true
+    final_result_.push_back("true");
+    return final_result_;
+  }
+
+  // case 4: select synonym and the query has non-empty result
+
   intermediate_result_tables_ = intermediate_result_tables;
   intermediate_column_header_ = intermediate_column_header;
   selections_list_ = selections;
@@ -183,11 +202,6 @@ FinalResult PqlProjector::GetFinalResult(
   TrimIntermediateResultTables();
   MergeIntermediateResultTables();
   GenerateFinalResult();
-
-  return final_result_;
-}
-
-FinalResult PqlProjector::GetFinalResult(bool result) {
-  result ? final_result_.push_back("true") : final_result_.push_back("false");
+  
   return final_result_;
 }

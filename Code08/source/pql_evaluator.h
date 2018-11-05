@@ -28,6 +28,7 @@ using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
 class PqlEvaluator {
  private:
   bool clause_flag_;      // to determine if clauses are true/false
+  bool query_flag_;      // to determine if the query is true/false
   PqlQuery pql_query_;    // the object where user query is stored
   PqlResult pql_result_;  // the object where results are stored
   ResultTableList result_t_list_;
@@ -39,12 +40,14 @@ class PqlEvaluator {
 
   /* Setter */
   void SetClauseFlag(bool);
+  void SetQueryFlag(bool);
   void SetPqlResult(PqlResult);
   void SetResultTableList(ResultTableList);
   void SetResultTableColumnHeader(ResultTableColumnHeader);
 
   /* Getter */
   bool IsValidClause();
+  bool IsValidQuery();
 
   /**
    * Called by the GUI. Use the Query provided by user
