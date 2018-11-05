@@ -271,7 +271,9 @@ const WithTable with_table = {{PqlDeclarationEntity::kProgline, number},
                               {PqlDeclarationEntity::kCallName, name},
                               {PqlDeclarationEntity::kReadName, name},
                               {PqlDeclarationEntity::kPrintName, name},
-                              {PqlDeclarationEntity::kProcedure, name}};
+                              {PqlDeclarationEntity::kProcedure, name},
+                              {PqlDeclarationEntity::kInteger, number},
+                              {PqlDeclarationEntity::kIdent, name} };
 
 /*
 This class stores the PQL query, including the declarations and
