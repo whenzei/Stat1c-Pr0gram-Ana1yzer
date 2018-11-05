@@ -97,13 +97,14 @@ class AffectsExtractor {
   // @params: Vertex the vertex to start from
   // @params: AffectsTable* affects_table the AffectsTable to populate
   // @params: AffectsTable* affected_by_table the AffectedByTable to populate
+  // @params: VisitedMap* to keep track of what vertices have been visited
   // @params: LastModMap the map to keep track of where each variable was last
   // modified
   // @params: WhileLastModMap the map to keep track of each while statement's
   // LastModMap
   // @params: CFG* pointer to cfg to run DFS on
   void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
-                           AffectsTable* affected_by_table,
+                           AffectsTable* affected_by_table, VisitedMap* visited,
                            LastModMap last_mod_map,
                            WhileLastModMap while_last_mod_map,
                            WhileLastModMap prev_while_last_mod_map, CFG* cfg);
@@ -149,7 +150,8 @@ class AffectsExtractor {
   AffectsTable GetAffectsBipTable();
 
   // Get the AffectedByBipTable of the whole program
-  // @returns a hashmap of <key> StmtNum <value> set of all affectingBip StmtNums
+  // @returns a hashmap of <key> StmtNum <value> set of all affectingBip
+  // StmtNums
   AffectsTable GetAffectedByBipTable();
 };
 

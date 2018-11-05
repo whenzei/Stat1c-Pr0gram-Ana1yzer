@@ -40,9 +40,11 @@ class DesignExtractor {
 
   // @params: CFG* pointer to cfg to run DfsConnect on
   // @returns the connected CFG
-  CFG ConnectProgramCFG(CFG* cfg);
+  CFG ConnectProgramCFG(CFG* cfg, bool is_reversed = false);
 
   void DfsConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
+
+  void DfsReverseConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
 
   //**************************************
  public:

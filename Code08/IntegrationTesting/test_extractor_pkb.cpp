@@ -23,6 +23,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   PKB pkb5 = GetTestPKBFive();
   PKB pkb6 = GetTestPKBSix();
   PKB pkb7 = GetTestPKBSeven();
+  PKB pkb8 = GetTestPKBEight();
 
  public:
   TEST_METHOD(IsNextTTwoParams) {
@@ -380,7 +381,14 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_8 == test_result_8);
   }
 
-  TEST_METHOD(GetAllAffects) {
+  TEST_METHOD(TestGetAllAffectedBy) {
+    PqlExtractor extractor = PqlExtractor(&pkb8);
+    AffectsTable actual_results = extractor.GetAffectedByBipTable();
+
+    Assert::IsNotNull(&actual_results);
+  }
+
+  TEST_METHOD(TestGetAllAffects) {
     // test while-if loop
     PqlExtractor extractor = PqlExtractor(&pkb1);
     AffectsTable actual_results_1 = extractor.GetAffectsTable();
@@ -796,6 +804,31 @@ TEST_CLASS(TestPkbPqlExtractor) {
         "}"
         "a = a+1;"  // 6
         "}";
+
+    PKB test_pkb = PKB();
+    Parser parser = Parser(&test_pkb);
+    TokenList tokenized_program = Tokenizer::Tokenize(program);
+    parser.Parse(tokenized_program);
+    return test_pkb;
+  }
+
+  PKB GetTestPKBEight() {
+    string program =
+        "procedure one{         "
+        "  a = a + 1;           "  // 1
+        "  call two;            "  // 2
+        "  read d;              "  // 3
+        "}                      "
+        "                       "
+        "procedure two{         "
+        "  while (a == b) {     "  // 4
+        "    if (x == 1) then { "  // 5
+        "      g = a;           "  // 6
+        "    } else {           "
+        "      w = a;           "  // 7
+        "    }                  "
+        "  }                    "
+        "}                      ";
 
     PKB test_pkb = PKB();
     Parser parser = Parser(&test_pkb);
