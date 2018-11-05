@@ -23,7 +23,7 @@ using QueryResultPairList = vector<pair<int, int>>;
 /*A class to evaluate the pql pattern clause*/
 class PqlEvaluatePattern {
  private:
-  PKB pkb_;           // pkb database
+  PKB* pkb_;           // pkb database
   bool clause_flag_;  // to determine if clauses are true/false
 
  public:
@@ -31,7 +31,7 @@ class PqlEvaluatePattern {
   PqlEvaluatePattern();
 
   /* Setter */
-  void SetPKB(PKB);
+  void SetPKB(PKB*);
   void SetClauseFlag(bool);
 
   /* Getter */
@@ -43,7 +43,7 @@ class PqlEvaluatePattern {
    * @param The evaluator, pkb and pattern clause in the Query
    * @return boolean of whether the clause is true/false
    */
-  bool EvaluatePatternClause(PqlEvaluator*, PKB, PqlPattern);
+  bool EvaluatePatternClause(PqlEvaluator*, PKB*, PqlPattern);
 
   /**
    * Evaluate assign pattern and store result in PqlResult table

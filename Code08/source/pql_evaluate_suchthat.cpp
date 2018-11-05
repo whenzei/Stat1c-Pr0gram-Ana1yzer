@@ -21,7 +21,7 @@ using std::vector;
 PqlEvaluateSuchthat::PqlEvaluateSuchthat() {}
 
 bool PqlEvaluateSuchthat::EvaluateSuchthatClause(PqlEvaluator* pql_eval,
-                                                 PKB pkb,
+                                                 PKB* pkb,
                                                  PqlSuchthat suchthat) {
   SetPKB(pkb);
   SetClauseFlag(true);
@@ -85,63 +85,63 @@ QueryResultList PqlEvaluateSuchthat::GetSelectAllResult(
       // Get all procedures name from PKB and store into
       // results list
       cout << "Select all procedure." << endl;
-      return this->pkb_.GetAllProcIndices();
+      return pkb_->GetAllProcIndices();
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
       // results list
       cout << "Select all variables." << endl;
-      return this->pkb_.GetAllVarIndices();
+      return pkb_->GetAllVarIndices();
     case PqlDeclarationEntity::kAssign:
       // Get all statement number of statement which
       // contains assignment from PKB and store into results
       // list
       cout << "Select all assign statement." << endl;
-      return this->pkb_.GetAllAssignStmt();
+      return pkb_->GetAllAssignStmt();
     case PqlDeclarationEntity::kStmt:
       // Get all stmt number from PKB and store into results
       // list
       cout << "Select all statement." << endl;
-      return this->pkb_.GetAllStmt();
+      return pkb_->GetAllStmt();
     case PqlDeclarationEntity::kRead:
       // Get all read stmt from PKB and store into results
       // list
       cout << "Select all read statement." << endl;
-      return this->pkb_.GetAllReadStmt();
+      return pkb_->GetAllReadStmt();
     case PqlDeclarationEntity::kPrint:
       // Get all print stmt from PKB and store into results
       // list
       cout << "Select all print statement." << endl;
-      return this->pkb_.GetAllPrintStmt();
+      return pkb_->GetAllPrintStmt();
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
       // list
       cout << "Select all call statement." << endl;
-      return this->pkb_.GetAllCallStmt();
+      return pkb_->GetAllCallStmt();
     case PqlDeclarationEntity::kCallName:
       // Get all call stmt from PKB and store into results
       // list
       cout << "Select all call.procName statement." << endl;
-      return this->pkb_.GetAllCallee();
+      return pkb_->GetAllCallee();
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into results
       // list
       cout << "Select all while statement." << endl;
-      return this->pkb_.GetAllWhileStmt();
+      return pkb_->GetAllWhileStmt();
     case PqlDeclarationEntity::kIf:
       // Get all if stmt from PKB and store into results
       // list
       cout << "Select all if statement." << endl;
-      return this->pkb_.GetAllIfStmt();
+      return pkb_->GetAllIfStmt();
     case PqlDeclarationEntity::kConstant:
       // Get all constant from PKB and store into results
       // list
       cout << "Select all constants." << endl;
-      return this->pkb_.GetAllConstValue();
+      return pkb_->GetAllConstValue();
     case PqlDeclarationEntity::kProgline:
       // Get all program line from PKB and store into
       // results list
       cout << "Select all program lines." << endl;
-      return this->pkb_.GetAllStmt();
+      return pkb_->GetAllStmt();
   }
 
   // Return empty result if nothing is found
@@ -161,20 +161,20 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
-  VarProcToIndexMap proc_to_index = this->pkb_.GetProcToIndexMapping();
+  VarProcToIndexMap proc_to_index = pkb_->GetProcToIndexMapping();
 
   cout << "Evaluating Calls" << endl;
 
   switch (arrangement) {
     case kNoSynonym:
-      if (!this->pkb_.IsCall(left_name, right_name)) {
+      if (!pkb_->IsCall(left_name, right_name)) {
         SetClauseFlag(false);
         cout << left_name << " not call by " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
-      if (this->pkb_.GetProcIndex(right_name) != -1) {
-        if (this->pkb_.GetCaller(proc_to_index[right_name]).empty()) {
+      if (pkb_->GetProcIndex(right_name) != -1) {
+        if (pkb_->GetCaller(proc_to_index[right_name]).empty()) {
           SetClauseFlag(false);
           cout << right_name << " is not called " << endl;
         }
@@ -183,8 +183,8 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (this->pkb_.GetProcIndex(left_name) != -1) {
-        if (this->pkb_.GetCallee(proc_to_index[left_name]).empty()) {
+      if (pkb_->GetProcIndex(left_name) != -1) {
+        if (pkb_->GetCallee(proc_to_index[left_name]).empty()) {
           SetClauseFlag(false);
           cout << left_name << " is not caller " << endl;
         }
@@ -193,14 +193,14 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasCallsRelationship()) {
+      if (!pkb_->HasCallsRelationship()) {
         SetClauseFlag(false);
         cout << " no calls relationship found " << endl;
       }
       return;
     case kOneSynonymLeft:
-      if (this->pkb_.GetProcIndex(right_name) != -1) {
-        result_list = this->pkb_.GetCaller(proc_to_index[right_name]);
+      if (pkb_->GetProcIndex(right_name) != -1) {
+        result_list = pkb_->GetCaller(proc_to_index[right_name]);
         if (result_list.empty()) {
           SetClauseFlag(false);
           cout << right_name << " is not called " << endl;
@@ -212,7 +212,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = this->pkb_.GetAllCaller();
+      result_list = pkb_->GetAllCaller();
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "there are no call for procedure" << endl;
@@ -221,8 +221,8 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      if (this->pkb_.GetProcIndex(left_name) != -1) {
-        result_list = this->pkb_.GetCallee(proc_to_index[left_name]);
+      if (pkb_->GetProcIndex(left_name) != -1) {
+        result_list = pkb_->GetCallee(proc_to_index[left_name]);
         if (result_list.empty()) {
           SetClauseFlag(false);
           cout << left_name << " is not caller " << endl;
@@ -234,7 +234,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = this->pkb_.GetAllCallee();
+      result_list = pkb_->GetAllCallee();
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " there are no procedures being called" << endl;
@@ -243,7 +243,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = this->pkb_.GetAllCallPairs();
+      result_pair_list = pkb_->GetAllCallPairs();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Call(proc,proc)" << endl;
@@ -273,31 +273,31 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
 
   switch (arrangement) {
     case kNoSynonym:
-      if (!this->pkb_.IsCallT(left_name, right_name)) {
+      if (!pkb_->IsCallT(left_name, right_name)) {
         SetClauseFlag(false);
         cout << left_name << " not indirectly call by " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
-      if (this->pkb_.GetCallerT(right_name).empty()) {
+      if (pkb_->GetCallerT(right_name).empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not indirectly called " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (this->pkb_.GetCalleeT(left_name).empty()) {
+      if (pkb_->GetCalleeT(left_name).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirect caller " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasCallsRelationship()) {
+      if (!pkb_->HasCallsRelationship()) {
         SetClauseFlag(false);
         cout << " no calls relationship found " << endl;
       }
       return;
     case kOneSynonymLeft:
-      result_list = this->pkb_.GetCallerT(right_name);
+      result_list = pkb_->GetCallerT(right_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not indirectly called " << endl;
@@ -306,7 +306,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = this->pkb_.GetAllCaller();
+      result_list = pkb_->GetAllCaller();
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "there are no call for procedure" << endl;
@@ -315,7 +315,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = this->pkb_.GetCalleeT(left_name);
+      result_list = pkb_->GetCalleeT(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirect caller " << endl;
@@ -324,7 +324,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = this->pkb_.GetAllCallee();
+      result_list = pkb_->GetAllCallee();
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " there are no procedures being called" << endl;
@@ -333,7 +333,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = this->pkb_.GetAllCallTPairs();
+      result_pair_list = pkb_->GetAllCallTPairs();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Call*(proc,proc)" << endl;
@@ -363,32 +363,32 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
 
   switch (arrangement) {
     case kNoSynonym:
-      if (!this->pkb_.IsNext(stoi(left_name), stoi(right_name))) {
+      if (!pkb_->IsNext(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not executed after" << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
-      if (this->pkb_.GetPrevious(stoi(right_name)).empty()) {
+      if (pkb_->GetPrevious(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not executed after anything " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (this->pkb_.GetNext(stoi(left_name)).empty()) {
+      if (pkb_->GetNext(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not executed before anything " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasNextRelationship()) {
+      if (!pkb_->HasNextRelationship()) {
         SetClauseFlag(false);
         cout << " no next relationship found " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetPrevious(stoi(right_name)), left_type);
+          FilterResult(pkb_->GetPrevious(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not executed after any left type" << endl;
@@ -397,7 +397,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllPrevious(), left_type);
+      result_list = FilterResult(pkb_->GetAllPrevious(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "left type is not executed before anything" << endl;
@@ -407,7 +407,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterResult(this->pkb_.GetNext(stoi(left_name)), right_type);
+          FilterResult(pkb_->GetNext(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not executed before any right type" << endl;
@@ -416,7 +416,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllNext(), right_type);
+      result_list = FilterResult(pkb_->GetAllNext(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right type is not executed before anything" << endl;
@@ -426,7 +426,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       result_pair_list = FilterPairResult(
-          kFilterBoth, this->pkb_.GetAllNextPairs(), left_type, right_type);
+          kFilterBoth, pkb_->GetAllNextPairs(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Next(left,right)" << endl;
@@ -441,7 +441,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
 void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
                                         PqlSuchthat suchthat,
                                         SuchthatParamType arrangement) {
-  PqlExtractor pqle = PqlExtractor(this->pkb_);
+  PqlExtractor pqle = PqlExtractor(*pkb_);
   // Getting parameter of such that
   Parameters such_that_param = suchthat.GetParameters();
   pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
@@ -478,7 +478,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasNextRelationship()) {
+      if (!pkb_->HasNextRelationship()) {
         SetClauseFlag(false);
         cout << " no next relationship found " << endl;
       }
@@ -495,7 +495,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllPrevious(), left_type);
+      result_list = FilterResult(pkb_->GetAllPrevious(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "left type is not indirectly executed before anything" << endl;
@@ -514,7 +514,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllNext(), right_type);
+      result_list = FilterResult(pkb_->GetAllNext(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right type is not indirectly executed after anything" << endl;
@@ -563,34 +563,34 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT followed by right
-      if (!this->pkb_.IsFollows(stoi(left_name), stoi(right_name))) {
+      if (!pkb_->IsFollows(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not followed by " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If right is not follower
-      if (this->pkb_.GetFollowedBy(stoi(right_name)).empty()) {
+      if (pkb_->GetFollowedBy(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not a follower " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If left is not followee
-      if (this->pkb_.GetFollows(stoi(left_name)).empty()) {
+      if (pkb_->GetFollows(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not a followee " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasFollowsRelationship()) {
+      if (!pkb_->HasFollowsRelationship()) {
         SetClauseFlag(false);
         cout << " no follow relationship found " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetFollowedBy(stoi(right_name)), left_type);
+          FilterResult(pkb_->GetFollowedBy(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No followee for this type " << endl;
@@ -599,7 +599,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllFollowedBy(), left_type);
+      result_list = FilterResult(pkb_->GetAllFollowedBy(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have any follower" << endl;
@@ -609,7 +609,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterResult(this->pkb_.GetFollows(stoi(left_name)), right_type);
+          FilterResult(pkb_->GetFollows(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No follower of this type " << endl;
@@ -618,7 +618,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllFollows(), right_type);
+      result_list = FilterResult(pkb_->GetAllFollows(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt is not following anyone" << endl;
@@ -629,7 +629,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
     case kTwoSynonym:
       // Filter left and right
       result_pair_list = FilterPairResult(
-          kFilterBoth, this->pkb_.GetAllFollowsPair(), left_type, right_type);
+          kFilterBoth, pkb_->GetAllFollowsPair(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of (lefttype,righttype)" << endl;
@@ -660,7 +660,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT followed by right
-      if (!this->pkb_.IsFollowsT(stoi(left_name), stoi(right_name))) {
+      if (!pkb_->IsFollowsT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not indirectly followed by " << right_name
              << endl;
@@ -668,27 +668,27 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       return;
     case kNoSynonymUnderscoreLeft:
       // If right is not follower
-      if (this->pkb_.GetFollowedByT(stoi(right_name)).empty()) {
+      if (pkb_->GetFollowedByT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not an indirect follower " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If left is not followee
-      if (this->pkb_.GetFollowsT(stoi(left_name)).empty()) {
+      if (pkb_->GetFollowsT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not an indirect followee " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasFollowsRelationship()) {
+      if (!pkb_->HasFollowsRelationship()) {
         SetClauseFlag(false);
         cout << " no follow relationship found " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetFollowedByT(stoi(right_name)), left_type);
+          FilterResult(pkb_->GetFollowedByT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No indirect followee for this type " << endl;
@@ -697,7 +697,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllFollowedBy(), left_type);
+      result_list = FilterResult(pkb_->GetAllFollowedBy(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have any follower" << endl;
@@ -707,7 +707,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterResult(this->pkb_.GetFollowsT(stoi(left_name)), right_type);
+          FilterResult(pkb_->GetFollowsT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No indirect follower of this type " << endl;
@@ -716,7 +716,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllFollows(), right_type);
+      result_list = FilterResult(pkb_->GetAllFollows(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt is not following anyone" << endl;
@@ -727,7 +727,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
     case kTwoSynonym:
       // Filter left and right
       result_pair_list = FilterPairResult(
-          kFilterBoth, this->pkb_.GetAllFollowsTPair(), left_type, right_type);
+          kFilterBoth, pkb_->GetAllFollowsTPair(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no indirect pair of (lefttype,righttype)" << endl;
@@ -758,34 +758,34 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT parent of right
-      if (!this->pkb_.IsParent(stoi(left_name), stoi(right_name))) {
+      if (!pkb_->IsParent(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not parent of " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If no parent
-      if (this->pkb_.GetParent(stoi(right_name)).empty()) {
+      if (pkb_->GetParent(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " has no parent " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no child
-      if (this->pkb_.GetChild(stoi(left_name)).empty()) {
+      if (pkb_->GetChild(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " has no child " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasParentRelationship()) {
+      if (!pkb_->HasParentRelationship()) {
         SetClauseFlag(false);
         cout << " no parent/child found " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetParent(stoi(right_name)), left_type);
+          FilterResult(pkb_->GetParent(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have " << right_name << " as child"
@@ -795,7 +795,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllParent(), left_type);
+      result_list = FilterResult(pkb_->GetAllParent(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt is not a parent" << endl;
@@ -805,7 +805,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterResult(this->pkb_.GetChild(stoi(left_name)), right_type);
+          FilterResult(pkb_->GetChild(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have stmt " << left_name << " as parent"
@@ -815,7 +815,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllChild(), right_type);
+      result_list = FilterResult(pkb_->GetAllChild(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have any parent" << endl;
@@ -825,7 +825,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       result_pair_list = FilterPairResult(
-          kFilterBoth, this->pkb_.GetAllParentPair(), left_type, right_type);
+          kFilterBoth, pkb_->GetAllParentPair(), left_type, right_type);
       // Filter left and right
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
@@ -857,34 +857,34 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT parent of right
-      if (!this->pkb_.IsParentT(stoi(left_name), stoi(right_name))) {
+      if (!pkb_->IsParentT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not indirect parent of " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If no parent
-      if (this->pkb_.GetParentT(stoi(right_name)).empty()) {
+      if (pkb_->GetParentT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " has no indirect parent " << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no child
-      if (this->pkb_.GetChildT(stoi(left_name)).empty()) {
+      if (pkb_->GetChildT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " has no indirect child " << endl;
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (!this->pkb_.HasParentRelationship()) {
+      if (!pkb_->HasParentRelationship()) {
         SetClauseFlag(false);
         cout << " no parent/child found " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetParentT(stoi(right_name)), left_type);
+          FilterResult(pkb_->GetParentT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have " << right_name
@@ -894,7 +894,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllParent(), left_type);
+      result_list = FilterResult(pkb_->GetAllParent(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt is not a parent" << endl;
@@ -904,7 +904,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterResult(this->pkb_.GetChildT(stoi(left_name)), right_type);
+          FilterResult(pkb_->GetChildT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have stmt " << left_name
@@ -914,7 +914,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRightUnderscoreLeft:
-      result_list = FilterResult(this->pkb_.GetAllChild(), right_type);
+      result_list = FilterResult(pkb_->GetAllChild(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have any parent" << endl;
@@ -924,7 +924,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       result_pair_list = FilterPairResult(
-          kFilterBoth, this->pkb_.GetAllParentTPair(), left_type, right_type);
+          kFilterBoth, pkb_->GetAllParentTPair(), left_type, right_type);
       // Filter left and right
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
@@ -956,14 +956,14 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If stmt (left) doesnt use variable (right)
-      if (!this->pkb_.IsUsedByS(stoi(left_name), right_name)) {
+      if (!pkb_->IsUsedByS(stoi(left_name), right_name)) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't use " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If nothing were used by this stmt
-      if (this->pkb_.GetUsedVarS(stoi(left_name)).empty()) {
+      if (pkb_->GetUsedVarS(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't use any variable " << endl;
       }
@@ -971,7 +971,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
     case kOneSynonymLeft:
       // If no stmt of left syn entity type uses the right variable
       result_list =
-          FilterResult(this->pkb_.GetUsingStmt(right_name), left_type);
+          FilterResult(pkb_->GetUsingStmt(right_name), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt of left type doesnt use right variable" << endl;
@@ -980,7 +980,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllUsingStmt(), left_type);
+      result_list = FilterResult(pkb_->GetAllUsingStmt(), left_type);
       // If no stmt of left syn entity type uses the any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -991,7 +991,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list = FilterVariableResult(
-          this->pkb_.GetUsedVarS(stoi(left_name)), right_type);
+          pkb_->GetUsedVarS(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesnt use any variable of this type"
@@ -1002,7 +1002,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       result_pair_list = FilterPairResult(
-          kFilterLeft, this->pkb_.GetAllUsesPairS(), left_type, right_type);
+          kFilterLeft, pkb_->GetAllUsesPairS(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt of left type doesnt use any variable" << endl;
@@ -1033,21 +1033,21 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If proc (left) doesnt use variable (right)
-      if (!this->pkb_.IsUsedByP(left_name, right_name)) {
+      if (!pkb_->IsUsedByP(left_name, right_name)) {
         SetClauseFlag(false);
         cout << "Proc " << left_name << " doesn't use " << right_name << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If nothing were used by this proc
-      if (this->pkb_.GetUsedVarP(left_name).empty()) {
+      if (pkb_->GetUsedVarP(left_name).empty()) {
         SetClauseFlag(false);
         cout << "Proc " << left_name << " doesn't use any variable " << endl;
       }
       return;
     case kOneSynonymLeft:
       // If no proc uses the right variable
-      result_list = this->pkb_.GetUsingProc(right_name);
+      result_list = pkb_->GetUsingProc(right_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Proc doesnt use right variable" << endl;
@@ -1056,7 +1056,7 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = this->pkb_.GetAllUsingProc();
+      result_list = pkb_->GetAllUsingProc();
       // If no proc of left syn entity type uses the any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1067,7 +1067,7 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymRight:
       result_list =
-          FilterVariableResult(this->pkb_.GetUsedVarP(left_name), right_type);
+          FilterVariableResult(pkb_->GetUsedVarP(left_name), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Proc " << left_name << " doesnt use any variable of this type"
@@ -1077,7 +1077,7 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = this->pkb_.GetAllUsesPairP();
+      result_pair_list = pkb_->GetAllUsesPairP();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << "Procedure doesnt use any variable" << endl;
@@ -1108,7 +1108,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If stmt (left) doesnt modify variable (right)
-      if (!this->pkb_.IsModifiedByS(stoi(left_name), right_name)) {
+      if (!pkb_->IsModifiedByS(stoi(left_name), right_name)) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify " << right_name
              << endl;
@@ -1116,14 +1116,14 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       return;
     case kNoSynonymUnderscoreRight:
       // If no variables were modified by this stmt
-      if (this->pkb_.GetModifiedVarS(stoi(left_name)).empty()) {
+      if (pkb_->GetModifiedVarS(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
       }
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(this->pkb_.GetModifyingS(right_name), left_type);
+          FilterResult(pkb_->GetModifyingS(right_name), left_type);
       // If no stmt of left syn entity type modifies the right variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1133,7 +1133,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = FilterResult(this->pkb_.GetAllModifyingS(), left_type);
+      result_list = FilterResult(pkb_->GetAllModifyingS(), left_type);
       // If no stmt of left syn entity type modifies any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1143,7 +1143,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = this->pkb_.GetModifiedVarS(stoi(left_name));
+      result_list = pkb_->GetModifiedVarS(stoi(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesnt modify any variable" << endl;
@@ -1153,7 +1153,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       result_pair_list = FilterPairResult(
-          kFilterLeft, this->pkb_.GetAllModifiesPairS(), left_type, right_type);
+          kFilterLeft, pkb_->GetAllModifiesPairS(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << "No stmt/variable pair found" << endl;
@@ -1184,7 +1184,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
   switch (arrangement) {
     case kNoSynonym:
       // If proc (left) doesnt modify variable (right)
-      if (!this->pkb_.IsModifiedByP(left_name, right_name)) {
+      if (!pkb_->IsModifiedByP(left_name, right_name)) {
         SetClauseFlag(false);
         cout << "Procedure " << left_name << " doesn't modify " << right_name
              << endl;
@@ -1192,13 +1192,13 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       return;
     case kNoSynonymUnderscoreRight:
       // If no variables were modified by this proc
-      if (this->pkb_.GetModifiedVarP(left_name).empty()) {
+      if (pkb_->GetModifiedVarP(left_name).empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
       }
       return;
     case kOneSynonymLeft:
-      result_list = this->pkb_.GetModifyingP(right_name);
+      result_list = pkb_->GetModifyingP(right_name);
       // If no proc modifies the right variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1208,7 +1208,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeftUnderscoreRight:
-      result_list = this->pkb_.GetAllModifyingP();
+      result_list = pkb_->GetAllModifyingP();
       // If no proc modifies any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1218,7 +1218,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = this->pkb_.GetModifiedVarP(left_name);
+      result_list = pkb_->GetModifiedVarP(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Proc " << left_name << " doesnt modify any variable" << endl;
@@ -1227,7 +1227,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = this->pkb_.GetAllModifiesPairP();
+      result_pair_list = pkb_->GetAllModifiesPairP();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << "No proc/variable pair found" << endl;
@@ -1253,7 +1253,7 @@ QueryResultList PqlEvaluateSuchthat::FilterResult(
   for (auto& iter : unfiltered_result) {
     int result = iter;
 
-    if (this->pkb_.GetStmtType(result) == entity_type) {
+    if (pkb_->GetStmtType(result) == entity_type) {
       filtered_result.push_back(result);
     }
   }
@@ -1267,10 +1267,10 @@ QueryResultList PqlEvaluateSuchthat::FilterVariableResult(
 
   for (auto& iter : unfiltered_result) {
     if (variable_type == PqlDeclarationEntity::kConstant &&
-        this->pkb_.IsConstValue(iter)) {
+        pkb_->IsConstValue(iter)) {
       filtered_result.push_back(iter);
     } else if (variable_type == PqlDeclarationEntity::kVariable &&
-               this->pkb_.IsVarIndex(iter)) {
+               pkb_->IsVarIndex(iter)) {
       filtered_result.push_back(iter);
     }
   }
@@ -1315,18 +1315,18 @@ QueryResultPairList PqlEvaluateSuchthat::FilterPairResult(
     int right_result = iter.second;
     switch (filter_type) {
       case kFilterLeft:
-        if (this->pkb_.GetStmtType(left_result) == left_type) {
+        if (pkb_->GetStmtType(left_result) == left_type) {
           filtered_result.push_back(iter);
         }
         break;
       case kFilterRight:
-        if (this->pkb_.GetStmtType(right_result) == right_type) {
+        if (pkb_->GetStmtType(right_result) == right_type) {
           filtered_result.push_back(iter);
         }
         break;
       case kFilterBoth:
-        if (this->pkb_.GetStmtType(left_result) == left_type &&
-            this->pkb_.GetStmtType(right_result) == right_type) {
+        if (pkb_->GetStmtType(left_result) == left_type &&
+            pkb_->GetStmtType(right_result) == right_type) {
           filtered_result.push_back(iter);
         }
         break;
@@ -1404,4 +1404,4 @@ void PqlEvaluateSuchthat::SetClauseFlag(bool clause_flag) {
 
 bool PqlEvaluateSuchthat::IsValidClause() { return clause_flag_; }
 
-void PqlEvaluateSuchthat::SetPKB(PKB pkb) { this->pkb_ = pkb; }
+void PqlEvaluateSuchthat::SetPKB(PKB* pkb) { this->pkb_ = pkb; }

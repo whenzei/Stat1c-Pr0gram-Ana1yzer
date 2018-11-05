@@ -55,7 +55,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         switch (clause->GetClauseType()) {
           case PqlClauseType::kSuchthat:
             tempbool = suchthat_evaluator.EvaluateSuchthatClause(
-                this, pkb, *(PqlSuchthat*)clause);
+                this, &pkb, *(PqlSuchthat*)clause);
             // If valid then set boolean, if not dont change the invalidity
             if (IsValidClause()) {
               SetClauseFlag(tempbool);
@@ -63,7 +63,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
             continue;
           case PqlClauseType::kPattern:
             tempbool = pattern_evaluator.EvaluatePatternClause(
-                this, pkb, *(PqlPattern*)clause);
+                this, &pkb, *(PqlPattern*)clause);
             // If valid then set boolean, if not dont change the invalidity
             if (IsValidClause()) {
               SetClauseFlag(tempbool);
@@ -71,7 +71,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
             continue;
           case PqlClauseType::kWith:
             tempbool =
-                with_evaluator.EvaluateWithClause(this, pkb, *(PqlWith*)clause);
+                with_evaluator.EvaluateWithClause(this, &pkb, *(PqlWith*)clause);
             // If valid then set boolean, if not dont change the invalidity
             if (IsValidClause()) {
               SetClauseFlag(tempbool);

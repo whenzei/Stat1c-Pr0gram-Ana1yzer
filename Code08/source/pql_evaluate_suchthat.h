@@ -26,7 +26,7 @@ using IndexToVarProcMap = unordered_map<int, string>;
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluateSuchthat {
  private:
-  PKB pkb_;           // pkb database
+  PKB* pkb_;           // pkb database
   bool clause_flag_;  // to determine if clauses are true/false
 
  public:
@@ -34,7 +34,7 @@ class PqlEvaluateSuchthat {
   PqlEvaluateSuchthat();
 
   /* Setter */
-  void SetPKB(PKB);
+  void SetPKB(PKB*);
   void SetClauseFlag(bool);
 
   /* Getter */
@@ -47,7 +47,7 @@ class PqlEvaluateSuchthat {
    * @param The evaluator, pkb and such that clause in the Query
    * @return boolean of whether the clause is true/false
    */
-  bool EvaluateSuchthatClause(PqlEvaluator* pql_eval, PKB pkb,
+  bool EvaluateSuchthatClause(PqlEvaluator* pql_eval, PKB* pkb,
                               PqlSuchthat suchthat);
 
   /**
