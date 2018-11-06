@@ -8,6 +8,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "pql_extractor.h"
 #include "pql_global.h"
 
 using std::pair;
@@ -44,16 +45,25 @@ class PqlResult {
 
   void InitTable(QueryResultPairList, string, string);
 
+  void InitTable(AffectsTable, string, string);
+
   void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
 
   void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int,
                     string, string);
 
+  void MergeResults(AffectsTable, PqlResultTableConflict, int, int, string,
+                    string);
+
   void SetupMergeMap(QueryResultPairList, PqlResultTableConflict);
+
+  void SetupMergeMap(AffectsTable, PqlResultTableConflict);
 
   void SetupMergeSet(QueryResultList);
 
   void SetupMergeSet(QueryResultPairList);
+
+  void SetupMergeSet(AffectsTable);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);
