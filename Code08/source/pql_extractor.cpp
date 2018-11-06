@@ -65,12 +65,12 @@ VertexSet PqlExtractor::GetAllAffectedBy() {
   return ae_.GetAllAffectedBy();
 }
 
-AffectsTable PqlExtractor::GetAffectsTable() {
-  return ae_.GetAffectsTable();
+AffectsMap PqlExtractor::GetAffectsMap() {
+  return ae_.GetAffectsMap();
 }
 
-AffectsTable PqlExtractor::GetAffectedByTable() {
-  return ae_.GetAffectedByTable();
+AffectsMap PqlExtractor::GetAffectedByMap() {
+  return ae_.GetAffectedByMap();
 }
 
 /**********************************
@@ -105,12 +105,12 @@ VertexSet PqlExtractor::GetAllAffectedByT() {
   return ae_.GetAllAffectedByT();
 }
 
-AffectsTable PqlExtractor::GetAffectsTTable() {
-  return ae_.GetAffectsTTable();
+AffectsMap PqlExtractor::GetAffectsTMap() {
+  return ae_.GetAffectsTMap();
 }
 
-AffectsTable PqlExtractor::GetAffectedByTTable() {
-  return ae_.GetAffectedByTTable();
+AffectsMap PqlExtractor::GetAffectedByTMap() {
+  return ae_.GetAffectedByTMap();
 }
 
 /**********************************
@@ -137,12 +137,12 @@ VertexSet PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
   return ae_.GetAffectedBy(stmt_num, true);
 }
 
-AffectsTable PqlExtractor::GetAffectsBipTable() {
-  return ae_.GetAffectsBipTable();
+AffectsMap PqlExtractor::GetAffectsBipMap() {
+  return ae_.GetAffectsBipMap();
 }
 
-AffectsTable PqlExtractor::GetAffectedByBipTable() {
-  return ae_.GetAffectedByBipTable();
+AffectsMap PqlExtractor::GetAffectedByBipMap() {
+  return ae_.GetAffectedByBipMap();
 }
 
 /**********************************
@@ -177,10 +177,10 @@ VertexSet PqlExtractor::GetAllAffectedByBipT() {
   return ae_.GetAllAffectedByT(true);
 }
 
-AffectsTable PqlExtractor::GetAffectsBipTTable() {
-  return ae_.GetAffectsBipTTable();
+AffectsMap PqlExtractor::GetAffectsBipTMap() {
+  return ae_.GetAffectsBipTMap();
 }
 
-AffectsTable PqlExtractor::GetAffectedByBipTTable() {
-  return ae_.GetAffectedByBipTTable();
+AffectsMap PqlExtractor::GetAffectedByBipTMap() {
+  return ae_.GetAffectedByBipTMap();
 }

@@ -378,143 +378,127 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAffectsTable) {
     // test while-if loop
     PqlExtractor extractor = PqlExtractor(&pkb1);
-    AffectsTable actual_results_1 = extractor.GetAffectsTable();
-    AffectsTable expected_results_1;
+    AffectsMap actual_results_1 = extractor.GetAffectsMap();
+    AffectsMap expected_results_1;
     // variable t is modified at 4 / 6, used at 4, 6, 9, 12 without being
     // modified again
-    expected_results_1.AddEdge(4, 4);
-    expected_results_1.AddEdge(4, 6);
-    expected_results_1.AddEdge(4, 9);
-    expected_results_1.AddEdge(4, 12);
-
-    expected_results_1.AddEdge(6, 4);
-    expected_results_1.AddEdge(6, 6);
-    expected_results_1.AddEdge(6, 9);
-    expected_results_1.AddEdge(6, 12);
+    expected_results_1.emplace(4, VertexSet{4, 6, 9, 12});
+    expected_results_1.emplace(6, VertexSet{4, 6, 9, 12});
     // variable g is modified at 8 and used at 12 without being modified again
-    expected_results_1.AddEdge(8, 12);
+    expected_results_1.emplace(8, VertexSet{12});
+
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_1.emplace(9, VertexSet());
+    expected_results_1.emplace(12, VertexSet());
+
     // variable a and f are both modified again by non-assign statements and
     // thus have no results
     Assert::IsTrue(actual_results_1 == expected_results_1);
 
     // test if-while loop
     extractor = PqlExtractor(&pkb2);
-    AffectsTable actual_results_2 = extractor.GetAffectsTable();
-    AffectsTable expected_results_2;
-    expected_results_2.AddEdge(1, 5);
-    expected_results_2.AddEdge(1, 6);
-    expected_results_2.AddEdge(1, 10);
+    AffectsMap actual_results_2 = extractor.GetAffectsMap();
+    AffectsMap expected_results_2;
 
-    expected_results_2.AddEdge(6, 13);
-    expected_results_2.AddEdge(7, 10);
+    expected_results_2.emplace(1, VertexSet{5, 6, 10});
+    expected_results_2.emplace(6, VertexSet{13});
+    expected_results_2.emplace(7, VertexSet{10});
+    expected_results_2.emplace(10, VertexSet{9, 10});
+    expected_results_2.emplace(12, VertexSet{12, 13});
 
-    expected_results_2.AddEdge(10, 9);
-    expected_results_2.AddEdge(10, 10);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_2.emplace(5, VertexSet());
+    expected_results_2.emplace(13, VertexSet());
+    expected_results_2.emplace(9, VertexSet());
 
-    expected_results_2.AddEdge(12, 12);
-    expected_results_2.AddEdge(12, 13);
     Assert::IsTrue(actual_results_2 == expected_results_2);
 
     // test while-while loop
     extractor = PqlExtractor(&pkb4);
-    AffectsTable actual_results_3 = extractor.GetAffectsTable();
-    AffectsTable expected_results_3;
+    AffectsMap actual_results_3 = extractor.GetAffectsMap();
+    AffectsMap expected_results_3;
 
-    expected_results_3.AddEdge(1, 3);
-    expected_results_3.AddEdge(1, 12);
+    expected_results_3.emplace(1, VertexSet{3, 12});
+    expected_results_3.emplace(5, VertexSet{3, 12});
+    expected_results_3.emplace(7, VertexSet{5, 9});
+    expected_results_3.emplace(8, VertexSet{7});
+    expected_results_3.emplace(9, VertexSet{8});
 
-    expected_results_3.AddEdge(5, 3);
-    expected_results_3.AddEdge(5, 12);
-
-    expected_results_3.AddEdge(7, 5);
-    expected_results_3.AddEdge(7, 9);
-
-    expected_results_3.AddEdge(8, 7);
-
-    expected_results_3.AddEdge(9, 8);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_3.emplace(3, VertexSet());
+    expected_results_3.emplace(12, VertexSet());
 
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
 
-  TEST_METHOD(TestGetAffectedByTable) {
+  TEST_METHOD(TestGetAffectedByMap) {
     // test while-if loop
     PqlExtractor extractor = PqlExtractor(&pkb1);
-    AffectsTable actual_results_1 = extractor.GetAffectedByTable();
-    AffectsTable expected_results_1;
-    // Should be reversed of GetAffectsTable
-    expected_results_1.AddEdge(4, 4);
-    expected_results_1.AddEdge(6, 4);
-    expected_results_1.AddEdge(9, 4);
-    expected_results_1.AddEdge(12, 4);
+    AffectsMap actual_results_1 = extractor.GetAffectedByMap();
+    AffectsMap expected_results_1;
+    // Should be reversed of GetAffectsMap
+    expected_results_1.emplace(4, VertexSet{4, 6});
+    expected_results_1.emplace(6, VertexSet{4, 6});
+    expected_results_1.emplace(9, VertexSet{4, 6});
+    expected_results_1.emplace(12, VertexSet{4, 6, 8});
 
-    expected_results_1.AddEdge(4, 6);
-    expected_results_1.AddEdge(6, 6);
-    expected_results_1.AddEdge(9, 6);
-    expected_results_1.AddEdge(12, 6);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_1.emplace(8, VertexSet());
 
-    expected_results_1.AddEdge(12, 8);
     Assert::IsTrue(actual_results_1 == expected_results_1);
 
     // test if-while loop
     extractor = PqlExtractor(&pkb2);
-    AffectsTable actual_results_2 = extractor.GetAffectedByTable();
-    AffectsTable expected_results_2;
-    expected_results_2.AddEdge(5, 1);
-    expected_results_2.AddEdge(6, 1);
-    expected_results_2.AddEdge(10, 1);
+    AffectsMap actual_results_2 = extractor.GetAffectedByMap();
+    AffectsMap expected_results_2;
 
-    expected_results_2.AddEdge(13, 6);
-    expected_results_2.AddEdge(10, 7);
+    expected_results_2.emplace(5, VertexSet{1});
+    expected_results_2.emplace(6, VertexSet{1});
+    expected_results_2.emplace(10, VertexSet{1, 7, 10});
+    expected_results_2.emplace(13, VertexSet{6, 12});
+    expected_results_2.emplace(9, VertexSet{10});
+    expected_results_2.emplace(12, VertexSet{12});
 
-    expected_results_2.AddEdge(9, 10);
-    expected_results_2.AddEdge(10, 10);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_2.emplace(1, VertexSet());
+    expected_results_2.emplace(7, VertexSet());
 
-    expected_results_2.AddEdge(12, 12);
-    expected_results_2.AddEdge(13, 12);
     Assert::IsTrue(actual_results_2 == expected_results_2);
 
     // test while-while loop
     extractor = PqlExtractor(&pkb4);
-    AffectsTable actual_results_3 = extractor.GetAffectedByTable();
-    AffectsTable expected_results_3;
+    AffectsMap actual_results_3 = extractor.GetAffectedByMap();
+    AffectsMap expected_results_3;
 
-    expected_results_3.AddEdge(3, 1);
-    expected_results_3.AddEdge(12, 1);
+    expected_results_3.emplace(3, VertexSet{1, 5});
+    expected_results_3.emplace(12, VertexSet{1, 5});
+    expected_results_3.emplace(5, VertexSet{7});
+    expected_results_3.emplace(9, VertexSet{7});
+    expected_results_3.emplace(7, VertexSet{8});
+    expected_results_3.emplace(8, VertexSet{9});
 
-    expected_results_3.AddEdge(3, 5);
-    expected_results_3.AddEdge(12, 5);
-
-    expected_results_3.AddEdge(5, 7);
-    expected_results_3.AddEdge(9, 7);
-
-    expected_results_3.AddEdge(7, 8);
-
-    expected_results_3.AddEdge(8, 9);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results_3.emplace(1, VertexSet());
 
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
 
-  TEST_METHOD(TestGetAffectsBipTable) {
+  TEST_METHOD(TestGetAffectsBipMap) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
-    AffectsTable actual_results = extractor.GetAffectsBipTable();
-    AffectsTable expected_results;
+    AffectsMap actual_results = extractor.GetAffectsBipMap();
+    AffectsMap expected_results;
 
-    expected_results.AddEdge(1, 6);
-    expected_results.AddEdge(1, 10);
-    expected_results.AddEdge(1, 11);
-    expected_results.AddEdge(1, 8);
-    expected_results.AddEdge(1, 3);
+    expected_results.emplace(1, VertexSet{6, 10, 11, 8, 3});
+    expected_results.emplace(3, VertexSet{5});
+    expected_results.emplace(4, VertexSet{5});
+    expected_results.emplace(6, VertexSet{11, 8, 10});
+    expected_results.emplace(10, VertexSet{8, 3});
 
-    expected_results.AddEdge(3, 5);
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_results.emplace(11, VertexSet());
+    expected_results.emplace(8, VertexSet());
+    expected_results.emplace(5, VertexSet());
 
-    expected_results.AddEdge(4, 5);
-
-    expected_results.AddEdge(6, 11);
-    expected_results.AddEdge(6, 8);
-    expected_results.AddEdge(6, 10);
-
-    expected_results.AddEdge(10, 8);
-    expected_results.AddEdge(10, 3);
     Assert::IsTrue(actual_results == expected_results);
   }
 
@@ -637,7 +621,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestIsAffectsT) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
-    //Positives****************************************
+    // Positives****************************************
 
     bool test_result_1 = extractor.IsAffectsT(4, 6);
     Assert::IsTrue(test_result_1);
@@ -651,7 +635,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_4 = extractor.IsAffectsT(6, 12);
     Assert::IsTrue(test_result_4);
 
-    //Negatives********************************************
+    // Negatives********************************************
 
     // Both stmts are not found in the program
     bool test_result_5 = extractor.IsAffectsT(33, 120);
@@ -665,14 +649,14 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestIsAffectsTOneParam) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
-    //Positives****************************************
+    // Positives****************************************
     bool test_result_1 = extractor.IsAffectsT(6);
     Assert::IsTrue(test_result_1);
 
     bool test_result_2 = extractor.IsAffectsT(4);
     Assert::IsTrue(test_result_2);
 
-    //Negatives****************************************
+    // Negatives****************************************
 
     // Value of f is overwritten at stmt 10
     bool test_result_3 = extractor.IsAffectsT(9);
@@ -690,7 +674,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestIsAffectedT) {
     PqlExtractor extractor = PqlExtractor(&pkb3);
 
-    //Positives****************************************
+    // Positives****************************************
     bool test_result_1 = extractor.IsAffectedT(6);
     Assert::IsTrue(test_result_1);
 
@@ -700,7 +684,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_3 = extractor.IsAffectedT(9);
     Assert::IsTrue(test_result_3);
 
-    //Negatives****************************************
+    // Negatives****************************************
 
     // Not an assign statement
     bool test_result_4 = extractor.IsAffectedT(13);
@@ -714,34 +698,34 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestIsAffectsBipT) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
-    //Positives****************************************
+    // Positives****************************************
     bool test_result_1 = extractor.IsAffectsBipT(6, 11);
     Assert::IsTrue(test_result_1);
 
     bool test_result_2 = extractor.IsAffectsBipT(1, 3);
     Assert::IsTrue(test_result_2);
 
-    //Negatives****************************************
+    // Negatives****************************************
     // Not in an affecting relationship
     bool test_result_3 = extractor.IsAffectsBipT(3, 6);
     Assert::IsFalse(test_result_3);
 
     // Both are invalid
     bool test_result_4 = extractor.IsAffectsBipT(9, 12);
-    Assert::IsFalse(test_result_4); 
+    Assert::IsFalse(test_result_4);
   }
 
   TEST_METHOD(TestIsAffectsBipTOneParam) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
-    //Positives****************************************
+    // Positives****************************************
     bool test_result_1 = extractor.IsAffectsBipT(6);
     Assert::IsTrue(test_result_1);
 
     bool test_result_2 = extractor.IsAffectsBipT(1);
     Assert::IsTrue(test_result_1);
 
-    //Negatives****************************************
+    // Negatives****************************************
     // Not in an affecting relationship
     bool test_result_3 = extractor.IsAffectsBipT(5);
     Assert::IsFalse(test_result_3);
@@ -754,7 +738,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestIsAffectedBipT) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
-    //Positives****************************************
+    // Positives****************************************
     bool test_result_1 = extractor.IsAffectedBipT(8);
     Assert::IsTrue(test_result_1);
 
@@ -764,7 +748,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_3 = extractor.IsAffectedBipT(5);
     Assert::IsTrue(test_result_3);
 
-    //Negatives****************************************
+    // Negatives****************************************
     // Not in an affecting relationship
     bool test_result_4 = extractor.IsAffectedBipT(4);
     Assert::IsFalse(test_result_4);
@@ -777,20 +761,20 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAffectsT) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
-    //Positives**************************************
+    // Positives**************************************
     VertexSet test_result_1 = extractor.GetAffectsT(1);
-    VertexSet expected_result_1 = VertexSet{ 5, 6, 9, 10, 13 };
+    VertexSet expected_result_1 = VertexSet{5, 6, 9, 10, 13};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     VertexSet test_result_2 = extractor.GetAffectsT(7);
-    VertexSet expected_result_2 = VertexSet{ 9, 10 };
+    VertexSet expected_result_2 = VertexSet{9, 10};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     VertexSet test_result_3 = extractor.GetAffectsT(12);
-    VertexSet expected_result_3 = VertexSet{ 12, 13 };
+    VertexSet expected_result_3 = VertexSet{12, 13};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
-    //Negatives***************************************
+    // Negatives***************************************
 
     // Stmt 3 is a print stmt
     VertexSet test_result_4 = extractor.GetAffectsT(3);
@@ -816,20 +800,20 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAffectedByT) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
-    //Positives**************************************
+    // Positives**************************************
     VertexSet test_result_1 = extractor.GetAffectedByT(9);
-    VertexSet expected_result_1 = VertexSet{ 1, 7, 10 };
+    VertexSet expected_result_1 = VertexSet{1, 7, 10};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     VertexSet test_result_2 = extractor.GetAffectedByT(12);
-    VertexSet expected_result_2 = VertexSet{ 12 };
+    VertexSet expected_result_2 = VertexSet{12};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     VertexSet test_result_3 = extractor.GetAffectedByT(13);
-    VertexSet expected_result_3 = VertexSet{ 1, 6, 12 };
+    VertexSet expected_result_3 = VertexSet{1, 6, 12};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
-    //Negatives***************************************
+    // Negatives***************************************
 
     // Stmt 2 is a read stmt
     VertexSet test_result_4 = extractor.GetAffectedByT(2);
@@ -850,16 +834,16 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAffectsBipT) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
-    //Positives**************************************
+    // Positives**************************************
     VertexSet test_result_1 = extractor.GetAffectsBipT(1);
-    VertexSet expected_result_1 = VertexSet{ 3, 5, 6, 8, 10, 11 };
+    VertexSet expected_result_1 = VertexSet{3, 5, 6, 8, 10, 11};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     VertexSet test_result_2 = extractor.GetAffectsBipT(6);
-    VertexSet expected_result_2 = VertexSet{ 3, 5, 8, 10, 11 };
+    VertexSet expected_result_2 = VertexSet{3, 5, 8, 10, 11};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
-    //Negatives***************************************
+    // Negatives***************************************
 
     // Stmt 7 is a call stmt
     VertexSet test_result_3 = extractor.GetAffectsBipT(7);
@@ -875,16 +859,16 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAffectedByBipT) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
-    //Positives**************************************
+    // Positives**************************************
     VertexSet test_result_1 = extractor.GetAffectedByBipT(8);
-    VertexSet expected_result_1 = VertexSet{ 1, 6, 10 };
+    VertexSet expected_result_1 = VertexSet{1, 6, 10};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     VertexSet test_result_2 = extractor.GetAffectedByBipT(11);
-    VertexSet expected_result_2 = VertexSet{ 1, 6 };
+    VertexSet expected_result_2 = VertexSet{1, 6};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
-    //Negatives***************************************
+    // Negatives***************************************
 
     // Stmt 9 is a if stmt
     VertexSet test_result_3 = extractor.GetAffectedByBipT(9);
@@ -900,210 +884,179 @@ TEST_CLASS(TestPkbPqlExtractor) {
   TEST_METHOD(TestGetAllAffectsT) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
     VertexSet test_result_1 = extractor_1.GetAllAffectsT();
-    VertexSet expected_result_1 = VertexSet{ 4, 6, 8 };
+    VertexSet expected_result_1 = VertexSet{4, 6, 8};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb2);
     VertexSet test_result_2 = extractor_2.GetAllAffectsT();
-    VertexSet expected_result_2 = VertexSet{ 1, 6, 7, 10, 12 };
+    VertexSet expected_result_2 = VertexSet{1, 6, 7, 10, 12};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     PqlExtractor extractor_3 = PqlExtractor(&pkb3);
     VertexSet test_result_3 = extractor_3.GetAllAffectsT();
-    VertexSet expected_result_3 = VertexSet{ 1, 3, 5, 6, 7, 9, 11, 12, 14 };
+    VertexSet expected_result_3 = VertexSet{1, 3, 5, 6, 7, 9, 11, 12, 14};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
     PqlExtractor extractor_4 = PqlExtractor(&pkb4);
     VertexSet test_result_4 = extractor_4.GetAllAffectsT();
-    VertexSet expected_result_4 = VertexSet{ 1, 5, 7, 8, 9 };
+    VertexSet expected_result_4 = VertexSet{1, 5, 7, 8, 9};
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
   TEST_METHOD(TestGetAllAffectedByT) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
     VertexSet test_result_1 = extractor_1.GetAllAffectedByT();
-    VertexSet expected_result_1 = VertexSet{ 4, 6, 9, 12 };
+    VertexSet expected_result_1 = VertexSet{4, 6, 9, 12};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb2);
     VertexSet test_result_2 = extractor_2.GetAllAffectedByT();
-    VertexSet expected_result_2 = VertexSet{ 5, 6, 9, 10, 12, 13 };
+    VertexSet expected_result_2 = VertexSet{5, 6, 9, 10, 12, 13};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     PqlExtractor extractor_3 = PqlExtractor(&pkb3);
     VertexSet test_result_3 = extractor_3.GetAllAffectedByT();
-    VertexSet expected_result_3 = VertexSet{ 6, 9, 11, 12, 14, 15 };
+    VertexSet expected_result_3 = VertexSet{6, 9, 11, 12, 14, 15};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
     PqlExtractor extractor_4 = PqlExtractor(&pkb4);
     VertexSet test_result_4 = extractor_4.GetAllAffectedByT();
-    VertexSet expected_result_4 = VertexSet{ 3, 5, 7, 8, 9, 12 };
+    VertexSet expected_result_4 = VertexSet{3, 5, 7, 8, 9, 12};
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
   TEST_METHOD(TestGetAllAffectsBipT) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
     VertexSet test_result_1 = extractor_1.GetAllAffectsBipT();
-    VertexSet expected_result_1 = VertexSet{ 4, 6, 8 };
+    VertexSet expected_result_1 = VertexSet{4, 6, 8};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb5);
     VertexSet test_result_2 = extractor_2.GetAllAffectsBipT();
-    VertexSet expected_result_2 = VertexSet{ 1, 3, 4, 6, 10 };
+    VertexSet expected_result_2 = VertexSet{1, 3, 4, 6, 10};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     PqlExtractor extractor_3 = PqlExtractor(&pkb6);
     VertexSet test_result_3 = extractor_3.GetAllAffectsBipT();
-    VertexSet expected_result_3 = VertexSet{ };
+    VertexSet expected_result_3 = VertexSet{};
     Assert::IsTrue(test_result_3 == expected_result_3);
   }
 
   TEST_METHOD(TestGetAllAffectedByBipT) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
     VertexSet test_result_1 = extractor_1.GetAllAffectedByBipT();
-    VertexSet expected_result_1 = VertexSet{ 4, 6, 9, 12 };
+    VertexSet expected_result_1 = VertexSet{4, 6, 9, 12};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb5);
     VertexSet test_result_2 = extractor_2.GetAllAffectedByBipT();
-    VertexSet expected_result_2 = VertexSet{ 3, 5, 6, 8, 10, 11 };
+    VertexSet expected_result_2 = VertexSet{3, 5, 6, 8, 10, 11};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     PqlExtractor extractor_3 = PqlExtractor(&pkb6);
     VertexSet test_result_3 = extractor_3.GetAllAffectedByBipT();
-    VertexSet expected_result_3 = VertexSet{ };
+    VertexSet expected_result_3 = VertexSet{};
     Assert::IsTrue(test_result_3 == expected_result_3);
   }
 
-  TEST_METHOD(TestGetAffectsTTable) {
+  TEST_METHOD(TestGetAffectsTMap) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
-    AffectsTable test_result_1 = extractor_1.GetAffectsTTable();
-    AffectsTable expected_result_1;
-    expected_result_1.AddEdge(4, 4);
-    expected_result_1.AddEdge(4, 12);
-    expected_result_1.AddEdge(4, 6);
-    expected_result_1.AddEdge(4, 9);
-    expected_result_1.AddEdge(6, 4);
-    expected_result_1.AddEdge(6, 12);
-    expected_result_1.AddEdge(6, 6);
-    expected_result_1.AddEdge(6, 9);
-    expected_result_1.AddEdge(8, 12);
+    AffectsMap test_result_1 = extractor_1.GetAffectsTMap();
+    AffectsMap expected_result_1;
+
+    expected_result_1.emplace(4, VertexSet{4, 12, 6, 9});
+    expected_result_1.emplace(6, VertexSet{4, 12, 6, 9});
+    expected_result_1.emplace(8, VertexSet{12});
+
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_result_1.emplace(12, VertexSet());
+    expected_result_1.emplace(9, VertexSet());
+
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb4);
-    AffectsTable test_result_2 = extractor_2.GetAffectsTTable();
-    AffectsTable expected_result_2;
-    expected_result_2.AddEdge(1, 3);
-    expected_result_2.AddEdge(1, 12);
-    expected_result_2.AddEdge(5, 3);
-    expected_result_2.AddEdge(5, 12);
-    expected_result_2.AddEdge(7, 7);
-    expected_result_2.AddEdge(7, 8);
-    expected_result_2.AddEdge(7, 9);
-    expected_result_2.AddEdge(7, 5);
-    expected_result_2.AddEdge(7, 3);
-    expected_result_2.AddEdge(7, 12);
-    expected_result_2.AddEdge(8, 7);
-    expected_result_2.AddEdge(8, 8);
-    expected_result_2.AddEdge(8, 9);
-    expected_result_2.AddEdge(8, 5);
-    expected_result_2.AddEdge(8, 3);
-    expected_result_2.AddEdge(8, 12);
-    expected_result_2.AddEdge(9, 7);
-    expected_result_2.AddEdge(9, 8);
-    expected_result_2.AddEdge(9, 9);
-    expected_result_2.AddEdge(9, 5);
-    expected_result_2.AddEdge(9, 3);
-    expected_result_2.AddEdge(9, 12);
+    AffectsMap test_result_2 = extractor_2.GetAffectsTMap();
+    AffectsMap expected_result_2;
+
+    expected_result_2.emplace(1, VertexSet{3, 12});
+    expected_result_2.emplace(5, VertexSet{3, 12});
+    expected_result_2.emplace(7, VertexSet{7, 8, 9, 5, 3, 12});
+    expected_result_2.emplace(8, VertexSet{7, 8, 9, 5, 3, 12});
+    expected_result_2.emplace(9, VertexSet{7, 8, 9, 5, 3, 12});
+
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_result_2.emplace(3, VertexSet());
+    expected_result_2.emplace(12, VertexSet());
+
     Assert::IsTrue(test_result_2 == expected_result_2);
   }
 
-  TEST_METHOD(TestGetAffectedByTTable) {
+  TEST_METHOD(TestGetAffectedByTMap) {
     PqlExtractor extractor_1 = PqlExtractor(&pkb1);
-    AffectsTable test_result_1 = extractor_1.GetAffectedByTTable();
-    AffectsTable expected_result_1;
-    expected_result_1.AddEdge(4, 4);
-    expected_result_1.AddEdge(9, 4);
-    expected_result_1.AddEdge(6, 4);
-    expected_result_1.AddEdge(6, 6);
-    expected_result_1.AddEdge(12, 4);
-    expected_result_1.AddEdge(12, 6);
-    expected_result_1.AddEdge(4, 6);
-    expected_result_1.AddEdge(9, 6);
-    expected_result_1.AddEdge(12, 8);
+    AffectsMap test_result_1 = extractor_1.GetAffectedByTMap();
+    AffectsMap expected_result_1;
+
+    expected_result_1.emplace(4, VertexSet{4, 6});
+    expected_result_1.emplace(9, VertexSet{4, 6});
+    expected_result_1.emplace(6, VertexSet{4, 6});
+    expected_result_1.emplace(12, VertexSet{4, 6, 8});
+
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_result_1.emplace(8, VertexSet());
+
     Assert::IsTrue(test_result_1 == expected_result_1);
 
     PqlExtractor extractor_2 = PqlExtractor(&pkb4);
-    AffectsTable test_result_2 = extractor_2.GetAffectedByTTable();
-    AffectsTable expected_result_2;
-    expected_result_2.AddEdge(3, 1);
-    expected_result_2.AddEdge(12, 1);
-    expected_result_2.AddEdge(3, 5);
-    expected_result_2.AddEdge(12, 5);
-    expected_result_2.AddEdge(7, 7);
-    expected_result_2.AddEdge(8, 7);
-    expected_result_2.AddEdge(9, 7);
-    expected_result_2.AddEdge(5, 7);
-    expected_result_2.AddEdge(3, 7);
-    expected_result_2.AddEdge(12, 7);
-    expected_result_2.AddEdge(7, 8);
-    expected_result_2.AddEdge(8, 8);
-    expected_result_2.AddEdge(9, 8);
-    expected_result_2.AddEdge(5, 8);
-    expected_result_2.AddEdge(3, 8);
-    expected_result_2.AddEdge(12, 8);
-    expected_result_2.AddEdge(7, 9);
-    expected_result_2.AddEdge(8, 9);
-    expected_result_2.AddEdge(9, 9);
-    expected_result_2.AddEdge(5, 9);
-    expected_result_2.AddEdge(3, 9);
-    expected_result_2.AddEdge(12, 9);
+    AffectsMap test_result_2 = extractor_2.GetAffectedByTMap();
+    AffectsMap expected_result_2;
+
+    expected_result_2.emplace(3, VertexSet{1, 5, 7, 8, 9});
+    expected_result_2.emplace(12, VertexSet{1, 5, 7, 8, 9});
+    expected_result_2.emplace(7, VertexSet{7, 8, 9});
+    expected_result_2.emplace(8, VertexSet{7, 8, 9});
+    expected_result_2.emplace(9, VertexSet{7, 8, 9});
+    expected_result_2.emplace(5, VertexSet{7, 8, 9});
+
+    // add empty set for nodes in graph but doesnt affect anything
+    expected_result_2.emplace(1, VertexSet());
+
     Assert::IsTrue(test_result_2 == expected_result_2);
   }
 
-  TEST_METHOD(TestGetAffectsBipTTable) {
+  TEST_METHOD(TestGetAffectsBipTMap) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
-    AffectsTable test_result = extractor.GetAffectsBipTTable();
-    AffectsTable expected_result;
-    expected_result.AddEdge(1, 10);
-    expected_result.AddEdge(1, 11);
-    expected_result.AddEdge(1, 3);
-    expected_result.AddEdge(3, 5);
-    expected_result.AddEdge(4, 5);
-    expected_result.AddEdge(1, 6);
-    expected_result.AddEdge(1, 8);
-    expected_result.AddEdge(10, 3);
-    expected_result.AddEdge(10, 8);
-    expected_result.AddEdge(6, 10);
-    expected_result.AddEdge(6, 8);
-    expected_result.AddEdge(6, 11);
-    expected_result.AddEdge(10, 5);
-    expected_result.AddEdge(1, 5);
-    expected_result.AddEdge(6, 5);
-    expected_result.AddEdge(6, 3);
+    AffectsMap test_result = extractor.GetAffectsBipTMap();
+    AffectsMap expected_result;
+
+    expected_result.emplace(1, VertexSet{10, 11, 3, 6, 8, 5});
+    expected_result.emplace(3, VertexSet{5});
+    expected_result.emplace(4, VertexSet{5});
+    expected_result.emplace(10, VertexSet{3, 8, 5});
+    expected_result.emplace(6, VertexSet{10, 8, 11, 5, 3});
+
+    expected_result.emplace(11, VertexSet());
+    expected_result.emplace(8, VertexSet());
+    expected_result.emplace(5, VertexSet());
+
     Assert::IsTrue(test_result == expected_result);
   }
 
-  TEST_METHOD(TestGetAffectedByBipTTable) {
+  TEST_METHOD(TestGetAffectedByBipTMap) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
-    AffectsTable test_result = extractor.GetAffectedByBipTTable();
-    AffectsTable expected_result;
-    expected_result.AddEdge(6, 1);
-    expected_result.AddEdge(10, 1);
-    expected_result.AddEdge(11, 1);
-    expected_result.AddEdge(3, 1);
-    expected_result.AddEdge(5, 3);
-    expected_result.AddEdge(5, 4);
-    expected_result.AddEdge(5, 6);
-    expected_result.AddEdge(5, 1);
-    expected_result.AddEdge(5, 10);
-    expected_result.AddEdge(8, 1);
-    expected_result.AddEdge(3, 10);
-    expected_result.AddEdge(3, 6);
-    expected_result.AddEdge(8, 10);
-    expected_result.AddEdge(10, 6);
-    expected_result.AddEdge(8, 6);
-    expected_result.AddEdge(11, 6);
+    AffectsMap test_result = extractor.GetAffectedByBipTMap();
+    AffectsMap expected_result;
+
+    expected_result.emplace(6, VertexSet{1});
+    expected_result.emplace(10, VertexSet{1, 6});
+    expected_result.emplace(11, VertexSet{1, 6});
+    expected_result.emplace(3, VertexSet{1, 10, 6});
+    expected_result.emplace(5, VertexSet{3, 4, 6, 1, 10});
+    expected_result.emplace(8, VertexSet{1, 10, 6});
+
+    // create empty maps for statements that affect nothing but is in graph
+    expected_result.emplace(1, VertexSet());
+    expected_result.emplace(4, VertexSet());
+
     Assert::IsTrue(test_result == expected_result);
   }
 
