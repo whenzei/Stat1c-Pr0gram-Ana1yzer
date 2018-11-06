@@ -22,6 +22,7 @@ using MergeSet = unordered_set<string>;
 using ResultTable = vector<vector<int>>;
 using ResultRow = vector<int>;
 using QueryResultList = vector<int>;
+using QueryResultSet = unordered_set<int>;
 using QueryResultPairList = vector<pair<int, int>>;
 
 /*
@@ -43,11 +44,15 @@ class PqlResult {
 
   void InitTable(QueryResultList, string);
 
+  void InitTable(QueryResultSet, string);
+
   void InitTable(QueryResultPairList, string, string);
 
   void InitTable(AffectsTable, string, string);
 
   void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
+
+  void MergeResults(QueryResultSet, PqlResultTableConflict, int, string);
 
   void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int,
                     string, string);
@@ -60,6 +65,8 @@ class PqlResult {
   void SetupMergeMap(AffectsTable, PqlResultTableConflict);
 
   void SetupMergeSet(QueryResultList);
+
+  void SetupMergeSet(QueryResultSet);
 
   void SetupMergeSet(QueryResultPairList);
 

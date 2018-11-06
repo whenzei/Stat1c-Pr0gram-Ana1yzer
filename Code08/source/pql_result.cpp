@@ -62,6 +62,53 @@ void PqlResult::MergeResults(QueryResultList result_list,
   }
 }
 
+void PqlResult::MergeResults(QueryResultSet result_set,
+                             PqlResultTableConflict conflict_type,
+                             int conflict_column_num, string header_name) {
+  ResultTable result_table = GetResultTable();
+  ResultTable new_table;
+
+  // Not found, no conflict, proceed to merge
+  if (conflict_type == kNoConflict) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column : result_set) {
+        // Merging
+        ResultRow new_row = row;
+        new_row.push_back(result_column);
+        new_table.push_back(new_row);
+      }
+    }
+    SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_name, col_num);
+    SetColumnCount(++col_num);
+  }
+  // This column already exist, merge with comparison
+  else {
+    SetupMergeSet(result_set);
+    MergeSet merge_set = GetMergeSet();
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // If the column value in table matches the value in result list
+      if (merge_set.count(std::to_string(row[conflict_column_num]))) {
+        // Row has passed the comparison
+        new_table.push_back(row);
+      }
+    }
+    SetResultTable(new_table);
+  }
+
+  // If table is empty
+  if (new_table.empty()) {
+    // Remove all the column header
+    SetColumnCount(0);
+    ClearColumnHeader();
+  }
+}
+
 void PqlResult::MergeResults(QueryResultPairList result_pair_list,
                              PqlResultTableConflict conflict_type,
                              int conflict_left_pair, int conflict_right_pair,
@@ -278,6 +325,20 @@ void PqlResult::InitTable(QueryResultList result_list, string header_name) {
   SetColumnCount(++col_num);
 }
 
+void PqlResult::InitTable(QueryResultSet result_set, string header_name) {
+  for (auto& iter : result_set) {
+    ResultRow new_row;
+    // Add one new column
+    new_row.push_back(iter);
+    // Add row to result table
+    this->result_table_.push_back(new_row);
+  }
+  // Manage column header
+  int col_num = GetColumnCount();
+  AddColumnHeader(header_name, col_num);
+  SetColumnCount(++col_num);
+}
+
 void PqlResult::InitTable(QueryResultPairList result_pair_list,
                           string header_left, string header_right) {
   for (auto& iter : result_pair_list) {
@@ -318,6 +379,14 @@ void PqlResult::SetupMergeSet(QueryResultList result_list) {
   ClearMergeSet();
 
   for (auto& iter : result_list) {
+    AddMergeSet(std::to_string(iter));
+  }
+}
+
+void PqlResult::SetupMergeSet(QueryResultSet result_set) {
+  ClearMergeSet();
+
+  for (auto& iter : result_set) {
     AddMergeSet(std::to_string(iter));
   }
 }
