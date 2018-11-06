@@ -455,6 +455,10 @@ AffectsTable AffectsExtractor::GetAffectedByTable() {
 /**** AffectsT methods ****/
 
 bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
+  if (IsAffects(stmt_1, stmt_2)) {
+    return true;
+  }
+
   ProcName p1 = pkb_->GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
   
@@ -472,7 +476,7 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
   }
 
   if (!is_bip && has_set_affects_tables_) {
-    return affects_table_.DFS(stmt_1, stmt_2);
+    return affects_table_.CanReach(stmt_1, stmt_2);
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
@@ -599,12 +603,12 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
   // Otherwise, set the AffectedByTable or AffectedByBipTable based on is_bip.
   // Otherwise, do a DFS on the affected_by_(bip)_table_ and convert into set.
   if(!is_bip) {
-    VertexList affected_by_stmts_list = GetAffectsTable().DFS(stmt);
+    VertexList affected_by_stmts_list = GetAffectedByTable().DFS(stmt);
     VertexSet affected_by_stmts_set(affected_by_stmts_list.begin(),
       affected_by_stmts_list.end());
     return affected_by_stmts_set;
   } else {
-    VertexList affected_by_bip_stmts_list = GetAffectsBipTable().DFS(stmt);
+    VertexList affected_by_bip_stmts_list = GetAffectedByBipTable().DFS(stmt);
     VertexSet affected_by_bip_stmts_set(affected_by_bip_stmts_list.begin(),
     affected_by_bip_stmts_list.end());
     return affected_by_bip_stmts_set;
