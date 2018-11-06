@@ -558,7 +558,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
   QueryResultList result_list;
 
   cout << "Evaluating Affects" << endl;
-
+  /*
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsAffects(stoi(left_name), stoi(right_name))) {
@@ -630,9 +630,9 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
         cout << " no pair of Affects(left,right)" << endl;
       } else {
         pql_eval->StoreClauseResultInTable(result_table, left_name, right_name);
-      }
+      } 
       return;
-  }
+  } */
 }
 
 void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,

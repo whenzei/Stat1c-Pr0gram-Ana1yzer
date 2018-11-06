@@ -200,7 +200,7 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
   QueryResultList result_left, result_right;
   QueryResultPairList filtered_result;
 
-  // Change the 0c/0r/0p to c/r/p for now
+  // Change the 0c/0r/0p to c/r/p while evaluating
   if (left_type == PqlDeclarationEntity::kCallName ||
       left_type == PqlDeclarationEntity::kReadName ||
       left_type == PqlDeclarationEntity::kPrintName) {
@@ -213,14 +213,25 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
 
   // If same type, get twin pair
   if (left_type == right_type) {
-    pql_eval->StoreClauseResultInTable(GetSelectAllTwinResult(left_type),
-                                       left_name, right_name);
+    QueryResultPairList result_list = GetSelectAllTwinResult(left_type);
+    if (result_list.empty()) {
+      SetClauseFlag(false);
+    } else {
+      pql_eval->StoreClauseResultInTable(result_list, left_name, right_name);
+    }
   } else {
     result_left = GetSelectAllResult(left_type);
     result_right = GetSelectAllResult(right_type);
 
+    // If empty means invalid clause
+    if (result_left.empty() || result_right.empty()) {
+      SetClauseFlag(false);
+      return;
+    }
+
     // Check size to ensure fastest filter
     if (result_left.size() < result_right.size()) {
+      // No efficient check for var/proc type so we dont use them to filter
       if (right_type == PqlDeclarationEntity::kVariable ||
           right_type == PqlDeclarationEntity::kProcedure) {
         filtered_result =
