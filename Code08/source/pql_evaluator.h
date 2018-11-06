@@ -10,6 +10,7 @@
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
 #include "pql_result.h"

@@ -29,7 +29,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetPqlResult(PqlResult());
   SetResultTableList(ResultTableList());
   SetResultTableColumnHeader(ResultTableColumnHeader());
-  PqlExtractor pqle = PqlExtractor(pkb);
+  PqlExtractor pqle = PqlExtractor(&pkb);
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
