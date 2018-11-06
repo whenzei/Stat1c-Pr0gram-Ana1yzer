@@ -45,9 +45,10 @@ class PqlProjector {
   // generate final_result from final_result_table
   void GenerateFinalResult();
 
-  // @returns a ResultTable that contains the result for select all select_type
-  // used when a selected synonym does not appear in any clause
-  ResultTable GetSelectAllResult(Synonym selected_syn);
+  // @returns true if the result for select all select_type is not empty and is
+  // added to intermediate_result_tables_ used when a selected synonym does not
+  // appear in any clause
+  bool AddSelectAllResult(Synonym selected_syn);
 
   // @returns the corresponding variable name
   VarName GetVarName(VarIndex var_id);

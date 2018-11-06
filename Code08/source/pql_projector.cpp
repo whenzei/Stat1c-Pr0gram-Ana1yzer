@@ -89,7 +89,7 @@ void PqlProjector::GenerateFinalResult() {
   }
 }
 
-ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
+bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
   QueryResultList query_result_list;
   PqlResult pql_result;
 
@@ -199,9 +199,15 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
       break;
     }
   }
-
-  pql_result.InitTable(query_result_list, selected_syn.first);
-  return pql_result.GetResultTable();
+  if (query_result_list.empty()) {
+    return false;
+  } else {
+    pql_result.InitTable(query_result_list, selected_syn.first);
+    intermediate_result_tables_.push_back(pql_result.GetResultTable());
+    intermediate_column_header_[selected_syn.first] =
+        make_pair(intermediate_result_tables_.size() - 1, 0);
+    return true;
+  }
 }
 
 VarName PqlProjector::GetVarName(VarIndex var_id) {
@@ -246,9 +252,10 @@ FinalResult PqlProjector::GetFinalResult(
       // if the selected synonym is not in any group, store the result of
       // GetAll[synonym_type] as a new group
       if (intermediate_column_header_.count(syn.first) == 0) {
-        intermediate_result_tables_.push_back(GetSelectAllResult(syn));
-        intermediate_column_header_[syn.first] =
-            make_pair(intermediate_result_tables_.size() - 1, 0);
+        if (!AddSelectAllResult(syn)) {
+	      // one of the selected synonym does not have any result, return empty final result list
+          return final_result_;
+        }
       }
     }
   }
