@@ -69,17 +69,31 @@ class PqlExtractor {
   //**************** Affects* *********************************
 
   // @returns true if Affects*(stmt_1, stmt_2) holds
-  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
+  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns a list of stmt numbers a where Affects*(stmt, a) holds
-  StmtNumList GetAffectsT(StmtNum stmt, bool is_bip = false);
+  // @returns true if Affects*(stmt, n) holds for some statement n
+  bool IsAffectsT(StmtNum stmt);
 
-  // @returns a list of stmt numbers a where Affects*(a, stmt) holds
-  StmtNumList GetAffectedByT(StmtNum stmt, bool is_bip = false);
+  // @returns true if Affects*(n, stmt) holds for some statement n
+  bool IsAffectedByT(StmtNum stmt);
 
-  // @returns a list of pairs of stmt numbers a1 and a2 where Affects*(a1, a2)
-  // holds
+  // @returns a set of stmt numbers a where Affects*(stmt, a) holds
+  VertexSet GetAffectsT(StmtNum stmt);
+
+  // @returns a set of stmt numbers a where Affects*(a, stmt) holds
+  VertexSet GetAffectedByT(StmtNum stmt);
+
+  // @returns a set of stmts affecting some other statement
+  VertexSet GetAllAffectsT();
+
+  // @returns a set of stmts being affected by some other statement
+  VertexSet GetAllAffectedByT();
+
+  // @returns a hashmap of <key> stmt <value> set of all affected stmts
   AffectsTable GetAffectsTTable();
+
+  // @returns a hashmap of <key> stmt <value> set of all affecting stmts
+  AffectsTable GetAffectedByTTable();
 
   //****************** AffectsBip *******************************
 
@@ -111,19 +125,34 @@ class PqlExtractor {
 
   //****************** AffectsBip* *******************************
 
-  // @returns true if stmt_1 affects* stmt_2 across procedures
+  // @returns true if AffectsBip*(stmt_1, stmt_2) holds
   bool IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns a list of stmts n that make Affects*(stmt, n) true across
-  // procedures
-  StmtNumList GetAffectsBipT(StmtNum stmt);
+  // @returns true if AffectsBip*(stmt, n) holds for some statement n
+  bool IsAffectsBipT(StmtNum stmt);
 
-  // @returns a list of stmts n that make Affects*(n, stmt) true across
-  // procedures
-  StmtNumList GetAffectedByBipT(StmtNum stmt);
+  // @returns true if AffectsBip*(n, stmt) holds for some statement n
+  bool IsAffectedByBipT(StmtNum stmt);
 
-  // @returns a hashmap of <key> StmtNum <value> set of all affected* StmtNums
+  // @returns a set of stmt numbers a where AffectsBip*(stmt, a) holds
+  VertexSet GetAffectsBipT(StmtNum stmt);
+
+  // @returns a set of stmt numbers a where AffectsBip*(a, stmt) holds
+  VertexSet GetAffectedByBipT(StmtNum stmt);
+
+  // @returns a set of stmts affecting some other statement across procedures
+  VertexSet GetAllAffectsBipT();
+
+  // @returns a set of stmts affected by some other statement across procedures
+  VertexSet GetAllAffectedByBipT();
+
+  // @returns a hashmap of <key> StmtNum <value> set of all affectedByBipT
+  // StmtNums
   AffectsTable GetAffectsBipTTable();
+
+  // @returns a hashmap of <key> StmtNum <value> set of all affectingBipT
+  // StmtNums
+  AffectsTable GetAffectedByBipTTable();
 };
 
 #endif  // !PQL_EXTRACTOR_H

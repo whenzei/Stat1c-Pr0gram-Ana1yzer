@@ -14,11 +14,17 @@ class AffectsExtractor {
  private:
   PKB* pkb_;
   bool has_set_affects_tables_;
+  bool has_set_affects_t_tables_;
   bool has_set_affects_bip_tables_;
+  bool has_set_affects_bip_t_tables_;
   AffectsTable affects_table_;
+  AffectsTable affects_t_table_;
   AffectsTable affected_by_table_;
+  AffectsTable affected_by_t_table_;
   AffectsTable affects_bip_table_;
+  AffectsTable affects_bip_t_table_;
   AffectsTable affected_by_bip_table_;
+  AffectsTable affected_by_bip_t_table_;
 
   bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip);
 
@@ -34,8 +40,14 @@ class AffectsExtractor {
   // Sets the affects_table_ and affected_by_table_ of this class
   void SetAffectsTables();
 
+  // Sets the affects_t_table_ and affected_by_t_table_ of this class
+  void SetAffectsTTables();
+
   // Sets the affects_bip_table_ and affected_by_bip_table_ of this class
   void SetAffectsBipTables();
+
+  // Sets the affects_bip_t_table_ and affected_by_bip_t_table_ of this class
+  void SetAffectsBipTTables();
 
   /* DFS METHODS */
 
@@ -150,7 +162,7 @@ class AffectsExtractor {
   AffectsTable GetAffectedByTable();
 
   /************
-  * IsAffects* *
+  * AffectsT *
   *************/
 
   // Checks and returns whether Affects*(stmt_1, stmt_2) is true
@@ -187,6 +199,14 @@ class AffectsExtractor {
   // @returns a set of statements n
   VertexSet GetAllAffectedByT(bool is_bip = false);
 
+  // Returns all Affects*(a1, a2) relations in the program
+  // @returns a table of <key> a1, <value> set of a2
+  AffectsTable GetAffectsTTable();
+
+  // Returns all Affects*(a1, a2) relations in the program
+  // @returns a table of <key> a2, <value> set of a1
+  AffectsTable GetAffectedByTTable();
+
   /************
   * AffectsBip *
   *************/
@@ -200,6 +220,17 @@ class AffectsExtractor {
   // StmtNums
   AffectsTable GetAffectedByBipTable();
 
+  /************
+  * AffectsBipT *
+  *************/
+
+  // Get the AffectedBipTTable of the whole program
+  // @returns a hashmap of <key> stmt <value> set of all affectedByBipT stmts
+  AffectsTable GetAffectsBipTTable();
+
+  // Get the AffectedByBipTTable of the whole program
+  // @returns a hashmap of <key> stmt <value> set of all affectingBipT stmts
+  AffectsTable GetAffectedByBipTTable();
 };
 
 #endif  // !AFFECTS_EXTRACTOR_H

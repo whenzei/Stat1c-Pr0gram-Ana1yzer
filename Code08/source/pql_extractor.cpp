@@ -77,27 +77,40 @@ AffectsTable PqlExtractor::GetAffectedByTable() {
  * AffectsT *
  **********************************/
 
-bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
-  return false;
+bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2) {
+  return ae_.IsAffectsT(stmt_1, stmt_2);
 }
 
-StmtNumList PqlExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
-  StmtNumList affected_stmts;
-  StmtNumList final_stmt_list;
-  return final_stmt_list;
+bool PqlExtractor::IsAffectsT(StmtNum stmt) {
+  return ae_.IsAffectsT(stmt);
 }
 
-StmtNumList PqlExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
-  StmtNumList affecting_stmts;
-  StmtNumList final_stmt_list;
-  return final_stmt_list;
+bool PqlExtractor::IsAffectedByT(StmtNum stmt) {
+  return ae_.IsAffectedByT(stmt);
+}
+
+VertexSet PqlExtractor::GetAffectsT(StmtNum stmt) {
+  return ae_.GetAffectsT(stmt);
+}
+
+VertexSet PqlExtractor::GetAffectedByT(StmtNum stmt) {
+  return ae_.GetAffectedByT(stmt);
+}
+
+VertexSet PqlExtractor::GetAllAffectsT() {
+  return ae_.GetAllAffectsT();
+}
+
+VertexSet PqlExtractor::GetAllAffectedByT() {
+  return ae_.GetAllAffectedByT();
 }
 
 AffectsTable PqlExtractor::GetAffectsTTable() {
-  AffectsTable affects_table = GetAffectsTable();
-  AffectsTable affects_t_table;
+  return ae_.GetAffectsTTable();
+}
 
-  return affects_t_table;
+AffectsTable PqlExtractor::GetAffectedByTTable() {
+  return ae_.GetAffectedByTTable();
 }
 
 /**********************************
@@ -133,24 +146,41 @@ AffectsTable PqlExtractor::GetAffectedByBipTable() {
 }
 
 /**********************************
- * AffectsBip* *
+ * AffectsBipT *
  **********************************/
 
 bool PqlExtractor::IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2) {
-  return IsAffectsT(stmt_1, stmt_2, true);
+  return ae_.IsAffectsT(stmt_1, stmt_2, true);
 }
 
-StmtNumList PqlExtractor::GetAffectsBipT(StmtNum stmt_1) {
-  return GetAffectsT(stmt_1, true);
+bool PqlExtractor::IsAffectsBipT(StmtNum stmt) {
+  return ae_.IsAffectsT(stmt, true);
 }
 
-StmtNumList PqlExtractor::GetAffectedByBipT(StmtNum stmt_num) {
-  return StmtNumList();
+bool PqlExtractor::IsAffectedByBipT(StmtNum stmt) {
+  return ae_.IsAffectedByT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAffectsBipT(StmtNum stmt) {
+  return ae_.GetAffectsT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAffectedByBipT(StmtNum stmt) {
+  return ae_.GetAffectedByT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAllAffectsBipT() {
+  return ae_.GetAllAffectsT(true);
+}
+
+VertexSet PqlExtractor::GetAllAffectedByBipT() {
+  return ae_.GetAllAffectedByT(true);
 }
 
 AffectsTable PqlExtractor::GetAffectsBipTTable() {
-  AffectsTable affects_table = GetAffectsBipTable();
-  AffectsTable affects_t_table;
+  return ae_.GetAffectsBipTTable();
+}
 
-  return affects_t_table;
+AffectsTable PqlExtractor::GetAffectedByBipTTable() {
+  return ae_.GetAffectedByBipTTable();
 }
