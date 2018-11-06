@@ -105,25 +105,84 @@ void DesignExtractor::PopulateDominates() {
 void DesignExtractor::PopulateProgramCFG() {
   CFG* combined_cfg = pkb_->GetCombinedCFG();
   CFG* reversed_combined_cfg = pkb_->GetReverseCombinedCFG();
-  pkb_->SetProgramCFG(ConnectProgramCFG(combined_cfg));
-  pkb_->SetReverseProgramCFG(ConnectProgramCFG(reversed_combined_cfg));
+  pair<CFG, CFG> cfgs = ConnectProgramCFG(combined_cfg, reversed_combined_cfg);
+  pkb_->SetProgramCFG(cfgs.first);
+  pkb_->SetReverseProgramCFG(cfgs.second);
 }
 
-CFG DesignExtractor::ConnectProgramCFG(CFG* combined_cfg) {
+pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg, CFG* rev_combined_cfg) {
   // must clone, or the combined cfg will be mutated
   CFG program_cfg = CFG(*combined_cfg);
-  // program cfg might not always have 1 as root, such as when a call statement
-  // is stmt#1 and removed
-  Vertex min_vertex = GetMinVertex(&program_cfg);
-  program_cfg.SetRoot(min_vertex);
+  CFG rev_program_cfg = CFG(*rev_combined_cfg);
+  VisitedMap visited = VisitedMap();
 
-  VisitedMap visited;
-  for (auto& v : program_cfg.GetAllVertices()) {
-    visited[v] = false;
+  for (auto v : program_cfg.GetAllVertices()) {
+    // not visited yet
+    if (!visited.count(v)) {
+        DfsConnect(v, &program_cfg, &rev_program_cfg, &visited);
+    }
   }
 
-  DfsConnect(min_vertex, &program_cfg, &visited);
-  return program_cfg;
+  return make_pair(program_cfg, rev_program_cfg);
+}
+
+
+void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
+                                 VisitedMap* visited) {
+  if (visited->count(v)) {
+    return;
+  }
+
+  visited->emplace(v, true);
+
+  VertexList terminal_nodes;
+
+  StmtType stmt_type = pkb_->GetStmtType(v);
+  if (stmt_type == StmtType::kCall) {
+    // get neighbours before adding the root as neighbour
+    VertexList neighbours = cfg->GetNeighboursList(v);
+    ProcName proc_name = pkb_->GetProcName(pkb_->GetCalledProcedure(v));
+    CFG* called_cfg = pkb_->GetCFG(proc_name);
+    Vertex called_cfg_root = called_cfg->GetRoot();
+    // add root of the procedure's cfg as neighbour of call statement's
+    // previouses
+    VertexList previouses = pkb_->GetPrevious(v);
+    for (auto& previous : previouses) {
+      cfg->AddEdge(previous, called_cfg_root);
+      rev_cfg->AddEdge(called_cfg_root, previous);
+    }
+
+    // remove the whole call node
+    // must be done before obtaining terminal nodes in case the call statement
+    // is a terminal node
+    cfg->RemoveNode(v);
+    rev_cfg->RemoveNode(v);
+
+    // get terminal nodes of the called cfg
+    terminal_nodes = called_cfg->GetTerminalNodes();
+
+    for (auto& neighbour : neighbours) {
+      // add the neighbours to the terminal nodes of the procedure
+      for (auto& terminal_node : terminal_nodes) {
+        cfg->AddEdge(terminal_node, neighbour);
+        rev_cfg->AddEdge(neighbour, terminal_node);
+      }
+    }
+
+    // get all the neighbours of the previous node again and dfs
+    for (auto& previous : previouses) {
+      VertexList prev_neighbours = cfg->GetNeighboursList(previous);
+      for (auto& prev_neighbour : prev_neighbours) {
+        DfsConnect(prev_neighbour, cfg, rev_cfg, visited);
+      }
+    }
+  } else {
+    // Default path for non calls: Get the neighbours
+    VertexList neighbours = cfg->GetNeighboursList(v);
+    for (auto& neighbour : neighbours) {
+      DfsConnect(neighbour, cfg, rev_cfg, visited);
+    }
+  }
 }
 
 void DesignExtractor::UpdateCFGRoots() {
@@ -160,60 +219,5 @@ void DesignExtractor::DescentForCallee(ProcName true_caller,
   for (auto& callee : callees) {
     pkb_->InsertIndirectCallRelationship(true_caller, callee);
     DescentForCallee(true_caller, callee);
-  }
-}
-
-void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg,
-                                 VisitedMap* visited) {
-  if ((*visited)[v]) {
-    return;
-  }
-
-  (*visited)[v] = true;
-
-  VertexList terminal_nodes;
-
-  StmtType stmt_type = pkb_->GetStmtType(v);
-  if (stmt_type == StmtType::kCall) {
-    // get neighbours before adding the root as neighbour
-    VertexList neighbours = cfg->GetNeighboursList(v);
-    ProcName proc_name = pkb_->GetProcName(pkb_->GetCalledProcedure(v));
-    CFG* called_cfg = pkb_->GetCFG(proc_name);
-    Vertex called_cfg_root = called_cfg->GetRoot();
-    // add root of the procedure's cfg as neighbour of call statement's
-    // previouses
-    VertexList previouses = pkb_->GetPrevious(v);
-    for (auto& previous : previouses) {
-      cfg->AddEdge(previous, called_cfg_root);
-    }
-
-    // remove the whole call node
-    // must be done before obtaining terminal nodes in case the call statement
-    // is a terminal node
-    cfg->RemoveNode(v);
-
-    // get terminal nodes of the called cfg
-    terminal_nodes = called_cfg->GetTerminalNodes();
-
-    for (auto& neighbour : neighbours) {
-      // add the neighbours to the terminal nodes of the procedure
-      for (auto& terminal_node : terminal_nodes) {
-        cfg->AddEdge(terminal_node, neighbour);
-      }
-    }
-
-    // get all the neighbours of the previous node again and dfs
-    for (auto& previous : previouses) {
-      VertexList prev_neighbours = cfg->GetNeighboursList(previous);
-      for (auto& prev_neighbour : prev_neighbours) {
-        DfsConnect(prev_neighbour, cfg, visited);
-      }
-    }
-  } else {
-    // Default path for non calls: Get the neighbours
-    VertexList neighbours = cfg->GetNeighboursList(v);
-    for (auto& neighbour : neighbours) {
-      DfsConnect(neighbour, cfg, visited);
-    }
   }
 }

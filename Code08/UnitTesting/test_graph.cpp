@@ -167,5 +167,36 @@ TEST_CLASS(TestGraph) {
     Assert::IsTrue(VertexSet{kVertex2, kVertex3} ==
                    graph.GetUnreachableVertices(kVertex2));
   }
+
+  TEST_METHOD(TestCanReach) {
+    Graph graph = Graph();
+    graph.AddEdge(kVertex1, kVertex2);
+    graph.AddEdge(kVertex1, kVertex3);
+    graph.AddEdge(kVertex2, kVertex4);
+    graph.AddEdge(kVertex2, kVertex5);
+    graph.AddEdge(kVertex3, kVertex5);
+    graph.AddEdge(kVertex5, kVertex3);
+    graph.AddEdge(kVertex6, kVertex3);
+
+    bool result1 = graph.CanReach(kVertex1, kVertex3);
+    Assert::IsTrue(result1);
+    bool result2 = graph.CanReach(kVertex2, kVertex3);
+    Assert::IsTrue(result2); 
+    bool result3 = graph.CanReach(kVertex3, kVertex5);
+    Assert::IsTrue(result3);
+    bool result4 = graph.CanReach(kVertex5, kVertex3);
+    Assert::IsTrue(result4);
+    bool result5 = graph.CanReach(kVertex5, kVertex6);
+    Assert::IsFalse(result5);
+
+    graph.AddEdge(kVertex2, kVertex1);
+    bool result6 = graph.CanReach(kVertex2, kVertex1);
+    Assert::IsTrue(result6);
+
+    graph.RemoveEdge(kVertex2, kVertex5);
+    graph.RemoveEdge(kVertex2, kVertex1);
+    bool result7 = graph.CanReach(kVertex2, kVertex3);
+    Assert::IsFalse(result7);
+  }
 };
 }  // namespace FrontendTests

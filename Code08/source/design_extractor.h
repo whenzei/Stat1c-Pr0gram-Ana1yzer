@@ -40,9 +40,9 @@ class DesignExtractor {
 
   // @params: CFG* pointer to cfg to run DfsConnect on
   // @returns the connected CFG
-  CFG ConnectProgramCFG(CFG* cfg);
+  pair<CFG, CFG> ConnectProgramCFG(CFG* cfg, CFG* rev_cfg);
 
-  void DfsConnect(const Vertex v, CFG* cfg, VisitedMap* visited);
+  void DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg, VisitedMap* visited);
 
   //**************************************
  public:
