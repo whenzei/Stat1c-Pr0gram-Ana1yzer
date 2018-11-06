@@ -86,7 +86,7 @@ bool PqlExtractor::IsAffectsT(StmtNum stmt) {
 }
 
 bool PqlExtractor::IsAffectedByT(StmtNum stmt) {
-  return ae_.IsAffectedByT(stmt);
+  return ae_.IsAffectedT(stmt);
 }
 
 VertexSet PqlExtractor::GetAffectsT(StmtNum stmt) {
@@ -158,7 +158,7 @@ bool PqlExtractor::IsAffectsBipT(StmtNum stmt) {
 }
 
 bool PqlExtractor::IsAffectedByBipT(StmtNum stmt) {
-  return ae_.IsAffectedByT(stmt, true);
+  return ae_.IsAffectedT(stmt, true);
 }
 
 VertexSet PqlExtractor::GetAffectsBipT(StmtNum stmt) {

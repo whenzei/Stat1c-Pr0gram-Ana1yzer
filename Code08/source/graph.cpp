@@ -173,12 +173,12 @@ bool Graph::CanReach(Vertex from, Vertex to) {
   return false;
 }
 
-VertexList Graph::DFS(const Vertex from) {
+VertexSet Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
     visited[kv.first] = false;
   }
-  VertexList path;
+  VertexSet path;
 
   DFS(from, &visited, &path);
   return path;
@@ -213,7 +213,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
 
   visited[v] = true;
 
-  VertexList path;  // don't need this, just here for reusability
+  VertexSet path;  // don't need this, just here for reusability
   std::cout << "At vertex " << v << std::endl;
   DFS(root_, &visited, &path);
   std::cout << std::endl;
@@ -234,7 +234,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
   return result;
 }
 
-void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
+void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexSet *path) {
   if ((*visited)[v]) {
     return;
   }
@@ -243,7 +243,7 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
 
   // add saving of path here if want pre-order traversal
   std::cout << v << " ";
-  path->push_back(v);
+  path->insert(v);
 
   VertexSet *neighbours = &adj_set_[v];
 

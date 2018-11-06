@@ -38,7 +38,7 @@ class Graph {
   bool HasCycle(const Vertex& v, VisitedMap* visited, VertexSet* neighbours);
 
   // Generic DFS method, keeps a list of the path traversed
-  void DFS(const Vertex& v, VisitedMap*, VertexList* path);
+  void DFS(const Vertex& v, VisitedMap*, VertexSet* path);
 
   // Helper method for CanReach
   // @returns true if v can reach target, false otherwise
@@ -87,11 +87,7 @@ class Graph {
 
   // Performs a DFS of all vertices reachable from given vertex v
   // @returns vector of vertices in DFS
-  VertexList DFS(const Vertex v);
-
-  // Performs DFS from given vertex start until it finds vertex to_find
-  // @returns true if found, false otherwise
-  bool DFS(Vertex start, Vertex to_find);
+  VertexSet DFS(const Vertex v);
 
   // Get all unreachable vertices when the given vertex v is removed
   // @returns set of all non-visited vertices
