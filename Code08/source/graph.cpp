@@ -29,6 +29,7 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
 
   AddNode(from);
   AddNode(to);
+  parent_vertices_.emplace(from);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
@@ -69,8 +70,11 @@ void Graph::RemoveNode(const Vertex &vertex) {
     adj_set_.erase(vertex);
     adj_list_.erase(vertex);
     all_vertices_.erase(vertex);
+    parent_vertices_.erase(vertex);
   }
 }
+
+VertexSet Graph::GetParentVertices() { return parent_vertices_; }
 
 bool Graph::IsEmpty() { return size_ == 0; }
 
@@ -157,6 +161,18 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
   return false;
 }
 
+bool Graph::CanReach(Vertex from, Vertex to) {
+  VertexList neighbours = GetNeighboursList(from);
+  VisitedMap visited = VisitedMap();
+  for (auto &neighbour : neighbours) {
+    if (DFS(neighbour, to, &visited)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 VertexList Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
@@ -166,6 +182,27 @@ VertexList Graph::DFS(const Vertex from) {
 
   DFS(from, &visited, &path);
   return path;
+}
+
+bool Graph::DFS(Vertex v, Vertex target, VisitedMap *visited) {
+  if (visited->count(v)) {
+    return false;
+  }
+
+  visited->emplace(v, true);
+
+  if (v == target) {
+    return true;
+  }
+  VertexList neighbours = GetNeighboursList(v);
+
+  for (auto& neighbour : neighbours) {
+    if (DFS(neighbour, target, visited)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 VertexSet Graph::GetUnreachableVertices(Vertex v) {

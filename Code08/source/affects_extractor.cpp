@@ -38,8 +38,7 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
     return false;
   }
 
-  // if is_bip, check if Call*(p1, p2) is true. If not, return false
-  if ((!is_bip && p1 != p2) || (is_bip && !pkb_->IsCallT(p1, p2))) {
+  if ((!is_bip && p1 != p2)) {
     return false;
   }
 
@@ -407,34 +406,34 @@ void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
 
 VertexSet AffectsExtractor::GetAllAffects(bool is_bip) {
   if (!is_bip && has_set_affects_tables_) {
-    return affects_table_.GetAllVertices();
+    return affects_table_.GetParentVertices();
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetAllVertices();
+    return affects_bip_table_.GetParentVertices();
   }
 
   if (is_bip) {
-    return GetAffectsBipTable().GetAllVertices();
+    return GetAffectsBipTable().GetParentVertices();
   }
 
-  return GetAffectsTable().GetAllVertices();
+  return GetAffectsTable().GetParentVertices();
 }
 
 VertexSet AffectsExtractor::GetAllAffectedBy(bool is_bip) {
   if (!is_bip && has_set_affects_tables_) {
-    return affected_by_table_.GetAllVertices();
+    return affected_by_table_.GetParentVertices();
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetAllVertices();
+    return affected_by_bip_table_.GetParentVertices();
   }
 
   if (is_bip) {
-    return GetAffectedByBipTable().GetAllVertices();
+    return GetAffectedByBipTable().GetParentVertices();
   }
 
-  return GetAffectedByTable().GetAllVertices();
+  return GetAffectedByTable().GetParentVertices();
 }
 
 AffectsTable AffectsExtractor::GetAffectsTable() {
@@ -475,8 +474,8 @@ void AffectsExtractor::SetAffectsTables() {
     CFG* cfg = pkb_->GetCFG(proc_name);
     // Special DFS each CFG for affects
     DfsSetAffectsTables(cfg->GetRoot(), &affects_table_, &affected_by_table_,
-                        LastModMap(), WhileLastModMap(), WhileLastModMap(),
-                        cfg);
+                        &VisitedMap(), LastModMap(), WhileLastModMap(),
+                        WhileLastModMap(), cfg);
   }
 
   has_set_affects_tables_ = true;
@@ -484,9 +483,15 @@ void AffectsExtractor::SetAffectsTables() {
 
 void AffectsExtractor::SetAffectsBipTables() {
   CFG* cfg = pkb_->GetProgramCFG();
-  DfsSetAffectsTables(cfg->GetRoot(), &affects_bip_table_,
-                      &affected_by_bip_table_, LastModMap(), WhileLastModMap(),
-                      WhileLastModMap(), cfg);
+  VisitedMap visited = VisitedMap();
+  // since program cfg must start from 1 and go to n, loop through
+  for (int i = 1; i <= cfg->GetSize(); i++) {
+    if (!visited.count(i)) {
+      DfsSetAffectsTables(i, &affects_bip_table_, &affected_by_bip_table_,
+                          &visited, LastModMap(), WhileLastModMap(),
+                          WhileLastModMap(), cfg);
+    }
+  }
 
   has_set_affects_bip_tables_ = true;
 }
@@ -497,7 +502,8 @@ void AffectsExtractor::SetAffectsBipTables() {
 // wlmm -> WhileLastModMap
 // pwlmm -> PreviousWhileLastModMap
 void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
-                                           AffectsTable* abt, LastModMap lmm,
+                                           AffectsTable* abt,
+                                           VisitedMap* visited, LastModMap lmm,
                                            WhileLastModMap wlmm,
                                            WhileLastModMap pwlmm, CFG* cfg) {
   StmtType stmt_type = pkb_->GetStmtType(v);
@@ -506,6 +512,8 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
   if (stmt_type == StmtType::kWhile && wlmm.count(v) && lmm == wlmm[v]) {
     return;
   }
+
+  visited->emplace(v, true);
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var
@@ -545,7 +553,7 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
   // dfs neighbours
   VertexSet neighbours = cfg->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsSetAffectsTables(neighbour, at, abt, lmm, wlmm, pwlmm, cfg);
+    DfsSetAffectsTables(neighbour, at, abt, visited, lmm, wlmm, pwlmm, cfg);
   }
 }
 

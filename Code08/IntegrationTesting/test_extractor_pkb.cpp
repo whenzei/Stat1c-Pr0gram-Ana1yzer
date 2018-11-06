@@ -25,7 +25,8 @@ TEST_CLASS(TestPkbPqlExtractor) {
   PKB pkb7 = GetTestPKBSeven();
 
  public:
-  TEST_METHOD(IsNextTTwoParams) {
+  /* NextExtractor Tests*/
+  TEST_METHOD(TestIsNextTTwoParams) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives
@@ -43,7 +44,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsFalse(extractor.IsNextT(222, 222));
   }
 
-  TEST_METHOD(IsNextTOneParam) {
+  TEST_METHOD(TestIsNextTOneParam) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives
@@ -56,7 +57,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsFalse(extractor.IsNextT(2222));
   }
 
-  TEST_METHOD(IsPreviousT) {
+  TEST_METHOD(TestIsPreviousT) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positive
@@ -71,7 +72,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsFalse(extractor.IsPreviousT(13));
   }
 
-  TEST_METHOD(GetPreviousT) {
+  TEST_METHOD(TestGetPreviousT) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positive
@@ -94,7 +95,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
-  TEST_METHOD(GetNextT) {
+  TEST_METHOD(TestGetNextT) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positive
@@ -116,7 +117,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
-  TEST_METHOD(GetNextTPair) {
+  TEST_METHOD(TestGetNextTPair) {
     PqlExtractor extractor = PqlExtractor(&pkb7);
 
     // Positive
@@ -145,7 +146,8 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_1_set == test_result_1_set);
   }
 
-  TEST_METHOD(IsAffectsTwoParams) {
+  /* AffectsExtractor - Affects Tests */
+  TEST_METHOD(TestIsAffectsTwoParams) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives****************************************
@@ -192,7 +194,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_11 = extractor.IsAffects(2, 4);
     Assert::IsFalse(test_result_11);
   }
-  TEST_METHOD(IsAffectsOneParam) {
+  TEST_METHOD(TestIsAffectsOneParam) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives****************************************
@@ -233,7 +235,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_9 = extractor.IsAffects(9);
     Assert::IsFalse(test_result_9);
   }
-  TEST_METHOD(IsAffected) {
+  TEST_METHOD(TestIsAffected) {
     PqlExtractor extractor = PqlExtractor(&pkb3);
 
     // Positives****************************************
@@ -265,39 +267,8 @@ TEST_CLASS(TestPkbPqlExtractor) {
     bool test_result_8 = extractor.IsAffected(6);
     Assert::IsFalse(test_result_8);
   }
-  /*
-  TEST_METHOD(IsAffectsT) {
-    PKB test_pkb = GetTestPKBOne();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
 
-    //Positives****************************************
-
-    bool test_result_1 = extractor.IsAffectsT(4, 6);
-    Assert::IsTrue(test_result_1);
-
-    bool test_result_2 = extractor.IsAffectsT(4, 9);
-    Assert::IsTrue(test_result_2);
-
-    bool test_result_3 = extractor.IsAffectsT(6, 4);
-    Assert::IsTrue(test_result_3);
-
-    //Negatives********************************************
-
-    // Stmts 6 and 12 are in different procedures
-    bool test_result_4 = extractor.IsAffects(6, 12);
-    Assert::IsFalse(test_result_4);
-
-    // Both stmts are not found in the program
-    bool test_result_5 = extractor.IsAffects(33, 120);
-    Assert::IsFalse(test_result_5);
-
-    // Both statements are not assignment statements
-    bool test_result_6 = extractor.IsAffects(3, 1);
-    Assert::IsFalse(test_result_6);
-  }
-  */
-
-  TEST_METHOD(GetAffects) {
+  TEST_METHOD(TestGetAffects) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positives**************************************
@@ -335,7 +306,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     VertexSet expected_result_7 = VertexSet{};
     Assert::IsTrue(test_result_7 == expected_result_7);
   }
-  TEST_METHOD(GetAffectedByWhileInIf) {
+  TEST_METHOD(TestGetAffectedByWhileInIf) {
     PqlExtractor extractor = PqlExtractor(&pkb3);
 
     // Positives**************************************
@@ -380,7 +351,31 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_8 == test_result_8);
   }
 
-  TEST_METHOD(GetAllAffects) {
+  TEST_METHOD(TestGetAllAffects) {
+    PqlExtractor extractor = PqlExtractor(&pkb1);
+    VertexSet actual_results_1 = extractor.GetAllAffects();
+    VertexSet expected_results_1 = VertexSet{4, 6, 8};
+    Assert::IsTrue(actual_results_1 == expected_results_1);
+
+    extractor = PqlExtractor(&pkb2);
+    VertexSet actual_results_2 = extractor.GetAllAffects();
+    VertexSet expected_results_2 = VertexSet{1, 6, 7, 10, 12};
+    Assert::IsTrue(actual_results_2 == expected_results_2);
+
+    extractor = PqlExtractor(&pkb3);
+    VertexSet actual_results_3 = extractor.GetAllAffects();
+    VertexSet expected_results_3 = VertexSet{1, 3, 5, 6, 7, 9, 11, 12, 14};
+    Assert::IsTrue(actual_results_3 == expected_results_3);
+
+    extractor = PqlExtractor(&pkb4);
+    VertexSet actual_results_4 = extractor.GetAllAffects();
+    VertexSet expected_results_4 = VertexSet{1, 5, 7, 8, 9};
+    Assert::IsTrue(actual_results_4 == expected_results_4);
+  }
+
+  TEST_METHOD(TestGetAllAffectedBy) {}
+
+  TEST_METHOD(TestGetAffectsTable) {
     // test while-if loop
     PqlExtractor extractor = PqlExtractor(&pkb1);
     AffectsTable actual_results_1 = extractor.GetAffectsTable();
@@ -441,6 +436,64 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results_3 == expected_results_3);
   }
 
+  TEST_METHOD(TestGetAffectedByTable) {
+    // test while-if loop
+    PqlExtractor extractor = PqlExtractor(&pkb1);
+    AffectsTable actual_results_1 = extractor.GetAffectedByTable();
+    AffectsTable expected_results_1;
+    // Should be reversed of GetAffectsTable
+    expected_results_1.AddEdge(4, 4);
+    expected_results_1.AddEdge(6, 4);
+    expected_results_1.AddEdge(9, 4);
+    expected_results_1.AddEdge(12, 4);
+
+    expected_results_1.AddEdge(4, 6);
+    expected_results_1.AddEdge(6, 6);
+    expected_results_1.AddEdge(9, 6);
+    expected_results_1.AddEdge(12, 6);
+
+    expected_results_1.AddEdge(12, 8);
+    Assert::IsTrue(actual_results_1 == expected_results_1);
+
+    // test if-while loop
+    extractor = PqlExtractor(&pkb2);
+    AffectsTable actual_results_2 = extractor.GetAffectedByTable();
+    AffectsTable expected_results_2;
+    expected_results_2.AddEdge(5, 1);
+    expected_results_2.AddEdge(6, 1);
+    expected_results_2.AddEdge(10, 1);
+
+    expected_results_2.AddEdge(13, 6);
+    expected_results_2.AddEdge(10, 7);
+
+    expected_results_2.AddEdge(9, 10);
+    expected_results_2.AddEdge(10, 10);
+
+    expected_results_2.AddEdge(12, 12);
+    expected_results_2.AddEdge(13, 12);
+    Assert::IsTrue(actual_results_2 == expected_results_2);
+
+    // test while-while loop
+    extractor = PqlExtractor(&pkb4);
+    AffectsTable actual_results_3 = extractor.GetAffectedByTable();
+    AffectsTable expected_results_3;
+
+    expected_results_3.AddEdge(3, 1);
+    expected_results_3.AddEdge(12, 1);
+
+    expected_results_3.AddEdge(3, 5);
+    expected_results_3.AddEdge(12, 5);
+
+    expected_results_3.AddEdge(5, 7);
+    expected_results_3.AddEdge(9, 7);
+
+    expected_results_3.AddEdge(7, 8);
+
+    expected_results_3.AddEdge(8, 9);
+
+    Assert::IsTrue(actual_results_3 == expected_results_3);
+  }
+
   TEST_METHOD(TestGetAffectsBipTable) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
     AffectsTable actual_results = extractor.GetAffectsBipTable();
@@ -465,7 +518,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(actual_results == expected_results);
   }
 
-  TEST_METHOD(IsAffectsBipTwoParam) {
+  TEST_METHOD(TestIsAffectsBipTwoParam) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
     bool test_result_1 = extractor.IsAffectsBip(1, 6);
@@ -490,7 +543,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsFalse(test_result_7);
   }
 
-  TEST_METHOD(IsAffectsBipOneParam) {
+  TEST_METHOD(TestIsAffectsBipOneParam) {
     PqlExtractor extractor = PqlExtractor(&pkb5);
 
     bool test_result_1 = extractor.IsAffectsBip(1);
@@ -518,38 +571,34 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsFalse(test_result_8);
   }
 
-  TEST_METHOD(IsAffectedBip) {
-    /* PqlExtractor extractor = PqlExtractor(pkb5);
+  TEST_METHOD(TestIsAffectedBip) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
 
-      // Positives***********************************
-     bool test_result_1 = extractor.IsAffectedBip(11);
-     Assert::IsTrue(test_result_1);
+    // Positives***********************************
+    bool test_result_1 = extractor.IsAffectedBip(11);
+    Assert::IsTrue(test_result_1);
 
-     bool test_result_2 = extractor.IsAffectedBip(10);
-     Assert::IsTrue(test_result_2);
+    bool test_result_2 = extractor.IsAffectedBip(10);
+    Assert::IsTrue(test_result_2);
 
-     bool test_result_3 = extractor.IsAffectedBip(6);
-     Assert::IsTrue(test_result_3);
+    bool test_result_3 = extractor.IsAffectedBip(6);
+    Assert::IsTrue(test_result_3);
 
-     bool test_result_4 = extractor.IsAffectedBip(5);
-     Assert::IsTrue(test_result_4);
+    bool test_result_4 = extractor.IsAffectedBip(5);
+    Assert::IsTrue(test_result_4);
 
-     //Negatives***********************************
-     bool test_result_5 = extractor.IsAffectedBip(2);
-     Assert::IsFalse(test_result_5);
+    // Negatives***********************************
+    bool test_result_5 = extractor.IsAffectedBip(2);
+    Assert::IsFalse(test_result_5);
 
-     bool test_result_6 = extractor.IsAffectedBip(1);
-     Assert::IsFalse(test_result_6);
+    bool test_result_6 = extractor.IsAffectedBip(1);
+    Assert::IsFalse(test_result_6);
 
-     bool test_result_7 = extractor.IsAffectedBip(6);
-     Assert::IsFalse(test_result_7);
-
-     bool test_result_8 = extractor.IsAffectedBip(4);
-     Assert::IsFalse(test_result_8);
-   */
+    bool test_result_7 = extractor.IsAffectedBip(4);
+    Assert::IsFalse(test_result_7);
   }
 
-  TEST_METHOD(GetAffectedByIfInWhile) {
+  TEST_METHOD(TestGetAffectedByIfInWhile) {
     PqlExtractor extractor = PqlExtractor(&pkb1);
 
     // Positives**************************************
@@ -583,8 +632,42 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(expected_result_6 == test_result_6);
   }
 
+  /* AffectsExtractor - AffectsT Tests */
+
   /*
-  TEST_METHOD(GetAffectsT) {
+ TEST_METHOD(TestIsAffectsT) {
+   PKB test_pkb = GetTestPKBOne();
+   PqlExtractor extractor = PqlExtractor(test_pkb);
+
+   //Positives****************************************
+
+   bool test_result_1 = extractor.IsAffectsT(4, 6);
+   Assert::IsTrue(test_result_1);
+
+   bool test_result_2 = extractor.IsAffectsT(4, 9);
+   Assert::IsTrue(test_result_2);
+
+   bool test_result_3 = extractor.IsAffectsT(6, 4);
+   Assert::IsTrue(test_result_3);
+
+   //Negatives********************************************
+
+   // Stmts 6 and 12 are in different procedures
+   bool test_result_4 = extractor.IsAffects(6, 12);
+   Assert::IsFalse(test_result_4);
+
+   // Both stmts are not found in the program
+   bool test_result_5 = extractor.IsAffects(33, 120);
+   Assert::IsFalse(test_result_5);
+
+   // Both statements are not assignment statements
+   bool test_result_6 = extractor.IsAffects(3, 1);
+   Assert::IsFalse(test_result_6);
+ }
+ */
+
+  /*
+  TEST_METHOD(TestGetAffectsT) {
     PKB test_pkb = GetTestPKBTwo();
     PqlExtractor extractor = PqlExtractor(test_pkb);
 
