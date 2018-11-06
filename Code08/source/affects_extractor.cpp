@@ -581,7 +581,7 @@ VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
   // }
 
   // Dummy
-  // return VertexSet();
+  return VertexSet();
 }
 
 VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
@@ -631,7 +631,7 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
   // }
 
   // Dummy
-  // return VertexSet();
+  return VertexSet();
 }
 
 VertexSet AffectsExtractor::GetAllAffectsT(bool is_bip) {
