@@ -72,6 +72,15 @@ bool PqlEvaluateSuchthat::EvaluateSuchthatClause(PqlEvaluator* pql_eval,
     case PqlSuchthatType::kAffectsT:
       EvaluateAffectsT(pql_eval, suchthat, arrangement);
       break;
+    case PqlSuchthatType::kAffectsB:
+      EvaluateAffectsBip(pql_eval, suchthat, arrangement);
+      break;
+    case PqlSuchthatType::kAffectsBT:
+      EvaluateAffectsBipT(pql_eval, suchthat, arrangement);
+      break;
+    case PqlSuchthatType::kDominates:
+      EvaluateDominates(pql_eval, suchthat, arrangement);
+      break;
   }
 
   return IsValidClause();
@@ -522,8 +531,8 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(kFilterBoth, pqle_->GetAllNextTPairs(),
-                                          left_type, right_type);
+      result_pair_list = FilterPairResult(
+          kFilterBoth, pqle_->GetAllNextTPairs(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Next*(left,right)" << endl;
@@ -537,11 +546,199 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
 
 void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
                                           PqlSuchthat suchthat,
-                                          SuchthatParamType arrangement) {}
+                                          SuchthatParamType arrangement) {
+  // Getting parameter of such that
+  Parameters such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+  QueryResultList result_list;
+
+  cout << "Evaluating Affects" << endl;
+
+  switch (arrangement) {
+    case kNoSynonym:
+      if (!pqle_->IsAffects(stoi(left_name), stoi(right_name))) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting " << right_name << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreLeft:
+      if (pqle_->GetAffectedBy(stoi(right_name)).empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not affected by anything " << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreRight:
+      if (pqle_->GetAffects(stoi(left_name)).empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting anything " << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreBoth:
+      if (pqle_->GetAffectsTable().empty()) {
+        SetClauseFlag(false);
+        cout << " no affects relationship found " << endl;
+      }
+      return;
+    case kOneSynonymLeft:
+      result_list = pqle_->GetAffectedBy(stoi(right_name));
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not affected by anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymLeftUnderscoreRight:
+      // TODO
+      result_list;
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << "left is not affecting anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymRight:
+      result_list = pqle_->GetAffects(stoi(left_name));
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not affecting anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kOneSynonymRightUnderscoreLeft:
+      // TODO
+      result_list;
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " right is not affected by anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kTwoSynonym:
+      // TODO
+      AffectsTable result_table = pqle_->GetAffectsTable();
+      if (result_table.empty()) {
+        SetClauseFlag(false);
+        cout << " no pair of Affects(left,right)" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_table, left_name, right_name);
+      }
+      return;
+  }
+}
 
 void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
                                            PqlSuchthat suchthat,
                                            SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
+                                             PqlSuchthat suchthat,
+                                             SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
+                                              PqlSuchthat suchthat,
+                                              SuchthatParamType arrangement) {}
+
+void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
+                                            PqlSuchthat suchthat,
+                                            SuchthatParamType arrangement) {
+  // Getting parameter of such that
+  Parameters such_that_param = suchthat.GetParameters();
+  pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
+  pair<string, PqlDeclarationEntity> right_param = such_that_param.second;
+  string left_name = left_param.first;
+  string right_name = right_param.first;
+  PqlDeclarationEntity left_type = left_param.second;
+  PqlDeclarationEntity right_type = right_param.second;
+  QueryResultList result_list;
+  QueryResultPairList result_pair_list;
+
+  cout << "Evaluating Dominates" << endl;
+
+  switch (arrangement) {
+    case kNoSynonym:
+      if (!pkb_->IsDominates(stoi(left_name), stoi(right_name))) {
+        SetClauseFlag(false);
+        cout << left_name << " does not dominate " << right_name << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreLeft:
+      if (pkb_->GetDominating(stoi(right_name)).empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not dominated by anything " << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreRight:
+      if (pkb_->GetDominated(stoi(left_name)).empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not dominating anything" << endl;
+      }
+      return;
+    case kNoSynonymUnderscoreBoth:
+      if (!pkb_->HasDominatesRelationship()) {
+        SetClauseFlag(false);
+        cout << " no dominates relationship found " << endl;
+      }
+      return;
+    case kOneSynonymLeft:
+      result_list =
+          FilterResult(pkb_->GetDominating(stoi(right_name)), left_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << right_name << " is not dominated by left type" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymLeftUnderscoreRight:
+      result_list = FilterResult(pkb_->GetAllDominating(), left_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << "left type is not dominating anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, left_name);
+      }
+      return;
+    case kOneSynonymRight:
+      result_list =
+          FilterResult(pkb_->GetDominated(stoi(left_name)), right_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << left_name << " is not dominating right type" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kOneSynonymRightUnderscoreLeft:
+      result_list = FilterResult(pkb_->GetAllDominated(), right_type);
+      if (result_list.empty()) {
+        SetClauseFlag(false);
+        cout << " right type is not dominated by anything" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_list, right_name);
+      }
+      return;
+    case kTwoSynonym:
+      result_pair_list = FilterPairResult(
+          kFilterBoth, pkb_->GetAllDominatesPairs(), left_type, right_type);
+      if (result_pair_list.empty()) {
+        SetClauseFlag(false);
+        cout << " no pair of Dominates(left,right)" << endl;
+      } else {
+        pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
+                                           right_name);
+      }
+      return;
+  }
+}
 
 void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
                                           PqlSuchthat suchthat,

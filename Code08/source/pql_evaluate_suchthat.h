@@ -173,6 +173,30 @@ class PqlEvaluateSuchthat {
   void EvaluateAffectsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
 
+    /**
+   * Evaluate AffectsBip clause and store result in PqlResult table
+   * @param The evaluator and affectsbip clause in the Query and arrangement of
+   * clause arguments
+   */
+  void EvaluateAffectsBip(PqlEvaluator*, PqlSuchthat suchthat,
+                          SuchthatParamType arrangement);
+
+  /**
+   * Evaluate AffectsBip* clause and store result in PqlResult table
+   * @param The evaluator and affectsbip* clause in the Query and arrangement of
+   * clause arguments
+   */
+  void EvaluateAffectsBipT(PqlEvaluator*, PqlSuchthat suchthat,
+                           SuchthatParamType arrangement);
+
+  /**
+   * Evaluate Dominates clause and store result in PqlResult table
+   * @param The evaluator and Dominates clause in the Query and arrangement of
+   * clause arguments
+   */
+  void EvaluateDominates(PqlEvaluator*, PqlSuchthat suchthat,
+                         SuchthatParamType arrangement);
+
   /**
    * Determine the number of synonym in the such that param (e.g such that
    * Follows(a,b) => 2 synonyms)
