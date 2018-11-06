@@ -25,7 +25,7 @@ using IndexToVarProcMap = unordered_map<int, string>;
 /*A class to evaluate the pql with clause*/
 class PqlEvaluateWith {
  private:
-  PKB* pkb_;                         // pkb database
+  PKB* pkb_;                        // pkb database
   bool clause_flag_;                // to determine if clauses are true/false
   VarProcToIndexMap var_to_index;   // Mapping of pkb's variable to index
   VarProcToIndexMap proc_to_index;  // Mapping of pkb's proc to index
@@ -67,7 +67,8 @@ class PqlEvaluateWith {
 
   /**
    * Evaluate with clause (1 synonym) and store result in PqlResult table
-   * @param The evaluator and the synonym in with clause and the value for comparison
+   * @param The evaluator and the synonym in with clause and the value for
+   * comparison
    */
   void EvaluateWithOneSynonym(PqlEvaluator*, Synonym with_syn,
                               string comparison_val);
@@ -93,8 +94,17 @@ class PqlEvaluateWith {
    * @returns vector<int> list that only contains result of a certain entity
    * type
    */
-  QueryResultPairList FilterWithResult(QueryResultList unfiltered_result,
-                                       PqlDeclarationEntity entity_type);
+  QueryResultPairList FilterWithRight(QueryResultList unfiltered_result,
+                                      PqlDeclarationEntity entity_type);
+
+  /**
+   * Filter the result list based on the declaration entity type
+   * @param unfiltered list and declaration entity type (e.g assign)
+   * @returns vector<int> list that only contains result of a certain entity
+   * type
+   */
+  QueryResultPairList FilterWithLeft(QueryResultList unfiltered_result,
+                                     PqlDeclarationEntity entity_type);
 };
 
 #endif  // !PQL_EVALUATE_WITH_H
