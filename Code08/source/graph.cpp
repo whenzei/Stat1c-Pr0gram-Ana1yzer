@@ -162,7 +162,15 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
 }
 
 bool Graph::CanReach(Vertex from, Vertex to) {
-  return DFS(from, to);
+  VertexList neighbours = GetNeighboursList(from);
+  VisitedMap visited = VisitedMap();
+  for (auto &neighbour : neighbours) {
+    if (DFS(neighbour, to, &visited)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 VertexList Graph::DFS(const Vertex from) {
@@ -176,16 +184,25 @@ VertexList Graph::DFS(const Vertex from) {
   return path;
 }
 
-bool Graph::DFS(Vertex start, Vertex to_find) {
-  bool is_found = false;
-  VisitedMap visited_nodes;
-
-  for (auto &kv : adj_set_) {
-    visited_nodes[kv.first] = false;
+bool Graph::DFS(Vertex v, Vertex target, VisitedMap *visited) {
+  if (visited->count(v)) {
+    return false;
   }
-  
-  DFS(start, to_find, &visited_nodes, &is_found);
-  return is_found;
+
+  visited->emplace(v, true);
+
+  if (v == target) {
+    return true;
+  }
+  VertexList neighbours = GetNeighboursList(v);
+
+  for (auto& neighbour : neighbours) {
+    if (DFS(neighbour, target, visited)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 VertexSet Graph::GetUnreachableVertices(Vertex v) {
@@ -236,34 +253,6 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
     }
   }
   // add saving of path here if post-order traversal
-}
-
-void Graph::DFS(const Vertex &start, const Vertex &to_find, VisitedMap *visited, bool *is_found) {
-  // Base case: If start node is same as node we are looking for
-  if (start == to_find) {
-    (*is_found) = true;
-    return;
-  }
-
-  // Base case: If already found
-  if (is_found) {
-    return;
-  }
-
-  // Base case: If already visited
-  if ((*visited)[start] == true) {
-    return;
-  }
-
-  (*visited)[start] = true;
-
-  VertexSet *neighbours = &adj_set_[start];
-
-  for (auto &neighbour : *neighbours) {
-    if (!(*visited)[neighbour]) {
-      DFS(neighbour, to_find, visited, is_found);
-    }
-  }
 }
 
 VertexSet Graph::GetNeighboursSet(const Vertex &v) {

@@ -31,18 +31,23 @@ class Graph {
   VertexSet parent_vertices_;
   int size_;
 
+  // Overloaded method for the Toposort() function to populate the topoqueue
   void Toposort(const Vertex& v, VisitedMap* visited, queue<Vertex>* topoqueue);
 
+  // Helper method to determine if there are cycles
   bool HasCycle(const Vertex& v, VisitedMap* visited, VertexSet* neighbours);
 
+  // Generic DFS method, keeps a list of the path traversed
   void DFS(const Vertex& v, VisitedMap*, VertexList* path);
 
-  void DFS(const Vertex& start, const Vertex& to_find, VisitedMap*, bool *is_found);
+  // Helper method for CanReach
+  // @returns true if v can reach target, false otherwise
+  bool DFS(Vertex v, Vertex target, VisitedMap* visited);
 
  public:
   Graph();
 
-  bool operator== (const Graph& other_graph);
+  bool operator==(const Graph& other_graph);
 
   // sets the root of the graph to the given value
   // If the given value is not in the graph, no root change will occur
@@ -72,7 +77,6 @@ class Graph {
   // A vertex is a parent if it points to another vertex
   // @returns parent all vertices
   VertexSet GetParentVertices();
-
 
   // @returns true if graph is empty, false otherwise
   bool IsEmpty();

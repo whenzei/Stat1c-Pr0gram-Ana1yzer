@@ -178,24 +178,24 @@ TEST_CLASS(TestGraph) {
     graph.AddEdge(kVertex5, kVertex3);
     graph.AddEdge(kVertex6, kVertex3);
 
-    int result1 = graph.CanReach(kVertex1, kVertex3);
+    bool result1 = graph.CanReach(kVertex1, kVertex3);
     Assert::IsTrue(result1);
-    int result2 = graph.CanReach(kVertex2, kVertex3);
+    bool result2 = graph.CanReach(kVertex2, kVertex3);
     Assert::IsTrue(result2); 
-    int result3 = graph.CanReach(kVertex3, kVertex5);
+    bool result3 = graph.CanReach(kVertex3, kVertex5);
     Assert::IsTrue(result3);
-    int result4 = graph.CanReach(kVertex5, kVertex3);
+    bool result4 = graph.CanReach(kVertex5, kVertex3);
     Assert::IsTrue(result4);
-    int result5 = graph.CanReach(kVertex5, kVertex6);
+    bool result5 = graph.CanReach(kVertex5, kVertex6);
     Assert::IsFalse(result5);
 
     graph.AddEdge(kVertex2, kVertex1);
-    int result6 = graph.CanReach(kVertex2, kVertex1);
+    bool result6 = graph.CanReach(kVertex2, kVertex1);
     Assert::IsTrue(result6);
 
     graph.RemoveEdge(kVertex2, kVertex5);
     graph.RemoveEdge(kVertex2, kVertex1);
-    int result7 = graph.CanReach(kVertex2, kVertex3);
+    bool result7 = graph.CanReach(kVertex2, kVertex3);
     Assert::IsFalse(result7);
   }
 };
