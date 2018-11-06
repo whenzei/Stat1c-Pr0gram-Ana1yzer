@@ -65,10 +65,10 @@ class PqlExtractor {
   // Get the AffectedByTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affecting StmtNums
   AffectsTable GetAffectedByTable();
- 
+
   //**************** Affects* *********************************
 
-// @returns true if Affects*(stmt_1, stmt_2) holds
+  // @returns true if Affects*(stmt_1, stmt_2) holds
   bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns a list of stmt numbers a where Affects*(stmt, a) holds
@@ -77,7 +77,8 @@ class PqlExtractor {
   // @returns a list of stmt numbers a where Affects*(a, stmt) holds
   StmtNumList GetAffectedByT(StmtNum stmt, bool is_bip = false);
 
-  // @returns a list of pairs of stmt numbers a1 and a2 where Affects*(a1, a2) holds
+  // @returns a list of pairs of stmt numbers a1 and a2 where Affects*(a1, a2)
+  // holds
   AffectsTable GetAffectsTTable();
 
   //****************** AffectsBip *******************************
@@ -104,21 +105,24 @@ class PqlExtractor {
   AffectsTable GetAffectsBipTable();
 
   // Get the AffectedByBipTable of the whole program
-  // @returns a hashmap of <key> StmtNum <value> set of all affectingBip StmtNums
+  // @returns a hashmap of <key> StmtNum <value> set of all affectingBip
+  // StmtNums
   AffectsTable GetAffectedByBipTable();
 
   //****************** AffectsBip* *******************************
 
-// @returns true if stmt_1 affects* stmt_2 across procedures
+  // @returns true if stmt_1 affects* stmt_2 across procedures
   bool IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2);
 
-  // @returns a list of stmts n that make Affects*(stmt, n) true across procedures
+  // @returns a list of stmts n that make Affects*(stmt, n) true across
+  // procedures
   StmtNumList GetAffectsBipT(StmtNum stmt);
 
-  // @returns a list of stmts n that make Affects*(n, stmt) true across procedures
+  // @returns a list of stmts n that make Affects*(n, stmt) true across
+  // procedures
   StmtNumList GetAffectedByBipT(StmtNum stmt);
 
-  // @returns a hashmap of <key> StmtNum <value> set of all affected* StmtNums 
+  // @returns a hashmap of <key> StmtNum <value> set of all affected* StmtNums
   AffectsTable GetAffectsBipTTable();
 };
 
