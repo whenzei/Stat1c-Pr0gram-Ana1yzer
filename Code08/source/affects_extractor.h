@@ -9,7 +9,6 @@ using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
 using LastModMap = unordered_map<Vertex, VarIndex>;
-using WhileLastModMap = unordered_map<Vertex, LastModMap>;
 
 class AffectsExtractor {
  private:

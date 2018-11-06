@@ -776,13 +776,22 @@ void AffectsExtractor::SetAffectsBipTTables() {
 void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
                                            AffectsTable* abt,
                                            VisitedMap* visited, LastModMap lmm,
-                                          VisitedCountMap vcm, CFG* cfg) {
+                                           VisitedCountMap vcm, CFG* cfg) {
   StmtType stmt_type = pkb_->GetStmtType(v);
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
 
-  if (stmt_type == StmtType::kAssign && vcm.count(v) && vcm[v] >= 2) {
-    return;
+   // update wlmm
+  if (stmt_type == StmtType::kWhile) {
+    if (vcm.count(v)) {
+      if (vcm[v] < 2) {
+        vcm[v] += 1;
+      } else {
+        return;
+      }
+    } else {
+      vcm.emplace(v, 1);
+    }
   }
 
   visited->emplace(v, true);
@@ -812,16 +821,7 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
     }
   }
 
-  // update wlmm
-  if (stmt_type == StmtType::kWhile) {
-    if (vcm.count(v) == 0) {
-      vcm.emplace(v, 1);
-    } else if (vcm.count(v) && vcm[v]<2) {
-      vcm[v] = vcm[v] + 1;
-    } else {
-      return;
-    }
-  }
+
 
   // dfs neighbours
   VertexSet neighbours = cfg->GetNeighboursSet(v);
