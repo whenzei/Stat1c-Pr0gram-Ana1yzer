@@ -62,6 +62,12 @@ class PqlEvaluator {
   void StoreClauseResultInTable(QueryResultList, string);
 
   /**
+   * Stores the list of results into the PqlResult table
+   * @param the set<int> of results and synonym-variable name
+   */
+  void StoreClauseResultInTable(QueryResultSet, string);
+
+  /**
    * Stores the list of pair into the PqlResult table
    * @param the vector<int> of pairs and the pair's synonym-variable name
    */
@@ -72,7 +78,7 @@ class PqlEvaluator {
    * @param the hashmap<int,set> of results and left & right synonym-variable
    * name
    */
-  void StoreClauseResultInTable(AffectsTable, string, string);
+  void StoreClauseResultInTable(AffectsMap, string, string);
 };
 
 #endif  // !QUERY_EVALUATOR_H

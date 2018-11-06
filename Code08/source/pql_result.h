@@ -48,7 +48,7 @@ class PqlResult {
 
   void InitTable(QueryResultPairList, string, string);
 
-  void InitTable(AffectsTable, string, string);
+  void InitTable(AffectsMap, string, string);
 
   void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
 
@@ -57,12 +57,12 @@ class PqlResult {
   void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int,
                     string, string);
 
-  void MergeResults(AffectsTable, PqlResultTableConflict, int, int, string,
+  void MergeResults(AffectsMap, PqlResultTableConflict, int, int, string,
                     string);
 
   void SetupMergeMap(QueryResultPairList, PqlResultTableConflict);
 
-  void SetupMergeMap(AffectsTable, PqlResultTableConflict);
+  void SetupMergeMap(AffectsMap, PqlResultTableConflict);
 
   void SetupMergeSet(QueryResultList);
 
@@ -70,7 +70,7 @@ class PqlResult {
 
   void SetupMergeSet(QueryResultPairList);
 
-  void SetupMergeSet(AffectsTable);
+  void SetupMergeSet(AffectsMap);
 
   /* Setters */
   void AddColumnHeader(string var_name, int column_num);

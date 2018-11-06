@@ -210,7 +210,7 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
 }
 
-void PqlResult::MergeResults(AffectsTable affects_table,
+void PqlResult::MergeResults(AffectsMap affects_table,
                              PqlResultTableConflict conflict_type,
                              int conflict_left_pair, int conflict_right_pair,
                              string header_left, string header_right) {
@@ -356,7 +356,7 @@ void PqlResult::InitTable(QueryResultPairList result_pair_list,
   SetColumnCount(++col_num);
 }
 
-void PqlResult::InitTable(AffectsTable affects_table, string header_left,
+void PqlResult::InitTable(AffectsMap affects_table, string header_left,
                           string header_right) {
   for (auto& affect : affects_table) {
     for (auto& affected : affect.second) {
@@ -399,7 +399,7 @@ void PqlResult::SetupMergeSet(QueryResultPairList result_pair_list) {
   }
 }
 
-void PqlResult::SetupMergeSet(AffectsTable affects_table) {
+void PqlResult::SetupMergeSet(AffectsMap affects_table) {
   ClearMergeSet();
 
   for (auto& affect : affects_table) {
@@ -428,7 +428,7 @@ void PqlResult::SetupMergeMap(QueryResultPairList result_pair_list,
   }
 }
 
-void PqlResult::SetupMergeMap(AffectsTable affects_table,
+void PqlResult::SetupMergeMap(AffectsMap affects_table,
                               PqlResultTableConflict conflict_type) {
   ClearMergeMap();
 
