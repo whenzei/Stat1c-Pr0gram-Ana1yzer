@@ -452,6 +452,195 @@ AffectsTable AffectsExtractor::GetAffectedByTable() {
   return affected_by_table_;
 }
 
+/**** AffectsT methods ****/
+
+bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
+  ProcName p1 = pkb_->GetProcOfStmt(stmt_1);
+  ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
+  
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  if ((is_bip && pkb_->IsCallT(p1, p2)) || (!is_bip && p1!=p2)) {
+    return false;
+  }
+
+  if (pkb_->GetStmtType(stmt_1) != StmtType::kAssign ||
+    pkb_->GetStmtType(stmt_2) != StmtType::kAssign) {
+    return false;
+  }
+
+  if (!is_bip && has_set_affects_tables_) {
+    // return affects_table_.DFS(stmt_1, stmt_2);
+  }
+
+  if (is_bip && has_set_affects_bip_tables_) {
+    // return affects_bip_table_.DFS(stmt_1, stmt_2);
+  }
+  // Do a DFS(start, end) on affects_table. Return boolean value from CanReach. 
+  /// return GetAffectsTable().CanReach(stmt_1, stmt_2);
+  // Dummy
+  return false;
+}
+
+bool AffectsExtractor::IsAffectsT(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
+    return false;
+  }
+  
+  if (!is_bip && has_set_affects_tables_) {
+    return !affects_table_.GetNeighboursSet(stmt).empty();
+  }
+  
+  if (is_bip && has_set_affects_bip_tables_) {
+    return !affects_bip_table_.GetNeighboursSet(stmt).empty();
+  }
+
+  // Otherwise, do a DFS on the affects_table_ if !is_bip
+  // Do DFS on affects_bip_table_ if is_bip
+  // return is_bip ? !GetAffectsBipTable().DFS(stmt).empty() 
+  // : !GetAffectsTable().DFS(stmt).empty();
+  // return !GetAffectsTable().DFS(stmt).empty();
+
+  // Dummy
+  return false;
+}
+
+bool AffectsExtractor::IsAffectedByT(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
+    return false;
+  }
+
+  if (!is_bip && has_set_affects_tables_) {
+    return !affected_by_table_.GetNeighboursSet(stmt).empty();
+  }
+
+  if (is_bip && has_set_affects_bip_tables_) {
+    return !affected_by_bip_table_.GetNeighboursSet(stmt).empty();
+  }
+
+  // Otherwise, do a DFS on the affected_by_table_ if !is_bip
+  // Do DFS on affected_by_bip_table_ if is_bip
+  // return is_bip ? !GetAffectedByBipTable().DFS(stmt).empty() :
+  // !GetAffectedByTable().DFS(stmt).empty();
+
+  // Dummy
+  return false;
+}
+
+VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  // If none of the preconditions for Affects match, return empty set.
+  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
+    return VertexSet();
+  }
+
+  // If only for local procedure and AffectsTable is already set
+  // Perform DFS on AffectsTable and return all the statements that stmt can reach
+  // as a set.
+  if (!is_bip && has_set_affects_tables_) {
+    VertexList affected_stmts_list = affects_table_.DFS(stmt);
+    VertexSet affected_stmts_set(affected_stmts_list.begin(),
+      affected_stmts_list.end());
+    return affected_stmts_set;
+  }
+
+  // If for entire program and AffectsBipTable is already set
+  // Perform DFS on AffectsBipTable and return all the statements that stmt can
+  // reach as a set.
+  if (is_bip && has_set_affects_bip_tables_) {
+    VertexList affected_bip_stmts_list = affects_bip_table_.DFS(stmt);
+    VertexSet affected_bip_stmts_set(affected_bip_stmts_list.begin(),
+      affected_bip_stmts_list.end());
+    return affected_bip_stmts_set;
+  }
+
+  // Otherwise, do a DFS on the affects_table_ and convert into set.
+  // Help set the AffectsTable or AffectsBipTable based on is_bip.
+  // TODO: Uncomment. Might be better to separate this part out.
+
+  // if(is_bip) {
+  // GetAffectsTable();
+  // VertexList affected_stmts_list = affects_table_.DFS(stmt);
+  // VertexSet affected_stmts_set(affected_stmts_list.begin(),
+  // affected_stmts_list.end());
+  // return affected_stmts_set;
+  // } else {
+  // GetAffectsBipTable();
+  // VertexList affected_bip_stmts_list = affects_bip_table_.DFS(stmt);
+  // VertexSet affected_bip_stmts_set(affected_bip_stmts_list.begin(),
+  // affected_bip_stmts_list.end());
+  // return affected_bip_stmts_set;
+  // }
+
+  // Dummy
+  return VertexSet();
+}
+
+VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  // If none of the preconditions for Affects match, return empty set.
+  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
+    return VertexSet();
+  }
+
+  // If only for local procedure and AffectedByTable is already set
+  // Perform DFS on AffectedByTable and return all the statements that stmt can reach
+  // as a set.
+  if (!is_bip && has_set_affects_tables_) {
+    VertexList affected_by_stmts_list = affected_by_table_.DFS(stmt);
+    VertexSet affected_by_stmts_set(affected_by_stmts_list.begin(),
+      affected_by_stmts_list.end());
+    return affected_by_stmts_set;
+  }
+
+  // If for entire program and AffectsBipTable is already set
+  // Perform DFS on AffectsBipTable and return all the statements that stmt can
+  // reach as a set.
+  if (is_bip && has_set_affects_bip_tables_) {
+    VertexList affected_by_bip_stmts_list = affected_by_bip_table_.DFS(stmt);
+    VertexSet affected_by_bip_stmts_set(affected_by_bip_stmts_list.begin(),
+      affected_by_bip_stmts_list.end());
+    return affected_by_bip_stmts_set;
+  }
+
+  // Otherwise, do a DFS on the affected_by_table_ and convert into set.
+  // Help set the AffectedByTable or AffectedByBipTable based on is_bip.
+  // TODO: Uncomment. Might be better to separate this part out.
+
+  // if(is_bip) {
+  // GetAffectsTable(); 
+  // VertexList affected_by_stmts_list = affected_by_table_.DFS(stmt);
+  // VertexSet affected_by_stmts_set(affected_by_stmts_list.begin(),
+  // affected_by_stmts_list.end());
+  // return affected_by_stmts_set;
+  // } else {
+  // GetAffectsBipTable();
+  // VertexList affected_by_bip_stmts_list = affected_by_bip_table_.DFS(stmt);
+  // VertexSet affected_by_bip_stmts_set(affected_by_bip_stmts_list.begin(),
+  // affected_by_bip_stmts_list.end());
+  // return affected_by_bip_stmts_set;
+  // }
+
+  // Dummy
+  return VertexSet();
+}
+
+VertexSet AffectsExtractor::GetAllAffectsT(bool is_bip) {
+  return GetAllAffects(is_bip);
+}
+
+VertexSet AffectsExtractor::GetAllAffectedByT(bool is_bip) {
+  return GetAllAffectedBy(is_bip);
+}
+
 AffectsTable AffectsExtractor::GetAffectsBipTable() {
   if (has_set_affects_bip_tables_) {
     return affects_bip_table_;

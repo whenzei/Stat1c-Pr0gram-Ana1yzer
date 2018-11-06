@@ -116,6 +116,10 @@ class AffectsExtractor {
   AffectsExtractor();
   AffectsExtractor(PKB* pkb);
 
+  /************
+  * IsAffects *
+  *************/
+
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
@@ -145,6 +149,48 @@ class AffectsExtractor {
   // @returns a hashmap of <key> StmtNum <value> set of all affecting StmtNums
   AffectsTable GetAffectedByTable();
 
+  /************
+  * IsAffects* *
+  *************/
+
+  // Checks and returns whether Affects*(stmt_1, stmt_2) is true
+  // @returns true if stmt_1 affects stmt_2
+  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false); 
+
+  // Checks and returns whether Affects*(stmt, n) is true for
+  // some arbitrary statement n
+  // @returns true if stmt affects any statement
+  bool IsAffectsT(StmtNum stmt, bool is_bip = false);
+
+  // Checks and returns whether Affects*(n, stmt) is true for
+  // some arbitrary statement n
+  // @returns true if stmt is affected by any statement
+  bool IsAffectedByT(StmtNum stmt, bool is_bip = false);
+
+  // Returns a set of statements that stmt Affects
+  // i.e., where Affects*(stmt, n)
+  // @returns a set of statements n
+  VertexSet GetAffectsT(StmtNum stmt, bool is_bip = false);
+
+  // Returns a set of statements that stmt is Affected by
+  // i.e., where Affects*(n, stmt)
+  // @returns a set of statements n
+  VertexSet GetAffectedByT(StmtNum stmt, bool is_bip = false);
+
+  // Returns a set of statements n that affects any other statement
+  // Logically equivalent to GetAllAffects(is_bip)
+  // @returns a set of statements n
+  VertexSet GetAllAffectsT(bool is_bip = false);
+
+  // Returns a set of statements n that are affected by any other statement
+  // Logically equivalent to GetAllAffectedBy(is_bip);
+  // @returns a set of statements n
+  VertexSet GetAllAffectedByT(bool is_bip = false);
+
+  /************
+  * AffectsBip *
+  *************/
+
   // Get the AffectsBipTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectedBip StmtNums
   AffectsTable GetAffectsBipTable();
@@ -153,6 +199,7 @@ class AffectsExtractor {
   // @returns a hashmap of <key> StmtNum <value> set of all affectingBip
   // StmtNums
   AffectsTable GetAffectedByBipTable();
+
 };
 
 #endif  // !AFFECTS_EXTRACTOR_H
