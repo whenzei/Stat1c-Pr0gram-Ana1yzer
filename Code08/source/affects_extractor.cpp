@@ -442,19 +442,31 @@ VertexSet AffectsExtractor::GetAllAffectedBy(bool is_bip) {
   return GetAffectedByTable().GetParentVertices();
 }
 
-AffectsTable AffectsExtractor::GetAffectsTable() {
-  if (has_set_affects_tables_) {
-    return affects_table_;
+AffectsMap AffectsExtractor::GetAffectsMap() {
+  if (!has_set_affects_tables_) {
+    SetAffectsTables();  // populate the tables if not set yet
   }
-  SetAffectsTables();  // populate the tables
+  return affects_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectedByMap() {
+  if (!has_set_affects_tables_) {
+    SetAffectsTables();  // populate the tables
+  }
+  return affected_by_table_.GetAdjSet();
+}
+
+AffectsTable AffectsExtractor::GetAffectsTable() {
+  if (!has_set_affects_tables_) {
+    SetAffectsTables();  // populate the tables if not set yet
+  }
   return affects_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectedByTable() {
-  if (has_set_affects_tables_) {
-    return affected_by_table_;
+  if (!has_set_affects_tables_) {
+    SetAffectsTables();  // populate the tables if not set yet
   }
-  SetAffectsTables();  // populate the tables
   return affected_by_table_;
 }
 
@@ -467,17 +479,17 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
 
   ProcName p1 = pkb_->GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
-  
+
   if (p1.empty() || p2.empty()) {
     return false;
   }
 
-  if (!is_bip && p1!=p2) {
+  if (!is_bip && p1 != p2) {
     return false;
   }
 
   if (pkb_->GetStmtType(stmt_1) != StmtType::kAssign ||
-    pkb_->GetStmtType(stmt_2) != StmtType::kAssign) {
+      pkb_->GetStmtType(stmt_2) != StmtType::kAssign) {
     return false;
   }
 
@@ -489,9 +501,9 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
     return affects_bip_table_.CanReach(stmt_1, stmt_2);
   }
 
-  // Do a DFS(start, end) on affects_table. Return boolean value from CanReach. 
-  return is_bip ? GetAffectsBipTable().CanReach(stmt_1, stmt_2) :
-    GetAffectsTable().CanReach(stmt_1, stmt_2);
+  // Do a DFS(start, end) on affects_table. Return boolean value from CanReach.
+  return is_bip ? GetAffectsBipTable().CanReach(stmt_1, stmt_2)
+                : GetAffectsTable().CanReach(stmt_1, stmt_2);
 }
 
 bool AffectsExtractor::IsAffectsT(StmtNum stmt, bool is_bip) {
@@ -510,22 +522,23 @@ VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
     return VertexSet();
   }
 
-  // If only looking for Affects* in local procedure and AffectsTable is already set,
-  // perform DFS on AffectsTable and return all the statements that stmt can reach.
+  // If only looking for Affects* in local procedure and AffectsTable is already
+  // set, perform DFS on AffectsTable and return all the statements that stmt
+  // can reach.
   if (!is_bip && has_set_affects_tables_) {
     return affects_table_.DFSNeighbours(stmt);
   }
 
-  // If looking for Affects* in entire program and AffectsBipTable is already set,
-  // perform DFS on AffectsBipTable and return all the statements that stmt can
-  // reach.
+  // If looking for Affects* in entire program and AffectsBipTable is already
+  // set, perform DFS on AffectsBipTable and return all the statements that stmt
+  // can reach.
   if (is_bip && has_set_affects_bip_tables_) {
     return affects_bip_table_.DFSNeighbours(stmt);
   }
 
   // Otherwise, help set the AffectsTable or AffectsBipTable based on is_bip.
   // Then, do the same DFS as above and return the reachable stmts.
-  if(!is_bip) {
+  if (!is_bip) {
     return GetAffectsTable().DFSNeighbours(stmt);
   } else {
     return GetAffectsBipTable().DFSNeighbours(stmt);
@@ -541,7 +554,8 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
   }
 
   // If only for local procedure and AffectedByTable is already set
-  // Perform DFS on AffectedByTable and return all the statements that stmt can reach.
+  // Perform DFS on AffectedByTable and return all the statements that stmt can
+  // reach.
   if (!is_bip && has_set_affects_tables_) {
     return affected_by_table_.DFSNeighbours(stmt);
   }
@@ -555,7 +569,7 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
 
   // Otherwise, set the AffectedByTable or AffectedByBipTable based on is_bip
   // perform DFSNeighbours on the respective table.
-  if(!is_bip) {
+  if (!is_bip) {
     return GetAffectedByTable().DFSNeighbours(stmt);
   } else {
     return GetAffectedByBipTable().DFSNeighbours(stmt);
@@ -570,61 +584,101 @@ VertexSet AffectsExtractor::GetAllAffectedByT(bool is_bip) {
   return GetAllAffectedBy(is_bip);
 }
 
+/***********************
+ * Map Getters for PQL *
+ ***********************/
+
+AffectsMap AffectsExtractor::GetAffectsTMap() {
+  if (!has_set_affects_t_tables_) {
+    SetAffectsTTables();  // populate the tables
+  }
+  return affects_t_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectedByTMap() {
+  if (!has_set_affects_t_tables_) {
+    SetAffectsTTables();
+  }
+  return affected_by_t_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectsBipMap() {
+  if (!has_set_affects_bip_tables_) {
+    SetAffectsBipTables();  // populate the tables
+  }
+  return affects_bip_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectedByBipMap() {
+  if (!has_set_affects_bip_tables_) {
+    SetAffectsBipTables();  // populate the tables
+  }
+  return affected_by_bip_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectsBipTMap() {
+  if (!has_set_affects_bip_t_tables_) {
+    SetAffectsBipTTables();  // populate the tables
+  }
+  return affects_bip_t_table_.GetAdjSet();
+}
+
+AffectsMap AffectsExtractor::GetAffectedByBipTMap() {
+  if (!has_set_affects_bip_t_tables_) {
+    SetAffectsBipTTables();  // populate the tables
+  }
+  return affected_by_bip_t_table_.GetAdjSet();
+}
+
 /***************
-* Table Getters *
-****************/
+ * Table Getters *
+ ****************/
 
 AffectsTable AffectsExtractor::GetAffectsTTable() {
-  if (has_set_affects_t_tables_) {
-    return affects_t_table_;
+  if (!has_set_affects_t_tables_) {
+    SetAffectsTTables();  // populate the tables
   }
-  SetAffectsTTables();  // populate the tables
   return affects_t_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectedByTTable() {
-  if (has_set_affects_t_tables_) {
-    return affected_by_t_table_;
+  if (!has_set_affects_t_tables_) {
+    SetAffectsTTables();
   }
-  SetAffectsTTables();
   return affected_by_t_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectsBipTable() {
-  if (has_set_affects_bip_tables_) {
-    return affects_bip_table_;
+  if (!has_set_affects_bip_tables_) {
+    SetAffectsBipTables();  // populate the tables
   }
-  SetAffectsBipTables();  // populate the tables
   return affects_bip_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectedByBipTable() {
-  if (has_set_affects_bip_tables_) {
-    return affected_by_bip_table_;
+  if (!has_set_affects_bip_tables_) {
+    SetAffectsBipTables();  // populate the tables
   }
-  SetAffectsBipTables();  // populate the tables
   return affected_by_bip_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectsBipTTable() {
-  if (has_set_affects_bip_t_tables_) {
-    return affects_bip_t_table_;
+  if (!has_set_affects_bip_t_tables_) {
+    SetAffectsBipTTables();  // populate the tables
   }
-  SetAffectsBipTTables();  // populate the tables
   return affects_bip_t_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectedByBipTTable() {
-  if (has_set_affects_bip_t_tables_) {
-    return affected_by_bip_t_table_;
+  if (!has_set_affects_bip_t_tables_) {
+    SetAffectsBipTTables();  // populate the tables
   }
-  SetAffectsBipTTables();  // populate the tables
   return affected_by_bip_t_table_;
 }
 
 /***************
-* Table Setters *
-****************/
+ * Table Setters *
+ ****************/
 
 void AffectsExtractor::SetAffectsTables() {
   ProcNameList all_procs = pkb_->GetAllProcNames();
@@ -714,8 +768,8 @@ void AffectsExtractor::SetAffectsBipTTables() {
 }
 
 /***************
-* DFS / Util *
-****************/
+ * DFS / Util *
+ ****************/
 
 // at -> AffectsTable
 // abt -> AffectedByTable

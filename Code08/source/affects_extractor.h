@@ -7,6 +7,7 @@
 
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
+using AffectsMap = unordered_map<Vertex, VertexSet>;
 using LastModMap = unordered_map<Vertex, VarIndex>;
 using WhileLastModMap = unordered_map<Vertex, LastModMap>;
 
@@ -35,6 +36,21 @@ class AffectsExtractor {
   VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
 
   VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+
+  // internal helper methods to get the tables regardless of whether the tables
+  // have been initialized
+  AffectsTable GetAffectsTable();
+  AffectsTable GetAffectedByTable();
+
+  AffectsTable GetAffectsTTable();
+  AffectsTable GetAffectedByTTable();
+
+  AffectsTable GetAffectsBipTable();
+  AffectsTable GetAffectedByBipTable();
+
+  AffectsTable GetAffectsBipTTable();
+  AffectsTable GetAffectedByBipTTable();
+
 
   /* SETTER METHODS */
   // Sets the affects_table_ and affected_by_table_ of this class
@@ -129,8 +145,8 @@ class AffectsExtractor {
   AffectsExtractor(PKB* pkb);
 
   /************
-  * IsAffects *
-  *************/
+   * IsAffects *
+   *************/
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
@@ -153,21 +169,21 @@ class AffectsExtractor {
   // @returns set of all statements stmt such that Affects(_, stmt) holds true
   VertexSet GetAllAffectedBy(bool is_bip = false);
 
-  // Get the AffectsTable of the whole program
+  // Get the Affects mapping of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
-  AffectsTable GetAffectsTable();
+  AffectsMap GetAffectsMap();
 
-  // Get the AffectedByTable of the whole program
+  // Get the AffectedBy mapping of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affecting StmtNums
-  AffectsTable GetAffectedByTable();
+  AffectsMap GetAffectedByMap();
 
   /************
-  * AffectsT *
-  *************/
+   * AffectsT *
+   *************/
 
   // Checks and returns whether Affects*(stmt_1, stmt_2) is true
   // @returns true if stmt_1 affects stmt_2
-  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false); 
+  bool IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // Checks and returns whether Affects*(stmt, n) is true for
   // some arbitrary statement n
@@ -201,36 +217,36 @@ class AffectsExtractor {
 
   // Returns all Affects*(a1, a2) relations in the program
   // @returns a table of <key> a1, <value> set of a2
-  AffectsTable GetAffectsTTable();
+  AffectsMap GetAffectsTMap();
 
   // Returns all Affects*(a1, a2) relations in the program
   // @returns a table of <key> a2, <value> set of a1
-  AffectsTable GetAffectedByTTable();
+  AffectsMap GetAffectedByTMap();
 
   /************
-  * AffectsBip *
-  *************/
+   * AffectsBip *
+   *************/
 
   // Get the AffectsBipTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectedBip StmtNums
-  AffectsTable GetAffectsBipTable();
+  AffectsMap GetAffectsBipMap();
 
   // Get the AffectedByBipTable of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectingBip
   // StmtNums
-  AffectsTable GetAffectedByBipTable();
+  AffectsMap GetAffectedByBipMap();
 
   /************
-  * AffectsBipT *
-  *************/
+   * AffectsBipT *
+   *************/
 
-  // Get the AffectedBipTTable of the whole program
+  // Get the AffectedBipTMap of the whole program
   // @returns a hashmap of <key> stmt <value> set of all affectedByBipT stmts
-  AffectsTable GetAffectsBipTTable();
+  AffectsMap GetAffectsBipTMap();
 
   // Get the AffectedByBipTTable of the whole program
   // @returns a hashmap of <key> stmt <value> set of all affectingBipT stmts
-  AffectsTable GetAffectedByBipTTable();
+  AffectsMap GetAffectedByBipTMap();
 };
 
 #endif  // !AFFECTS_EXTRACTOR_H

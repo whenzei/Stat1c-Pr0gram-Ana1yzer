@@ -58,13 +58,13 @@ class PqlExtractor {
   // holds true
   VertexSet GetAllAffectedBy();
 
-  // Get the AffectsTable of the whole program
+  // Get the AffectsMap of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affected StmtNums
-  AffectsTable GetAffectsTable();
+  AffectsMap GetAffectsMap();
 
-  // Get the AffectedByTable of the whole program
+  // Get the AffectedByMap of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affecting StmtNums
-  AffectsTable GetAffectedByTable();
+  AffectsMap GetAffectedByMap();
 
   //**************** Affects* *********************************
 
@@ -90,10 +90,10 @@ class PqlExtractor {
   VertexSet GetAllAffectedByT();
 
   // @returns a hashmap of <key> stmt <value> set of all affected stmts
-  AffectsTable GetAffectsTTable();
+  AffectsMap GetAffectsTMap();
 
   // @returns a hashmap of <key> stmt <value> set of all affecting stmts
-  AffectsTable GetAffectedByTTable();
+  AffectsMap GetAffectedByTMap();
 
   //****************** AffectsBip *******************************
 
@@ -114,14 +114,14 @@ class PqlExtractor {
   // @returns a set of n that Affects(n, stmt_num) holds true
   VertexSet GetAffectedByBip(StmtNum stmt_num);
 
-  // Get the AffectsBipTable of the whole program
+  // Get the AffectsBipMap of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectedBip StmtNums
-  AffectsTable GetAffectsBipTable();
+  AffectsMap GetAffectsBipMap();
 
-  // Get the AffectedByBipTable of the whole program
+  // Get the AffectedByBipMap of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all affectingBip
   // StmtNums
-  AffectsTable GetAffectedByBipTable();
+  AffectsMap GetAffectedByBipMap();
 
   //****************** AffectsBip* *******************************
 
@@ -148,11 +148,11 @@ class PqlExtractor {
 
   // @returns a hashmap of <key> StmtNum <value> set of all affectedByBipT
   // StmtNums
-  AffectsTable GetAffectsBipTTable();
+  AffectsMap GetAffectsBipTMap();
 
   // @returns a hashmap of <key> StmtNum <value> set of all affectingBipT
   // StmtNums
-  AffectsTable GetAffectedByBipTTable();
+  AffectsMap GetAffectedByBipTMap();
 };
 
 #endif  // !PQL_EXTRACTOR_H
