@@ -634,79 +634,477 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
   /* AffectsExtractor - AffectsT Tests */
 
-  /*
- TEST_METHOD(TestIsAffectsT) {
-   PKB test_pkb = GetTestPKBOne();
-   PqlExtractor extractor = PqlExtractor(test_pkb);
+  TEST_METHOD(TestIsAffectsT) {
+    PqlExtractor extractor = PqlExtractor(&pkb1);
 
-   //Positives****************************************
+    //Positives****************************************
 
-   bool test_result_1 = extractor.IsAffectsT(4, 6);
-   Assert::IsTrue(test_result_1);
+    bool test_result_1 = extractor.IsAffectsT(4, 6);
+    Assert::IsTrue(test_result_1);
 
-   bool test_result_2 = extractor.IsAffectsT(4, 9);
-   Assert::IsTrue(test_result_2);
+    bool test_result_2 = extractor.IsAffectsT(4, 9);
+    Assert::IsTrue(test_result_2);
 
-   bool test_result_3 = extractor.IsAffectsT(6, 4);
-   Assert::IsTrue(test_result_3);
+    bool test_result_3 = extractor.IsAffectsT(6, 4);
+    Assert::IsTrue(test_result_3);
 
-   //Negatives********************************************
+    bool test_result_4 = extractor.IsAffectsT(6, 12);
+    Assert::IsTrue(test_result_4);
 
-   // Stmts 6 and 12 are in different procedures
-   bool test_result_4 = extractor.IsAffects(6, 12);
-   Assert::IsFalse(test_result_4);
+    //Negatives********************************************
 
-   // Both stmts are not found in the program
-   bool test_result_5 = extractor.IsAffects(33, 120);
-   Assert::IsFalse(test_result_5);
+    // Both stmts are not found in the program
+    bool test_result_5 = extractor.IsAffectsT(33, 120);
+    Assert::IsFalse(test_result_5);
 
-   // Both statements are not assignment statements
-   bool test_result_6 = extractor.IsAffects(3, 1);
-   Assert::IsFalse(test_result_6);
- }
- */
+    // Both statements are not assignment statements
+    bool test_result_6 = extractor.IsAffectsT(3, 1);
+    Assert::IsFalse(test_result_6);
+  }
 
-  /*
+  TEST_METHOD(TestIsAffectsTOneParam) {
+    PqlExtractor extractor = PqlExtractor(&pkb1);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffectsT(6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsT(4);
+    Assert::IsTrue(test_result_2);
+
+    //Negatives****************************************
+
+    // Value of f is overwritten at stmt 10
+    bool test_result_3 = extractor.IsAffectsT(9);
+    Assert::IsFalse(test_result_3);
+
+    // Not an assign statement
+    bool test_result_4 = extractor.IsAffectsT(1);
+    Assert::IsFalse(test_result_4);
+
+    // 11 doesn't affect anyone
+    bool test_result_5 = extractor.IsAffectsT(11);
+    Assert::IsFalse(test_result_5);
+  }
+
+  TEST_METHOD(TestIsAffectedT) {
+    PqlExtractor extractor = PqlExtractor(&pkb3);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffectedT(6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectedT(11);
+    Assert::IsTrue(test_result_2);
+
+    bool test_result_3 = extractor.IsAffectedT(9);
+    Assert::IsTrue(test_result_3);
+
+    //Negatives****************************************
+
+    // Not an assign statement
+    bool test_result_4 = extractor.IsAffectedT(13);
+    Assert::IsFalse(test_result_4);
+
+    // 3 is not affected by anyone
+    bool test_result_5 = extractor.IsAffectedT(3);
+    Assert::IsFalse(test_result_5);
+  }
+
+  TEST_METHOD(TestIsAffectsBipT) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffectsBipT(6, 11);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBipT(1, 3);
+    Assert::IsTrue(test_result_2);
+
+    //Negatives****************************************
+    // Not in an affecting relationship
+    bool test_result_3 = extractor.IsAffectsBipT(3, 6);
+    Assert::IsFalse(test_result_3);
+
+    // Both are invalid
+    bool test_result_4 = extractor.IsAffectsBipT(9, 12);
+    Assert::IsFalse(test_result_4); 
+  }
+
+  TEST_METHOD(TestIsAffectsBipTOneParam) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffectsBipT(6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectsBipT(1);
+    Assert::IsTrue(test_result_1);
+
+    //Negatives****************************************
+    // Not in an affecting relationship
+    bool test_result_3 = extractor.IsAffectsBipT(5);
+    Assert::IsFalse(test_result_3);
+
+    // 7 is a call stmt
+    bool test_result_4 = extractor.IsAffectsBipT(7);
+    Assert::IsFalse(test_result_4);
+  }
+
+  TEST_METHOD(TestIsAffectedBipT) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+
+    //Positives****************************************
+    bool test_result_1 = extractor.IsAffectedBipT(8);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_2 = extractor.IsAffectedBipT(6);
+    Assert::IsTrue(test_result_1);
+
+    bool test_result_3 = extractor.IsAffectedBipT(5);
+    Assert::IsTrue(test_result_3);
+
+    //Negatives****************************************
+    // Not in an affecting relationship
+    bool test_result_4 = extractor.IsAffectedBipT(4);
+    Assert::IsFalse(test_result_4);
+
+    // 2 is a call stmt
+    bool test_result_5 = extractor.IsAffectedBipT(2);
+    Assert::IsFalse(test_result_5);
+  }
+
   TEST_METHOD(TestGetAffectsT) {
-    PKB test_pkb = GetTestPKBTwo();
-    PqlExtractor extractor = PqlExtractor(test_pkb);
+    PqlExtractor extractor = PqlExtractor(&pkb2);
 
     //Positives**************************************
-    StmtNumList test_result_1 = extractor.GetAffectsT(1);
-    StmtNumList expected_result_1 = StmtNumList{ 5, 6, 9, 10, 13 };
+    VertexSet test_result_1 = extractor.GetAffectsT(1);
+    VertexSet expected_result_1 = VertexSet{ 5, 6, 9, 10, 13 };
     Assert::IsTrue(test_result_1 == expected_result_1);
 
-    StmtNumList test_result_2 = extractor.GetAffectsT(7);
-    StmtNumList expected_result_2 = StmtNumList{ 9, 10 };
+    VertexSet test_result_2 = extractor.GetAffectsT(7);
+    VertexSet expected_result_2 = VertexSet{ 9, 10 };
     Assert::IsTrue(test_result_2 == expected_result_2);
 
-    StmtNumList test_result_3 = extractor.GetAffectsT(12);
-    StmtNumList expected_result_3 = StmtNumList{ 12, 13 };
+    VertexSet test_result_3 = extractor.GetAffectsT(12);
+    VertexSet expected_result_3 = VertexSet{ 12, 13 };
     Assert::IsTrue(test_result_3 == expected_result_3);
 
     //Negatives***************************************
 
     // Stmt 3 is a print stmt
-    StmtNumList test_result_4 = extractor.GetAffectsT(3);
-    StmtNumList expected_result_4 = StmtNumList{};
+    VertexSet test_result_4 = extractor.GetAffectsT(3);
+    VertexSet expected_result_4 = VertexSet{};
     Assert::IsTrue(test_result_4 == expected_result_4);
 
     // Stmt 13 is the last statement in the procedure
-    StmtNumList test_result_5 = extractor.GetAffectsT(13);
-    StmtNumList expected_result_5 = StmtNumList{};
+    VertexSet test_result_5 = extractor.GetAffectsT(13);
+    VertexSet expected_result_5 = VertexSet{};
     Assert::IsTrue(test_result_5 == expected_result_5);
 
     // Stmt 4 is a if stmt
-    StmtNumList test_result_6 = extractor.GetAffectsT(4);
-    StmtNumList expected_result_6 = StmtNumList{};
+    VertexSet test_result_6 = extractor.GetAffectsT(4);
+    VertexSet expected_result_6 = VertexSet{};
     Assert::IsTrue(test_result_6 == expected_result_6);
 
     // Stmt 80 is not found in program
-    StmtNumList test_result_7 = extractor.GetAffectsT(80);
-    StmtNumList expected_result_7 = StmtNumList{};
+    VertexSet test_result_7 = extractor.GetAffectsT(80);
+    VertexSet expected_result_7 = VertexSet{};
     Assert::IsTrue(test_result_7 == expected_result_7);
   }
-  */
+
+  TEST_METHOD(TestGetAffectedByT) {
+    PqlExtractor extractor = PqlExtractor(&pkb2);
+
+    //Positives**************************************
+    VertexSet test_result_1 = extractor.GetAffectedByT(9);
+    VertexSet expected_result_1 = VertexSet{ 1, 7, 10 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    VertexSet test_result_2 = extractor.GetAffectedByT(12);
+    VertexSet expected_result_2 = VertexSet{ 12 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    VertexSet test_result_3 = extractor.GetAffectedByT(13);
+    VertexSet expected_result_3 = VertexSet{ 1, 6, 12 };
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    //Negatives***************************************
+
+    // Stmt 2 is a read stmt
+    VertexSet test_result_4 = extractor.GetAffectedByT(2);
+    VertexSet expected_result_4 = VertexSet{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
+
+    // Stmt 8 is a while stmt
+    VertexSet test_result_5 = extractor.GetAffectedByT(8);
+    VertexSet expected_result_5 = VertexSet{};
+    Assert::IsTrue(test_result_5 == expected_result_5);
+
+    // Stmt 92 is not found in the program
+    VertexSet test_result_6 = extractor.GetAffectedByT(92);
+    VertexSet expected_result_6 = VertexSet{};
+    Assert::IsTrue(test_result_6 == expected_result_6);
+  }
+
+  TEST_METHOD(TestGetAffectsBipT) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+
+    //Positives**************************************
+    VertexSet test_result_1 = extractor.GetAffectsBipT(1);
+    VertexSet expected_result_1 = VertexSet{ 3, 5, 6, 8, 10, 11 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    VertexSet test_result_2 = extractor.GetAffectsBipT(6);
+    VertexSet expected_result_2 = VertexSet{ 3, 5, 8, 10, 11 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    //Negatives***************************************
+
+    // Stmt 7 is a call stmt
+    VertexSet test_result_3 = extractor.GetAffectsBipT(7);
+    VertexSet expected_result_3 = VertexSet{};
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    // Stmt 11 does not affect anyone
+    VertexSet test_result_4 = extractor.GetAffectsBipT(11);
+    VertexSet expected_result_4 = VertexSet{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
+  }
+
+  TEST_METHOD(TestGetAffectedByBipT) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+
+    //Positives**************************************
+    VertexSet test_result_1 = extractor.GetAffectedByBipT(8);
+    VertexSet expected_result_1 = VertexSet{ 1, 6, 10 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    VertexSet test_result_2 = extractor.GetAffectedByBipT(11);
+    VertexSet expected_result_2 = VertexSet{ 1, 6 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    //Negatives***************************************
+
+    // Stmt 9 is a if stmt
+    VertexSet test_result_3 = extractor.GetAffectedByBipT(9);
+    VertexSet expected_result_3 = VertexSet{};
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    // Stmt 4 is not affected by anyone
+    VertexSet test_result_4 = extractor.GetAffectedByBipT(4);
+    VertexSet expected_result_4 = VertexSet{};
+    Assert::IsTrue(test_result_4 == expected_result_4);
+  }
+
+  TEST_METHOD(TestGetAllAffectsT) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    VertexSet test_result_1 = extractor_1.GetAllAffectsT();
+    VertexSet expected_result_1 = VertexSet{ 4, 6, 8 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb2);
+    VertexSet test_result_2 = extractor_2.GetAllAffectsT();
+    VertexSet expected_result_2 = VertexSet{ 1, 6, 7, 10, 12 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    PqlExtractor extractor_3 = PqlExtractor(&pkb3);
+    VertexSet test_result_3 = extractor_3.GetAllAffectsT();
+    VertexSet expected_result_3 = VertexSet{ 1, 3, 5, 6, 7, 9, 11, 12, 14 };
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    PqlExtractor extractor_4 = PqlExtractor(&pkb4);
+    VertexSet test_result_4 = extractor_4.GetAllAffectsT();
+    VertexSet expected_result_4 = VertexSet{ 1, 5, 7, 8, 9 };
+    Assert::IsTrue(test_result_4 == expected_result_4);
+  }
+
+  TEST_METHOD(TestGetAllAffectedByT) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    VertexSet test_result_1 = extractor_1.GetAllAffectedByT();
+    VertexSet expected_result_1 = VertexSet{ 4, 6, 9, 12 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb2);
+    VertexSet test_result_2 = extractor_2.GetAllAffectedByT();
+    VertexSet expected_result_2 = VertexSet{ 5, 6, 9, 10, 12, 13 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    PqlExtractor extractor_3 = PqlExtractor(&pkb3);
+    VertexSet test_result_3 = extractor_3.GetAllAffectedByT();
+    VertexSet expected_result_3 = VertexSet{ 6, 9, 11, 12, 14, 15 };
+    Assert::IsTrue(test_result_3 == expected_result_3);
+
+    PqlExtractor extractor_4 = PqlExtractor(&pkb4);
+    VertexSet test_result_4 = extractor_4.GetAllAffectedByT();
+    VertexSet expected_result_4 = VertexSet{ 3, 5, 7, 8, 9, 12 };
+    Assert::IsTrue(test_result_4 == expected_result_4);
+  }
+
+  TEST_METHOD(TestGetAllAffectsBipT) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    VertexSet test_result_1 = extractor_1.GetAllAffectsBipT();
+    VertexSet expected_result_1 = VertexSet{ 4, 6, 8 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb5);
+    VertexSet test_result_2 = extractor_2.GetAllAffectsBipT();
+    VertexSet expected_result_2 = VertexSet{ 1, 3, 4, 6, 10 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    PqlExtractor extractor_3 = PqlExtractor(&pkb6);
+    VertexSet test_result_3 = extractor_3.GetAllAffectsBipT();
+    VertexSet expected_result_3 = VertexSet{ };
+    Assert::IsTrue(test_result_3 == expected_result_3);
+  }
+
+  TEST_METHOD(TestGetAllAffectedByBipT) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    VertexSet test_result_1 = extractor_1.GetAllAffectedByBipT();
+    VertexSet expected_result_1 = VertexSet{ 4, 6, 9, 12 };
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb5);
+    VertexSet test_result_2 = extractor_2.GetAllAffectedByBipT();
+    VertexSet expected_result_2 = VertexSet{ 3, 5, 6, 8, 10, 11 };
+    Assert::IsTrue(test_result_2 == expected_result_2);
+
+    PqlExtractor extractor_3 = PqlExtractor(&pkb6);
+    VertexSet test_result_3 = extractor_3.GetAllAffectedByBipT();
+    VertexSet expected_result_3 = VertexSet{ };
+    Assert::IsTrue(test_result_3 == expected_result_3);
+  }
+
+  TEST_METHOD(TestGetAffectsTTable) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    AffectsTable test_result_1 = extractor_1.GetAffectsTTable();
+    AffectsTable expected_result_1;
+    expected_result_1.AddEdge(4, 4);
+    expected_result_1.AddEdge(4, 12);
+    expected_result_1.AddEdge(4, 6);
+    expected_result_1.AddEdge(4, 9);
+    expected_result_1.AddEdge(6, 4);
+    expected_result_1.AddEdge(6, 12);
+    expected_result_1.AddEdge(6, 6);
+    expected_result_1.AddEdge(6, 9);
+    expected_result_1.AddEdge(8, 12);
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb4);
+    AffectsTable test_result_2 = extractor_2.GetAffectsTTable();
+    AffectsTable expected_result_2;
+    expected_result_2.AddEdge(1, 3);
+    expected_result_2.AddEdge(1, 12);
+    expected_result_2.AddEdge(5, 3);
+    expected_result_2.AddEdge(5, 12);
+    expected_result_2.AddEdge(7, 7);
+    expected_result_2.AddEdge(7, 8);
+    expected_result_2.AddEdge(7, 9);
+    expected_result_2.AddEdge(7, 5);
+    expected_result_2.AddEdge(7, 3);
+    expected_result_2.AddEdge(7, 12);
+    expected_result_2.AddEdge(8, 7);
+    expected_result_2.AddEdge(8, 8);
+    expected_result_2.AddEdge(8, 9);
+    expected_result_2.AddEdge(8, 5);
+    expected_result_2.AddEdge(8, 3);
+    expected_result_2.AddEdge(8, 12);
+    expected_result_2.AddEdge(9, 7);
+    expected_result_2.AddEdge(9, 8);
+    expected_result_2.AddEdge(9, 9);
+    expected_result_2.AddEdge(9, 5);
+    expected_result_2.AddEdge(9, 3);
+    expected_result_2.AddEdge(9, 12);
+    Assert::IsTrue(test_result_2 == expected_result_2);
+  }
+
+  TEST_METHOD(TestGetAffectedByTTable) {
+    PqlExtractor extractor_1 = PqlExtractor(&pkb1);
+    AffectsTable test_result_1 = extractor_1.GetAffectedByTTable();
+    AffectsTable expected_result_1;
+    expected_result_1.AddEdge(4, 4);
+    expected_result_1.AddEdge(9, 4);
+    expected_result_1.AddEdge(6, 4);
+    expected_result_1.AddEdge(6, 6);
+    expected_result_1.AddEdge(12, 4);
+    expected_result_1.AddEdge(12, 6);
+    expected_result_1.AddEdge(4, 6);
+    expected_result_1.AddEdge(9, 6);
+    expected_result_1.AddEdge(12, 8);
+    Assert::IsTrue(test_result_1 == expected_result_1);
+
+    PqlExtractor extractor_2 = PqlExtractor(&pkb4);
+    AffectsTable test_result_2 = extractor_2.GetAffectedByTTable();
+    AffectsTable expected_result_2;
+    expected_result_2.AddEdge(3, 1);
+    expected_result_2.AddEdge(12, 1);
+    expected_result_2.AddEdge(3, 5);
+    expected_result_2.AddEdge(12, 5);
+    expected_result_2.AddEdge(7, 7);
+    expected_result_2.AddEdge(8, 7);
+    expected_result_2.AddEdge(9, 7);
+    expected_result_2.AddEdge(5, 7);
+    expected_result_2.AddEdge(3, 7);
+    expected_result_2.AddEdge(12, 7);
+    expected_result_2.AddEdge(7, 8);
+    expected_result_2.AddEdge(8, 8);
+    expected_result_2.AddEdge(9, 8);
+    expected_result_2.AddEdge(5, 8);
+    expected_result_2.AddEdge(3, 8);
+    expected_result_2.AddEdge(12, 8);
+    expected_result_2.AddEdge(7, 9);
+    expected_result_2.AddEdge(8, 9);
+    expected_result_2.AddEdge(9, 9);
+    expected_result_2.AddEdge(5, 9);
+    expected_result_2.AddEdge(3, 9);
+    expected_result_2.AddEdge(12, 9);
+    Assert::IsTrue(test_result_2 == expected_result_2);
+  }
+
+  TEST_METHOD(TestGetAffectsBipTTable) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+    AffectsTable test_result = extractor.GetAffectsBipTTable();
+    AffectsTable expected_result;
+    expected_result.AddEdge(1, 10);
+    expected_result.AddEdge(1, 11);
+    expected_result.AddEdge(1, 3);
+    expected_result.AddEdge(3, 5);
+    expected_result.AddEdge(4, 5);
+    expected_result.AddEdge(1, 6);
+    expected_result.AddEdge(1, 8);
+    expected_result.AddEdge(10, 3);
+    expected_result.AddEdge(10, 8);
+    expected_result.AddEdge(6, 10);
+    expected_result.AddEdge(6, 8);
+    expected_result.AddEdge(6, 11);
+    expected_result.AddEdge(10, 5);
+    expected_result.AddEdge(1, 5);
+    expected_result.AddEdge(6, 5);
+    Assert::IsTrue(test_result == expected_result);
+  }
+
+  TEST_METHOD(TestGetAffectedByBipTTable) {
+    PqlExtractor extractor = PqlExtractor(&pkb5);
+    AffectsTable test_result = extractor.GetAffectedByBipTTable();
+    AffectsTable expected_result;
+    expected_result.AddEdge(6, 1);
+    expected_result.AddEdge(10, 1);
+    expected_result.AddEdge(11, 1);
+    expected_result.AddEdge(3, 1);
+    expected_result.AddEdge(5, 3);
+    expected_result.AddEdge(5, 4);
+    expected_result.AddEdge(5, 6);
+    expected_result.AddEdge(5, 1);
+    expected_result.AddEdge(5, 10);
+    expected_result.AddEdge(8, 1);
+    expected_result.AddEdge(3, 10);
+    expected_result.AddEdge(3, 6);
+    expected_result.AddEdge(8, 10);
+    expected_result.AddEdge(10, 6);
+    expected_result.AddEdge(8, 6);
+    expected_result.AddEdge(11, 6);
+    Assert::IsTrue(test_result == expected_result);
+  }
 
   PKB GetTestPKBOne() {
     string program =
