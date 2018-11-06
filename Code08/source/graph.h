@@ -27,16 +27,27 @@ class Graph {
   Vertex root_;
   AdjList adj_list_;
   AdjSet adj_set_;
+  VertexSet all_vertices_;
+  VertexSet parent_vertices_;
   int size_;
 
+  // Overloaded method for the Toposort() function to populate the topoqueue
   void Toposort(const Vertex& v, VisitedMap* visited, queue<Vertex>* topoqueue);
 
+  // Helper method to determine if there are cycles
   bool HasCycle(const Vertex& v, VisitedMap* visited, VertexSet* neighbours);
 
-  void DFS(const Vertex& v, VisitedMap*, VertexList* path);
+  // Generic DFS method, keeps a list of the path traversed
+  void DFS(const Vertex& v, VisitedMap*, VertexSet* path);
+
+  // Helper method for CanReach
+  // @returns true if v can reach target, false otherwise
+  bool DFS(Vertex v, Vertex target, VisitedMap* visited);
 
  public:
   Graph();
+
+  bool operator==(const Graph& other_graph);
 
   // sets the root of the graph to the given value
   // If the given value is not in the graph, no root change will occur
@@ -63,6 +74,10 @@ class Graph {
   // @returns a list of all nodes without neighbours
   VertexList GetTerminalNodes();
 
+  // A vertex is a parent if it points to another vertex
+  // @returns parent all vertices
+  VertexSet GetParentVertices();
+
   // @returns true if graph is empty, false otherwise
   bool IsEmpty();
 
@@ -72,7 +87,11 @@ class Graph {
 
   // Performs a DFS of all vertices reachable from given vertex v
   // @returns vector of vertices in DFS
-  VertexList DFS(const Vertex v);
+  VertexSet DFS(const Vertex v);
+
+  // Performs a DFS of neighbouring vertices
+  // @returns a set of vertices in DFS
+  VertexSet DFSNeighbours(const Vertex v);
 
   // Get all unreachable vertices when the given vertex v is removed
   // @returns set of all non-visited vertices
@@ -81,6 +100,9 @@ class Graph {
   // Check for cycles in the graph
   // @returns true if cycle exists, false otherwise
   bool HasCycle();
+
+  // @returns true if vertex 'to' can be reached from vertex 'from'
+  bool CanReach(Vertex from, Vertex to);
 
   /* GETTERS */
   // @returns size of graph

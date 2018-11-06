@@ -1022,7 +1022,7 @@ void PqlEvaluator::EvaluateNext(PqlSuchthat suchthat,
 void PqlEvaluator::EvaluateNextT(PqlSuchthat suchthat,
                                  SuchthatParamType arrangement) {
   PKB pkb = GetPKB();
-  PqlExtractor pqle = PqlExtractor(pkb);
+  PqlExtractor pqle = PqlExtractor(&pkb);
   // Getting parameter of such that
   Parameters such_that_param = suchthat.GetParameters();
   pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
