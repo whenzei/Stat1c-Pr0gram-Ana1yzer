@@ -95,7 +95,9 @@ class PqlEvaluateWith {
    * type
    */
   QueryResultPairList FilterWithRight(QueryResultList unfiltered_result,
-                                      PqlDeclarationEntity entity_type);
+                                      QueryResultList,
+                                      PqlDeclarationEntity entity_type,
+                                      PqlDeclarationEntity);
 
   /**
    * Filter the result list based on the declaration entity type
@@ -104,7 +106,9 @@ class PqlEvaluateWith {
    * type
    */
   QueryResultPairList FilterWithLeft(QueryResultList unfiltered_result,
-                                     PqlDeclarationEntity entity_type);
+                                     QueryResultList,
+                                     PqlDeclarationEntity entity_type,
+                                     PqlDeclarationEntity);
 };
 
 #endif  // !PQL_EVALUATE_WITH_H
