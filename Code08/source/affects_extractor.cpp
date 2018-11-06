@@ -406,34 +406,34 @@ void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
 
 VertexSet AffectsExtractor::GetAllAffects(bool is_bip) {
   if (!is_bip && has_set_affects_tables_) {
-    return affects_table_.GetAllVertices();
+    return affects_table_.GetParentVertices();
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetAllVertices();
+    return affects_bip_table_.GetParentVertices();
   }
 
   if (is_bip) {
-    return GetAffectsBipTable().GetAllVertices();
+    return GetAffectsBipTable().GetParentVertices();
   }
 
-  return GetAffectsTable().GetAllVertices();
+  return GetAffectsTable().GetParentVertices();
 }
 
 VertexSet AffectsExtractor::GetAllAffectedBy(bool is_bip) {
   if (!is_bip && has_set_affects_tables_) {
-    return affected_by_table_.GetAllVertices();
+    return affected_by_table_.GetParentVertices();
   }
 
   if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetAllVertices();
+    return affected_by_bip_table_.GetParentVertices();
   }
 
   if (is_bip) {
-    return GetAffectedByBipTable().GetAllVertices();
+    return GetAffectedByBipTable().GetParentVertices();
   }
 
-  return GetAffectedByTable().GetAllVertices();
+  return GetAffectedByTable().GetParentVertices();
 }
 
 AffectsTable AffectsExtractor::GetAffectsTable() {

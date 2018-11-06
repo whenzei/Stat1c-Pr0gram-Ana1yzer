@@ -364,7 +364,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
 
     extractor = PqlExtractor(&pkb3);
     VertexSet actual_results_3 = extractor.GetAllAffects();
-    VertexSet expected_results_3 = VertexSet{1, 3, 5, 6, 7, 9, 11, 14};
+    VertexSet expected_results_3 = VertexSet{1, 3, 5, 6, 7, 9, 11, 12, 14};
     Assert::IsTrue(actual_results_3 == expected_results_3);
 
     extractor = PqlExtractor(&pkb4);

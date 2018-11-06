@@ -29,6 +29,7 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
 
   AddNode(from);
   AddNode(to);
+  parent_vertices_.emplace(from);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
@@ -69,8 +70,11 @@ void Graph::RemoveNode(const Vertex &vertex) {
     adj_set_.erase(vertex);
     adj_list_.erase(vertex);
     all_vertices_.erase(vertex);
+    parent_vertices_.erase(vertex);
   }
 }
+
+VertexSet Graph::GetParentVertices() { return parent_vertices_; }
 
 bool Graph::IsEmpty() { return size_ == 0; }
 
@@ -157,6 +161,10 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
   return false;
 }
 
+bool Graph::CanReach(Vertex from, Vertex to) {
+  return DFS(from, to);
+}
+
 VertexList Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
@@ -166,6 +174,18 @@ VertexList Graph::DFS(const Vertex from) {
 
   DFS(from, &visited, &path);
   return path;
+}
+
+bool Graph::DFS(Vertex start, Vertex to_find) {
+  bool is_found = false;
+  VisitedMap visited_nodes;
+
+  for (auto &kv : adj_set_) {
+    visited_nodes[kv.first] = false;
+  }
+  
+  DFS(start, to_find, &visited_nodes, &is_found);
+  return is_found;
 }
 
 VertexSet Graph::GetUnreachableVertices(Vertex v) {
@@ -216,6 +236,34 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
     }
   }
   // add saving of path here if post-order traversal
+}
+
+void Graph::DFS(const Vertex &start, const Vertex &to_find, VisitedMap *visited, bool *is_found) {
+  // Base case: If start node is same as node we are looking for
+  if (start == to_find) {
+    (*is_found) = true;
+    return;
+  }
+
+  // Base case: If already found
+  if (is_found) {
+    return;
+  }
+
+  // Base case: If already visited
+  if ((*visited)[start] == true) {
+    return;
+  }
+
+  (*visited)[start] = true;
+
+  VertexSet *neighbours = &adj_set_[start];
+
+  for (auto &neighbour : *neighbours) {
+    if (!(*visited)[neighbour]) {
+      DFS(neighbour, to_find, visited, is_found);
+    }
+  }
 }
 
 VertexSet Graph::GetNeighboursSet(const Vertex &v) {
