@@ -125,10 +125,24 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
       // Get all call stmt from PKB and store into query_result_list
       query_result_list = pkb_->GetAllCallStmt();
       break;
-    case PqlDeclarationEntity::kCallName:
-      // Get all call stmt from PKB and store into query_result_list
-      query_result_list = pkb_->GetAllCallee();
+    case PqlDeclarationEntity::kCallName: {
+      string call_stmt =
+          selected_syn.first.substr(1, selected_syn.first.size());
+      if (intermediate_column_header_.count(call_stmt)) {
+        // If call.stmt# exists in the intermediate result table, get
+        // corresponding call.procName results
+        int result_table_id = intermediate_column_header_[call_stmt].first;
+        int column_id = intermediate_column_header_[call_stmt].second;
+        ResultTable result_table = intermediate_result_tables_[result_table_id];
+        for (auto& row : result_table) {
+          query_result_list.push_back(pkb_->GetCalledProcedure(row[column_id]));
+        }
+      } else {
+        // Get all call stmt from PKB and store into query_result_list
+        query_result_list = pkb_->GetAllCallee();
+      }
       break;
+    }
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into query_result_list
       query_result_list = pkb_->GetAllWhileStmt();
@@ -146,16 +160,44 @@ ResultTable PqlProjector::GetSelectAllResult(Synonym selected_syn) {
       // query_result_list
       query_result_list = pkb_->GetAllStmt();
       break;
-    case PqlDeclarationEntity::kReadName:
-      // Get all read stmt var from PKB and store into results
-      // list
-      query_result_list = pkb_->GetAllReadVar();
+    case PqlDeclarationEntity::kReadName: {
+      string read_stmt =
+          selected_syn.first.substr(1, selected_syn.first.size());
+      if (intermediate_column_header_.count(read_stmt)) {
+        // If read.stmt# exists in the intermediate result table, get
+        // corresponding read.varName results
+        int result_table_id = intermediate_column_header_[read_stmt].first;
+        int column_id = intermediate_column_header_[read_stmt].second;
+        ResultTable result_table = intermediate_result_tables_[result_table_id];
+        for (auto& row : result_table) {
+          query_result_list.push_back(pkb_->GetReadVar(row[column_id]));
+        }
+      } else {
+        // Get all read stmt var from PKB and store into results
+        // list
+        query_result_list = pkb_->GetAllReadVar();
+      }
       break;
-    case PqlDeclarationEntity::kPrintName:
-      // Get all print var from PKB and store into results
-      // list
-      query_result_list = pkb_->GetAllPrintVar();
+    }
+    case PqlDeclarationEntity::kPrintName: {
+      string print_stmt =
+          selected_syn.first.substr(1, selected_syn.first.size());
+      if (intermediate_column_header_.count(print_stmt)) {
+        // If print.stmt# exists in the intermediate result table, get
+        // corresponding print.varName results
+        int result_table_id = intermediate_column_header_[print_stmt].first;
+        int column_id = intermediate_column_header_[print_stmt].second;
+        ResultTable result_table = intermediate_result_tables_[result_table_id];
+        for (auto& row : result_table) {
+          query_result_list.push_back(pkb_->GetPrintVar(row[column_id]));
+        }
+      } else {
+        // Get all print var from PKB and store into results
+        // list
+        query_result_list = pkb_->GetAllPrintVar();
+      }
       break;
+    }
   }
 
   pql_result.InitTable(query_result_list, selected_syn.first);

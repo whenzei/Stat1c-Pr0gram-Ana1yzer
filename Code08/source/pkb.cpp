@@ -690,8 +690,8 @@ bool PKB::IsCalledProc(ProcIndex callee_proc_id) {
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
-ProcName PKB::GetCalledProcedure(StmtNum stmt_num) {
-  return GetProcName(call_table_.GetCalledProcedure(stmt_num));
+ProcIndex PKB::GetCalledProcedure(StmtNum stmt_num) {
+  return call_table_.GetCalledProcedure(stmt_num);
 }
 
 bool PKB::IsNext(StmtNum previous_stmt, StmtNum next_stmt) {
