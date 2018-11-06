@@ -21,9 +21,10 @@ using std::vector;
 PqlEvaluateSuchthat::PqlEvaluateSuchthat() {}
 
 bool PqlEvaluateSuchthat::EvaluateSuchthatClause(PqlEvaluator* pql_eval,
-                                                 PKB* pkb,
-                                                 PqlSuchthat suchthat) {
+                                                 PKB* pkb, PqlSuchthat suchthat,
+                                                 PqlExtractor* pqle) {
   SetPKB(pkb);
+  SetPqlExtractor(pqle);
   SetClauseFlag(true);
   SuchthatParamType arrangement =
       CheckSuchthatParamType(suchthat.GetParameters());
@@ -406,8 +407,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list =
-          FilterResult(pkb_->GetNext(stoi(left_name)), right_type);
+      result_list = FilterResult(pkb_->GetNext(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not executed before any right type" << endl;
@@ -425,8 +425,8 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(
-          kFilterBoth, pkb_->GetAllNextPairs(), left_type, right_type);
+      result_pair_list = FilterPairResult(kFilterBoth, pkb_->GetAllNextPairs(),
+                                          left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Next(left,right)" << endl;
@@ -441,7 +441,6 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
 void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
                                         PqlSuchthat suchthat,
                                         SuchthatParamType arrangement) {
-  PqlExtractor pqle = PqlExtractor(*pkb_);
   // Getting parameter of such that
   Parameters such_that_param = suchthat.GetParameters();
   pair<string, PqlDeclarationEntity> left_param = such_that_param.first;
@@ -457,21 +456,21 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
 
   switch (arrangement) {
     case kNoSynonym:
-      if (!pqle.IsNextT(stoi(left_name), stoi(right_name))) {
+      if (!pqle_->IsNextT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
         cout << left_name << " not indirectly executed after" << right_name
              << endl;
       }
       return;
     case kNoSynonymUnderscoreLeft:
-      if (pqle.GetPreviousT(stoi(right_name)).empty()) {
+      if (pqle_->GetPreviousT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not indirectly executed after anything "
              << endl;
       }
       return;
     case kNoSynonymUnderscoreRight:
-      if (pqle.GetNextT(stoi(left_name)).empty()) {
+      if (pqle_->GetNextT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirectly executed before anything "
              << endl;
@@ -485,7 +484,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymLeft:
       result_list =
-          FilterResult(pqle.GetPreviousT(stoi(right_name)), left_type);
+          FilterResult(pqle_->GetPreviousT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << right_name << " is not indirectly executed after any left type"
@@ -504,7 +503,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = FilterResult(pqle.GetNextT(stoi(left_name)), right_type);
+      result_list = FilterResult(pqle_->GetNextT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << left_name << " is not indirectly executed before any right type"
@@ -523,7 +522,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(kFilterBoth, pqle.GetAllNextTPairs(),
+      result_pair_list = FilterPairResult(kFilterBoth, pqle_->GetAllNextTPairs(),
                                           left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
@@ -608,8 +607,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list =
-          FilterResult(pkb_->GetFollows(stoi(left_name)), right_type);
+      result_list = FilterResult(pkb_->GetFollows(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " No follower of this type " << endl;
@@ -784,8 +782,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeft:
-      result_list =
-          FilterResult(pkb_->GetParent(stoi(right_name)), left_type);
+      result_list = FilterResult(pkb_->GetParent(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have " << right_name << " as child"
@@ -804,8 +801,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list =
-          FilterResult(pkb_->GetChild(stoi(left_name)), right_type);
+      result_list = FilterResult(pkb_->GetChild(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have stmt " << left_name << " as parent"
@@ -824,8 +820,8 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(
-          kFilterBoth, pkb_->GetAllParentPair(), left_type, right_type);
+      result_pair_list = FilterPairResult(kFilterBoth, pkb_->GetAllParentPair(),
+                                          left_type, right_type);
       // Filter left and right
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
@@ -883,8 +879,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeft:
-      result_list =
-          FilterResult(pkb_->GetParentT(stoi(right_name)), left_type);
+      result_list = FilterResult(pkb_->GetParentT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " left stmt does not have " << right_name
@@ -903,8 +898,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list =
-          FilterResult(pkb_->GetChildT(stoi(left_name)), right_type);
+      result_list = FilterResult(pkb_->GetChildT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << " right stmt does not have stmt " << left_name
@@ -970,8 +964,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       return;
     case kOneSynonymLeft:
       // If no stmt of left syn entity type uses the right variable
-      result_list =
-          FilterResult(pkb_->GetUsingStmt(right_name), left_type);
+      result_list = FilterResult(pkb_->GetUsingStmt(right_name), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt of left type doesnt use right variable" << endl;
@@ -990,8 +983,8 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymRight:
-      result_list = FilterVariableResult(
-          pkb_->GetUsedVarS(stoi(left_name)), right_type);
+      result_list =
+          FilterVariableResult(pkb_->GetUsedVarS(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt " << left_name << " doesnt use any variable of this type"
@@ -1001,8 +994,8 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(
-          kFilterLeft, pkb_->GetAllUsesPairS(), left_type, right_type);
+      result_pair_list = FilterPairResult(kFilterLeft, pkb_->GetAllUsesPairS(),
+                                          left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
         cout << "Stmt of left type doesnt use any variable" << endl;
@@ -1122,8 +1115,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       }
       return;
     case kOneSynonymLeft:
-      result_list =
-          FilterResult(pkb_->GetModifyingS(right_name), left_type);
+      result_list = FilterResult(pkb_->GetModifyingS(right_name), left_type);
       // If no stmt of left syn entity type modifies the right variable
       if (result_list.empty()) {
         SetClauseFlag(false);
@@ -1405,3 +1397,7 @@ void PqlEvaluateSuchthat::SetClauseFlag(bool clause_flag) {
 bool PqlEvaluateSuchthat::IsValidClause() { return clause_flag_; }
 
 void PqlEvaluateSuchthat::SetPKB(PKB* pkb) { this->pkb_ = pkb; }
+
+void PqlEvaluateSuchthat::SetPqlExtractor(PqlExtractor* pqle) {
+  this->pqle_ = pqle;
+}

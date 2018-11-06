@@ -10,6 +10,7 @@
 #include "pql_evaluate_suchthat.h"
 #include "pql_evaluate_with.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_projector.h"
 #include "pql_query.h"
@@ -28,7 +29,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   SetPqlResult(PqlResult());
   SetResultTableList(ResultTableList());
   SetResultTableColumnHeader(ResultTableColumnHeader());
-
+  PqlExtractor pqle = PqlExtractor(pkb);
   // Default value should be true, until the clause returns a false
   SetClauseFlag(true);
   FinalResult final_results;
@@ -55,7 +56,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         switch (clause->GetClauseType()) {
           case PqlClauseType::kSuchthat:
             tempbool = suchthat_evaluator.EvaluateSuchthatClause(
-                this, &pkb, *(PqlSuchthat*)clause);
+                this, &pkb, *(PqlSuchthat*)clause, &pqle);
             // If valid then set boolean, if not dont change the invalidity
             if (IsValidClause()) {
               SetClauseFlag(tempbool);

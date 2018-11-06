@@ -12,6 +12,7 @@
 #include "pql_evaluator.h"
 #include "pql_global.h"
 #include "pql_query.h"
+#include "pql_extractor.h"
 
 using std::list;
 using std::string;
@@ -26,8 +27,9 @@ using IndexToVarProcMap = unordered_map<int, string>;
 /*A class to evaluate user query and return result to user*/
 class PqlEvaluateSuchthat {
  private:
-  PKB* pkb_;           // pkb database
+  PKB* pkb_;          // pkb database
   bool clause_flag_;  // to determine if clauses are true/false
+  PqlExtractor* pqle_;
 
  public:
   /* Contructor */
@@ -35,6 +37,7 @@ class PqlEvaluateSuchthat {
 
   /* Setter */
   void SetPKB(PKB*);
+  void SetPqlExtractor(PqlExtractor*);
   void SetClauseFlag(bool);
 
   /* Getter */
@@ -48,7 +51,7 @@ class PqlEvaluateSuchthat {
    * @return boolean of whether the clause is true/false
    */
   bool EvaluateSuchthatClause(PqlEvaluator* pql_eval, PKB* pkb,
-                              PqlSuchthat suchthat);
+                              PqlSuchthat suchthat, PqlExtractor*);
 
   /**
    * Return a list of all the result of a certain type
@@ -60,98 +63,112 @@ class PqlEvaluateSuchthat {
 
   /**
    * Evaluate follows clause and store result in PqlResult table
-   * @param The evaluator and follows clause in the Query and arrangement of clause arguments
+   * @param The evaluator and follows clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateFollows(PqlEvaluator*, PqlSuchthat suchthat,
                        SuchthatParamType arrangement);
 
   /**
    * Evaluate follows* clause and store result in PqlResult table
-   * @param The evaluator and follows* clause in the Query and arrangement of clause arguments
+   * @param The evaluator and follows* clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateFollowsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
 
   /**
    * Evaluate parent clause and store result in PqlResult table
-   * @param The evaluator and parent clause in the Query and arrangement of clause arguments
+   * @param The evaluator and parent clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateParent(PqlEvaluator*, PqlSuchthat suchthat,
                       SuchthatParamType arrangement);
 
   /**
    * Evaluate parent* clause and store result in PqlResult table
-   * @param The evaluator and parent* clause in the Query and arrangement of clause arguments
+   * @param The evaluator and parent* clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateParentT(PqlEvaluator*, PqlSuchthat suchthat,
                        SuchthatParamType arrangement);
 
   /**
    * Evaluate uses (stmt) clause and store result in PqlResult table
-   * @param The evaluator and uses clause in the Query and arrangement of clause arguments
+   * @param The evaluator and uses clause in the Query and arrangement of clause
+   * arguments
    */
   void EvaluateUsesS(PqlEvaluator*, PqlSuchthat suchthat,
                      SuchthatParamType arrangement);
 
   /**
    * Evaluate uses (procedure) clause and store result in PqlResult table
-   * @param The evaluator and uses clause in the Query and arrangement of clause arguments
+   * @param The evaluator and uses clause in the Query and arrangement of clause
+   * arguments
    */
   void EvaluateUsesP(PqlEvaluator*, PqlSuchthat suchthat,
                      SuchthatParamType arrangement);
 
   /**
    * Evaluate modifies (stmt) clause and store result in PqlResult table
-   * @param The evaluator and modifies clause in the Query and arrangement of clause arguments
+   * @param The evaluator and modifies clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateModifiesS(PqlEvaluator*, PqlSuchthat suchthat,
                          SuchthatParamType arrangement);
 
   /**
    * Evaluate modifies (procedure) clause and store result in PqlResult table
-   * @param The evaluator and modifies clause in the Query and arrangement of clause arguments
+   * @param The evaluator and modifies clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateModifiesP(PqlEvaluator*, PqlSuchthat suchthat,
                          SuchthatParamType arrangement);
 
   /**
    * Evaluate Call clause and store result in PqlResult table
-   * @param The evaluator and Call clause in the Query and arrangement of clause arguments
+   * @param The evaluator and Call clause in the Query and arrangement of clause
+   * arguments
    */
   void EvaluateCalls(PqlEvaluator*, PqlSuchthat suchthat,
                      SuchthatParamType arrangement);
 
   /**
    * Evaluate Call* clause and store result in PqlResult table
-   * @param The evaluator and Call* clause in the Query and arrangement of clause arguments
+   * @param The evaluator and Call* clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateCallsT(PqlEvaluator*, PqlSuchthat suchthat,
                       SuchthatParamType arrangement);
 
   /**
    * Evaluate Next clause and store result in PqlResult table
-   * @param The evaluator and Next clause in the Query and arrangement of clause arguments
+   * @param The evaluator and Next clause in the Query and arrangement of clause
+   * arguments
    */
   void EvaluateNext(PqlEvaluator*, PqlSuchthat suchthat,
                     SuchthatParamType arrangement);
 
   /**
    * Evaluate Next* clause and store result in PqlResult table
-   * @param The evaluator and Next* clause in the Query and arrangement of clause arguments
+   * @param The evaluator and Next* clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateNextT(PqlEvaluator*, PqlSuchthat suchthat,
                      SuchthatParamType arrangement);
 
   /**
    * Evaluate Affects clause and store result in PqlResult table
-   * @param The evaluator and affects clause in the Query and arrangement of clause arguments
+   * @param The evaluator and affects clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateAffects(PqlEvaluator*, PqlSuchthat suchthat,
                        SuchthatParamType arrangement);
 
   /**
    * Evaluate Affects* clause and store result in PqlResult table
-   * @param The evaluator and affects* clause in the Query and arrangement of clause arguments
+   * @param The evaluator and affects* clause in the Query and arrangement of
+   * clause arguments
    */
   void EvaluateAffectsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
