@@ -488,45 +488,11 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
 }
 
 bool AffectsExtractor::IsAffectsT(StmtNum stmt, bool is_bip) {
-  ProcName p = pkb_->GetProcOfStmt(stmt);
-
-  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
-    return false;
-  }
-  
-  if (!is_bip && has_set_affects_tables_) {
-    return !affects_table_.GetNeighboursSet(stmt).empty();
-  }
-  
-  if (is_bip && has_set_affects_bip_tables_) {
-    return !affects_bip_table_.GetNeighboursSet(stmt).empty();
-  }
-
-  // Otherwise, do a DFS on the affects_table_ if !is_bip
-  // Do DFS on affects_bip_table_ if is_bip
-  return is_bip ? !GetAffectsBipTable().DFS(stmt).empty() 
-    : !GetAffectsTable().DFS(stmt).empty();
+  return IsAffects(stmt, is_bip);
 }
 
-bool AffectsExtractor::IsAffectedByT(StmtNum stmt, bool is_bip) {
-  ProcName p = pkb_->GetProcOfStmt(stmt);
-
-  if (pkb_->GetStmtType(stmt) != StmtType::kAssign || p.empty()) {
-    return false;
-  }
-
-  if (!is_bip && has_set_affects_tables_) {
-    return !affected_by_table_.GetNeighboursSet(stmt).empty();
-  }
-
-  if (is_bip && has_set_affects_bip_tables_) {
-    return !affected_by_bip_table_.GetNeighboursSet(stmt).empty();
-  }
-
-  // Otherwise, do a DFS on the affected_by_table_ if !is_bip
-  // Do DFS on affected_by_bip_table_ if is_bip
-  return is_bip ? !GetAffectedByBipTable().DFS(stmt).empty() :
-    !GetAffectedByTable().DFS(stmt).empty();
+bool AffectsExtractor::IsAffectedT(StmtNum stmt, bool is_bip) {
+  return IsAffected(stmt, is_bip);
 }
 
 VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {

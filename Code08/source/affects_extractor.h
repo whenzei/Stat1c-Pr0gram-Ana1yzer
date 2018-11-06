@@ -177,7 +177,7 @@ class AffectsExtractor {
   // Checks and returns whether Affects*(n, stmt) is true for
   // some arbitrary statement n
   // @returns true if stmt is affected by any statement
-  bool IsAffectedByT(StmtNum stmt, bool is_bip = false);
+  bool IsAffectedT(StmtNum stmt, bool is_bip = false);
 
   // Returns a set of statements that stmt Affects
   // i.e., where Affects*(stmt, n)
