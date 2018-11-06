@@ -643,9 +643,9 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
-  // @returns procedure name called at given statement number if exists, empty
+  // @returns the index of procedure called at given statement number if exists, empty
   // string otherwise
-  ProcName GetCalledProcedure(StmtNum stmt_num);
+  ProcIndex GetCalledProcedure(StmtNum stmt_num);
 
   /************************
    * Next Table Functions *
