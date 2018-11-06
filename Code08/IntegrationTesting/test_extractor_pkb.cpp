@@ -1080,6 +1080,7 @@ TEST_CLASS(TestPkbPqlExtractor) {
     expected_result.AddEdge(10, 5);
     expected_result.AddEdge(1, 5);
     expected_result.AddEdge(6, 5);
+    expected_result.AddEdge(6, 3);
     Assert::IsTrue(test_result == expected_result);
   }
 
