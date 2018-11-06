@@ -89,6 +89,10 @@ class Graph {
   // @returns vector of vertices in DFS
   VertexSet DFS(const Vertex v);
 
+  // Performs a DFS of neighbouring vertices
+  // @returns a set of vertices in DFS
+  VertexSet DFSNeighbours(const Vertex v);
+
   // Get all unreachable vertices when the given vertex v is removed
   // @returns set of all non-visited vertices
   VertexSet GetUnreachableVertices(Vertex v);

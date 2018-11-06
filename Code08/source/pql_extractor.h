@@ -75,7 +75,7 @@ class PqlExtractor {
   bool IsAffectsT(StmtNum stmt);
 
   // @returns true if Affects*(n, stmt) holds for some statement n
-  bool IsAffectedByT(StmtNum stmt);
+  bool IsAffectedT(StmtNum stmt);
 
   // @returns a set of stmt numbers a where Affects*(stmt, a) holds
   VertexSet GetAffectsT(StmtNum stmt);
@@ -132,7 +132,7 @@ class PqlExtractor {
   bool IsAffectsBipT(StmtNum stmt);
 
   // @returns true if AffectsBip*(n, stmt) holds for some statement n
-  bool IsAffectedByBipT(StmtNum stmt);
+  bool IsAffectedBipT(StmtNum stmt);
 
   // @returns a set of stmt numbers a where AffectsBip*(stmt, a) holds
   VertexSet GetAffectsBipT(StmtNum stmt);

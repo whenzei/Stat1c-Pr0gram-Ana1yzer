@@ -5,11 +5,17 @@ AffectsExtractor::AffectsExtractor() {}
 AffectsExtractor::AffectsExtractor(PKB* pkb) {
   pkb_ = pkb;
   has_set_affects_tables_ = false;
+  has_set_affects_t_tables_ = false;
   has_set_affects_bip_tables_ = false;
+  has_set_affects_bip_t_tables_ = false;
   affects_table_ = AffectsTable();
+  affects_t_table_ = AffectsTable();
   affects_bip_table_ = AffectsTable();
+  affects_bip_t_table_ = AffectsTable();
   affected_by_table_ = AffectsTable();
+  affected_by_t_table_ = AffectsTable();
   affected_by_bip_table_ = AffectsTable();
+  affected_by_bip_t_table_ = AffectsTable();
 }
 
 /**** Affects(const, const) methods ****/
@@ -484,7 +490,8 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
   }
 
   // Do a DFS(start, end) on affects_table. Return boolean value from CanReach. 
-  return GetAffectsTable().CanReach(stmt_1, stmt_2);
+  return is_bip ? GetAffectsBipTable().CanReach(stmt_1, stmt_2) :
+    GetAffectsTable().CanReach(stmt_1, stmt_2);
 }
 
 bool AffectsExtractor::IsAffectsT(StmtNum stmt, bool is_bip) {
@@ -506,22 +513,22 @@ VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
   // If only looking for Affects* in local procedure and AffectsTable is already set,
   // perform DFS on AffectsTable and return all the statements that stmt can reach.
   if (!is_bip && has_set_affects_tables_) {
-    return affects_table_.DFS(stmt);
+    return affects_table_.DFSNeighbours(stmt);
   }
 
   // If looking for Affects* in entire program and AffectsBipTable is already set,
   // perform DFS on AffectsBipTable and return all the statements that stmt can
   // reach.
   if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.DFS(stmt);
+    return affects_bip_table_.DFSNeighbours(stmt);
   }
 
   // Otherwise, help set the AffectsTable or AffectsBipTable based on is_bip.
   // Then, do the same DFS as above and return the reachable stmts.
   if(!is_bip) {
-    return GetAffectsTable().DFS(stmt);
+    return GetAffectsTable().DFSNeighbours(stmt);
   } else {
-    return GetAffectsBipTable().DFS(stmt);
+    return GetAffectsBipTable().DFSNeighbours(stmt);
   }
 }
 
@@ -536,22 +543,22 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
   // If only for local procedure and AffectedByTable is already set
   // Perform DFS on AffectedByTable and return all the statements that stmt can reach.
   if (!is_bip && has_set_affects_tables_) {
-    return affected_by_table_.DFS(stmt);
+    return affected_by_table_.DFSNeighbours(stmt);
   }
 
   // If for entire program and AffectsBipTable is already set
   // Perform DFS on AffectsBipTable and return all the statements that stmt can
   // reach.
   if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.DFS(stmt);
+    return affected_by_bip_table_.DFSNeighbours(stmt);
   }
 
-  // Otherwise, set the AffectedByTable or AffectedByBipTable based on is_bip.
-  // Otherwise, do a DFS on the affected_by_(bip)_table_ and convert into set.
+  // Otherwise, set the AffectedByTable or AffectedByBipTable based on is_bip
+  // perform DFSNeighbours on the respective table.
   if(!is_bip) {
-    return GetAffectedByTable().DFS(stmt);
+    return GetAffectedByTable().DFSNeighbours(stmt);
   } else {
-    return GetAffectedByBipTable().DFS(stmt);
+    return GetAffectedByBipTable().DFSNeighbours(stmt);
   }
 }
 
@@ -604,7 +611,7 @@ AffectsTable AffectsExtractor::GetAffectsBipTTable() {
     return affects_bip_t_table_;
   }
   SetAffectsBipTTables();  // populate the tables
-  return affects_bip_table_;
+  return affects_bip_t_table_;
 }
 
 AffectsTable AffectsExtractor::GetAffectedByBipTTable() {
@@ -641,7 +648,7 @@ void AffectsExtractor::SetAffectsTTables() {
   Get all nodes that are reachable from that node (using DFS)
   And add Edge(node, reachable_node) in the new AffectsTTable */
   for (auto& vertex : vertices) {
-    VertexSet reachable_nodes = affects_table.DFS(vertex);
+    VertexSet reachable_nodes = affects_table.DFSNeighbours(vertex);
     for (auto& reachable_node : reachable_nodes) {
       // duplicates will be disregarded by AddEdge
       affects_t_table_.AddEdge(vertex, reachable_node);
@@ -651,7 +658,7 @@ void AffectsExtractor::SetAffectsTTables() {
   // Do the same for AffectedByT Table (the inverse)
   vertices = affected_by_table.GetAllVertices();
   for (auto& vertex : vertices) {
-    VertexSet reachable_nodes = affected_by_table.DFS(vertex);
+    VertexSet reachable_nodes = affected_by_table.DFSNeighbours(vertex);
     for (auto& reachable_node : reachable_nodes) {
       // duplicates will be disregarded by AddEdge
       affected_by_t_table_.AddEdge(vertex, reachable_node);
@@ -685,7 +692,7 @@ void AffectsExtractor::SetAffectsBipTTables() {
   Get all nodes that are reachable from that node (using DFS)
   And add Edge(node, reachable_node) in the new AffectsBipTTable */
   for (auto& vertex : vertices) {
-    VertexSet reachable_nodes = affects_bip_table.DFS(vertex);
+    VertexSet reachable_nodes = affects_bip_table.DFSNeighbours(vertex);
     for (auto& reachable_node : reachable_nodes) {
       // duplicates will be disregarded by Graph.AddEdge
       affects_bip_t_table_.AddEdge(vertex, reachable_node);
@@ -696,7 +703,7 @@ void AffectsExtractor::SetAffectsBipTTables() {
 
   // Do the same for AffectedByBipT Table (the inverse)
   for (auto& vertex : vertices) {
-    VertexSet reachable_nodes = affected_by_bip_table.DFS(vertex);
+    VertexSet reachable_nodes = affected_by_bip_table.DFSNeighbours(vertex);
     for (auto& reachable_node : reachable_nodes) {
       // duplicates will be disregarded by Graph.AddEdge
       affected_by_bip_t_table_.AddEdge(vertex, reachable_node);

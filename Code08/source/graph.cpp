@@ -184,6 +184,16 @@ VertexSet Graph::DFS(const Vertex from) {
   return path;
 }
 
+VertexSet Graph::DFSNeighbours(const Vertex from) {
+  VertexSet neighbours = GetNeighboursSet(from);
+  VertexSet final_path;
+  for (auto& neighbour : neighbours) {
+    VertexSet inter_path = DFS(neighbour);
+    final_path.insert(inter_path.begin(), inter_path.end());
+  }
+  return final_path;
+}
+
 bool Graph::DFS(Vertex v, Vertex target, VisitedMap *visited) {
   if (visited->count(v)) {
     return false;

@@ -85,7 +85,7 @@ bool PqlExtractor::IsAffectsT(StmtNum stmt) {
   return ae_.IsAffectsT(stmt);
 }
 
-bool PqlExtractor::IsAffectedByT(StmtNum stmt) {
+bool PqlExtractor::IsAffectedT(StmtNum stmt) {
   return ae_.IsAffectedT(stmt);
 }
 
@@ -157,7 +157,7 @@ bool PqlExtractor::IsAffectsBipT(StmtNum stmt) {
   return ae_.IsAffectsT(stmt, true);
 }
 
-bool PqlExtractor::IsAffectedByBipT(StmtNum stmt) {
+bool PqlExtractor::IsAffectedBipT(StmtNum stmt) {
   return ae_.IsAffectedT(stmt, true);
 }
 
