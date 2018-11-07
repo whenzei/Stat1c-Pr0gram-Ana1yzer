@@ -33,6 +33,30 @@ NextTMap PqlExtractor::GetNextTMap() {
   return ne_.GetNextTMap();
 }
 
+NextTMap PqlExtractor::GetAssignNextTMap() {
+  return ne_.GetAssignNextTMap();
+}
+
+NextTMap PqlExtractor::GetWhileNextTMap() {
+  return ne_.GetWhileNextTMap();
+}
+
+NextTMap PqlExtractor::GetIfNextTMap() {
+  return ne_.GetIfNextTMap();
+}
+
+NextTMap PqlExtractor::GetCallNextTMap() {
+  return ne_.GetCallNextTMap();
+}
+
+NextTMap PqlExtractor::GetReadNextTMap() {
+  return ne_.GetReadNextTMap();
+}
+
+NextTMap PqlExtractor::GetPrintNextTMap() {
+  return ne_.GetPrintNextTMap();
+}
+
 /**********************************
  * Affects *
  **********************************/

@@ -34,6 +34,31 @@ class PqlExtractor {
   // @returns a hashmap of <key> StmtNum <value> set of all nextT StmtNums
   NextTMap GetNextTMap();
 
+  // Get the NextT mapping of assign statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all assign nextT
+  // StmtNums
+  NextTMap GetAssignNextTMap();
+
+  // Get the NextT mapping of while statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all while nextT StmtNums
+  NextTMap GetWhileNextTMap();
+
+  // Get the NextT mapping of if statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all if nextT StmtNums
+  NextTMap GetIfNextTMap();
+
+  // Get the NextT mapping of call statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all call nextT StmtNums
+  NextTMap GetCallNextTMap();
+
+  // Get the NextT mapping of read statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all read nextT StmtNums
+  NextTMap GetReadNextTMap();
+
+  // Get the NextT mapping of print statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all print nextT StmtNums
+  NextTMap GetPrintNextTMap();
+
   //****************** Affects *******************************
 
   // @returns true if Affects(stmt_1, stmt_2) holds, else false
