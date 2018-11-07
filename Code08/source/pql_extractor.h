@@ -67,6 +67,10 @@ class PqlExtractor {
   // @returns true if stmt_num affects any statement
   bool IsAffects(StmtNum stmt_num);
 
+  // Can be used to check for all Affects/*(_,_) and AffectsBip/*(_,_)
+  // @returns true if Affects(_, _) holds, otherwise false
+  bool HasAffectsRelationship();
+
   // @returns true if stmt_num is affected by any statement
   bool IsAffected(StmtNum stmt_num);
 

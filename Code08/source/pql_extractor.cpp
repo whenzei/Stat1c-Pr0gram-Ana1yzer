@@ -69,6 +69,10 @@ bool PqlExtractor::IsAffects(StmtNum stmt_num) {
   return ae_.IsAffects(stmt_num);
 }
 
+bool PqlExtractor::HasAffectsRelationship() {
+  return ae_.HasAffectsRelationship();
+}
+
 bool PqlExtractor::IsAffected(StmtNum stmt_num) {
   return ae_.IsAffected(stmt_num);
 }
