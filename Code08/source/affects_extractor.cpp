@@ -777,24 +777,20 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
                                            AffectsTable* abt,
                                            VisitedMap* visited, LastModMap lmm,
                                            VisitedCountMap vcm, CFG* cfg) {
-  StmtType stmt_type = pkb_->GetStmtType(v);
-  // only return when hit while loop a second time and last_while_mod_map_ is
-  // stable
-
-  // update wlmm
-  if (stmt_type == StmtType::kWhile) {
-    if (vcm.count(v)) {
-      if (vcm[v] < 2) {
-        vcm[v] += 1;
-      } else {
-        return;
-      }
+  // return if this is the third time reaching this vertex
+  if (vcm.count(v)) {
+    if (vcm[v] < 2) {
+      vcm[v] += 1;
     } else {
-      vcm.emplace(v, 1);
+      return;
     }
+  } else {
+    vcm.emplace(v, 1);
   }
 
   visited->emplace(v, true);
+
+  StmtType stmt_type = pkb_->GetStmtType(v);
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var
