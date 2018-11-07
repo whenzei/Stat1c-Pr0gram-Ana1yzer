@@ -781,7 +781,7 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
 
-   // update wlmm
+  // update wlmm
   if (stmt_type == StmtType::kWhile) {
     if (vcm.count(v)) {
       if (vcm[v] < 2) {
@@ -798,9 +798,10 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var
-    VarIndex modified_var = pkb_->GetModifiedVarS(v).front();
+    VarIndexList modified_vars = pkb_->GetModifiedVarS(v);
 
     if (stmt_type == StmtType::kAssign) {
+      VarIndex modified_var = modified_vars.front();
       // add used to affects table if found in lmm
       VarIndexList used_vars = pkb_->GetUsedVarS(v);
       for (auto& used_var : used_vars) {
@@ -815,13 +816,13 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
       lmm[modified_var] = v;
     } else {
       // not assign statement, but modifies something. Need to clear from lmm
-      if (lmm.count(modified_var)) {
-        lmm.erase(modified_var);
+      for (auto& modified_var : modified_vars) {
+        if (lmm.count(modified_var)) {
+          lmm.erase(modified_var);
+        }
       }
     }
   }
-
-
 
   // dfs neighbours
   VertexSet neighbours = cfg->GetNeighboursSet(v);
