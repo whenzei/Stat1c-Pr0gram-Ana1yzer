@@ -14,7 +14,7 @@ using std::string;
 using std::unordered_map;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
-using ResultTable = vector<vector<int>>;
+using ResultTable = unordered_set<vector<int>>;
 using ResultRow = vector<int>;
 using QueryResultList = vector<int>;
 using QueryResultPairList = vector<pair<int, int>>;
@@ -40,11 +40,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.InitTable(test_result_list, "a");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have one column
-    Assert::IsTrue(result_row_column.size() == 1);
     Assert::IsTrue(pql_result.GetColumnCount() == 1);
 
     // Should have three rows
@@ -54,13 +52,13 @@ TEST_CLASS(TestPqlResult) {
 
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
 
-    int expected_result1 = 1;
-    int expected_result3 = 3;
+	vector<int> expected_result1{1};
+    vector<int> expected_result3{3};
 
-    // First row should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // Last row should contain "3"
-    Assert::AreEqual(expected_result3, result_table[2][0]);
+    // Row should contain "1"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "3"
+    Assert::IsTrue(result_table.count(expected_result3));
   }
 
   TEST_METHOD(TestInitPairTable) {
@@ -73,11 +71,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
-    Assert::IsTrue(result_row_column.size() == 2);
     Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have three rows
@@ -89,19 +85,13 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    int expected_result1 = 1;
-    int expected_result3 = 3;
-    int expected_resulta = 7;
-    int expected_resultc = 9;
+    vector<int> expected_result1{1, 7};
+    vector<int> expected_result2{3, 9};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "7"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // Last row first col should contain "3"
-    Assert::AreEqual(expected_result3, result_table[2][0]);
-    // Last row sec col should contain "9"
-    Assert::AreEqual(expected_resultc, result_table[2][1]);
+    // Row should contain "1 7"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "3 9"
+    Assert::IsTrue(result_table.count(expected_result2));
   }
 
   TEST_METHOD(TestMergeTableNoConflict) {
@@ -120,11 +110,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.MergeResults(test_merge_list, kNoConflict, -1, "b");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
-    Assert::IsTrue(result_row_column.size() == 2);
     Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have nine rows
@@ -136,24 +124,16 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    int expected_result1 = 1;
-    int expected_result3 = 3;
-    int expected_resulta = 7;
-    int expected_resultb = 8;
-    int expected_resultc = 9;
+	vector<int> expected_result1{1, 7};
+    vector<int> expected_result2{1, 8};
+    vector<int> expected_result3{3, 9};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // Sec row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[1][0]);
-    // Sec row sec col should contain "b"
-    Assert::AreEqual(expected_resultb, result_table[1][1]);
-    // Last row first col should contain "3"
-    Assert::AreEqual(expected_result3, result_table[8][0]);
-    // Last row sec col should contain "c"
-    Assert::AreEqual(expected_resultc, result_table[8][1]);
+    // Row should contain "1 7"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "1 8"
+    Assert::IsTrue(result_table.count(expected_result2));
+    // Row should contain "3 9"
+    Assert::IsTrue(result_table.count(expected_result3));
   }
 
   TEST_METHOD(TestMergeTableNoConflictPair) {
@@ -172,11 +152,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.MergeResults(test_mergepair_list, kNoConflict, -1, -1, "c", "b");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
-    Assert::IsTrue(result_row_column.size() == 3);
     Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have nine rows
@@ -190,33 +168,16 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    int expected_result1 = 1;
-    int expected_result3 = 3;
-    int expected_result4 = 4;
-    int expected_result5 = 5;
-    int expected_result6 = 6;
-    int expected_resulta = 7;
-    int expected_resultb = 8;
-    int expected_resultc = 9;
+    vector<int> expected_result1{1, 7, 4};
+    vector<int> expected_result2{1, 8, 5};
+    vector<int> expected_result3{3, 9, 6};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // First row last col should contain "4"
-    Assert::AreEqual(expected_result4, result_table[0][2]);
-    // Sec row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[1][0]);
-    // Sec row sec col should contain "b"
-    Assert::AreEqual(expected_resultb, result_table[1][1]);
-    // Sec row last col should contain "5"
-    Assert::AreEqual(expected_result5, result_table[1][2]);
-    // Last row first col should contain "3"
-    Assert::AreEqual(expected_result3, result_table[8][0]);
-    // Last row sec col should contain "c"
-    Assert::AreEqual(expected_resultc, result_table[8][1]);
-    // Last row last col should contain "6"
-    Assert::AreEqual(expected_result6, result_table[8][2]);
+    // Row should contain "1 7 4"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "1 8 5"
+    Assert::IsTrue(result_table.count(expected_result2));
+    // Row should contain "3 9 6"
+    Assert::IsTrue(result_table.count(expected_result3));
   }
 
   TEST_METHOD(TestMergeTableWithConflict) {
@@ -237,11 +198,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.MergeResults(test_merge_list, kConflict, 0, "a");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
-    Assert::IsTrue(result_row_column.size() == 2);
     Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have two rows
@@ -253,19 +212,13 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    int expected_result1 = 1;
-    int expected_result5 = 5;
-    int expected_resulta = 7;
-    int expected_resulte = 11;
+	vector<int> expected_result1{1, 7};
+    vector<int> expected_result2{5, 11};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // Sec row first col should contain "5"
-    Assert::AreEqual(expected_result5, result_table[1][0]);
-    // Sec row sec col should contain "e"
-    Assert::AreEqual(expected_resulte, result_table[1][1]);
+    // Row should contain "1 7"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "5 11"
+    Assert::IsTrue(result_table.count(expected_result2));
   }
 
   TEST_METHOD(TestMergeTableWithOneConflictLeftPair) {
@@ -287,11 +240,9 @@ TEST_CLASS(TestPqlResult) {
                             "c");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
-    Assert::IsTrue(result_row_column.size() == 3);
     Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have two rows
@@ -305,25 +256,13 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    int expected_result1 = 1;
-    int expected_result5 = 5;
-    int expected_resulta = 7;
-    int expected_resulte = 11;
-    int expected_resultx = 21;
-    int expected_resulty = 22;
+	vector<int> expected_result1{1, 7, 21};
+    vector<int> expected_result2{5, 11, 22};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // First row last col should contain "x"
-    Assert::AreEqual(expected_resultx, result_table[0][2]);
-    // Sec row first col should contain "5"
-    Assert::AreEqual(expected_result5, result_table[1][0]);
-    // Sec row sec col should contain "e"
-    Assert::AreEqual(expected_resulte, result_table[1][1]);
-    // Sec row last col should contain "y"
-    Assert::AreEqual(expected_resulty, result_table[1][2]);
+    // Row should contain "1 7 21"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "5 11 22"
+    Assert::IsTrue(result_table.count(expected_result2));
   }
 
   TEST_METHOD(TestMergeTableWithOneConflictLeftPairNoResult) {
@@ -374,11 +313,9 @@ TEST_CLASS(TestPqlResult) {
                             "b");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have three column
-    Assert::IsTrue(result_row_column.size() == 3);
     Assert::IsTrue(pql_result.GetColumnCount() == 3);
 
     // Should have two rows
@@ -392,25 +329,13 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
 
-    int expected_result2 = 2;
-    int expected_result3 = 3;
-    int expected_resultb = 8;
-    int expected_resultc = 9;
-    int expected_results = 31;
-    int expected_resultp = 32;
+	vector<int> expected_result1{2, 8, 31};
+    vector<int> expected_result2{3, 9, 32};
 
-    // First row first col should contain "2"
-    Assert::AreEqual(expected_result2, result_table[0][0]);
-    // First row sec col should contain "b"
-    Assert::AreEqual(expected_resultb, result_table[0][1]);
-    // First row last col should contain "s"
-    Assert::AreEqual(expected_results, result_table[0][2]);
-    // Sec row first col should contain "3"
-    Assert::AreEqual(expected_result3, result_table[1][0]);
-    // Sec row sec col should contain "c"
-    Assert::AreEqual(expected_resultc, result_table[1][1]);
-    // Sec row last col should contain "p"
-    Assert::AreEqual(expected_resultp, result_table[1][2]);
+    // Row should contain "2 8 31"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Row should contain "3 9 32"
+    Assert::IsTrue(result_table.count(expected_result2));
   }
 
   TEST_METHOD(TestMergeTableWithOneConflictRightPairNoResult) {
@@ -460,11 +385,9 @@ TEST_CLASS(TestPqlResult) {
     pql_result.MergeResults(test_mergepair_list, kTwoConflict, 1, 0, "b", "a");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have two column
-    Assert::IsTrue(result_row_column.size() == 2);
     Assert::IsTrue(pql_result.GetColumnCount() == 2);
 
     // Should have two rows
@@ -476,19 +399,13 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headera, col_header.find("a")->second);
     Assert::AreEqual(expected_headerb, col_header.find("b")->second);
 
-    int expected_result2 = 2;
-    int expected_result4 = 4;
-    int expected_resultb = 8;
-    int expected_resultd = 10;
+	vector<int> expected_result1{2, 8};
+    vector<int> expected_result2{4, 10};
 
-    // First row first col should contain "2"
-    Assert::AreEqual(expected_result2, result_table[0][0]);
-    // First row sec col should contain "b"
-    Assert::AreEqual(expected_resultb, result_table[0][1]);
-    // Sec row first col should contain "4"
-    Assert::AreEqual(expected_result4, result_table[1][0]);
-    // Sec row sec col should contain "d"
-    Assert::AreEqual(expected_resultd, result_table[1][1]);
+    // First row first col should contain "2 8"
+    Assert::IsTrue(result_table.count(expected_result1));
+    // Sec row first col should contain "4 10"
+    Assert::IsTrue(result_table.count(expected_result2));
   }
 
   TEST_METHOD(TestTwoMerge) {
@@ -517,11 +434,9 @@ TEST_CLASS(TestPqlResult) {
                             "c");
 
     ResultTable result_table = pql_result.GetResultTable();
-    ResultRow result_row_column = result_table.front();
     ColumnHeader col_header = pql_result.GetColumnHeader();
 
     // Should have four column
-    Assert::IsTrue(result_row_column.size() == 4);
     Assert::IsTrue(pql_result.GetColumnCount() == 4);
 
     // Should have one row
@@ -537,19 +452,10 @@ TEST_CLASS(TestPqlResult) {
     Assert::AreEqual(expected_headerc, col_header.find("c")->second);
     Assert::AreEqual(expected_headerd, col_header.find("d")->second);
 
-    int expected_result1 = 1;
-    int expected_result8 = 8;
-    int expected_resulta = 7;
-    int expected_resultx = 21;
+    vector<int> expected_result1{1, 7, 21, 8};
 
-    // First row first col should contain "1"
-    Assert::AreEqual(expected_result1, result_table[0][0]);
-    // First row sec col should contain "a"
-    Assert::AreEqual(expected_resulta, result_table[0][1]);
-    // First row third col should contain "x"
-    Assert::AreEqual(expected_resultx, result_table[0][2]);
-    // First row last col should contain "8"
-    Assert::AreEqual(expected_result8, result_table[0][3]);
+    // First row first col should contain "1 7 21 8"
+    Assert::IsTrue(result_table.count(expected_result1));
   }
 
   TEST_METHOD(TestTwoMergeNoResult) {
