@@ -95,7 +95,7 @@ bool PqlParser::ParseDeclaration(TokenList tokens) {
   }
 
   // 2. Get variable names
-  for (int i = 1; i < tokens.size(); i++) {
+  for (unsigned i = 1; i < tokens.size(); i++) {
     if (tokens[i].type == Tokenizer::TokenType::kEOF) break;
     if (tokens[i].type == Tokenizer::TokenType::kComma) {
       if (i + 1 >= tokens.size()) {
@@ -224,7 +224,7 @@ bool PqlParser::ParseSelect(TokenList tokens) {
   ++current_index;
   // 2. Handle such that/pattern/with clauses
   string previous_type;
-  while (current_index < tokens.size() &&
+  while (current_index < (int) tokens.size() &&
          tokens[current_index].type != Tokenizer::TokenType::kEOF) {
     if (tokens[current_index].value == "such") {
       if (tokens[current_index + 1].value != "that") {

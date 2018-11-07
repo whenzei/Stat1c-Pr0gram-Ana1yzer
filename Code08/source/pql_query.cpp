@@ -9,7 +9,7 @@ using std::endl;
 PqlQuery::PqlQuery() {}
 
 PqlQuery::~PqlQuery() {
-  for(int i = 0; i < clauses_.size(); i++) {
+  for(unsigned i = 0; i < clauses_.size(); i++) {
     delete clauses_[i];
     clauses_[i] = nullptr;
   }

@@ -13,7 +13,7 @@ PqlOptimizer::PqlOptimizer() {}
 vector<PqlGroup> PqlOptimizer::Optimize() {
   vector<PqlGroup> groups;
   unordered_map<int, PqlGroup> group_map;
-  for (int i = 0; i < clauses_.size(); i++) {
+  for (unsigned i = 0; i < clauses_.size(); i++) {
     if (clauses_[i]->GetSynonyms().first != "") { // if there is a synonym
       int root = union_.at(clauses_[i]->GetSynonyms().first);
       while (find_.at(root) != -1) root = find_.at(root);

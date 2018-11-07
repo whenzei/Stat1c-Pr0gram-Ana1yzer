@@ -826,7 +826,7 @@ TEST_CLASS(TestParserPkb) {
 
     CFG* test_cfg = test_pkb.GetCFG("one");
 
-    for (int i = 1; i < list_of_adj_list.size(); i++) {
+    for (unsigned i = 1; i < list_of_adj_list.size(); i++) {
       StmtNumList test_adj_list = test_cfg->GetNeighboursList(i);
       StmtNumList true_adj_list = list_of_adj_list.at(i);
 
@@ -884,7 +884,7 @@ TEST_CLASS(TestParserPkb) {
 
     CFG* test_cfg = test_pkb.GetCFG("one");
 
-    for (int i = 1; i < list_of_adj_list.size(); i++) {
+    for (unsigned i = 1; i < list_of_adj_list.size(); i++) {
       StmtNumList test_adj_list = test_cfg->GetNeighboursList(i);
       StmtNumList true_adj_list = list_of_adj_list.at(i);
 
@@ -938,7 +938,7 @@ TEST_CLASS(TestParserPkb) {
 
     CFG* test_cfg = test_pkb.GetCFG("one");
 
-    for (int i = 1; i < list_of_adj_list.size(); i++) {
+    for (unsigned i = 1; i < list_of_adj_list.size(); i++) {
       StmtNumList test_adj_list = test_cfg->GetNeighboursList(i);
       StmtNumList true_adj_list = list_of_adj_list.at(i);
 
