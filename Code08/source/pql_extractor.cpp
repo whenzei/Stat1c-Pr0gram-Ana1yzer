@@ -29,8 +29,8 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   return ne_.GetPreviousT(stmt_num);
 }
 
-StmtNumPairList PqlExtractor::GetAllNextTPairs() {
-  return ne_.GetAllNextTPairs();
+NextTMap PqlExtractor::GetNextTMap() {
+  return ne_.GetNextTMap();
 }
 
 /**********************************

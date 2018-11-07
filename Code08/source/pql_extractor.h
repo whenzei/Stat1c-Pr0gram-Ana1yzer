@@ -30,8 +30,9 @@ class PqlExtractor {
   // @returns a list of all n's that satisfy Next*(n, stmt_num)
   StmtNumList GetPreviousT(StmtNum stmt_num);
 
-  // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
-  StmtNumPairList GetAllNextTPairs();
+  // Get the NextT mapping of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all nextT StmtNums
+  NextTMap GetNextTMap();
 
   //****************** Affects *******************************
 
