@@ -105,7 +105,7 @@ class AffectsExtractor {
   // @params: VisitedMap* the map to keep track of visited vertices
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffects(Vertex curr, VarIndex affects_var, VertexSet* res_list,
-                     CFG* cfg, VisitedMap* visited);
+                     CFG* cfg, VisitedMap visited);
 
   // @params: curr the current vertex
   // @params: used_vars the set of variables to be affected (contains variables
@@ -118,7 +118,7 @@ class AffectsExtractor {
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                         VarIndexSet affected_used_vars, VertexSet* res_list,
-                        CFG* cfg, VisitedMap* visited);
+                        CFG* cfg, VisitedMap visited);
 
   // Helper to populate the AffectsTable and AffectedByTable using DFS
   // @params: Vertex the vertex to start from

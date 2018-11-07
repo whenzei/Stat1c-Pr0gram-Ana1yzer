@@ -285,7 +285,7 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
-    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &visited);
+    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, visited);
   }
 
   return res_list;
@@ -293,13 +293,13 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
 
 void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
                                      VertexSet* res_list, CFG* cfg,
-                                     VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                     VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   if (curr_stmt_type == StmtType::kAssign) {
     if (pkb_->IsUsedByS(curr, affects_var)) {
@@ -351,7 +351,7 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
     DfsGetAffectedBy(neighbour, used_vars, VarIndexSet(), &res_list, cfg,
-                     &visited);
+                     visited);
   }
 
   return res_list;
@@ -360,12 +360,12 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
 void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                                         VarIndexSet affected_used_vars,
                                         VertexSet* res_list, CFG* cfg,
-                                        VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                        VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   bool has_affects = false;
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
