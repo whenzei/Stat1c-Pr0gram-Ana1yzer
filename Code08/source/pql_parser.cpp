@@ -396,8 +396,48 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
 
   // 11. Create such that object
   PqlClause* clause = new PqlSuchthat(suchthat_type, first, first_type, second, second_type);
-  if (first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger || 
-  first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) {
+  if (suchthat_type == PqlSuchthatType::kAffects || suchthat_type == PqlSuchthatType::kAffectsB) {
+    if (first_type == PqlDeclarationEntity::kInteger && second_type == PqlDeclarationEntity::kInteger) {
+      clause->SetPriority(PRIORITY_AFFECTS_CONST_CONST);
+    }
+    else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger) &&
+      first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_CONST_SYN);
+    }
+    else if (first_type == PqlDeclarationEntity::kUnderscore && second_type == PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_UNDERSCORE);
+    }
+    else if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_SYN_SYN);
+    }
+    else {
+      clause->SetPriority(PRIORITY_AFFECTS_OTHERS);
+    }
+  }
+  else if (suchthat_type == PqlSuchthatType::kAffectsT || suchthat_type == PqlSuchthatType::kAffectsBT) {
+    if (first_type == PqlDeclarationEntity::kInteger && second_type == PqlDeclarationEntity::kInteger) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_CONST_CONST);
+    }
+    else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger) && 
+    first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_CONST_SYN);
+    }
+    else if (first_type == PqlDeclarationEntity::kUnderscore && second_type == PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_UNDERSCORE);
+    }
+    else if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_SYN_SYN);
+    }
+    else {
+      clause->SetPriority(PRIORITY_AFFECTS_T_OTHERS);
+    }
+  }
+  else if (suchthat_type == PqlSuchthatType::kNextT) {
+    clause->SetPriority(PRIORITY_NEXT_T);
+  }
+  else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger ||
+    first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) && 
+    (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore)) {
     clause->SetPriority(PRIORITY_CONSTANT_AND_SYNONYM);
   }
   else if (suchthat_type == PqlSuchthatType::kFollows) {
@@ -408,12 +448,6 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
   else if (suchthat_type == PqlSuchthatType::kModifiesP || suchthat_type == PqlSuchthatType::kModifiesS) {
     clause->SetPriority(PRIORITY_MODIFIES);
-  }
-  else if (suchthat_type == PqlSuchthatType::kAffects || suchthat_type == PqlSuchthatType::kAffectsB) {
-    clause->SetPriority(PRIORITY_AFFECTS);
-  }
-  else if (suchthat_type == PqlSuchthatType::kAffectsT || suchthat_type == PqlSuchthatType::kAffectsBT) {
-    clause->SetPriority(PRIORITY_AFFECTS_T);
   }
   else {
     clause->SetPriority(PRIORITY_NORMAL);
@@ -871,7 +905,11 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
   // 10. Create with clause
   PqlClause* clause = new PqlWith(left, left_type, right, right_type);
-  clause->SetPriority(PRIORITY_WITH);
+  if (left_type == PqlDeclarationEntity::kInteger || left_type == PqlDeclarationEntity::kIdent || 
+    right_type == PqlDeclarationEntity::kInteger || right_type == PqlDeclarationEntity::kIdent) {
+    clause->SetPriority(PRIORITY_WITH_CONST_SYN);
+  }
+  else clause->SetPriority(PRIORITY_WITH_SYN_SYN);
   query_->AddClause(clause);
 
   --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end

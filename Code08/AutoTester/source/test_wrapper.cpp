@@ -57,7 +57,7 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
     results = qe.GetResultFromQuery(pql_query, pkb_);
   } else if (pql_query->GetResultIsFalse()) {
     std::list<std::string> temp;
-    temp.push_back("false");
+    temp.push_back("FALSE");
     results = temp;
   }
 

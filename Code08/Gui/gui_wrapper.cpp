@@ -56,7 +56,7 @@ void GUIWrapper::evaluate(std::string query, std::list<std::string>& results) {
     }
   } else {
     std::list<std::string> error;
-    if (pql_query->GetResultIsFalse()) error.push_back("false");
+    if (pql_query->GetResultIsFalse()) error.push_back("FALSE");
     else error.push_back(pql_parser.GetErrorMessage());
     results = error;
   }

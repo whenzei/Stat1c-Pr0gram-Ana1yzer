@@ -318,7 +318,7 @@ class PqlQuery {
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
-  bool AddClause(PqlClause*);
+  void AddClause(PqlClause*);
   void SetResultIsFalse(bool);
 
   /* Getters */

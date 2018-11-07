@@ -56,20 +56,8 @@ vector<PqlGroup> PqlOptimizer::Optimize() {
   return groups;
 }
 
-bool PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntity first_type, string second, PqlDeclarationEntity second_type) {
+void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntity first_type, string second, PqlDeclarationEntity second_type) {
   clauses_.push_back(clause);
-
-  // Add synonym with constrains to map
-  if (clause->GetClauseType() == PqlClauseType::kWith) {
-    if (first_type == PqlDeclarationEntity::kInteger || first_type == PqlDeclarationEntity::kIdent) {
-      if (synonym_with_.find(second) != synonym_with_.end()) return false; // a constrain for this synoynm already exist
-      synonym_with_.insert({ second, std::make_pair(first, first_type) });
-    }
-    else if (second_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kIdent) {
-      if (synonym_with_.find(first) != synonym_with_.end()) return false; // a constrain for this synoynm already exist
-      synonym_with_.insert({ first, std::make_pair(second, second_type) });
-    }
-  }
 
   // CASE 1: Both are synoynms
   if (PqlValidator::IsSynonym(first_type) && PqlValidator::IsSynonym(second_type)) {
@@ -133,9 +121,7 @@ bool PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
     }
     // CASE 2b: Group exist, just ignore
   }
-  // CASE 3: No synonyms, just ignore 
-
-  return true;
+  // CASE 3: No synonyms, just ignore
 }
 
 bool PqlOptimizer::ClauseUsesSelection(PqlClause* clause) {
