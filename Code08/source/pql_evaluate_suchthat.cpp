@@ -622,9 +622,19 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       AffectsMap result_map = pqle_->GetAffectsMap();
+      QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Affects(left,right)" << endl;
+      } else if (left_type == right_type) {
+        for (auto& affect : result_map) {
+          for (auto& affected : affect.second) {
+            if (affect.first == affected) {
+              pair_list.push_back(make_pair(affected, affected));
+            }
+          }
+        }
+        pql_eval->StoreClauseResultInTable(pair_list, left_name, right_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_map, left_name, right_name);
       }
@@ -710,9 +720,19 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       AffectsMap result_map = pqle_->GetAffectsTMap();
+      QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Affects(left,right)" << endl;
+      } else if (left_type == right_type) {
+        for (auto& affect : result_map) {
+          for (auto& affected : affect.second) {
+            if (affect.first == affected) {
+              pair_list.push_back(make_pair(affected, affected));
+            }
+          }
+        }
+        pql_eval->StoreClauseResultInTable(pair_list, left_name, right_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_map, left_name, right_name);
       }
@@ -798,9 +818,19 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       AffectsMap result_map = pqle_->GetAffectsBipMap();
+      QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of AffectsBip(left,right)" << endl;
+      } else if (left_type == right_type) {
+        for (auto& affect : result_map) {
+          for (auto& affected : affect.second) {
+            if (affect.first == affected) {
+              pair_list.push_back(make_pair(affected, affected));
+            }
+          }
+        }
+        pql_eval->StoreClauseResultInTable(pair_list, left_name, right_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_map, left_name, right_name);
       }
@@ -886,9 +916,19 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       return;
     case kTwoSynonym:
       AffectsMap result_map = pqle_->GetAffectsBipTMap();
+      QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of AffectsBip(left,right)" << endl;
+      } else if (left_type == right_type) {
+        for (auto& affect : result_map) {
+          for (auto& affected : affect.second) {
+            if (affect.first == affected) {
+              pair_list.push_back(make_pair(affected, affected));
+            }
+          }
+        }
+        pql_eval->StoreClauseResultInTable(pair_list, left_name, right_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_map, left_name, right_name);
       }

@@ -285,7 +285,7 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
-    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &visited);
+    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, visited);
   }
 
   return res_list;
@@ -293,13 +293,13 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
 
 void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
                                      VertexSet* res_list, CFG* cfg,
-                                     VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                     VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   if (curr_stmt_type == StmtType::kAssign) {
     if (pkb_->IsUsedByS(curr, affects_var)) {
@@ -351,7 +351,7 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
     DfsGetAffectedBy(neighbour, used_vars, VarIndexSet(), &res_list, cfg,
-                     &visited);
+                     visited);
   }
 
   return res_list;
@@ -360,12 +360,12 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
 void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                                         VarIndexSet affected_used_vars,
                                         VertexSet* res_list, CFG* cfg,
-                                        VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                        VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   bool has_affects = false;
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
@@ -781,7 +781,7 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
   // only return when hit while loop a second time and last_while_mod_map_ is
   // stable
 
-   // update wlmm
+  // update wlmm
   if (stmt_type == StmtType::kWhile) {
     if (vcm.count(v)) {
       if (vcm[v] < 2) {
@@ -798,9 +798,10 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var
-    VarIndex modified_var = pkb_->GetModifiedVarS(v).front();
+    VarIndexList modified_vars = pkb_->GetModifiedVarS(v);
 
     if (stmt_type == StmtType::kAssign) {
+      VarIndex modified_var = modified_vars.front();
       // add used to affects table if found in lmm
       VarIndexList used_vars = pkb_->GetUsedVarS(v);
       for (auto& used_var : used_vars) {
@@ -815,13 +816,13 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
       lmm[modified_var] = v;
     } else {
       // not assign statement, but modifies something. Need to clear from lmm
-      if (lmm.count(modified_var)) {
-        lmm.erase(modified_var);
+      for (auto& modified_var : modified_vars) {
+        if (lmm.count(modified_var)) {
+          lmm.erase(modified_var);
+        }
       }
     }
   }
-
-
 
   // dfs neighbours
   VertexSet neighbours = cfg->GetNeighboursSet(v);
