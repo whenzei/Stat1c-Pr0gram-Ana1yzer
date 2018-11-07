@@ -8,34 +8,33 @@ void PqlProjector::SortSelections() {
   }
 }
 
-void PqlProjector::TrimIntermediateResultTables() {
-  for (int group : selected_groups_) {
-    ResultTable* result_table = &intermediate_result_tables_[group];
-    vector<VarName> selected_synonyms = selection_group_table_[group];
-    // trim result table if not all columns are selected
-    if (selected_synonyms.size() != (*result_table).front().size()) {
-      vector<int> selected_columns;
-      for (VarName& syn : selected_synonyms) {
-        selected_columns.push_back(intermediate_column_header_[syn].second);
+ResultTable* PqlProjector::TrimIntermediateResultTable(int group) {
+  ResultTable* result_table = &intermediate_result_tables_[group];
+  vector<VarName> selected_synonyms = selection_group_table_[group];
+  // trim result table if not all columns are selected
+  if (selected_synonyms.size() != (*result_table).front().size()) {
+    vector<int> selected_columns;
+    for (VarName& syn : selected_synonyms) {
+      selected_columns.push_back(intermediate_column_header_[syn].second);
+    }
+    for (auto& row : (*result_table)) {
+      ResultRow new_row;
+      // only keep columns that are selected
+      for (int column : selected_columns) {
+        new_row.push_back(row[column]);
       }
-      for (auto& row : (*result_table)) {
-        ResultRow new_row;
-        // only keep columns that are selected
-        for (int column : selected_columns) {
-          new_row.push_back(row[column]);
-        }
-        row = new_row;
-      }
-    } else {
-      // if all columns are selected, changed the order of synonyms in
-      // selection_group_table_[group] to follow the column order in result
-      // table
-      for (VarName& syn : selected_synonyms) {
-        int column = intermediate_column_header_[syn].second;
-        selection_group_table_[group][column] = syn;
-      }
+      row = new_row;
+    }
+  } else {
+    // if all columns are selected, changed the order of synonyms in
+    // selection_group_table_[group] to follow the column order in result
+    // table
+    for (VarName& syn : selected_synonyms) {
+      int column = intermediate_column_header_[syn].second;
+      selection_group_table_[group][column] = syn;
     }
   }
+  return result_table;
 }
 
 void PqlProjector::MergeIntermediateResultTables() {
@@ -43,14 +42,21 @@ void PqlProjector::MergeIntermediateResultTables() {
     int group = *selected_groups_.begin();
     ResultTable* result_table = &intermediate_result_tables_[group];
     if (final_result_table_.empty()) {
-      final_result_table_ = *result_table;
+      final_result_table_ = *TrimIntermediateResultTable(group);
     } else {
       // cross product
       ResultTable new_table;
+      vector<VarName> selected_synonyms = selection_group_table_[group];
+      vector<int> selected_columns;
+      for (VarName& syn : selected_synonyms) {
+        selected_columns.push_back(intermediate_column_header_[syn].second);
+      }
       for (auto& row_1 : final_result_table_) {
         for (auto& row_2 : *result_table) {
           ResultRow new_row = row_1;
-          new_row.insert(new_row.end(), row_2.begin(), row_2.end());
+          for (int& column : selected_columns) {
+            new_row.push_back(row_2[column]);
+          }
           new_table.push_back(new_row);
         }
       }
@@ -261,7 +267,6 @@ FinalResult PqlProjector::GetFinalResult(
   }
 
   SortSelections();
-  TrimIntermediateResultTables();
   MergeIntermediateResultTables();
   GenerateFinalResult();
 
