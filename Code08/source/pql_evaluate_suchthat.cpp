@@ -626,7 +626,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Affects(left,right)" << endl;
-      } else if (left_type == right_type) {
+      } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
             if (affect.first == affected) {
@@ -724,7 +724,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of Affects(left,right)" << endl;
-      } else if (left_type == right_type) {
+      } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
             if (affect.first == affected) {
@@ -822,7 +822,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of AffectsBip(left,right)" << endl;
-      } else if (left_type == right_type) {
+      } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
             if (affect.first == affected) {
@@ -920,7 +920,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       if (result_map.empty()) {
         SetClauseFlag(false);
         cout << " no pair of AffectsBip(left,right)" << endl;
-      } else if (left_type == right_type) {
+      } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
             if (affect.first == affected) {
