@@ -171,6 +171,8 @@
     <ClCompile Include="test_graph.cpp" />
     <ClCompile Include="test_query_parser.cpp" />
     <ClCompile Include="test_query_validator.cpp" />
+    <ClCompile Include="test_evaluate_suchthat.cpp" />
+    <ClCompile Include="test_evaluate_with.cpp" />
     <ClCompile Include="test_tokenizer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -191,6 +193,7 @@
     <ClCompile Include="test_next_table.cpp" />
     <ClCompile Include="test_query_evaluator.cpp" />
     <ClCompile Include="test_pql_result.cpp" />
+    <ClCompile Include="test_pql_projector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPA\SPA.vcxproj">

@@ -141,7 +141,7 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
   if (stmt_type == StmtType::kCall) {
     // get neighbours before adding the root as neighbour
     VertexList neighbours = cfg->GetNeighboursList(v);
-    ProcName proc_name = pkb_->GetCalledProcedure(v);
+    ProcName proc_name = pkb_->GetProcName(pkb_->GetCalledProcedure(v));
     CFG* called_cfg = pkb_->GetCFG(proc_name);
     Vertex called_cfg_root = called_cfg->GetRoot();
     // add root of the procedure's cfg as neighbour of call statement's

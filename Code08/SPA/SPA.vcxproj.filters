@@ -81,6 +81,15 @@
     <ClCompile Include="..\source\pql_evaluator.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pql_evaluate_with.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_evaluate_pattern.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_evaluate_suchthat.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\pql_parser.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
@@ -141,6 +150,18 @@
     <ClCompile Include="..\source\pql_extractor.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\pql_clause.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_optimizer.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_group.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\pql_projector.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\parser.h">
@@ -195,6 +216,15 @@
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_evaluator.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_evaluate_suchthat.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_evaluate_pattern.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_evaluate_with.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
     <ClInclude Include="..\source\pql_result.h">
@@ -257,5 +287,14 @@
     <ClInclude Include="..\source\pql_extractor.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\pql_optimizer.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\pql_group.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClInclude>
+    <ClCompile Include="..\source\pql_projector.h">
+      <Filter>Header Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

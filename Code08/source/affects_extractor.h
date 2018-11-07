@@ -9,7 +9,6 @@ using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
 using LastModMap = unordered_map<Vertex, VarIndex>;
-using WhileLastModMap = unordered_map<Vertex, LastModMap>;
 
 class AffectsExtractor {
  private:
@@ -128,14 +127,11 @@ class AffectsExtractor {
   // @params: VisitedMap* to keep track of what vertices have been visited
   // @params: LastModMap the map to keep track of where each variable was last
   // modified
-  // @params: WhileLastModMap the map to keep track of each while statement's
-  // LastModMap
   // @params: CFG* pointer to cfg to run DFS on
   void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
                            AffectsTable* affected_by_table, VisitedMap* visited,
                            LastModMap last_mod_map,
-                           WhileLastModMap while_last_mod_map,
-                           WhileLastModMap prev_while_last_mod_map, CFG* cfg);
+                           VisitedCountMap vcm, CFG* cfg);
 
   // @returns true if StmtType is either kAssign, kCall, or kRead
   bool IsModifyingType(StmtType stmt_type);

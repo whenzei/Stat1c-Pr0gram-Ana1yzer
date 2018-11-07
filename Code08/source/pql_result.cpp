@@ -62,6 +62,53 @@ void PqlResult::MergeResults(QueryResultList result_list,
   }
 }
 
+void PqlResult::MergeResults(QueryResultSet result_set,
+                             PqlResultTableConflict conflict_type,
+                             int conflict_column_num, string header_name) {
+  ResultTable result_table = GetResultTable();
+  ResultTable new_table;
+
+  // Not found, no conflict, proceed to merge
+  if (conflict_type == kNoConflict) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& result_column : result_set) {
+        // Merging
+        ResultRow new_row = row;
+        new_row.push_back(result_column);
+        new_table.push_back(new_row);
+      }
+    }
+    SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_name, col_num);
+    SetColumnCount(++col_num);
+  }
+  // This column already exist, merge with comparison
+  else {
+    SetupMergeSet(result_set);
+    MergeSet merge_set = GetMergeSet();
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // If the column value in table matches the value in result list
+      if (merge_set.count(std::to_string(row[conflict_column_num]))) {
+        // Row has passed the comparison
+        new_table.push_back(row);
+      }
+    }
+    SetResultTable(new_table);
+  }
+
+  // If table is empty
+  if (new_table.empty()) {
+    // Remove all the column header
+    SetColumnCount(0);
+    ClearColumnHeader();
+  }
+}
+
 void PqlResult::MergeResults(QueryResultPairList result_pair_list,
                              PqlResultTableConflict conflict_type,
                              int conflict_left_pair, int conflict_right_pair,
@@ -163,8 +210,123 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
 }
 
+void PqlResult::MergeResults(AffectsMap affects_table,
+                             PqlResultTableConflict conflict_type,
+                             int conflict_left_pair, int conflict_right_pair,
+                             string header_left, string header_right) {
+  ResultTable result_table = GetResultTable();
+  ResultTable new_table;
+
+  // Not found, no conflict, proceed to merge
+  if (conflict_type == kNoConflict) {
+    // Iterating through the row
+    for (auto& row : result_table) {
+      // Iterating through the result list to be merged
+      for (auto& affect : affects_table) {
+        for (auto& affected : affect.second) {
+          // Merging
+          ResultRow new_row = row;
+          new_row.push_back(affect.first);
+          new_row.push_back(affected);
+          new_table.push_back(new_row);
+        }
+      }
+    }
+    SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_left, col_num);
+    AddColumnHeader(header_right, ++col_num);
+    SetColumnCount(++col_num);
+  }
+  // Left has conflict
+  else if (conflict_type == kOneConflictLeft) {
+    SetupMergeMap(affects_table, conflict_type);
+    MergeMap merge_map = GetMergeMap();
+    // Iterating through the row
+    for (auto& row : result_table) {
+      MergeMap::iterator merge_iter = merge_map.find(row[conflict_left_pair]);
+      // If this col value is found in merge map
+      if (merge_iter != merge_map.end()) {
+        // Row has passed the comparison, Merging
+        for (auto& merge_item : merge_iter->second) {
+          ResultRow new_row = row;
+          new_row.push_back(merge_item);
+          new_table.push_back(new_row);
+        }
+      }
+    }
+    SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_right, col_num);
+    SetColumnCount(++col_num);
+  }
+  // Right has conflict
+  else if (conflict_type == kOneConflictRight) {
+    SetupMergeMap(affects_table, conflict_type);
+    MergeMap merge_map = GetMergeMap();
+    // Iterating through the row
+    for (auto& row : result_table) {
+      MergeMap::iterator merge_iter = merge_map.find(row[conflict_right_pair]);
+      // If this col value is found in merge map
+      if (merge_iter != merge_map.end()) {
+        // Row has passed the comparison, Merging
+        for (auto& merge_item : merge_iter->second) {
+          ResultRow new_row = row;
+          new_row.push_back(merge_item);
+          new_table.push_back(new_row);
+        }
+      }
+    }
+    SetResultTable(new_table);
+    // Manage column header
+    int col_num = GetColumnCount();
+    AddColumnHeader(header_left, col_num);
+    SetColumnCount(++col_num);
+  }
+  // Two conflict
+  else if (conflict_type == kTwoConflict) {
+    SetupMergeSet(affects_table);
+    MergeSet merge_set = GetMergeSet();
+    // Iterating through the row
+    for (auto& row : result_table) {
+      string unique_key = std::to_string(row[conflict_left_pair]) + "-" +
+                          std::to_string(row[conflict_right_pair]);
+
+      // If the column value in table matches the value in result list
+      if (merge_set.count(unique_key)) {
+        // Row has passed the comparison
+        new_table.push_back(row);
+      }
+    }
+    SetResultTable(new_table);
+  }
+
+  // If table is empty
+  if (new_table.empty()) {
+    // Remove all the column header
+    SetColumnCount(0);
+    ClearColumnHeader();
+  }
+}
+
 void PqlResult::InitTable(QueryResultList result_list, string header_name) {
   for (auto& iter : result_list) {
+    ResultRow new_row;
+    // Add one new column
+    new_row.push_back(iter);
+    // Add row to result table
+    this->result_table_.push_back(new_row);
+  }
+  // Manage column header
+  int col_num = GetColumnCount();
+  AddColumnHeader(header_name, col_num);
+  SetColumnCount(++col_num);
+}
+
+void PqlResult::InitTable(QueryResultSet result_set, string header_name) {
+  for (auto& iter : result_set) {
     ResultRow new_row;
     // Add one new column
     new_row.push_back(iter);
@@ -194,10 +356,37 @@ void PqlResult::InitTable(QueryResultPairList result_pair_list,
   SetColumnCount(++col_num);
 }
 
+void PqlResult::InitTable(AffectsMap affects_table, string header_left,
+                          string header_right) {
+  for (auto& affect : affects_table) {
+    for (auto& affected : affect.second) {
+      ResultRow new_row;
+      // Add two new column
+      new_row.push_back(affect.first);
+      new_row.push_back(affected);
+      // Add row to result table
+      this->result_table_.push_back(new_row);
+    }
+  }
+  // Manage column header
+  int col_num = GetColumnCount();
+  AddColumnHeader(header_left, col_num);
+  AddColumnHeader(header_right, ++col_num);
+  SetColumnCount(++col_num);
+}
+
 void PqlResult::SetupMergeSet(QueryResultList result_list) {
   ClearMergeSet();
 
   for (auto& iter : result_list) {
+    AddMergeSet(std::to_string(iter));
+  }
+}
+
+void PqlResult::SetupMergeSet(QueryResultSet result_set) {
+  ClearMergeSet();
+
+  for (auto& iter : result_set) {
     AddMergeSet(std::to_string(iter));
   }
 }
@@ -207,6 +396,17 @@ void PqlResult::SetupMergeSet(QueryResultPairList result_pair_list) {
 
   for (auto& iter : result_pair_list) {
     AddMergeSet(std::to_string(iter.first) + "-" + std::to_string(iter.second));
+  }
+}
+
+void PqlResult::SetupMergeSet(AffectsMap affects_table) {
+  ClearMergeSet();
+
+  for (auto& affect : affects_table) {
+    for (auto& affected : affect.second) {
+      AddMergeSet(std::to_string(affect.first) + "-" +
+                  std::to_string(affected));
+    }
   }
 }
 
@@ -223,6 +423,28 @@ void PqlResult::SetupMergeMap(QueryResultPairList result_pair_list,
     case kOneConflictRight:
       for (auto& iter : result_pair_list) {
         AddMergeMap(iter.second, iter.first);
+      }
+      return;
+  }
+}
+
+void PqlResult::SetupMergeMap(AffectsMap affects_table,
+                              PqlResultTableConflict conflict_type) {
+  ClearMergeMap();
+
+  switch (conflict_type) {
+    case kOneConflictLeft:
+      for (auto& affect : affects_table) {
+        for (auto& affected : affect.second) {
+          AddMergeMap(affect.first, affected);
+        }
+      }
+      return;
+    case kOneConflictRight:
+      for (auto& affect : affects_table) {
+        for (auto& affected : affect.second) {
+          AddMergeMap(affected, affect.first);
+        }
       }
       return;
   }

@@ -21,6 +21,7 @@ using VertexSet = unordered_set<Vertex>;
 using AdjSet = unordered_map<Vertex, VertexSet>;
 using AdjList = unordered_map<Vertex, VertexList>;
 using VisitedMap = unordered_map<Vertex, bool>;
+using VisitedCountMap = unordered_map<Vertex, int>;
 
 class Graph {
   // have both set and vector for O(1) retrieval of different actions

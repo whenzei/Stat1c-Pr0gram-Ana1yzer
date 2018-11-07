@@ -52,7 +52,7 @@ class PKB {
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
   void HandleInsertVariables(VarNameSet var_set);
-  void HandleInsertVariable(VarName variable);
+  void HandleInsertVariable(VarName variable, StmtType stmt_type, StmtNum stmt_num);
   void HandleInsertConstants(ConstValueSet constants);
   void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 
@@ -105,6 +105,38 @@ class PKB {
 
   // @returns the corresponding var name index
   VarIndex GetVarIndex(VarName var_name);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  VarIndex GetReadVar(StmtNum stmt_num);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  VarIndex GetPrintVar(StmtNum stmt_num);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  StmtNumList GetReadStmt(VarName var_name);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  StmtNumList GetPrintStmt(VarName var_name);
+
+  // @returns true if var_name is modified in any read stmt
+  bool IsReadVar(VarName var_name);
+
+  // @returns true if var_name is used in any print stmt
+  bool IsPrintVar(VarName var_name);
+
+  // @returns a list of all variables modified in some read stmt
+  VarIndexList GetAllReadVar();
+
+  // @returns a list of all variables used in some print stmt
+  VarIndexList GetAllPrintVar();
+
+  // @returns a list of all variables modified in some read stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllReadVarTwin();
+
+  // @returns a list of all variables used in some print stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllPrintVarTwin();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
@@ -541,11 +573,12 @@ class PKB {
   // empty)
   ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
 
-  // Finds and returns all indices of callees for given procedure.
+    // Finds and returns all indices of callees for given procedure.
   // @params caller procedure name
   // @returns a list containing all callees' indices for given proc (can be
   // empty)
   ProcIndexList GetCalleeT(ProcName caller_proc);
+
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure index
@@ -610,9 +643,9 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
-  // @returns procedure name called at given statement number if exists, empty
+  // @returns the index of procedure called at given statement number if exists, empty
   // string otherwise
-  ProcName GetCalledProcedure(StmtNum stmt_num);
+  ProcIndex GetCalledProcedure(StmtNum stmt_num);
 
   /************************
    * Next Table Functions *
