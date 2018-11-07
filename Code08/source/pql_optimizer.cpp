@@ -91,7 +91,7 @@ void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
         }
         // CASE 1c.2: Only 1 have group ref
         else {
-          if (find_.at(first_group) != -1) find_[second_group] = first_group;
+          if (find_.at(first_group) == -1) find_[second_group] = first_group;
           else find_[first_group] = second_group;
         }
       }
