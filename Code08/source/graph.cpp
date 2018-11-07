@@ -1,9 +1,24 @@
 #include "graph.h"
+#include <algorithm>
+#include <iostream>
 
 Graph::Graph() {
   size_ = 0;
   adj_list_ = AdjList();
   adj_set_ = AdjSet();
+  all_vertices_ = VertexSet();
+}
+
+bool Graph::operator==(const Graph &other_graph) {
+  return adj_set_ == other_graph.adj_set_ &&
+         all_vertices_ == other_graph.all_vertices_ &&
+         size_ == other_graph.size_;
+}
+
+void Graph::SetRoot(const Vertex &new_root) {
+  if (adj_set_.count(new_root)) {
+    root_ = new_root;
+  }
 }
 
 void Graph::AddEdge(const Vertex &from, const Vertex &to) {
@@ -11,23 +26,55 @@ void Graph::AddEdge(const Vertex &from, const Vertex &to) {
     // first vertex in graph is the root
     root_ = from;
   }
-  if (!adj_set_.count(from)) {
-    size_++;
-    adj_set_.emplace(from, VertexSet());
-    adj_list_.emplace(from, VertexList());
-  }
 
-  if (!adj_set_.count(to)) {
-    size_++;
-    adj_set_.emplace(to, VertexSet());
-    adj_list_.emplace(to, VertexList());
-  }
+  AddNode(from);
+  AddNode(to);
+  parent_vertices_.emplace(from);
 
   if (!adj_set_[from].count(to)) {
     adj_list_[from].push_back(to);
     adj_set_[from].emplace(to);
   }
 }
+
+void Graph::RemoveEdge(const Vertex &from, const Vertex &to) {
+  if (adj_set_[from].count(to)) {
+    // remove from adjList
+    VertexList &vec = adj_list_[from];  // use shorter name
+    VertexList::iterator position = std::find(vec.begin(), vec.end(), to);
+    if (position != vec.end()) {
+      vec.erase(std::remove(vec.begin(), vec.end(), to), vec.end());
+    }
+    adj_set_[from].erase(to);
+  }
+}
+
+void Graph::AddNode(const Vertex &vertex) {
+  if (!adj_set_.count(vertex)) {
+    size_++;
+    adj_set_.emplace(vertex, VertexSet());
+    adj_list_.emplace(vertex, VertexList());
+    all_vertices_.emplace(vertex);
+  }
+}
+
+void Graph::RemoveNode(const Vertex &vertex) {
+  if (adj_set_.count(vertex)) {
+    // remove edge from all vertices that has this as neighbour
+    for (auto &v : all_vertices_) {
+      if (GetNeighboursSet(v).count(vertex)) {
+        RemoveEdge(v, vertex);
+      }
+    }
+    size_--;
+    adj_set_.erase(vertex);
+    adj_list_.erase(vertex);
+    all_vertices_.erase(vertex);
+    parent_vertices_.erase(vertex);
+  }
+}
+
+VertexSet Graph::GetParentVertices() { return parent_vertices_; }
 
 bool Graph::IsEmpty() { return size_ == 0; }
 
@@ -114,15 +161,58 @@ bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
   return false;
 }
 
-VertexList Graph::DFS(const Vertex from) {
+bool Graph::CanReach(Vertex from, Vertex to) {
+  VertexList neighbours = GetNeighboursList(from);
+  VisitedMap visited = VisitedMap();
+  for (auto &neighbour : neighbours) {
+    if (DFS(neighbour, to, &visited)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+VertexSet Graph::DFS(const Vertex from) {
   VisitedMap visited;
   for (auto &kv : adj_set_) {
     visited[kv.first] = false;
   }
-  VertexList path;
+  VertexSet path;
 
   DFS(from, &visited, &path);
   return path;
+}
+
+VertexSet Graph::DFSNeighbours(const Vertex from) {
+  VertexSet neighbours = GetNeighboursSet(from);
+  VertexSet final_path;
+  for (auto& neighbour : neighbours) {
+    VertexSet inter_path = DFS(neighbour);
+    final_path.insert(inter_path.begin(), inter_path.end());
+  }
+  return final_path;
+}
+
+bool Graph::DFS(Vertex v, Vertex target, VisitedMap *visited) {
+  if (visited->count(v)) {
+    return false;
+  }
+
+  visited->emplace(v, true);
+
+  if (v == target) {
+    return true;
+  }
+  VertexList neighbours = GetNeighboursList(v);
+
+  for (auto& neighbour : neighbours) {
+    if (DFS(neighbour, target, visited)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 VertexSet Graph::GetUnreachableVertices(Vertex v) {
@@ -133,8 +223,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
 
   visited[v] = true;
 
-  VertexList path;  // don't need this, just here for reusability
-  DFS(root_, &visited, &path);
+  DFS(root_, &visited, &VertexSet());
 
   VertexSet result;
 
@@ -152,7 +241,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
   return result;
 }
 
-void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
+void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexSet *path) {
   if ((*visited)[v]) {
     return;
   }
@@ -160,7 +249,7 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexList *path) {
   (*visited)[v] = true;
 
   // add saving of path here if want pre-order traversal
-  path->push_back(v);
+  path->emplace(v);
 
   VertexSet *neighbours = &adj_set_[v];
 
@@ -186,18 +275,24 @@ VertexList Graph::GetNeighboursList(const Vertex &v) {
   return VertexList();
 }
 
+VertexList Graph::GetTerminalNodes() {
+  // retrieve all nodes with empty adj_list_
+  VertexList result;
+  for (auto &vertex : all_vertices_) {
+    if (adj_list_[vertex].empty()) {
+      result.push_back(vertex);
+    }
+  }
+
+  return result;
+}
+
 int Graph::GetSize() { return size_; }
 
 AdjList Graph::GetAdjList() { return adj_list_; }
 
 AdjSet Graph::GetAdjSet() { return adj_set_; }
 
-VertexSet Graph::GetAllVertices() {
-  VertexSet result;
-  for (auto &kv : adj_set_) {
-    // return all keys (meaning the vertex itself)
-    result.emplace(kv.first);
-  }
+VertexSet Graph::GetAllVertices() { return all_vertices_; }
 
-  return result;
-}
+Vertex Graph::GetRoot() { return root_; }

@@ -38,6 +38,12 @@ PqlSuchthatType PqlSuchthat::StringToType(string input) {
     return PqlSuchthatType::kAffects;
   } else if (input == "Affects*") {
     return PqlSuchthatType::kAffectsT;
+  } else if (input == "Dominates") {
+    return PqlSuchthatType::kDominates;
+  } else if (input == "AffectsBip") {
+    return PqlSuchthatType::kAffectsB;
+  } else if (input == "AffectsBip*") {
+    return PqlSuchthatType::kAffectsBT;
   } else {
     return PqlSuchthatType::kNone;
   }

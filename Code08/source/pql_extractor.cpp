@@ -1,152 +1,186 @@
-#include <unordered_set>
-
 #include "pql_extractor.h"
 
-using std::unordered_set;
+PqlExtractor::PqlExtractor(PKB* pkb) {
+  ae_ = AffectsExtractor(pkb);
+  ne_ = NextExtractor(pkb);
+}
 
-PqlExtractor::PqlExtractor(PKB pkb) { pkb_ = pkb; }
+/**********************************
+ * NextT  *
+ **********************************/
 
 bool PqlExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
-  unordered_set<StmtNum> visited_stmts;
-  queue<StmtNum> next_stmt_queue;
-
-  StmtNumList temp_next_stmts = pkb_.GetNext(previous_stmt);
-  for (auto& temp_next_stmt : temp_next_stmts) {
-    next_stmt_queue.push(temp_next_stmt);
-  }
-
-  // BFS
-  while (!next_stmt_queue.empty()) {
-    StmtNum curr_stmt = next_stmt_queue.front();
-    next_stmt_queue.pop();
-
-    if (visited_stmts.count(curr_stmt) == 1) {
-      continue;
-    }
-
-    visited_stmts.emplace(curr_stmt);
-    if (curr_stmt == next_stmt) {
-      return true;
-    }
-
-    StmtNumList curr_next_stmts = pkb_.GetNext(curr_stmt);
-    for (StmtNum curr_next : curr_next_stmts) {
-      if (visited_stmts.count(curr_next) == 0) {
-        next_stmt_queue.push(curr_next);
-      }
-    }
-  }
-  return false;
+  return ne_.IsNextT(previous_stmt, next_stmt);
 }
 
 bool PqlExtractor::IsNextT(StmtNum stmt_num) {
-  return !(pkb_.GetPrevious(stmt_num)).empty();
+  return ne_.IsNextT(stmt_num);
 }
 
 bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
-  return !(pkb_.GetNext(stmt_num)).empty();
+  return ne_.IsPreviousT(stmt_num);
 }
 
 StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
-  StmtNumList res_list;
-  unordered_set<StmtNum> visited_stmts;
-  queue<StmtNum> next_stmt_queue;
-
-  for (auto& next_stmt : pkb_.GetNext(stmt_num)) {
-    next_stmt_queue.push(next_stmt);
-  }
-
-  // BFS
-  while (!next_stmt_queue.empty()) {
-    StmtNum curr_stmt = next_stmt_queue.front();
-    next_stmt_queue.pop();
-
-    if (visited_stmts.count(curr_stmt) == 1) {
-      continue;
-    }
-    visited_stmts.emplace(curr_stmt);
-    res_list.push_back(curr_stmt);
-
-    StmtNumList curr_next_stmts = pkb_.GetNext(curr_stmt);
-    for (StmtNum curr_next : curr_next_stmts) {
-      if (visited_stmts.count(curr_next) == 0) {
-        next_stmt_queue.push(curr_next);
-      }
-    }
-  }
-
-  return res_list;
+  return ne_.GetNextT(stmt_num);
 }
 
 StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
-  StmtNumList res_list;
-  unordered_set<StmtNum> visited_stmts;
-  queue<StmtNum> prev_stmt_queue;
-
-  for (auto& next_stmt : pkb_.GetPrevious(stmt_num)) {
-    prev_stmt_queue.push(next_stmt);
-  }
-
-  // BFS
-  while (!prev_stmt_queue.empty()) {
-    StmtNum curr_stmt = prev_stmt_queue.front();
-    prev_stmt_queue.pop();
-
-    if (visited_stmts.count(curr_stmt) == 1) {
-      continue;
-    }
-
-    visited_stmts.emplace(curr_stmt);
-    res_list.push_back(curr_stmt);
-
-    StmtNumList curr_prev_stmts = pkb_.GetPrevious(curr_stmt);
-    for (StmtNum curr_prev : curr_prev_stmts) {
-      if (visited_stmts.count(curr_prev) == 0) {
-        prev_stmt_queue.push(curr_prev);
-      }
-    }
-  }
-
-  return res_list;
+  return ne_.GetPreviousT(stmt_num);
 }
 
 StmtNumPairList PqlExtractor::GetAllNextTPairs() {
-  StmtNumList prev_list = pkb_.GetAllPrevious();
-  StmtNumPairList res_list;
-
-  for (auto& prev : prev_list) {
-    FormPairBFS(prev, &res_list);
-  }
-
-  return res_list;
+  return ne_.GetAllNextTPairs();
 }
 
-void PqlExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
-  unordered_set<StmtNum> visited_stmts;
-  queue<StmtNum> prev_stmt_queue;
+/**********************************
+ * Affects *
+ **********************************/
 
-  for (auto& next_stmt : pkb_.GetNext(start)) {
-    prev_stmt_queue.push(next_stmt);
-  }
+bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
+  return ae_.IsAffects(stmt_1, stmt_2);
+}
 
-  // BFS
-  while (!prev_stmt_queue.empty()) {
-    StmtNum curr_stmt = prev_stmt_queue.front();
-    prev_stmt_queue.pop();
+bool PqlExtractor::IsAffects(StmtNum stmt_num) {
+  return ae_.IsAffects(stmt_num);
+}
 
-    if (visited_stmts.count(curr_stmt) == 1) {
-      continue;
-    }
+bool PqlExtractor::IsAffected(StmtNum stmt_num) {
+  return ae_.IsAffected(stmt_num);
+}
 
-    visited_stmts.emplace(curr_stmt);
+VertexSet PqlExtractor::GetAffects(StmtNum stmt_1) {
+  return ae_.GetAffects(stmt_1);
+}
 
-    (*res_list).push_back(make_pair(start, curr_stmt));
+VertexSet PqlExtractor::GetAffectedBy(StmtNum stmt_num) {
+  return ae_.GetAffectedBy(stmt_num);
+}
 
-    StmtNumList curr_prev_stmts = pkb_.GetNext(curr_stmt);
-    for (StmtNum curr_next : curr_prev_stmts) {
-      if (visited_stmts.count(curr_next) == 0) {
-        prev_stmt_queue.push(curr_next);
-      }
-    }
-  }
+VertexSet PqlExtractor::GetAllAffects() {
+  return ae_.GetAllAffects();
+}
+
+VertexSet PqlExtractor::GetAllAffectedBy() {
+  return ae_.GetAllAffectedBy();
+}
+
+AffectsMap PqlExtractor::GetAffectsMap() {
+  return ae_.GetAffectsMap();
+}
+
+AffectsMap PqlExtractor::GetAffectedByMap() {
+  return ae_.GetAffectedByMap();
+}
+
+/**********************************
+ * AffectsT *
+ **********************************/
+
+bool PqlExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2) {
+  return ae_.IsAffectsT(stmt_1, stmt_2);
+}
+
+bool PqlExtractor::IsAffectsT(StmtNum stmt) {
+  return ae_.IsAffectsT(stmt);
+}
+
+bool PqlExtractor::IsAffectedT(StmtNum stmt) {
+  return ae_.IsAffectedT(stmt);
+}
+
+VertexSet PqlExtractor::GetAffectsT(StmtNum stmt) {
+  return ae_.GetAffectsT(stmt);
+}
+
+VertexSet PqlExtractor::GetAffectedByT(StmtNum stmt) {
+  return ae_.GetAffectedByT(stmt);
+}
+
+VertexSet PqlExtractor::GetAllAffectsT() {
+  return ae_.GetAllAffectsT();
+}
+
+VertexSet PqlExtractor::GetAllAffectedByT() {
+  return ae_.GetAllAffectedByT();
+}
+
+AffectsMap PqlExtractor::GetAffectsTMap() {
+  return ae_.GetAffectsTMap();
+}
+
+AffectsMap PqlExtractor::GetAffectedByTMap() {
+  return ae_.GetAffectedByTMap();
+}
+
+/**********************************
+ * AffectsBip *
+ **********************************/
+
+bool PqlExtractor::IsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
+  return ae_.IsAffects(stmt_1, stmt_2, true);
+}
+
+bool PqlExtractor::IsAffectsBip(StmtNum stmt_num) {
+  return ae_.IsAffects(stmt_num, true);
+}
+
+bool PqlExtractor::IsAffectedBip(StmtNum stmt_num) {
+  return ae_.IsAffected(stmt_num, true);
+}
+
+VertexSet PqlExtractor::GetAffectsBip(StmtNum stmt_1) {
+  return ae_.GetAffects(stmt_1, true);
+}
+
+VertexSet PqlExtractor::GetAffectedByBip(StmtNum stmt_num) {
+  return ae_.GetAffectedBy(stmt_num, true);
+}
+
+AffectsMap PqlExtractor::GetAffectsBipMap() {
+  return ae_.GetAffectsBipMap();
+}
+
+AffectsMap PqlExtractor::GetAffectedByBipMap() {
+  return ae_.GetAffectedByBipMap();
+}
+
+/**********************************
+ * AffectsBipT *
+ **********************************/
+
+bool PqlExtractor::IsAffectsBipT(StmtNum stmt_1, StmtNum stmt_2) {
+  return ae_.IsAffectsT(stmt_1, stmt_2, true);
+}
+
+bool PqlExtractor::IsAffectsBipT(StmtNum stmt) {
+  return ae_.IsAffectsT(stmt, true);
+}
+
+bool PqlExtractor::IsAffectedBipT(StmtNum stmt) {
+  return ae_.IsAffectedT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAffectsBipT(StmtNum stmt) {
+  return ae_.GetAffectsT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAffectedByBipT(StmtNum stmt) {
+  return ae_.GetAffectedByT(stmt, true);
+}
+
+VertexSet PqlExtractor::GetAllAffectsBipT() {
+  return ae_.GetAllAffectsT(true);
+}
+
+VertexSet PqlExtractor::GetAllAffectedByBipT() {
+  return ae_.GetAllAffectedByT(true);
+}
+
+AffectsMap PqlExtractor::GetAffectsBipTMap() {
+  return ae_.GetAffectsBipTMap();
+}
+
+AffectsMap PqlExtractor::GetAffectedByBipTMap() {
+  return ae_.GetAffectedByBipTMap();
 }

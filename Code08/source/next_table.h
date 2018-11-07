@@ -31,6 +31,8 @@ using CFGTable = unordered_map<string, CFG>;
 class NextTable {
   CFG combined_cfg_;
   CFG reversed_combined_cfg_;
+  CFG program_cfg_;
+  CFG reversed_program_cfg_;
   CFGTable cfg_table_;
   CFGTable reversed_cfg_table_;
   StmtNumList previous_list_;
@@ -45,7 +47,12 @@ class NextTable {
   void InsertNext(ProcName proc_name, StmtNum previous_stmt_int,
                   StmtNum next_stmt_int);
 
+  // adds the statement into the CFG node
+  void InsertStatement(ProcName proc_name, StmtNum stmt_num);
+
   CFG* GetCFG(ProcName proc_name);
+
+  CFG* GetReverseCFG(ProcName proc_name);
 
   bool IsNext(StmtNum previous_stmt, StmtNum next_stmt);
 
@@ -65,9 +72,26 @@ class NextTable {
 
   CFG* GetCombinedCFG();
 
+  CFG* GetReverseCombinedCFG();
+
   void SetAllNextPairs(StmtNumPairList next_pair_list);
 
   bool HasNextRelationship();
+
+  /*****************************
+   * AffectsBip Table Functions *
+   *****************************/
+  // Sets the program_cfg_ to the given program_cfg
+  void SetProgramCFG(const CFG& program_cfg);
+
+  // Sets the reversed_program_cfg_ to the given reversed_program_cfg
+  void SetReverseProgramCFG(const CFG& reversed_program_cfg);
+
+  // @returns the program cfg
+  CFG* GetProgramCFG();
+
+  // @returns the reversed program cfg
+  CFG* GetReverseProgramCFG();
 };
 
 #endif !SPA_NEXT_TABLE_H

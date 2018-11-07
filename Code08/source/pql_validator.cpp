@@ -10,14 +10,17 @@ using std::regex_match;
 using std::stack;
 using tt = Tokenizer::TokenType;
 
+/* Use Regex to check if a given string is of IDENT format. */
 bool PqlValidator::ValidateIdent(string content) {
   return regex_match(content, regex("[a-zA-Z][a-zA-Z0-9]*"));
 }
 
+/* Use Regex to check if a given string is of INTEGER format. */
 bool PqlValidator::ValidateInteger(string content) {
   return regex_match(content, regex("[0-9]*"));
 }
 
+/* Check if a given list of tokens is an expression. */
 bool PqlValidator::ValidateExpression(TokenList tokens) {
   // expr: expr ‘+’ term | expr ‘-’ term | term
   // term: term ‘*’ factor | term ‘ / ’ factor | term ‘%’ factor | factor
@@ -81,11 +84,10 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
   return true;
 }
 
+/* Check if an attribute is compatible with a certain entity type. */
 bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
   switch (type) {
     case PqlDeclarationEntity::kStmt:
-    case PqlDeclarationEntity::kRead:
-    case PqlDeclarationEntity::kPrint:
     case PqlDeclarationEntity::kWhile:
     case PqlDeclarationEntity::kIf:
     case PqlDeclarationEntity::kAssign:
@@ -100,10 +102,37 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
     case PqlDeclarationEntity::kProcedure:
       if (attr == "procName") return true;
       break;
+    case PqlDeclarationEntity::kRead:
+    case PqlDeclarationEntity::kPrint:
+      if (attr == "stmt" || attr == "varName") return true;
+      break;
     case PqlDeclarationEntity::kCall:
       if (attr == "stmt" || attr == "procName") return true;
       break;
   }
 
   return false;
+}
+
+/* Check if a PqlDeclarationEntity is actually a real entity type. */
+bool PqlValidator::IsSynonym(PqlDeclarationEntity type) {
+  switch(type) {
+      case PqlDeclarationEntity::kStmt:
+      case PqlDeclarationEntity::kRead:
+      case PqlDeclarationEntity::kReadName:
+      case PqlDeclarationEntity::kPrint:
+      case PqlDeclarationEntity::kPrintName:
+      case PqlDeclarationEntity::kCall:
+      case PqlDeclarationEntity::kCallName:
+      case PqlDeclarationEntity::kWhile:
+      case PqlDeclarationEntity::kIf:
+      case PqlDeclarationEntity::kAssign:
+      case PqlDeclarationEntity::kVariable:
+      case PqlDeclarationEntity::kConstant:
+      case PqlDeclarationEntity::kProgline:
+      case PqlDeclarationEntity::kProcedure:
+        return true;
+      default: 
+        return false;
+  }
 }

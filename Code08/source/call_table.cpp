@@ -2,60 +2,52 @@
 
 #include "call_table.h"
 
-bool CallTable::InsertIndirectCallRelationship(ProcName caller_proc,
-                                               ProcName callee_proc) {
-  if (proc_list_.GetProcIndex(caller_proc) == -1) {
-    proc_list_.InsertProcName(caller_proc);
-  }
-  if (proc_list_.GetProcIndex(callee_proc) == -1) {
-    proc_list_.InsertProcName(callee_proc);
-  }
-  int caller_proc_index = proc_list_.GetProcIndex(caller_proc);
-  int callee_proc_index = proc_list_.GetProcIndex(callee_proc);
-  if (IsCallT(caller_proc_index, callee_proc_index)) {
+bool CallTable::InsertIndirectCallRelationship(ProcIndex caller_proc,
+                                               ProcIndex callee_proc) {
+  if (IsCallT(caller_proc, callee_proc)) {
     return false;
   }
-  call_table_[caller_proc_index].push_back(callee_proc_index);
-  callee_table_[callee_proc_index].push_back(caller_proc_index);
-  if (caller_set_.insert(caller_proc_index).second) {
-    caller_list_.push_back(caller_proc_index);
+  call_table_[caller_proc].push_back(callee_proc);
+  callee_table_[callee_proc].push_back(caller_proc);
+  if (caller_set_.insert(caller_proc).second) {
+    caller_list_.push_back(caller_proc);
   }
-  if (callee_set_.insert(callee_proc_index).second) {
-    callee_list_.push_back(callee_proc_index);
+  if (callee_set_.insert(callee_proc).second) {
+    callee_list_.push_back(callee_proc);
   }
   return true;
 }
 
-bool CallTable::InsertDirectCallRelationship(ProcName caller_proc,
-                                             ProcName callee_proc) {
-  if (proc_list_.GetProcIndex(caller_proc) == -1) {
-    proc_list_.InsertProcName(caller_proc);
-  }
-  if (proc_list_.GetProcIndex(callee_proc) == -1) {
-    proc_list_.InsertProcName(callee_proc);
-  }
-  int caller_proc_index = proc_list_.GetProcIndex(caller_proc);
-  int callee_proc_index = proc_list_.GetProcIndex(callee_proc);
-  if (IsCallT(caller_proc_index, callee_proc_index)) {
+bool CallTable::InsertDirectCallRelationship(ProcIndex caller_proc,
+                                             ProcIndex callee_proc) {
+  if (IsCallT(caller_proc, callee_proc)) {
     return false;
   }
-  direct_call_table_[caller_proc_index].push_back(callee_proc_index);
-  direct_callee_table_[callee_proc_index].push_back(caller_proc_index);
-  call_table_[caller_proc_index].push_back(callee_proc_index);
-  callee_table_[callee_proc_index].push_back(caller_proc_index);
-  if (caller_set_.insert(caller_proc_index).second) {
-    caller_list_.push_back(caller_proc_index);
+  direct_call_table_[caller_proc].push_back(callee_proc);
+  direct_callee_table_[callee_proc].push_back(caller_proc);
+  call_table_[caller_proc].push_back(callee_proc);
+  callee_table_[callee_proc].push_back(caller_proc);
+  if (caller_set_.insert(caller_proc).second) {
+    caller_list_.push_back(caller_proc);
   }
-  if (callee_set_.insert(callee_proc_index).second) {
-    callee_list_.push_back(callee_proc_index);
+  if (callee_set_.insert(callee_proc).second) {
+    callee_list_.push_back(callee_proc);
     callee_twin_list_.push_back(
-        make_pair(callee_proc_index, callee_proc_index));
+        make_pair(callee_proc, callee_proc));
   }
   return true;
 }
 
 void CallTable::InsertCalls(StmtNum stmt_num, ProcIndex callee_proc) {
   stmt_num_proc_table_[callee_proc].push_back(stmt_num);
+  stmt_to_call_table_[stmt_num] = callee_proc;
+}
+
+ProcIndex CallTable::GetCalledProcedure(StmtNum stmt_num) {
+  if (stmt_to_call_table_.count(stmt_num)) {
+    return stmt_to_call_table_[stmt_num];
+  }
+  return -1;
 }
 
 StmtNumList CallTable::GetCallingStmts(ProcIndex callee_proc) {
@@ -83,15 +75,6 @@ ProcIndexList CallTable::GetCallee(ProcIndex caller_proc) {
     callee_list = (*iter).second;
   }
   return callee_list;
-}
-
-ProcNameList CallTable::GetCallee(ProcName caller_proc) {
-  ProcIndexList callee_list = GetCallee(proc_list_.GetProcIndex(caller_proc));
-  ProcNameList callee_name_list;
-  for (int proc_index : callee_list) {
-    callee_name_list.push_back(proc_list_.GetProcName(proc_index));
-  }
-  return callee_name_list;
 }
 
 ProcIndexList CallTable::GetCalleeT(ProcIndex caller_proc) {
@@ -128,8 +111,9 @@ ProcIndexPairList CallTable::GetAllCallPairs() {
   ProcIndexPairList call_pair_list;
   for (auto entry : direct_call_table_) {
     if (direct_call_table_.find(entry.first) != direct_call_table_.end()) {
-      call_pair_list.push_back(
-          make_pair(entry.first, direct_call_table_[entry.first].front()));
+      for (auto callee : direct_call_table_[entry.first]) {
+        call_pair_list.push_back(make_pair(entry.first, callee));
+      }
     }
   }
   return call_pair_list;
@@ -149,7 +133,9 @@ ProcIndexPairList CallTable::GetAllCallTPairs() {
 
 bool CallTable::IsCall(ProcIndex caller_proc, ProcIndex callee_proc) {
   if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
-    return (direct_call_table_[caller_proc].front() == callee_proc);
+    ProcIndexList direct_callee_list = direct_call_table_[caller_proc];
+    return (find(direct_callee_list.begin(), direct_callee_list.end(), callee_proc)
+        != direct_callee_list.end());
   }
   return false;
 }

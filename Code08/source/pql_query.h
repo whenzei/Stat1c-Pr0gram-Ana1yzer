@@ -18,12 +18,14 @@ using std::vector;
 #include "pql_pattern.h"
 #include "pql_suchthat.h"
 #include "pql_with.h"
+#include "pql_optimizer.h"
 
 using Declarations = unordered_map<string, PqlDeclarationEntity>;
 using EntitySet = unordered_set<PqlDeclarationEntity>;
 using SuchthatParameters = pair<EntitySet, EntitySet>;
 using SuchthatTable = unordered_map<PqlSuchthatType, SuchthatParameters>;
 using WithTable = unordered_map<PqlDeclarationEntity, EntitySet>;
+using Group = vector<PqlClause*>;
 
 /*
 SELECT SUCH THAT CLAUSE
@@ -164,19 +166,41 @@ const EntitySet next_t_second = {
 
 // Affects
 const EntitySet affects_first = {PqlDeclarationEntity::kAssign,
+								 PqlDeclarationEntity::kStmt,
+								 PqlDeclarationEntity::kProgline,
                                  PqlDeclarationEntity::kUnderscore,
                                  PqlDeclarationEntity::kInteger};
 const EntitySet affects_second = {PqlDeclarationEntity::kAssign,
+								 PqlDeclarationEntity::kStmt,
+								 PqlDeclarationEntity::kProgline,
                                   PqlDeclarationEntity::kUnderscore,
                                   PqlDeclarationEntity::kInteger};
 
 // AffectsT
 const EntitySet affects_t_first = {PqlDeclarationEntity::kAssign,
+								  PqlDeclarationEntity::kStmt,
+								  PqlDeclarationEntity::kProgline,
                                    PqlDeclarationEntity::kUnderscore,
                                    PqlDeclarationEntity::kInteger};
 const EntitySet affects_t_second = {PqlDeclarationEntity::kAssign,
+								    PqlDeclarationEntity::kStmt,
+								    PqlDeclarationEntity::kProgline,
                                     PqlDeclarationEntity::kUnderscore,
                                     PqlDeclarationEntity::kInteger};
+
+// Dominates
+const EntitySet dominates_first = {
+    PqlDeclarationEntity::kStmt,    PqlDeclarationEntity::kRead,
+    PqlDeclarationEntity::kPrint,   PqlDeclarationEntity::kCall,
+    PqlDeclarationEntity::kWhile,   PqlDeclarationEntity::kIf,
+    PqlDeclarationEntity::kAssign,  PqlDeclarationEntity::kProgline,
+    PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore };
+const EntitySet dominates_second = {
+    PqlDeclarationEntity::kStmt,    PqlDeclarationEntity::kRead,
+    PqlDeclarationEntity::kPrint,   PqlDeclarationEntity::kCall,
+    PqlDeclarationEntity::kWhile,   PqlDeclarationEntity::kIf,
+    PqlDeclarationEntity::kAssign,  PqlDeclarationEntity::kProgline,
+    PqlDeclarationEntity::kInteger, PqlDeclarationEntity::kUnderscore };
 
 // Group all the sets into a map for easy access
 const SuchthatTable suchthat_table = {
@@ -197,8 +221,10 @@ const SuchthatTable suchthat_table = {
     {PqlSuchthatType::kNext, std::make_pair(next_first, next_second)},
     {PqlSuchthatType::kNextT, std::make_pair(next_t_first, next_t_second)},
     {PqlSuchthatType::kAffects, std::make_pair(affects_first, affects_second)},
-    {PqlSuchthatType::kAffectsT,
-     std::make_pair(affects_t_first, affects_t_second)}};
+    {PqlSuchthatType::kAffectsT, std::make_pair(affects_t_first, affects_t_second)},
+    {PqlSuchthatType::kAffectsB, std::make_pair(affects_first, affects_second)},
+    {PqlSuchthatType::kAffectsBT, std::make_pair(affects_t_first, affects_t_second)},
+    {PqlSuchthatType::kDominates, std::make_pair(dominates_first, dominates_second)} };
 
 /*
 SELECT PATTERN CLAUSE
@@ -237,7 +263,8 @@ const EntitySet number = {
 
 const EntitySet name = {
     PqlDeclarationEntity::kVariable, PqlDeclarationEntity::kProcedure,
-    PqlDeclarationEntity::kCallName, PqlDeclarationEntity::kIdent};
+    PqlDeclarationEntity::kCallName, PqlDeclarationEntity::kReadName, 
+    PqlDeclarationEntity::kPrintName, PqlDeclarationEntity::kIdent};
 
 const WithTable with_table = {{PqlDeclarationEntity::kProgline, number},
                               {PqlDeclarationEntity::kStmt, number},
@@ -250,7 +277,11 @@ const WithTable with_table = {{PqlDeclarationEntity::kProgline, number},
                               {PqlDeclarationEntity::kConstant, number},
                               {PqlDeclarationEntity::kVariable, name},
                               {PqlDeclarationEntity::kCallName, name},
-                              {PqlDeclarationEntity::kProcedure, name}};
+                              {PqlDeclarationEntity::kReadName, name},
+                              {PqlDeclarationEntity::kPrintName, name},
+                              {PqlDeclarationEntity::kProcedure, name},
+                              {PqlDeclarationEntity::kInteger, number},
+                              {PqlDeclarationEntity::kIdent, name} };
 
 /*
 This class stores the PQL query, including the declarations and
@@ -264,6 +295,10 @@ class PqlQuery {
   vector<Synonym> selections_;
   /* collection of clauses in the 'Select' statement */
   vector<PqlClause*> clauses_;
+  /* does the optimization of clauses */
+  PqlOptimizer optimizer_;
+  /* collection of groups of clauses from optimization */
+  vector<PqlGroup> groups_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;
@@ -275,6 +310,9 @@ class PqlQuery {
   /* Constructor */
   PqlQuery();
 
+  /* Deconstructor */
+  ~PqlQuery();
+
   /* Setters */
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
@@ -284,6 +322,9 @@ class PqlQuery {
   Declarations GetDeclarations();
   vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
+  vector<PqlGroup> GetGroups();
+
+  void Optimize();
 
   static PqlDeclarationEntity DeclarationStringToType(string);
 

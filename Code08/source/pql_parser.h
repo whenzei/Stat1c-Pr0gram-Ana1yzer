@@ -32,11 +32,11 @@ class PqlParser {
   // Stores error message if parsing fail at some stage
   string error_message_;
 
-  // Parses a single statement provided
-  // A statement is a single declaration, or the select clause
-  // @params: string the statement in string form
-  // @params: bool true if this statement is the last
-  // @returns true if parse success, false otherwise
+  /**
+  Parses a single statement. A statement is a single declaration, or the select clause
+  @string the statement in string form
+  @bool true if this statement is the last
+  */
   bool ParseStatement(string, bool);
 
   // Parses the select statement provided

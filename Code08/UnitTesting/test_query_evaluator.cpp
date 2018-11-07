@@ -15,6 +15,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 namespace PQLTests {
 TEST_CLASS(TestQueryEvaluator) {
  public:
+      /*
   TEST_METHOD(TestTupleCrossProduct) {
     PqlEvaluator qe;
     vector<FinalResult> test_items = {{"1", "2"}, {"4", "5"}};
@@ -60,6 +61,6 @@ TEST_CLASS(TestQueryEvaluator) {
     string result2 = qe.Trim(empty);
     Assert::AreEqual(expected2, result2);
   }
-
+  */
 };
 }  // namespace PQLTests

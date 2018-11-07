@@ -52,7 +52,7 @@ class PKB {
   bool HandleInsertStatement(StatementData* stmt_data, StmtType stmt_type);
   void HandleInsertVariables(VarName variable, VarNameSet var_set);
   void HandleInsertVariables(VarNameSet var_set);
-  void HandleInsertVariable(VarName variable);
+  void HandleInsertVariable(VarName variable, StmtType stmt_type, StmtNum stmt_num);
   void HandleInsertConstants(ConstValueSet constants);
   void HandleInsertPattern(StmtType stmt_type, void* stmt_data);
 
@@ -105,6 +105,38 @@ class PKB {
 
   // @returns the corresponding var name index
   VarIndex GetVarIndex(VarName var_name);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  VarIndex GetReadVar(StmtNum stmt_num);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  VarIndex GetPrintVar(StmtNum stmt_num);
+
+  // @returns the variable modified in stmt_num if it is a read stmt
+  StmtNumList GetReadStmt(VarName var_name);
+
+  // @returns the variable used in stmt_num if it is a print stmt
+  StmtNumList GetPrintStmt(VarName var_name);
+
+  // @returns true if var_name is modified in any read stmt
+  bool IsReadVar(VarName var_name);
+
+  // @returns true if var_name is used in any print stmt
+  bool IsPrintVar(VarName var_name);
+
+  // @returns a list of all variables modified in some read stmt
+  VarIndexList GetAllReadVar();
+
+  // @returns a list of all variables used in some print stmt
+  VarIndexList GetAllPrintVar();
+
+  // @returns a list of all variables modified in some read stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllReadVarTwin();
+
+  // @returns a list of all variables used in some print stmt (repeat each
+  // var_id to form a pair)
+  VarIndexPairList GetAllPrintVarTwin();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
@@ -372,6 +404,9 @@ class PKB {
   // @returns true if Modifies(stmt_num, var_name) holds
   bool IsModifiedByS(StmtNum stmt_num, VarName var_name);
 
+  // @returns true if Modifies(stmt_num, var_index) holds
+  bool IsModifiedByS(StmtNum stmt_num, VarIndex var_index);
+
   // @returns true if Modifies(proc_name, var_name) holds
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
@@ -437,6 +472,9 @@ class PKB {
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
+
+  // @returns true if Uses(stmt_num, var_index) holds
+  bool IsUsedByS(StmtNum stmt_num, VarIndex var_index);
 
   // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
@@ -535,11 +573,12 @@ class PKB {
   // empty)
   ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
 
-  // Finds and returns all indices of callees for given procedure.
+    // Finds and returns all indices of callees for given procedure.
   // @params caller procedure name
   // @returns a list containing all callees' indices for given proc (can be
   // empty)
   ProcIndexList GetCalleeT(ProcName caller_proc);
+
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure index
@@ -604,6 +643,10 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
+  // @returns the index of procedure called at given statement number if exists, empty
+  // string otherwise
+  ProcIndex GetCalledProcedure(StmtNum stmt_num);
+
   /************************
    * Next Table Functions *
    ************************/
@@ -635,21 +678,51 @@ class PKB {
   // @returns true if Next(_, _) holds
   bool HasNextRelationship();
 
-  // @returns the cfg belonging to a specified procedure
+  // @returns the cfg belonging to the given procedure
   CFG* GetCFG(ProcName proc_name);
+
+  // @returns the reverse cfg belonging to the given procedure
+  CFG* GetReverseCFG(ProcName proc_name);
 
   // @returns the combined cfg of the program
   CFG* GetCombinedCFG();
+
+  // @returns the reversed combined cfg of the program
+  CFG* GetReverseCombinedCFG();
 
   // Parser calls this method to notify pkb end of parse.
   // PKB will proceed with design extraction
   void NotifyParseEnd();
 
   /*****************************
+   * AffectsBip Table Functions *
+   *****************************/
+  // Set the given cfg as the program CFG
+  // Solely used by the Design Extractor class
+  void SetProgramCFG(const CFG& program_cfg);
+
+  // Set the given cfg as the reversed program CFG
+  // Solely used by the Design Extractor class
+  void SetReverseProgramCFG(const CFG& reversed_program_cfg);
+
+  // Get the program CFG, with call statements removed and the call
+  // statements' previous statements connected to the called procedure's root,
+  // and the terminal nodes of the called procedure connected to the neighbours
+  // of the (removed) call statement node
+  // @returns the program CFG
+  CFG* GetProgramCFG();
+
+  // Similar to GetProgramCFG, with the only difference being the direction of
+  // the edges are reversed
+  // @returns the reversed program CFG
+  CFG* GetReverseProgramCFG();
+
+  /*****************************
    * Dominates Table Functions *
    *****************************/
 
-  // inserts dominates relationships between dominating_vertex and dominated_vertices
+  // inserts dominates relationships between dominating_vertex and
+  // dominated_vertices
   void InsertDominates(Vertex dominating_vertex, VertexSet dominated_vertices);
 
   // @returns true if Dominates(dominating_stmt, dominated_stmt) holds
