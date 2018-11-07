@@ -444,7 +444,8 @@ QueryResultPairList PqlEvaluateWith::FilterWithLeft(
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_var[iter])) {
             // If proc name = var name
-            filtered_result.push_back(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(pkb_->GetProcIndex(index_to_var[iter]), iter));
           }
         }
       }
@@ -459,7 +460,8 @@ QueryResultPairList PqlEvaluateWith::FilterWithLeft(
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_proc[iter])) {
             // If var name = proc name
-            filtered_result.push_back(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(pkb_->GetVarIndex(index_to_proc[iter]), iter));
           }
         }
       }
@@ -658,7 +660,8 @@ QueryResultPairList PqlEvaluateWith::FilterWithRight(
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_var[iter])) {
             // If proc name = var name
-            filtered_result.push_back(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(iter, pkb_->GetProcIndex(index_to_var[iter])));
           }
         }
       }
@@ -673,7 +676,8 @@ QueryResultPairList PqlEvaluateWith::FilterWithRight(
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_proc[iter])) {
             // If var name = proc name
-            filtered_result.push_back(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(iter, pkb_->GetVarIndex(index_to_proc[iter])));
           }
         }
       }
