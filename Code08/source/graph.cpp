@@ -223,10 +223,7 @@ VertexSet Graph::GetUnreachableVertices(Vertex v) {
 
   visited[v] = true;
 
-  VertexSet path;  // don't need this, just here for reusability
-  std::cout << "At vertex " << v << std::endl;
-  DFS(root_, &visited, &path);
-  std::cout << std::endl;
+  DFS(root_, &visited, &VertexSet());
 
   VertexSet result;
 
@@ -252,8 +249,7 @@ void Graph::DFS(const Vertex &v, VisitedMap *visited, VertexSet *path) {
   (*visited)[v] = true;
 
   // add saving of path here if want pre-order traversal
-  std::cout << v << " ";
-  path->insert(v);
+  path->emplace(v);
 
   VertexSet *neighbours = &adj_set_[v];
 
