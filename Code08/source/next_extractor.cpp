@@ -246,7 +246,7 @@ NextTMap NextExtractor::GetTypedNextTMap(StmtType type) {
   }
 
   for (auto& stmt : stmts) {
-    result.emplace(next_t_table_.GetAdjSet()[stmt]);
+    result.emplace(stmt, next_t_table_.GetAdjSet()[stmt]);
   }
 
   return result;

@@ -531,14 +531,46 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       return;
     case kTwoSynonym:
-      result_pair_list = FilterPairResult(
-          kFilterBoth, pqle_->GetAllNextTPairs(), left_type, right_type);
-      if (result_pair_list.empty()) {
+      AffectsMap next_map;
+      switch (left_type) {
+        case PqlDeclarationEntity::kAssign:
+          next_map = FilterNextTTable(pqle_->GetAssignNextTMap(), right_type);
+          break;
+        case PqlDeclarationEntity::kWhile:
+          next_map = FilterNextTTable(pqle_->GetWhileNextTMap(), right_type);
+          break;
+        case PqlDeclarationEntity::kIf:
+          next_map = FilterNextTTable(pqle_->GetIfNextTMap(), right_type);
+          break;
+        case PqlDeclarationEntity::kCall:
+          next_map = FilterNextTTable(pqle_->GetCallNextTMap(), right_type);
+          break;
+        case PqlDeclarationEntity::kRead:
+          next_map = FilterNextTTable(pqle_->GetReadNextTMap(), right_type);
+          break;
+        case PqlDeclarationEntity::kPrint:
+          next_map = FilterNextTTable(pqle_->GetPrintNextTMap(), right_type);
+          break;
+        default:
+          next_map = FilterNextTTable(pqle_->GetNextTMap(), right_type);
+      }
+      if (next_map.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Next*(left,right)" << endl;
-      } else {
+        cout << " no map of Next*(lefttype,righttype)" << endl;
+      } 
+	  // two syn same
+	  else if ((left_name.compare(right_name)) == 0) {
+        for (auto& before : next_map) {
+          for (auto& next : before.second) {
+            if (before.first == next) {
+              result_pair_list.push_back(make_pair(next, next));
+            }
+          }
+        }
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
+      } else {
+        pql_eval->StoreClauseResultInTable(next_map, left_name, right_name);
       }
       return;
   }
@@ -579,7 +611,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (pqle_->GetAffectsMap().empty()) {
+      if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
         cout << " no affects relationship found " << endl;
       }
@@ -677,7 +709,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (pqle_->GetAffectsTMap().empty()) {
+      if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
         cout << " no affects relationship found " << endl;
       }
@@ -775,7 +807,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (pqle_->GetAffectsBipMap().empty()) {
+      if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
         cout << " no affects relationship found " << endl;
       }
@@ -873,7 +905,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       }
       return;
     case kNoSynonymUnderscoreBoth:
-      if (pqle_->GetAffectsBipTMap().empty()) {
+      if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
         cout << " no affects relationship found " << endl;
       }
@@ -1813,6 +1845,26 @@ QueryResultPairList PqlEvaluateSuchthat::FilterPairResult(
 
   return filtered_result;
 }
+
+AffectsMap PqlEvaluateSuchthat::FilterNextTTable(
+    AffectsMap result_map, PqlDeclarationEntity entity_type) {
+  // If its of type stmt (not assign, if, while etc) just return the list,
+  // nothing to filter
+  if (entity_type == PqlDeclarationEntity::kStmt ||
+      entity_type == PqlDeclarationEntity::kProgline) {
+    return result_map;
+  }
+  
+  for (auto& key : result_map) {
+    for (auto& val : key.second) {
+      if (pkb_->GetStmtType(val) != entity_type) {
+        key.second.erase(val);
+      }
+    }
+  }
+
+  return result_map;
+} 
 
 SuchthatParamType PqlEvaluateSuchthat::CheckSuchthatParamType(
     Parameters such_that_param) {
