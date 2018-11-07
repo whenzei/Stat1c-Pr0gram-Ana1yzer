@@ -21,10 +21,17 @@ bool PqlParser::Parse() {
   // 1. Split up individual statements by semicolon
   vector<string> statements = Util::Split(query_text_, ';');
 
-  // 2. Process each statement
+  // 2. Check if Select BOOLEAN
+  bool isBoolean = false;
+  if (statements.back().substr(0, 14) == "Select BOOLEAN") isBoolean = true;
+
+  // 3. Process each statement
   for (vector<string>::const_iterator i = statements.begin();
        i != statements.end(); ++i) {
-    if (!ParseStatement(*i, i + 1 == statements.end())) return false;
+    if (!ParseStatement(*i, i + 1 == statements.end())) {
+      if (isBoolean) query_->SetResultIsFalse(true);
+      return false;
+    } 
   }
 
   return true;
