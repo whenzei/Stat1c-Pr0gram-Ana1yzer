@@ -1,5 +1,7 @@
 #include "pql_projector.h"
 
+using std::find;
+
 void PqlProjector::SortSelections() {
   for (auto& syn : selections_set_) {
     int group = intermediate_column_header_[syn].first;
@@ -46,16 +48,14 @@ void PqlProjector::MergeIntermediateResultTables() {
     } else {
       // cross product
       ResultTable new_table;
-      vector<VarName> selected_synonyms = selection_group_table_[group];
-      vector<int> selected_columns;
-      for (VarName& syn : selected_synonyms) {
-        selected_columns.push_back(intermediate_column_header_[syn].second);
-      }
       for (auto& row_1 : final_result_table_) {
         for (auto& row_2 : *result_table) {
           ResultRow new_row = row_1;
-          for (int& column : selected_columns) {
-            new_row.push_back(row_2[column]);
+          for (string& selected_synonym : selection_group_table_[group]) {
+            // only merge the selected columns
+            int selected_column =
+                intermediate_column_header_[selected_synonym].second;
+            new_row.push_back(row_2[selected_column]);
           }
           new_table.push_back(new_row);
         }
@@ -135,25 +135,33 @@ bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
       break;
     case PqlDeclarationEntity::kCallName: {
       string call_stmt = selected_syn.first.substr(1);
-      if (!intermediate_column_header_.count(call_stmt)) {
-        // add an intermediate result table for the corresponding call_stmt if
-        // it does not exist in any intermediate result table
-        if (!AddSelectAllResult(
-                make_pair(call_stmt, PqlDeclarationEntity::kCall))) {
-          return false;
+      Synonym call_syn = make_pair(call_stmt, PqlDeclarationEntity::kCall);
+      if (find(selections_list_.begin(), selections_list_.end(), call_syn) !=
+          selections_list_.end()) {
+        // if call_stmt is also selected, make sure there is a table containing
+        // call_stmt first, then add a column of call_var
+        if (!intermediate_column_header_.count(call_stmt)) {
+          // add an intermediate result table for the corresponding call_stmt if
+          // it does not exist in any intermediate result table
+          if (!AddSelectAllResult(call_syn)) {
+            return false;
+          }
         }
+        // get the corresponding call.procName for each row and add them as a
+        // column
+        int result_table_id = intermediate_column_header_[call_stmt].first;
+        int column_id = intermediate_column_header_[call_stmt].second;
+        ResultTable* result_table =
+            &intermediate_result_tables_[result_table_id];
+        for (auto& row : *result_table) {
+          row.push_back(pkb_->GetCalledProcedure(row[column_id]));
+        }
+        intermediate_column_header_[selected_syn.first] =
+            make_pair(result_table_id, (*result_table).front().size() - 1);
+        intermediate_result_tables_modified = true;
+      } else {
+        query_result_list = pkb_->GetAllCallee();
       }
-      // get the corresponding call.procName for each row and add them as a
-      // column
-      int result_table_id = intermediate_column_header_[call_stmt].first;
-      int column_id = intermediate_column_header_[call_stmt].second;
-      ResultTable* result_table = &intermediate_result_tables_[result_table_id];
-      for (auto& row : *result_table) {
-        row.push_back(pkb_->GetCalledProcedure(row[column_id]));
-      }
-      intermediate_column_header_[selected_syn.first] =
-          make_pair(result_table_id, (*result_table).front().size() - 1);
-      intermediate_result_tables_modified = true;
       break;
     }
     case PqlDeclarationEntity::kWhile:
@@ -175,48 +183,64 @@ bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
       break;
     case PqlDeclarationEntity::kReadName: {
       string read_stmt = selected_syn.first.substr(1);
-      if (!intermediate_column_header_.count(read_stmt)) {
-        // add an intermediate result table for the corresponding read_stmt if
-        // it does not exist in any intermediate result table
-        if (!AddSelectAllResult(
-                make_pair(read_stmt, PqlDeclarationEntity::kRead))) {
-          return false;
+      Synonym read_syn = make_pair(read_stmt, PqlDeclarationEntity::kRead);
+      if (find(selections_list_.begin(), selections_list_.end(), read_syn) !=
+          selections_list_.end()) {
+        // if read_stmt is also selected, make sure there is a table containing
+        // read_stmt first, then add a column of read_var
+        if (!intermediate_column_header_.count(read_stmt)) {
+          // add an intermediate result table for the corresponding read_stmt if
+          // it does not exist in any intermediate result table
+          if (!AddSelectAllResult(read_syn)) {
+            return false;
+          }
         }
+        // get the corresponding read.varName for each row and add them as a
+        // column
+        int result_table_id = intermediate_column_header_[read_stmt].first;
+        int column_id = intermediate_column_header_[read_stmt].second;
+        ResultTable* result_table =
+            &intermediate_result_tables_[result_table_id];
+        for (auto& row : *result_table) {
+          row.push_back(pkb_->GetReadVar(row[column_id]));
+        }
+        intermediate_column_header_[selected_syn.first] =
+            make_pair(result_table_id, (*result_table).front().size() - 1);
+        intermediate_result_tables_modified = true;
+      } else {
+        query_result_list = pkb_->GetAllReadVar();
       }
-      // get the corresponding read.varName for each row and add them as a
-      // column
-      int result_table_id = intermediate_column_header_[read_stmt].first;
-      int column_id = intermediate_column_header_[read_stmt].second;
-      ResultTable* result_table = &intermediate_result_tables_[result_table_id];
-      for (auto& row : *result_table) {
-        row.push_back(pkb_->GetReadVar(row[column_id]));
-      }
-      intermediate_column_header_[selected_syn.first] =
-          make_pair(result_table_id, (*result_table).front().size() - 1);
-      intermediate_result_tables_modified = true;
       break;
     }
     case PqlDeclarationEntity::kPrintName: {
       string print_stmt = selected_syn.first.substr(1);
-      if (!intermediate_column_header_.count(print_stmt)) {
-        // add an intermediate result table for the corresponding print_stmt if
-        // it does not exist in any intermediate result table
-        if (!AddSelectAllResult(
-                make_pair(print_stmt, PqlDeclarationEntity::kPrint))) {
-          return false;
+      Synonym print_syn = make_pair(print_stmt, PqlDeclarationEntity::kPrint);
+      if (find(selections_list_.begin(), selections_list_.end(), print_syn) !=
+          selections_list_.end()) {
+        // if print_stmt is also selected, make sure there is a table containing
+        // print_stmt first, then add a column of print_var
+        if (!intermediate_column_header_.count(print_stmt)) {
+          // add an intermediate result table for the corresponding print_stmt
+          // if it does not exist in any intermediate result table
+          if (!AddSelectAllResult(print_syn)) {
+            return false;
+          }
         }
+        // get the corresponding print.varName for each row and add them as a
+        // column
+        int result_table_id = intermediate_column_header_[print_stmt].first;
+        int column_id = intermediate_column_header_[print_stmt].second;
+        ResultTable* result_table =
+            &intermediate_result_tables_[result_table_id];
+        for (auto& row : *result_table) {
+          row.push_back(pkb_->GetPrintVar(row[column_id]));
+        }
+        intermediate_column_header_[selected_syn.first] =
+            make_pair(result_table_id, (*result_table).front().size() - 1);
+        intermediate_result_tables_modified = true;
+      } else {
+        query_result_list = pkb_->GetAllPrintVar();
       }
-      // get the corresponding print.varName for each row and add them as a
-      // column
-      int result_table_id = intermediate_column_header_[print_stmt].first;
-      int column_id = intermediate_column_header_[print_stmt].second;
-      ResultTable* result_table = &intermediate_result_tables_[result_table_id];
-      for (auto& row : *result_table) {
-        row.push_back(pkb_->GetPrintVar(row[column_id]));
-      }
-      intermediate_column_header_[selected_syn.first] =
-          make_pair(result_table_id, (*result_table).front().size() - 1);
-      intermediate_result_tables_modified = true;
       break;
     }
   }
