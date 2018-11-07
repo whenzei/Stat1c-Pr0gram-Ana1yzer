@@ -166,17 +166,25 @@ const EntitySet next_t_second = {
 
 // Affects
 const EntitySet affects_first = {PqlDeclarationEntity::kAssign,
+								 PqlDeclarationEntity::kStmt,
+								 PqlDeclarationEntity::kProgline,
                                  PqlDeclarationEntity::kUnderscore,
                                  PqlDeclarationEntity::kInteger};
 const EntitySet affects_second = {PqlDeclarationEntity::kAssign,
+								 PqlDeclarationEntity::kStmt,
+								 PqlDeclarationEntity::kProgline,
                                   PqlDeclarationEntity::kUnderscore,
                                   PqlDeclarationEntity::kInteger};
 
 // AffectsT
 const EntitySet affects_t_first = {PqlDeclarationEntity::kAssign,
+								  PqlDeclarationEntity::kStmt,
+								  PqlDeclarationEntity::kProgline,
                                    PqlDeclarationEntity::kUnderscore,
                                    PqlDeclarationEntity::kInteger};
 const EntitySet affects_t_second = {PqlDeclarationEntity::kAssign,
+								    PqlDeclarationEntity::kStmt,
+								    PqlDeclarationEntity::kProgline,
                                     PqlDeclarationEntity::kUnderscore,
                                     PqlDeclarationEntity::kInteger};
 
