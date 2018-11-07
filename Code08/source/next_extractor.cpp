@@ -148,14 +148,18 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
 
 NextTMap NextExtractor::GetNextTMap() {
   if (next_t_table_.IsEmpty()) {
-    StmtNumList prev_list = pkb_->GetAllPrevious();
-    StmtNumPairList res_list;
-
-    for (auto& prev : prev_list) {
-      BFSSetNextTTables(prev);
-    }
+    SetNextTTables();
   }
   return next_t_table_.GetAdjSet();
+}
+
+void NextExtractor::SetNextTTables() {
+  StmtNumList prev_list = pkb_->GetAllPrevious();
+  StmtNumPairList res_list;
+
+  for (auto& prev : prev_list) {
+    BFSSetNextTTables(prev);
+  }
 }
 
 void NextExtractor::BFSSetNextTTables(StmtNum start) {
@@ -186,4 +190,64 @@ void NextExtractor::BFSSetNextTTables(StmtNum start) {
       }
     }
   }
+}
+
+/* Helper API for PQLEvaluator to call specific typed NextT table */
+
+NextTMap NextExtractor::GetAssignNextTMap() {
+  return GetTypedNextTMap(StmtType::kAssign);
+}
+
+NextTMap NextExtractor::GetWhileNextTMap() {
+  return GetTypedNextTMap(StmtType::kWhile);
+}
+
+NextTMap NextExtractor::GetIfNextTMap() {
+  return GetTypedNextTMap(StmtType::kIf);
+}
+
+NextTMap NextExtractor::GetCallNextTMap() {
+  return GetTypedNextTMap(StmtType::kCall);
+}
+
+NextTMap NextExtractor::GetReadNextTMap() {
+  return GetTypedNextTMap(StmtType::kRead);
+}
+
+NextTMap NextExtractor::GetPrintNextTMap() {
+  return GetTypedNextTMap(StmtType::kPrint);
+}
+
+NextTMap NextExtractor::GetTypedNextTMap(StmtType type) {
+  if (next_t_table_.IsEmpty()) {
+    SetNextTTables();
+  }
+  NextTMap result;
+  StmtNumList stmts;
+
+  switch (type) {
+    case StmtType::kAssign:
+      stmts = pkb_->GetAllAssignStmt();
+      break;
+    case StmtType::kCall:
+      stmts = pkb_->GetAllCallStmt();
+      break;
+    case StmtType::kIf:
+      stmts = pkb_->GetAllIfStmt();
+      break;
+    case StmtType::kPrint:
+      stmts = pkb_->GetAllPrintStmt();
+      break;
+    case StmtType::kRead:
+      stmts = pkb_->GetAllReadStmt();
+      break;
+    case StmtType::kWhile:
+      stmts = pkb_->GetAllWhileStmt();
+  }
+
+  for (auto& stmt : stmts) {
+    result.emplace(next_t_table_.GetAdjSet()[stmt]);
+  }
+
+  return result;
 }

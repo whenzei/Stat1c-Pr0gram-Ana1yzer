@@ -13,7 +13,10 @@ class NextExtractor {
   NextTTable next_t_table_;
   NextTTable previous_t_table_;
 
+  void SetNextTTables();
   void BFSSetNextTTables(StmtNum start);
+
+  NextTMap GetTypedNextTMap(StmtType type);
 
  public:
   NextExtractor();
@@ -37,6 +40,14 @@ class NextExtractor {
   // Get the NextT mapping of the whole program
   // @returns a hashmap of <key> StmtNum <value> set of all nextT StmtNums
   NextTMap GetNextTMap();
+
+  /* Helper API for PQLEvaluator to call specific typed NextT table */
+  NextTMap GetAssignNextTMap();
+  NextTMap GetWhileNextTMap();
+  NextTMap GetIfNextTMap();
+  NextTMap GetCallNextTMap();
+  NextTMap GetReadNextTMap();
+  NextTMap GetPrintNextTMap();
 };
 
 #endif  // !NEXT_EXTRACTOR_H
