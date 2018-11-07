@@ -127,8 +127,11 @@ TEST_CLASS(TestPkbPqlExtractor) {
     expected_result_1.emplace(1, VertexSet{1, 2, 3, 4, 5, 6});
     expected_result_1.emplace(2, VertexSet{1, 2, 3, 4, 5, 6});
     expected_result_1.emplace(3, VertexSet{1, 2, 3, 4, 5, 6});
-    expected_result_1.emplace(4, VertexSet{1, 2, 3});
+    expected_result_1.emplace(4, VertexSet{1, 2, 3, 4, 5, 6});
     expected_result_1.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
+
+    // add empty set for vertices without nextT
+    expected_result_1.emplace(6, VertexSet());
 
     Assert::IsTrue(expected_result_1 == actual_result_1);
   }
@@ -139,8 +142,9 @@ TEST_CLASS(TestPkbPqlExtractor) {
     // Assign stmt
     NextTMap actual_result_1 = extractor.GetAssignNextTMap();
     NextTMap expected_result_1;
-    // only 5 is assign stmt
+    // both 5 and 6 are assign stmts, but only 5 have nextTs
     expected_result_1.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(6, VertexSet());
     Assert::IsTrue(expected_result_1 == actual_result_1);
 
     // While stmt + test caching, should be fast
@@ -160,9 +164,9 @@ TEST_CLASS(TestPkbPqlExtractor) {
     // Read stmt + test caching, should be fast
     NextTMap actual_result_4 = extractor.GetReadNextTMap();
     NextTMap expected_result_4;
-    // boyh 3 and 5 are read stmts
+    // both 3 and 4 are read stmts
     expected_result_4.emplace(3, VertexSet{1, 2, 3, 4, 5, 6});
-    expected_result_4.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_4.emplace(4, VertexSet{1, 2, 3, 4, 5, 6});
     Assert::IsTrue(expected_result_4 == actual_result_4);
 
     // Negative tests, should have no calls
