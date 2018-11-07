@@ -366,9 +366,19 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     }
   }
 
-  // 9. Check if parameters are acceptable for the type
+  // 9. Early termination for Follows, Follows*, Parent, Parent*, Next if both syns params are same
+  if (suchthat_type == PqlSuchthatType::kFollows || suchthat_type == PqlSuchthatType::kFollowsT || 
+  suchthat_type == PqlSuchthatType::kParent || suchthat_type == PqlSuchthatType::kParentT || 
+  suchthat_type == PqlSuchthatType::kNext) {
+    if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore && first == second) {
+      error_message_ = "Follows, Follows*, Parent, Parent*, Next, can not have both params being same synonym.";
+      return false;
+    }
+  }
+
+  // 10. Check if parameters are acceptable for the type
   SuchthatParameters acceptable_parameters = suchthat_table.at(suchthat_type);
-  // 9.1 Check first parameter
+  // 10.1 Check first parameter
   if (acceptable_parameters.first.find(first_type) ==
       acceptable_parameters.first.end()) {
     error_message_ =
@@ -376,7 +386,7 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     return false;
   }
 
-  // 9.2 Check second parameter
+  // 10.2 Check second parameter
   if (acceptable_parameters.second.find(second_type) ==
       acceptable_parameters.second.end()) {
     error_message_ =
@@ -384,7 +394,7 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     return false;
   }
 
-  // 9. Create such that object
+  // 11. Create such that object
   PqlClause* clause = new PqlSuchthat(suchthat_type, first, first_type, second, second_type);
   if (first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger || 
   first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) {
@@ -849,7 +859,15 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   }
 
   // 9. If left and right is the same then ignore the clause
-  if (left == right && left_type == right_type) return true;
+  if (left_type == right_type) {
+    if (left == right) return true;
+    if (left_type == PqlDeclarationEntity::kInteger || left_type == PqlDeclarationEntity::kIdent) {
+      if (left != right) {
+        error_message_ = "With clause of both INTEGER params or IDENT params evaluate to false.";
+        return false;
+      }
+    }
+  }
 
   // 10. Create with clause
   PqlClause* clause = new PqlWith(left, left_type, right, right_type);

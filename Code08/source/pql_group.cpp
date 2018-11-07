@@ -28,7 +28,9 @@ void PqlGroup::SortClauses() {
         synonym_map_.at(first).insert(i);
       }
       else {
-        synonym_map_.insert(std::make_pair(first, unordered_set<int>({i})));
+        unordered_set<int> set;
+        set.insert(i);
+        synonym_map_.insert(std::make_pair(first, set));
       }
     }
     if (second != "") {
@@ -36,7 +38,9 @@ void PqlGroup::SortClauses() {
         synonym_map_.at(second).insert(i);
       }
       else {
-        synonym_map_.insert(std::make_pair(second, unordered_set<int>({i})));
+        unordered_set<int> set;
+        set.insert(i);
+        synonym_map_.insert(std::make_pair(second, set));
       }
     }
 

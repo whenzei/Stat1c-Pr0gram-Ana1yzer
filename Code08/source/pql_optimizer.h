@@ -27,13 +27,16 @@ private:
   // Collection of selected synonyms
   unordered_set<string> selections_;
 
+  // Map to track synonym with constrains, e.g. s.stmt# = 1
+  unordered_map<string, pair<string, PqlDeclarationEntity>> synonym_with_;
+
   // @return true if a clause uses a synonym that is selected
   bool ClauseUsesSelection(PqlClause*);
 
 public:
   PqlOptimizer();
   vector<PqlGroup> Optimize();
-  void AddUnion(PqlClause*, string, PqlDeclarationEntity, string = "", PqlDeclarationEntity = PqlDeclarationEntity::kNone);
+  bool AddUnion(PqlClause*, string, PqlDeclarationEntity, string = "", PqlDeclarationEntity = PqlDeclarationEntity::kNone);
   void AddSelection(string);
 };
 
