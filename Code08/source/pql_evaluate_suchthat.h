@@ -10,9 +10,9 @@
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
-#include "pql_extractor.h"
 
 using std::list;
 using std::string;
@@ -173,7 +173,7 @@ class PqlEvaluateSuchthat {
   void EvaluateAffectsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
 
-    /**
+  /**
    * Evaluate AffectsBip clause and store result in PqlResult table
    * @param The evaluator and affectsbip clause in the Query and arrangement of
    * clause arguments
@@ -234,6 +234,15 @@ class PqlEvaluateSuchthat {
       PqlResultFilterType filter_type,
       QueryResultPairList unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+
+  /**
+   * Filter the table based on the variable entity type
+   * @param unfiltered list and variable entity type (e.g constant)
+   * @returns map that only contains result of a certain
+   * entity type
+   */
+  AffectsMap FilterNextTTable(AffectsMap unfiltered_result,
+                                       PqlDeclarationEntity filter_type);
 };
 
 #endif  // !PQL_EVALUATE_SUCHTHAT_H

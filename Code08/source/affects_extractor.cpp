@@ -8,6 +8,10 @@ AffectsExtractor::AffectsExtractor(PKB* pkb) {
   has_set_affects_t_tables_ = false;
   has_set_affects_bip_tables_ = false;
   has_set_affects_bip_t_tables_ = false;
+  has_checked_affects_relationship_ = false;
+
+  has_affects_relationship_ = false;
+
   affects_table_ = AffectsTable();
   affects_t_table_ = AffectsTable();
   affects_bip_table_ = AffectsTable();
@@ -98,6 +102,33 @@ bool AffectsExtractor::DfsIsAffects(Vertex curr, Vertex target,
   VertexList neighbours = cfg->GetNeighboursList(curr);
   for (Vertex& neighbour : neighbours) {
     if (DfsIsAffects(neighbour, target, affects_var, cfg, visited)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**** Affects(_, _) methods ****/
+
+bool AffectsExtractor::HasAffectsRelationship() {
+  // already pre-cached
+  if (has_set_affects_tables_) {
+    return !affects_table_.IsEmpty();
+  }
+
+  if (has_checked_affects_relationship_) {
+    return has_affects_relationship_;
+  }
+
+  has_checked_affects_relationship_ = true;
+
+  // else check if any assign stmts affects with early termination
+  StmtNumList assign_stmts = pkb_->GetAllAssignStmt();
+  for (auto& assign_stmt : assign_stmts) {
+    has_affects_relationship_ =
+        has_affects_relationship_ || IsAffects(assign_stmt);
+    if (has_affects_relationship_) {
       return true;
     }
   }
@@ -777,24 +808,20 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
                                            AffectsTable* abt,
                                            VisitedMap* visited, LastModMap lmm,
                                            VisitedCountMap vcm, CFG* cfg) {
-  StmtType stmt_type = pkb_->GetStmtType(v);
-  // only return when hit while loop a second time and last_while_mod_map_ is
-  // stable
-
-  // update wlmm
-  if (stmt_type == StmtType::kWhile) {
-    if (vcm.count(v)) {
-      if (vcm[v] < 2) {
-        vcm[v] += 1;
-      } else {
-        return;
-      }
+  // return if this is the third time reaching this vertex
+  if (vcm.count(v)) {
+    if (vcm[v] < 2) {
+      vcm[v] += 1;
     } else {
-      vcm.emplace(v, 1);
+      return;
     }
+  } else {
+    vcm.emplace(v, 1);
   }
 
   visited->emplace(v, true);
+
+  StmtType stmt_type = pkb_->GetStmtType(v);
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var

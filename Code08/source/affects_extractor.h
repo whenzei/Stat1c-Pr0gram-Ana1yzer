@@ -17,6 +17,10 @@ class AffectsExtractor {
   bool has_set_affects_t_tables_;
   bool has_set_affects_bip_tables_;
   bool has_set_affects_bip_t_tables_;
+  bool has_checked_affects_relationship_;
+
+  bool has_affects_relationship_;  // cache for Affects(_, _)
+
   AffectsTable affects_table_;
   AffectsTable affects_t_table_;
   AffectsTable affected_by_table_;
@@ -49,7 +53,6 @@ class AffectsExtractor {
 
   AffectsTable GetAffectsBipTTable();
   AffectsTable GetAffectedByBipTTable();
-
 
   /* SETTER METHODS */
   // Sets the affects_table_ and affected_by_table_ of this class
@@ -130,8 +133,8 @@ class AffectsExtractor {
   // @params: CFG* pointer to cfg to run DFS on
   void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
                            AffectsTable* affected_by_table, VisitedMap* visited,
-                           LastModMap last_mod_map,
-                           VisitedCountMap vcm, CFG* cfg);
+                           LastModMap last_mod_map, VisitedCountMap vcm,
+                           CFG* cfg);
 
   // @returns true if StmtType is either kAssign, kCall, or kRead
   bool IsModifyingType(StmtType stmt_type);
@@ -144,7 +147,7 @@ class AffectsExtractor {
    * IsAffects *
    *************/
 
-  // @returns true if Affects(stmt_1, stmt_2) holds, else false
+  // @returns true if Affects(stmt_1, stmt_2) holds, otherwise false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns true if stmt affects any statement
@@ -152,6 +155,10 @@ class AffectsExtractor {
 
   // @returns true if stmt is affected by any statement
   bool IsAffected(StmtNum stmt, bool is_bip = false);
+
+  // Can be used to check for all Affects/*(_,_) and AffectsBip/*(_,_)
+  // @returns true if Affects(_, _) holds, otherwise false
+  bool HasAffectsRelationship();
 
   // @returns a list of n that Affects(stmt_1, n) holds true
   VertexSet GetAffects(StmtNum stmt_1, bool is_bip = false);

@@ -117,33 +117,61 @@ TEST_CLASS(TestPkbPqlExtractor) {
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
-  TEST_METHOD(TestGetNextTPair) {
+  TEST_METHOD(TestGetNextTMap) {
     PqlExtractor extractor = PqlExtractor(&pkb7);
 
     // Positive
-    StmtNumPairList test_result_1 = extractor.GetAllNextTPairs();
-    std::set<pair<int, int>> test_result_1_set;
-    for (pair<int, int> res : test_result_1) {
-      test_result_1_set.emplace(res);
-    }
+    NextTMap actual_result_1 = extractor.GetNextTMap();
+    NextTMap expected_result_1;
 
-    StmtNumPairList expected_result_1 = StmtNumPairList{
-        make_pair(1, 2), make_pair(1, 3), make_pair(1, 4), make_pair(1, 5),
-        make_pair(1, 1), make_pair(1, 6), make_pair(2, 3), make_pair(2, 4),
-        make_pair(2, 5), make_pair(2, 1), make_pair(2, 2), make_pair(2, 6),
-        make_pair(3, 3), make_pair(3, 2), make_pair(3, 4), make_pair(3, 5),
-        make_pair(3, 1), make_pair(3, 6), make_pair(4, 4), make_pair(4, 5),
-        make_pair(4, 6), make_pair(4, 1), make_pair(4, 2), make_pair(4, 3),
-        make_pair(5, 5), make_pair(5, 1), make_pair(5, 2), make_pair(5, 3),
-        make_pair(5, 4), make_pair(5, 6)};
+    expected_result_1.emplace(1, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(2, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(3, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(4, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
 
-    std::set<pair<int, int>> expected_result_1_set;
+    // add empty set for vertices without nextT
+    expected_result_1.emplace(6, VertexSet());
 
-    for (pair<int, int> res : expected_result_1) {
-      expected_result_1_set.emplace(res);
-    }
+    Assert::IsTrue(expected_result_1 == actual_result_1);
+  }
 
-    Assert::IsTrue(expected_result_1_set == test_result_1_set);
+  TEST_METHOD(TestGetTypedNextTMap) {
+    PqlExtractor extractor = PqlExtractor(&pkb7);
+
+    // Assign stmt
+    NextTMap actual_result_1 = extractor.GetAssignNextTMap();
+    NextTMap expected_result_1;
+    // both 5 and 6 are assign stmts, but only 5 have nextTs
+    expected_result_1.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_1.emplace(6, VertexSet());
+    Assert::IsTrue(expected_result_1 == actual_result_1);
+
+    // While stmt + test caching, should be fast
+    NextTMap actual_result_2 = extractor.GetWhileNextTMap();
+    NextTMap expected_result_2;
+    // only 1 is while stmt
+    expected_result_2.emplace(1, VertexSet{1, 2, 3, 4, 5, 6});
+    Assert::IsTrue(expected_result_2 == actual_result_2);
+
+    // If stmt + test caching, should be fast
+    NextTMap actual_result_3 = extractor.GetIfNextTMap();
+    NextTMap expected_result_3;
+    // only 2 is if stmt
+    expected_result_3.emplace(2, VertexSet{1, 2, 3, 4, 5, 6});
+    Assert::IsTrue(expected_result_3 == actual_result_3);
+
+    // Read stmt + test caching, should be fast
+    NextTMap actual_result_4 = extractor.GetReadNextTMap();
+    NextTMap expected_result_4;
+    // both 3 and 4 are read stmts
+    expected_result_4.emplace(3, VertexSet{1, 2, 3, 4, 5, 6});
+    expected_result_4.emplace(4, VertexSet{1, 2, 3, 4, 5, 6});
+    Assert::IsTrue(expected_result_4 == actual_result_4);
+
+    // Negative tests, should have no calls
+    NextTMap actual_result_5 = extractor.GetCallNextTMap();
+    Assert::IsTrue(actual_result_5 == NextTMap());
   }
 
   /* AffectsExtractor - Affects Tests */
