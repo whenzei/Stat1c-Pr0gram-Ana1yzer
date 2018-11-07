@@ -273,14 +273,14 @@ FinalResult PqlProjector::GetFinalResult(
   if (!bool_result_so_far) {
     if (selections.empty()) {
       // case 1: select boolean and the query evaluates to false
-      final_result_.push_back("false");
+      final_result_.push_back("FALSE");
     }
     // case 2: select synonym and the query has empty result (return empty final
     // result list)
     return final_result_;
   } else if (selections.empty()) {
     // case 3: select boolean and the query evaluates to true
-    final_result_.push_back("true");
+    final_result_.push_back("TRUE");
     return final_result_;
   }
 
