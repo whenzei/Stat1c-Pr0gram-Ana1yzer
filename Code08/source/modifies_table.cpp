@@ -8,14 +8,14 @@ using std::make_pair;
 void ModifiesTable::InsertModifiesS(StmtNum stmt_num, VarIndex var_id) {
   modifying_stmt_set_.insert(stmt_num);
   modifies_s_map_[stmt_num].insert(var_id);
-  modified_by_s_map_[var_name_id].insert(stmt_num);
+  modified_by_s_map_[var_id].insert(stmt_num);
 }
 
 void ModifiesTable::InsertModifiesP(ProcIndex proc_id,
                                     VarIndex var_id) {
-  modifying_proc_set_.insert(proc_id).second);
-  modifies_p_map_[proc_name_id].insert(var_id);
-  modified_by_p_map_[var_name_id].insert(proc_name_id);
+  modifying_proc_set_.insert(proc_id);
+  modifies_p_map_[proc_id].insert(var_id);
+  modified_by_p_map_[var_id].insert(proc_id);
 }
 
 bool ModifiesTable::IsModifiedByS(StmtNum stmt_num, VarIndex var_id) {
