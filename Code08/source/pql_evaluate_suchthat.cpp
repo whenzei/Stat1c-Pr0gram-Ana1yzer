@@ -1856,11 +1856,11 @@ NextTMap PqlEvaluateSuchthat::FilterNextTTable(
   }
 
   for (auto& kv : result_map) {
-    StmtNumSet stmts = kv.second;
-    auto iterator = stmts.begin();
-    while (iterator != stmts.end()) {
+    StmtNumSet* stmts = &kv.second;
+    auto iterator = stmts->begin();
+    while (iterator != stmts->end()) {
       if (pkb_->GetStmtType(*iterator) != entity_type) {
-        iterator = stmts.erase(iterator);
+        iterator = stmts->erase(iterator);
       } else {
         iterator++;
       }
