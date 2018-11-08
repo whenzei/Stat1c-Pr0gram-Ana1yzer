@@ -5,8 +5,8 @@
 int VarList::InsertVarName(VarName var_name) {
   if (var_index_map_.find(var_name) == var_index_map_.end()) {
     int index = var_count_++;
-    var_index_list_.push_back(index);
-    var_index_twin_list_.push_back(make_pair(index, index));
+    var_index_set_.insert(index);
+    var_index_twin_set_.insert(make_pair(index, index));
     var_index_map_[var_name] = index;
     index_var_map_[index] = var_name;
     return index;
@@ -23,30 +23,26 @@ void VarList::InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type,
   switch (stmt_type) {
     case PqlDeclarationEntity::kRead:
       read_var_map_[stmt_num] = var_id;
-      var_read_map_[var_id].push_back(stmt_num);
-      if (read_var_set_.insert(var_id).second) {
-        read_var_list_.push_back(var_id);
-        read_var_twin_list_.push_back(make_pair(var_id, var_id));
-      }
+      var_read_map_[var_id].insert(stmt_num);
+      read_var_set_.insert(var_id);
+      read_var_twin_set_.insert(make_pair(var_id, var_id));
       break;
     case PqlDeclarationEntity::kPrint:
       print_var_map_[stmt_num] = var_id;
-      var_print_map_[var_id].push_back(stmt_num);
-      if (print_var_set_.insert(var_id).second) {
-        print_var_list_.push_back(var_id);
-        print_var_twin_list_.push_back(make_pair(var_id, var_id));
-      }
+      var_print_map_[var_id].insert(stmt_num);
+      print_var_set_.insert(var_id);
+      print_var_twin_set_.insert(make_pair(var_id, var_id));
       break;
   }
 }
 
-VarIndexList VarList::GetAllVarIndices() { return var_index_list_; }
+VarIndexSet VarList::GetAllVarIndices() { return var_index_set_; }
 
 bool VarList::IsVarIndex(VarIndex var_id) {
   return index_var_map_.find(var_id) != index_var_map_.end();
 }
 
-VarIndexPairList VarList::GetAllVarIndexTwin() { return var_index_twin_list_; }
+VarIndexPairSet VarList::GetAllVarIndexTwin() { return var_index_twin_set_; }
 
 bool VarList::IsVarName(VarName var_name) {
   return var_index_map_.find(var_name) != var_index_map_.end();
@@ -92,16 +88,16 @@ VarIndex VarList::GetPrintVar(StmtNum stmt_num) {
   }
 }
 
-StmtNumList VarList::GetReadStmt(VarIndex var_id) {
-  StmtNumList stmt_num_list;
+StmtNumSet VarList::GetReadStmt(VarIndex var_id) {
+  StmtNumSet stmt_num_list;
   if (var_read_map_.count(var_id)) {
     stmt_num_list = var_read_map_[var_id];
   }
   return stmt_num_list;
 }
 
-StmtNumList VarList::GetPrintStmt(VarIndex var_id) {
-  StmtNumList stmt_num_list;
+StmtNumSet VarList::GetPrintStmt(VarIndex var_id) {
+  StmtNumSet stmt_num_list;
   if (var_print_map_.count(var_id)) {
     stmt_num_list = var_print_map_[var_id];
   }
@@ -116,10 +112,10 @@ bool VarList::IsPrintVar(VarIndex var_id) {
   return print_var_set_.find(var_id) != print_var_set_.end();
 }
 
-VarIndexList VarList::GetAllReadVar() { return read_var_list_; }
+VarIndexSet VarList::GetAllReadVar() { return read_var_set_; }
 
-VarIndexList VarList::GetAllPrintVar() { return print_var_list_; }
+VarIndexSet VarList::GetAllPrintVar() { return print_var_set_; }
 
-VarIndexPairList VarList::GetAllReadVarTwin() { return read_var_twin_list_; }
+VarIndexPairSet VarList::GetAllReadVarTwin() { return read_var_twin_set_; }
 
-VarIndexPairList VarList::GetAllPrintVarTwin() { return print_var_twin_list_; }
+VarIndexPairSet VarList::GetAllPrintVarTwin() { return print_var_twin_set_; }

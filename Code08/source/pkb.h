@@ -63,17 +63,17 @@ class PKB {
 
   // get all procedure names stored inside procedure list
   // @returns the list of procedure names (can be empty)
-  ProcNameList GetAllProcNames();
+  ProcNameSet GetAllProcNames();
 
   // get all procedure indices stored inside procedure list
   // @returns the list of procedure indices (can be empty)
-  ProcIndexList GetAllProcIndices();
+  ProcIndexSet GetAllProcIndices();
 
   // @returns the list of <p_id, p_id> (same proc index repeated twice)
-  ProcIndexPairList GetAllProcIndexTwin();
+  ProcIndexPairSet GetAllProcIndexTwin();
 
   // @returns the list of <p_name, p_name> (same proc name repeated twice)
-  ProcNamePairList GetAllProcNameTwin();
+  ProcNamePairSet GetAllProcNameTwin();
 
   // @return the procedure name-index map
   ProcIndexMap GetProcToIndexMapping();
@@ -89,10 +89,10 @@ class PKB {
 
   // get all variable indices stored inside variable list
   // @returns the list of variable indices (can be empty)
-  VarIndexList GetAllVarIndices();
+  VarIndexSet GetAllVarIndices();
 
   // @returns the list of <v, v> (same v repeated twice)
-  VarIndexPairList GetAllVarIndexTwin();
+  VarIndexPairSet GetAllVarIndexTwin();
 
   // @return the variable name-index map
   VarIndexMap GetVarToIndexMapping();
@@ -113,10 +113,10 @@ class PKB {
   VarIndex GetPrintVar(StmtNum stmt_num);
 
   // @returns the variable modified in stmt_num if it is a read stmt
-  StmtNumList GetReadStmt(VarName var_name);
+  StmtNumSet GetReadStmt(VarName var_name);
 
   // @returns the variable used in stmt_num if it is a print stmt
-  StmtNumList GetPrintStmt(VarName var_name);
+  StmtNumSet GetPrintStmt(VarName var_name);
 
   // @returns true if var_name is modified in any read stmt
   bool IsReadVar(VarName var_name);
@@ -125,25 +125,25 @@ class PKB {
   bool IsPrintVar(VarName var_name);
 
   // @returns a list of all variables modified in some read stmt
-  VarIndexList GetAllReadVar();
+  VarIndexSet GetAllReadVar();
 
   // @returns a list of all variables used in some print stmt
-  VarIndexList GetAllPrintVar();
+  VarIndexSet GetAllPrintVar();
 
   // @returns a list of all variables modified in some read stmt (repeat each
   // var_id to form a pair)
-  VarIndexPairList GetAllReadVarTwin();
+  VarIndexPairSet GetAllReadVarTwin();
 
   // @returns a list of all variables used in some print stmt (repeat each
   // var_id to form a pair)
-  VarIndexPairList GetAllPrintVarTwin();
+  VarIndexPairSet GetAllPrintVarTwin();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
-  ConstValueList GetAllConstValue();
+  ConstValueSet GetAllConstValue();
 
   // @returns the list of <c, c> (same c repeated twice)
-  ConstValuePairList GetAllConstValueTwin();
+  ConstValuePairSet GetAllConstValueTwin();
 
   // @returns a PqlDeclarationEntity enum to represent the statement type
   // (assign/while/if/read/print)
@@ -231,57 +231,57 @@ class PKB {
   // Inserts a next relationship between previous_stmt and next_stmt
   void InsertNext(ProcName proc_name, StmtNum previous_stmt, StmtNum next_stmt);
 
-  void SetAllNextPairs(StmtNumPairList next_pair_list);
+  void SetAllNextPairs(StmtNumPairSet next_pair_list);
 
   // get statement numbers for all statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllStmt();
+  StmtNumSet GetAllStmt();
 
   // @returns the list of <s, s> (same s repeated twice)
-  StmtNumPairList GetAllStmtTwin();
+  StmtNumPairSet GetAllStmtTwin();
 
   // get statement numbers for all assign statements stored inside stmt type
   // list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllAssignStmt();
+  StmtNumSet GetAllAssignStmt();
 
   // @returns the list of <a, a> (same a repeated twice)
-  StmtNumPairList GetAllAssignStmtTwin();
+  StmtNumPairSet GetAllAssignStmtTwin();
 
   // get statement numbers for all while statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllWhileStmt();
+  StmtNumSet GetAllWhileStmt();
 
   // @returns the list of <w, w> (same w repeated twice)
-  StmtNumPairList GetAllWhileStmtTwin();
+  StmtNumPairSet GetAllWhileStmtTwin();
 
   // get statement numbers for all if statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllIfStmt();
+  StmtNumSet GetAllIfStmt();
 
   // @returns the list of <ifs, ifs> (same ifs repeated twice)
-  StmtNumPairList GetAllIfStmtTwin();
+  StmtNumPairSet GetAllIfStmtTwin();
 
   // get statement numbers for all read statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllReadStmt();
+  StmtNumSet GetAllReadStmt();
 
   // @returns the list of <r, r> (same r repeated twice)
-  StmtNumPairList GetAllReadStmtTwin();
+  StmtNumPairSet GetAllReadStmtTwin();
 
   // get statement numbers for all print statements stored inside stmt type list
   // @returns the list of statement numbers(can be empty)
-  StmtNumList GetAllPrintStmt();
+  StmtNumSet GetAllPrintStmt();
 
   // @returns the list of <pr, pr> (same pr repeated twice)
-  StmtNumPairList GetAllPrintStmtTwin();
+  StmtNumPairSet GetAllPrintStmtTwin();
 
   // get stmt numbers for all call stmts inside the stmt type list
   // @returns the list of stmt numbers
-  StmtNumList GetAllCallStmt();
+  StmtNumSet GetAllCallStmt();
 
   // @returns the list of <call, call> (same call repeated twice)
-  StmtNumPairList GetAllCallStmtTwin();
+  StmtNumPairSet GetAllCallStmtTwin();
 
   /***********************
    * Is-A Functions *
@@ -333,31 +333,31 @@ class PKB {
   bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
   // @returns a list of all n's that satisfy Follows*(stmt_num, n)
-  StmtNumList GetFollowsT(StmtNum stmt_num);
+  StmtNumSet GetFollowsT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(stmt_num, n)
-  StmtNumList GetFollows(StmtNum stmt_num);
+  StmtNumSet GetFollows(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(_, n)
-  StmtNumList GetAllFollows();
+  StmtNumSet GetAllFollows();
 
   // @returns a list of all n's that satisfy Follows*(n, stmt_num)
-  StmtNumList GetFollowedByT(StmtNum stmt_num);
+  StmtNumSet GetFollowedByT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows(n, stmt_num)
-  StmtNumList GetFollowedBy(StmtNum stmt_num);
+  StmtNumSet GetFollowedBy(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Follows*(n, _)
-  StmtNumList GetAllFollowedBy();
+  StmtNumSet GetAllFollowedBy();
 
   // @returns true if Follows(_, _) holds
   bool HasFollowsRelationship();
 
   // @returns list of all pairs of <s1, s2> that satisfy Follows*(s1, s2)
-  StmtNumPairList GetAllFollowsTPair();
+  StmtNumPairSet GetAllFollowsTPair();
 
   // @returns list of all pairs of <s1, s2> that satisfy Follows(s1, s2)
-  StmtNumPairList GetAllFollowsPair();
+  StmtNumPairSet GetAllFollowsPair();
 
   /***********************
    * Parent Table Functions *
@@ -371,31 +371,31 @@ class PKB {
 
   // @returns a list of all n's that satisfy Parent(n, stmt_num)
   // only one element
-  StmtNumList GetParent(StmtNum stmt_num);
+  StmtNumSet GetParent(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Parent*(n, stmt_num)
-  StmtNumList GetParentT(StmtNum stmt_num);
+  StmtNumSet GetParentT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Parent(n, _)/Parent*(n, _)
-  StmtNumList GetAllParent();
+  StmtNumSet GetAllParent();
 
   // @returns a list of all n's that satisfy Parent(stmt_num, n)
-  StmtNumList GetChild(StmtNum stmt_num);
+  StmtNumSet GetChild(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Parent*(stmt_num, n)
-  StmtNumList GetChildT(StmtNum stmt_num);
+  StmtNumSet GetChildT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Parent(_, n)
-  StmtNumList GetAllChild();
+  StmtNumSet GetAllChild();
 
   // @returns true if Parent(_, _) holds
   bool HasParentRelationship();
 
   // @returns list of all pairs of <s1, s2> that satisfy Parent(s1, s2)
-  StmtNumPairList GetAllParentPair();
+  StmtNumPairSet GetAllParentPair();
 
   // @returns list of all pairs of <s1, s2> that satisfy Parent*(s1, s2)
-  StmtNumPairList GetAllParentTPair();
+  StmtNumPairSet GetAllParentTPair();
 
   /***********************
    * Modifies Table Functions *
@@ -411,64 +411,64 @@ class PKB {
   bool IsModifiedByP(ProcName proc_name, VarName var_name);
 
   // @returns a list of all n's that satisfy Modifies(stmt_num, n)
-  VarIndexList GetModifiedVarS(StmtNum stmt_num);
+  VarIndexSet GetModifiedVarS(StmtNum stmt_num);
 
   // @params proc_name the name of the procedure to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Modifies(proc_name, n)
-  VarIndexList GetModifiedVarP(ProcName proc_name);
+  VarIndexSet GetModifiedVarP(ProcName proc_name);
 
   // @params proc_id the id of the proc_name to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Modifies(proc_name, n)
-  VarIndexList GetModifiedVarP(ProcIndex proc_id);
+  VarIndexSet GetModifiedVarP(ProcIndex proc_id);
 
   // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, var_name)
-  StmtNumList GetModifyingS(VarName var_name);
+  StmtNumSet GetModifyingS(VarName var_name);
 
   // @returns a list of all indices of procedures that satisfy
   // Modifies(proc_name, var_name)
-  ProcIndexList GetModifyingP(VarName var_name);
+  ProcIndexSet GetModifyingP(VarName var_name);
 
   // @returns a list of all stmt_num's that satisfy Modifies(stmt_num, _)
-  StmtNumList GetAllModifyingS();
+  StmtNumSet GetAllModifyingS();
 
   // @returns a list of all proc_name's that satisfy Modifies(proc_name,
   // _)
-  ProcIndexList GetAllModifyingP();
+  ProcIndexSet GetAllModifyingP();
 
   // @returns a list of all pairs of <stmt_num, var_name> that satisfy
   // Modifies(stmt_num, var_name)
-  StmtVarIndexPairList GetAllModifiesPairS();
+  StmtVarPairSet GetAllModifiesPairS();
 
   // @returns a list of all pairs of <proc_name, var_name> that satisfy
   // Modifies(proc_name, var_name)
-  ProcVarPairList GetAllModifiesPairP();
+  ProcVarPairSet GetAllModifiesPairP();
 
   /***********************
    * Uses Table Functions *
    ***********************/
 
   // @returns a list of all n's that satisfy Uses(stmt_num, n)
-  VarIndexList GetUsedVarS(StmtNum stmt_num);
+  VarIndexSet GetUsedVarS(StmtNum stmt_num);
 
   // @params proc_name the name of the procedure to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Uses(proc_name, n)
-  VarIndexList GetUsedVarP(ProcName proc_name);
+  VarIndexSet GetUsedVarP(ProcName proc_name);
 
   // @params proc_id the id of the proc_name to check Uses(proc_name, n)
   // @returns a list of all n's that satisfy Uses(proc_name, n)
-  VarIndexList GetUsedVarP(ProcIndex proc_id);
+  VarIndexSet GetUsedVarP(ProcIndex proc_id);
 
   // @returns a list of all stmt_num's that satisfy Uses(stmt_num, _)
-  StmtNumList GetAllUsingStmt();
+  StmtNumSet GetAllUsingStmt();
 
   // @returns a list of all proc_name's that satisfy Uses(proc_name, _)
-  ProcIndexList GetAllUsingProc();
+  ProcIndexSet GetAllUsingProc();
 
   // @returns a list of all stmt_num's that satisfy Uses(stmt_num, var_name)
-  StmtNumList GetUsingStmt(VarName var_name);
+  StmtNumSet GetUsingStmt(VarName var_name);
 
   // @returns a list of all proc_name's that satisfy Uses(proc_name, var_name)
-  ProcIndexList GetUsingProc(VarName var_name);
+  ProcIndexSet GetUsingProc(VarName var_name);
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
@@ -494,33 +494,33 @@ class PKB {
   // @returns a list of a's that satisfy pattern a(var_name, _sub_expr_)
   // var_name can be an empty string, sub_expr can be an empty TokenList (to
   // represent underscore)
-  StmtNumList GetAssignWithPattern(VarName var_name, TokenList sub_expr);
+  StmtNumSet GetAssignWithPattern(VarName var_name, TokenList sub_expr);
 
   // @returns a list of a's that satisfy pattern a(var_name, exact_expr)
   // var_name can be an empty string (to represent underscore)
-  StmtNumList GetAssignWithExactPattern(VarName var_name, TokenList exact_expr);
+  StmtNumSet GetAssignWithExactPattern(VarName var_name, TokenList exact_expr);
 
   // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
   // _sub_expr_)
-  StmtVarPairList GetAllAssignPatternPair(TokenList sub_expr);
+  StmtVarPairSet GetAllAssignPatternPair(TokenList sub_expr);
 
   // @returns a list of all pairs of <a, v> that satisfy pattern a(v,
   // exact_expr)
-  StmtVarPairList GetAllAssignExactPatternPair(TokenList exact_expr);
+  StmtVarPairSet GetAllAssignExactPatternPair(TokenList exact_expr);
 
   // @returns a list of w's that satisfy pattern w(var_name, _)
   // var_name can be an empty string to represent underscore
-  StmtNumList GetWhileWithPattern(VarName var_name);
+  StmtNumSet GetWhileWithPattern(VarName var_name);
 
   // @returns a list of all pairs of <w, v> that satisfy pattern w(v, _)
-  StmtVarPairList GetAllWhilePatternPair();
+  StmtVarPairSet GetAllWhilePatternPair();
 
   // @returns a list of ifs' that satisfy pattern ifs(var_name, _)
   // var_name can be an empty string to represent underscore
-  StmtNumList GetIfWithPattern(VarName var_name);
+  StmtNumSet GetIfWithPattern(VarName var_name);
 
   // @returns a list of all pairs of <ifs, v> that satisfy pattern ifs(v, _)
-  StmtVarPairList GetAllIfPatternPair();
+  StmtVarPairSet GetAllIfPatternPair();
 
   /***********************
    * Call Table Functions *
@@ -548,7 +548,7 @@ class PKB {
   // Finds and returns a list of statement numbers calling the given proc.
   // @params proc index of the procedure being called
   // @returns a list of stmt numbers (can be empty)
-  StmtNumList GetCallingStmts(ProcIndex callee_proc_id);
+  StmtNumSet GetCallingStmts(ProcIndex callee_proc_id);
 
   // Finds and returns a list of pairs of all stmt numbers
   // and procedures called by that stmt number.
@@ -559,7 +559,7 @@ class PKB {
   // @params caller procedure index
   // @returns a list containing all direct callees' indices for given proc (can
   // be empty)
-  ProcIndexList GetCallee(ProcIndex caller_proc_id);
+  ProcIndexSet GetCallee(ProcIndex caller_proc_id);
 
   // Finds and returns all names of direct callees for given procedure.
   // @params caller procedure name
@@ -571,41 +571,41 @@ class PKB {
   // @params caller procedure index
   // @returns a list containing all callees' indices for given proc (can be
   // empty)
-  ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
+  ProcIndexSet GetCalleeT(ProcIndex caller_proc_id);
 
     // Finds and returns all indices of callees for given procedure.
   // @params caller procedure name
   // @returns a list containing all callees' indices for given proc (can be
   // empty)
-  ProcIndexList GetCalleeT(ProcName caller_proc);
+  ProcIndexSet GetCalleeT(ProcName caller_proc);
 
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure index
   // @returns a list containing all direct callers' indices for given proc (can
   // be empty)
-  ProcIndexList GetCaller(ProcIndex callee_proc_id);
+  ProcIndexSet GetCaller(ProcIndex callee_proc_id);
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure name
   // @returns a list containing all direct callers' indices for given proc (can
   // be empty)
-  ProcIndexList GetCaller(ProcName callee_proc);
+  ProcIndexSet GetCaller(ProcName callee_proc);
 
   // Finds and returns all indices of callers for given procedure.
   // @params callee procedure index
   // @returns a list containing all callers' indices for given proc (can be
   // empty)
-  ProcIndexList GetCallerT(ProcIndex callee_proc_id);
+  ProcIndexSet GetCallerT(ProcIndex callee_proc_id);
 
   // Finds and returns all indices of callers for given procedure.
   // @params callee procedure name
   // @returns a list containing all callers' indices for given proc (can be
   // empty)
-  ProcIndexList GetCallerT(ProcName callee_proc);
+  ProcIndexSet GetCallerT(ProcName callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)
-  ProcIndexList GetAllCaller();
+  ProcIndexSet GetAllCaller();
 
   // Special method to retrieve all caller procs in String format.
   // To be only used by DE when populating PKB.
@@ -613,7 +613,7 @@ class PKB {
   ProcNameList GetAllCallerName();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcIndexList GetAllCallee();
+  ProcIndexSet GetAllCallee();
 
   // Special method to retrieve all caller procs in String format.
   // To be only used by DE when populating PKB.
@@ -661,19 +661,19 @@ class PKB {
   bool IsPrevious(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Next(stmt_num, n)
-  StmtNumList GetNext(StmtNum stmt_num);
+  StmtNumSet GetNext(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Next(n, stmt_num)
-  StmtNumList GetPrevious(StmtNum stmt_num);
+  StmtNumSet GetPrevious(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Next(_, n)
-  StmtNumList GetAllNext();
+  StmtNumSet GetAllNext();
 
   // @returns a list of all n's that satisfy Next(n, _)
-  StmtNumList GetAllPrevious();
+  StmtNumSet GetAllPrevious();
 
   // @returns a list of all pairs of <n1, n2> that satisfy Next(n1, n2)
-  StmtNumPairList GetAllNextPairs();
+  StmtNumPairSet GetAllNextPairs();
 
   // @returns true if Next(_, _) holds
   bool HasNextRelationship();
@@ -735,19 +735,19 @@ class PKB {
   bool IsDominated(StmtNum stmt_num);
 
   // @returns a list of all s's that satisfy Dominates(s, stmt_num)
-  StmtNumList GetDominating(StmtNum stmt_num);
+  StmtNumSet GetDominating(StmtNum stmt_num);
 
   // @returns a list of all s's that satisfy Dominates(stmt_num, s)
-  StmtNumList GetDominated(StmtNum stmt_num);
+  StmtNumSet GetDominated(StmtNum stmt_num);
 
   // @returns a list of all s's that satisfy Dominates(s, _)
-  StmtNumList GetAllDominating();
+  StmtNumSet GetAllDominating();
 
   // @returns a list of all s's that satisfy Dominates(_, s)
-  StmtNumList GetAllDominated();
+  StmtNumSet GetAllDominated();
 
   // @returns a list of all pairs of <s1, s1> that satisfy Dominates(s1, s2)
-  StmtNumPairList GetAllDominatesPairs();
+  StmtNumPairSet GetAllDominatesPairs();
 
   // @returns true if Dominates(_, _) holds
   bool HasDominatesRelationship();

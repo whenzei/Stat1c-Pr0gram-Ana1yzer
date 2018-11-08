@@ -19,13 +19,11 @@ TEST_CLASS(TestConstList) {
     const_list.InsertConstValue(kConstValue3);
     // duplicate
     const_list.InsertConstValue(kConstValue1);
-    ConstValueList const_list_result = const_list.GetAllConstValue();
+    ConstValueSet const_list_result = const_list.GetAllConstValue();
     Assert::IsTrue(const_list_result.size() == 3);
-    Assert::AreEqual(kConstValue1, const_list_result.front());
-    ConstValueList::iterator iter = const_list_result.begin();
-    iter++;
-    Assert::AreEqual(kConstValue2, *iter);
-    Assert::AreEqual(kConstValue3, const_list_result.back());
+    Assert::IsTrue(const_list_result.count(kConstValue1));
+    Assert::IsTrue(const_list_result.count(kConstValue2));
+    Assert::IsTrue(const_list_result.count(kConstValue3));
   }
 
   TEST_METHOD(TestIsConstValue) {
@@ -43,12 +41,10 @@ TEST_CLASS(TestConstList) {
     const_list.InsertConstValue(kConstValue2);
     // duplicate
     const_list.InsertConstValue(kConstValue1);
-    ConstValuePairList const_list_result = const_list.GetAllConstValueTwin();
+    ConstValuePairSet const_list_result = const_list.GetAllConstValueTwin();
     Assert::IsTrue(const_list_result.size() == 2);
-    Assert::AreEqual(kConstValue1, const_list_result.front().first);
-    Assert::AreEqual(kConstValue1, const_list_result.front().second);
-    Assert::AreEqual(kConstValue2, const_list_result.back().first);
-    Assert::AreEqual(kConstValue2, const_list_result.back().second);
+    Assert::IsTrue(const_list_result.count(make_pair(kConstValue1, kConstValue1)));
+	Assert::IsTrue(const_list_result.count(make_pair(kConstValue2, kConstValue2)));
   }
 };
 }  // namespace PKBTests

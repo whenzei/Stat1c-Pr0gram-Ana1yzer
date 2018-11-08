@@ -3,12 +3,10 @@
 #ifndef SPA_STMT_TABLE_H
 #define SPA_STMT_TABLE_H
 
-#include <string>
 #include <unordered_map>
 #include "pql_global.h"
 
 using std::pair;
-using std::string;
 using std::unordered_map;
 
 // StmtNum is defined as int inside the PKB,
@@ -19,15 +17,15 @@ using StmtType = PqlDeclarationEntity;
 using StmtMap = unordered_map<int, pair<StmtType, int>>;
 
 // The statement table class for the PKB component
-// Used to store statement number and the corresponding statement list index
-// that are passed into PKB from the parser
+// Used to store statement number, statement type and the procedure it belongs
+// to
 class StmtTable {
   StmtMap stmt_map_;
 
  public:
   // Insert a statement into the StmtTable
-  // Prerequisite: The stmt_num is not an empty string
   // @param stmt_num the statement number of the statement to be inserted
+  // @param stmt_type the type of the statement to be inserted
   // @param proc_index the index of the procedure the statement belongs to
   // @return true if the statement is not already in StmtTable and is inserted
   // into the table, false otherwise

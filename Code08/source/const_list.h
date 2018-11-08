@@ -3,34 +3,29 @@
 #ifndef SPA_CONST_LIST_H
 #define SPA_CONST_LIST_H
 
-#include <string>
 #include <unordered_set>
-#include <vector>
 
+using std::make_pair;
 using std::pair;
-using std::string;
 using std::unordered_set;
-using std::vector;
 
 using ConstValue = int;
-using ConstValueList = vector<int>;
-using ConstValuePairList = vector<pair<int, int>>;
-using ConstValueSet = unordered_set<int>;
+using ConstValuePairSet = unordered_set<pair<ConstValue, ConstValue>>;
+using ConstValueSet = unordered_set<ConstValue>;
 
 // The constant list class for the PKB component
 // Used to store constant values that are passed into PKB from the parser
 class ConstList {
-  ConstValueList const_value_list_;
-  ConstValuePairList const_value_twin_list_;
+  ConstValuePairSet const_value_twin_set_;
   ConstValueSet const_value_set_;
 
  public:
-  // Returns a list of all constant values in the ConstList.
-  ConstValueList GetAllConstValue();
+  // Returns a set of all constant values in the ConstList.
+  ConstValueSet GetAllConstValue();
 
-  // Returns a list of all constant values in pairs (in each pair, the const
+  // Returns a set of all constant values in pairs (in each pair, the const
   // value is repeated)
-  ConstValuePairList GetAllConstValueTwin();
+  ConstValuePairSet GetAllConstValueTwin();
 
   // Inserts constant value into the ConstList.
   // Duplicate values will be ignored.

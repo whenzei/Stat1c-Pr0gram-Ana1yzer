@@ -49,14 +49,14 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
-    StmtNumList result1 = parent_table.GetParentT(kStmtNum3);
+    StmtNumSet result1 = parent_table.GetParentT(kStmtNum3);
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum2, result1.front());
-    Assert::AreEqual(kStmtNum1, result1.back());
-    StmtNumList result2 = parent_table.GetParentT(kStmtNum2);
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum1));
+    StmtNumSet result2 = parent_table.GetParentT(kStmtNum2);
     Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kStmtNum1, result2.front());
-    StmtNumList result3 = parent_table.GetParentT(kStmtNum1);
+    Assert::IsTrue(result2.count(kStmtNum1));
+    StmtNumSet result3 = parent_table.GetParentT(kStmtNum1);
     Assert::IsTrue(result3.empty());
   }
 
@@ -65,10 +65,10 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
-    StmtNumList result = parent_table.GetAllParent();
+    StmtNumSet result = parent_table.GetAllParent();
     Assert::IsTrue(result.size() == 2);
-    Assert::AreEqual(kStmtNum1, result.front());
-    Assert::AreEqual(kStmtNum2, result.back());
+    Assert::IsTrue(result.count(kStmtNum1));
+    Assert::IsTrue(result.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetChild) {
@@ -77,13 +77,13 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum4);
-    StmtNumList result1 = parent_table.GetChild(kStmtNum1);
+    StmtNumSet result1 = parent_table.GetChild(kStmtNum1);
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum2, result1.front());
-    Assert::AreEqual(kStmtNum4, result1.back());
-    StmtNumList result2 = parent_table.GetChild(kStmtNum2);
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum4));
+    StmtNumSet result2 = parent_table.GetChild(kStmtNum2);
     Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kStmtNum3, result2.front());
+    Assert::IsTrue(result2.count(kStmtNum3));
   }
 
   TEST_METHOD(TestGetChildT) {
@@ -92,17 +92,14 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum4);
-    StmtNumList result1 = parent_table.GetChildT(kStmtNum1);
+    StmtNumSet result1 = parent_table.GetChildT(kStmtNum1);
     Assert::IsTrue(result1.size() == 3);
-    StmtNumList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum2, (*iter));
-    iter++;
-    Assert::AreEqual(kStmtNum3, (*iter));
-    iter++;
-    Assert::AreEqual(kStmtNum4, (*iter));
-    StmtNumList result2 = parent_table.GetChildT(kStmtNum2);
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum3));
+    Assert::IsTrue(result1.count(kStmtNum4));
+    StmtNumSet result2 = parent_table.GetChildT(kStmtNum2);
     Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kStmtNum3, result2.front());
+    Assert::IsTrue(result2.count(kStmtNum3));
   }
 
   TEST_METHOD(TestGetAllChild) {
@@ -111,14 +108,11 @@ TEST_CLASS(TestParentTable) {
     parent_table.InsertDirectParentRelationship(kStmtNum2, kStmtNum3);
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum3);
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum4);
-    StmtNumList result1 = parent_table.GetAllChild();
+    StmtNumSet result1 = parent_table.GetAllChild();
     Assert::IsTrue(result1.size() == 3);
-    StmtNumList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum2, (*iter));
-    iter++;
-    Assert::AreEqual(kStmtNum3, (*iter));
-    iter++;
-    Assert::AreEqual(kStmtNum4, (*iter));
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum3));
+    Assert::IsTrue(result1.count(kStmtNum4));
   }
 
   TEST_METHOD(TestHasParentRelationship) {
@@ -133,10 +127,9 @@ TEST_CLASS(TestParentTable) {
   TEST_METHOD(TestGetAllParentPair) {
     ParentTable parent_table;
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
-    StmtNumPairList parent_pair = parent_table.GetAllParentPair();
+    StmtNumPairSet parent_pair = parent_table.GetAllParentPair();
     Assert::IsTrue(parent_pair.size() == 1);
-    Assert::AreEqual(kStmtNum1, parent_pair.front().first);
-    Assert::AreEqual(kStmtNum2, parent_pair.front().second);
+    Assert::IsTrue(parent_pair.count(make_pair(kStmtNum1, kStmtNum2)));
     parent_table.InsertIndirectParentRelationship(kStmtNum2, kStmtNum4);
     parent_pair = parent_table.GetAllParentPair();
     Assert::IsTrue(parent_pair.size() == 1);
@@ -145,15 +138,14 @@ TEST_CLASS(TestParentTable) {
   TEST_METHOD(TestGetAllParentTPair) {
     ParentTable parent_table;
     parent_table.InsertDirectParentRelationship(kStmtNum1, kStmtNum2);
-    StmtNumPairList parent_pair = parent_table.GetAllParentTPair();
+    StmtNumPairSet parent_pair = parent_table.GetAllParentTPair();
     Assert::IsTrue(parent_pair.size() == 1);
-    Assert::AreEqual(kStmtNum1, parent_pair.front().first);
-    Assert::AreEqual(kStmtNum2, parent_pair.front().second);
+    Assert::IsTrue(parent_pair.count(make_pair(kStmtNum1, kStmtNum2)));
     parent_table.InsertIndirectParentRelationship(kStmtNum1, kStmtNum4);
     parent_pair = parent_table.GetAllParentTPair();
     Assert::IsTrue(parent_pair.size() == 2);
-    Assert::AreEqual(kStmtNum1, parent_pair.back().first);
-    Assert::AreEqual(kStmtNum4, parent_pair.back().second);
+    Assert::IsTrue(parent_pair.count(make_pair(kStmtNum1, kStmtNum2)));
+    Assert::IsTrue(parent_pair.count(make_pair(kStmtNum1, kStmtNum4)));
   }
 };
 }  // namespace PKBTests

@@ -13,167 +13,146 @@ TEST_CLASS(TestStmtTypeList) {
 
   TEST_METHOD(TestGetAllAssignStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kAssign);
-    StmtNumList result1 = stmt_type_list.GetAllAssignStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kAssign);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kAssign);
+    StmtNumSet result1 = stmt_type_list.GetAllAssignStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllAssignStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kAssign);
-    StmtNumPairList result1 = stmt_type_list.GetAllAssignStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kAssign);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kAssign);
+    StmtNumPairSet result1 = stmt_type_list.GetAllAssignStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllWhileStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kWhile);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kWhile);
-    StmtNumList result1 = stmt_type_list.GetAllWhileStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kWhile);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kWhile);
+    StmtNumSet result1 = stmt_type_list.GetAllWhileStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllWhileStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kWhile);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kWhile);
-    StmtNumPairList result1 = stmt_type_list.GetAllWhileStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kWhile);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kWhile);
+    StmtNumPairSet result1 = stmt_type_list.GetAllWhileStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllIfStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kIf);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kIf);
-    StmtNumList result1 = stmt_type_list.GetAllIfStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kIf);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kIf);
+    StmtNumSet result1 = stmt_type_list.GetAllIfStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllIfStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kIf);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kIf);
-    StmtNumPairList result1 = stmt_type_list.GetAllIfStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kIf);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kIf);
+    StmtNumPairSet result1 = stmt_type_list.GetAllIfStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllReadStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kRead);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kRead);
-    StmtNumList result1 = stmt_type_list.GetAllReadStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kRead);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kRead);
+    StmtNumSet result1 = stmt_type_list.GetAllReadStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllReadStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kRead);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kRead);
-    StmtNumPairList result1 = stmt_type_list.GetAllReadStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kRead);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kRead);
+    StmtNumPairSet result1 = stmt_type_list.GetAllReadStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllPrintStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kPrint);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kPrint);
-    StmtNumList result1 = stmt_type_list.GetAllPrintStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kPrint);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kPrint);
+    StmtNumSet result1 = stmt_type_list.GetAllPrintStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllPrintStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kPrint);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kPrint);
-    StmtNumPairList result1 = stmt_type_list.GetAllPrintStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kPrint);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kPrint);
+    StmtNumPairSet result1 = stmt_type_list.GetAllPrintStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllCallStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kCall);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kCall);
-    StmtNumList result1 = stmt_type_list.GetAllCallStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kCall);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kCall);
+    StmtNumSet result1 = stmt_type_list.GetAllCallStmt();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllCallStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kCall);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kCall);
-    StmtNumPairList result1 = stmt_type_list.GetAllCallStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kCall);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kCall);
+    StmtNumPairSet result1 = stmt_type_list.GetAllCallStmtTwin();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front().first);
-    Assert::AreEqual(kStmtNum1, result1.front().second);
-    Assert::AreEqual(kStmtNum2, result1.back().first);
-    Assert::AreEqual(kStmtNum2, result1.back().second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
   }
 
   TEST_METHOD(TestGetAllStmt) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kWhile);
-    stmt_type_list.InsertStmt(kStmtNum3, PqlDeclarationEntity::kPrint);
-    StmtNumList result1 = stmt_type_list.GetAllStmt();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kAssign);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kWhile);
+    stmt_type_list.InsertStmt(kStmtNum3, StmtType::kPrint);
+    StmtNumSet result1 = stmt_type_list.GetAllStmt();
     Assert::IsTrue(result1.size() == 3);
-    StmtNumList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum1, *iter);
-    iter++;
-    Assert::AreEqual(kStmtNum2, *iter);
-    iter++;
-    Assert::AreEqual(kStmtNum3, *iter);
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum3));
   }
 
   TEST_METHOD(TestGetAllStmtTwin) {
     StmtTypeList stmt_type_list;
-    stmt_type_list.InsertStmt(kStmtNum1, PqlDeclarationEntity::kAssign);
-    stmt_type_list.InsertStmt(kStmtNum2, PqlDeclarationEntity::kWhile);
-    stmt_type_list.InsertStmt(kStmtNum3, PqlDeclarationEntity::kPrint);
-    StmtNumPairList result1 = stmt_type_list.GetAllStmtTwin();
+    stmt_type_list.InsertStmt(kStmtNum1, StmtType::kAssign);
+    stmt_type_list.InsertStmt(kStmtNum2, StmtType::kWhile);
+    stmt_type_list.InsertStmt(kStmtNum3, StmtType::kPrint);
+    StmtNumPairSet result1 = stmt_type_list.GetAllStmtTwin();
     Assert::IsTrue(result1.size() == 3);
-    StmtNumPairList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kStmtNum1, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kStmtNum2, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum3, (*iter).first);
-    Assert::AreEqual(kStmtNum3, (*iter).second);
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum1, kStmtNum1)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum2, kStmtNum2)));
+    Assert::IsTrue(result1.count(std::make_pair(kStmtNum3, kStmtNum3)));
   }
 };
 }  // namespace PKBTests

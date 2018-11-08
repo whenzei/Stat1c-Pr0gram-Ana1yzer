@@ -5,30 +5,31 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
+#include <unordered_set>
 
 using std::make_pair;
 using std::pair;
 using std::string;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 using ProcName = string;
 using ProcIndex = int;
-using ProcIndexList = vector<ProcIndex>;
-using ProcNameList = vector<ProcName>;
-using ProcIndexPairList = vector<pair<ProcIndex, ProcIndex>>;
-using ProcNamePairList = vector<pair<ProcName, ProcName>>;
+using ProcIndexSet = unordered_set<ProcIndex>;
+using ProcNameSet = unordered_set<ProcName>;
+using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>>;
+using ProcNamePairSet = unordered_set<pair<ProcName, ProcName>>;
 using ProcIndexMap = unordered_map<ProcName, ProcIndex>;
 using IndexProcMap = unordered_map<ProcIndex, ProcName>;
 
 // The procedure list class for the PKB component
 // Used to store procedure names that are passed into PKB from the parser
 class ProcList {
-  ProcIndexList proc_id_list_;
-  ProcIndexPairList proc_id_twin_list_;
-  ProcNameList proc_name_list_;
-  ProcNamePairList proc_name_twin_list_;
+  ProcIndexSet proc_id_set_;
+  ProcIndexPairSet proc_id_twin_set_;
+  ProcNameSet proc_name_set_;
+  ProcNamePairSet proc_name_twin_set_;
   // TODO: Depending on PQL's preferences, might have to add below
   // a list of Proc Indices and just return the entire list.
   ProcIndexMap proc_id_map_;
@@ -45,10 +46,10 @@ class ProcList {
   int InsertProcName(ProcName proc_name);
 
   // @returns the list of all procedure indices (can be empty)
-  ProcIndexList GetAllProcIndices();
+  ProcIndexSet GetAllProcIndices();
 
   // @returns the list of all procedure indices (can be empty)
-  ProcNameList GetAllProcNames();
+  ProcNameSet GetAllProcNames();
 
   // @returns true if proc_name exists in the proc list
   bool IsProcName(ProcName proc_name);
@@ -58,11 +59,11 @@ class ProcList {
 
   // @returns the list of all procedure names in pairs (in each pair, the same
   // procedure name is repeated)
-  ProcNamePairList GetAllProcNameTwin();
+  ProcNamePairSet GetAllProcNameTwin();
 
   // @returns the list of all procedure indices in pairs (in each pair, the same
   // procedure index is repeated)
-  ProcIndexPairList GetAllProcIndexTwin();
+  ProcIndexPairSet GetAllProcIndexTwin();
 
   // @returns an unordered map with Index to Proc mapping
   IndexProcMap GetIndexToProcMapping();
