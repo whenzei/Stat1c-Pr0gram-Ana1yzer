@@ -160,8 +160,8 @@ class PKB {
   void InsertEdgeInCallGraph(ProcName curr_proc_name,
                              ProcName called_proc_name);
 
-  // @returns toposorted order of procedure calls in a ProcNameList
-  vector<int> GetToposortedCalls();
+  // @returns toposorted order of procedure calls in a ProcIndexList
+  ProcIndexList GetToposortedCalls();
 
   // inserts the given assign statement into the StmtTable, StmtTypeList and
   // StmtListTable
@@ -481,7 +481,7 @@ class PKB {
 
   // @returns a set of all pairs of <stmt_num, var_name> that satisfy
   // Uses(stmt_num, var_name)
-  StmtVarIndexPairSet GetAllUsesPairS();
+  StmtVarPairSet GetAllUsesPairS();
 
   // @returns a set of all pairs of <proc_name, var_name> that satisfy
   // Uses(proc_name, var_name)

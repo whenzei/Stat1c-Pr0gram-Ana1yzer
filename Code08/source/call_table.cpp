@@ -9,12 +9,8 @@ bool CallTable::InsertIndirectCallRelationship(ProcIndex caller_proc,
   }
   call_table_[caller_proc].insert(callee_proc);
   callee_table_[callee_proc].insert(caller_proc);
-  if (caller_set_.insert(caller_proc).second) {
-    caller_list_.push_back(caller_proc);
-  }
-  if (callee_set_.insert(callee_proc).second) {
-    callee_list_.push_back(callee_proc);
-  }
+  caller_set_.insert(caller_proc);
+  callee_set_.insert(callee_proc);
   return true;
 }
 
@@ -27,14 +23,8 @@ bool CallTable::InsertDirectCallRelationship(ProcIndex caller_proc,
   direct_callee_table_[callee_proc].insert(caller_proc);
   call_table_[caller_proc].insert(callee_proc);
   callee_table_[callee_proc].insert(caller_proc);
-  if (caller_set_.insert(caller_proc).second) {
-    caller_list_.push_back(caller_proc);
-  }
-  if (callee_set_.insert(callee_proc).second) {
-    callee_list_.push_back(callee_proc);
-    callee_twin_set_.insert(
-        make_pair(callee_proc, callee_proc));
-  }
+  caller_set_.insert(caller_proc);
+  callee_set_.insert(callee_proc);
   return true;
 }
 
@@ -134,8 +124,7 @@ ProcIndexPairSet CallTable::GetAllCallTPairs() {
 bool CallTable::IsCall(ProcIndex caller_proc, ProcIndex callee_proc) {
   if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
     ProcIndexSet direct_callee_set = direct_call_table_[caller_proc];
-    return (find(direct_callee_set.begin(), direct_callee_set.end(), callee_proc)
-        != direct_callee_set.end());
+    return direct_callee_set.find(callee_proc) != direct_callee_set.end();
   }
   return false;
 }
@@ -143,8 +132,7 @@ bool CallTable::IsCall(ProcIndex caller_proc, ProcIndex callee_proc) {
 bool CallTable::IsCallT(ProcIndex caller_proc, ProcIndex callee_proc) {
   if (call_table_.find(caller_proc) != call_table_.end()) {
     ProcIndexSet callee_set = call_table_[caller_proc];
-    return (find(callee_set.begin(), callee_set.end(), callee_proc) !=
-        callee_set.end());
+    return callee_set.find(callee_proc) != callee_set.end();
   }
   return false;
 }

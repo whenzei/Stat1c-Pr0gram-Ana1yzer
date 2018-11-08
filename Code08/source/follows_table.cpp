@@ -3,37 +3,31 @@
 #include "follows_table.h"
 
 void FollowsTable::InsertFollows(StmtNum stmt_1, StmtNum stmt_2) {
-  if (!IsFollowsT(stmt_1, stmt_2)) {
-    if (direct_followed_by_map_.find(stmt_1) == direct_followed_by_map_.end()) {
-      direct_followed_by_map_[stmt_1].insert(stmt_2);
-      direct_follows_map_[stmt_2].insert(stmt_1);
-    }
-    followed_by_map_[stmt_1].insert(stmt_2);
-    follows_map_[stmt_2].insert(stmt_1);
-    if (follows_set_.insert(stmt_2).second) {
-      follows_list_.push_back(stmt_2);
-    }
-    if (followed_by_set_.insert(stmt_1).second) {
-      followed_by_list_.push_back(stmt_1);
-    }
+  if (followed_by_set_.insert(stmt_1).second) {
+    // stmt_1 is not followed by any other stmt, direct direct follows
+    // relationship
+    direct_followed_by_map_[stmt_1].insert(stmt_2);
+    direct_follows_map_[stmt_2].insert(stmt_1);
   }
+  followed_by_map_[stmt_1].insert(stmt_2);
+  follows_map_[stmt_2].insert(stmt_1);
+  follows_set_.insert(stmt_2);
 }
 
 bool FollowsTable::IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2) {
   if (followed_by_map_.find(stmt_num1) != followed_by_map_.end()) {
-    return (find(followed_by_map_[stmt_num1].begin(),
-      followed_by_map_[stmt_num1].end(),
-                 stmt_num2) != followed_by_map_[stmt_num1].end());
+    return (followed_by_map_[stmt_num1].find(stmt_num2) !=
+            followed_by_map_[stmt_num1].end());
   } else {
     return false;
   }
 }
 
 bool FollowsTable::IsFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
-  if (direct_followed_by_map_.find(stmt_num1) != direct_followed_by_map_.end()) {
-    return (find(direct_followed_by_map_[stmt_num1].begin(),
-      direct_followed_by_map_[stmt_num1].end(),
-      stmt_num2) != direct_followed_by_map_[stmt_num1].end());
+  if (direct_followed_by_map_.find(stmt_num1) !=
+      direct_followed_by_map_.end()) {
+    return (direct_followed_by_map_[stmt_num1].find(stmt_num2) !=
+            direct_followed_by_map_[stmt_num1].end());
   } else {
     return false;
   }
@@ -71,9 +65,7 @@ StmtNumSet FollowsTable::GetFollowedBy(StmtNum stmt_num) {
 
 StmtNumSet FollowsTable::GetAllFollowedBy() { return followed_by_set_; }
 
-bool FollowsTable::HasFollowsRelationship() { 
-  return (!follows_map_.empty()); 
-}
+bool FollowsTable::HasFollowsRelationship() { return (!follows_map_.empty()); }
 
 StmtNumPairSet FollowsTable::GetAllFollowsTPair() {
   StmtNumPairSet follows_pair_t_set;

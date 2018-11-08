@@ -124,7 +124,7 @@ void PKB::InsertEdgeInCallGraph(ProcName curr_proc_name,
   call_graph_.AddEdge(curr_proc_id, called_proc_id);
 }
 
-vector<int> PKB::GetToposortedCalls() { return call_graph_.Toposort(); }
+ProcIndexList PKB::GetToposortedCalls() { return call_graph_.Toposort(); }
 
 void PKB::InsertAssignStmt(AssignStmtData* stmt_data) {
   if (HandleInsertStatement(stmt_data, StmtType::kAssign)) {
@@ -513,7 +513,7 @@ bool PKB::IsUsedByP(ProcName proc_name, VarName var_name) {
   return uses_table_.IsUsedByP(GetProcIndex(proc_name), GetVarIndex(var_name));
 }
 
-StmtVarIndexPairSet PKB::GetAllUsesPairS() {
+StmtVarPairSet PKB::GetAllUsesPairS() {
   return uses_table_.GetAllUsesSPair();
 }
 

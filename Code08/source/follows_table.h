@@ -3,22 +3,17 @@
 #ifndef SPA_FOLLOWS_TABLE_H
 #define SPA_FOLLOWS_TABLE_H
 
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <vector>
 
 using std::make_pair;
 using std::pair;
-using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
-using StmtNumList = vector<int>;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
 using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
 using FollowsMap = unordered_map<int, unordered_set<int>>;
 using FollowedByMap = unordered_map<int, unordered_set<int>>;
@@ -38,11 +33,9 @@ class FollowsTable {
   // Stores follows relationship in <key=followed, value=set of followers>
   FollowedByMap direct_followed_by_map_;
   FollowedByMap followed_by_map_;
-  // List & Set of stmts that follow another stmt
-  StmtNumList follows_list_;
+  // Set of stmts that follow another stmt
   StmtNumSet follows_set_;
-  // List & Set of stmts that are followed by another stmt
-  StmtNumList followed_by_list_;
+  // Set of stmts that are followed by another stmt
   StmtNumSet followed_by_set_;
 
  public:
