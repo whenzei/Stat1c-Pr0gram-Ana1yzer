@@ -117,7 +117,7 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
   return final_results;
 }
 
-void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
+void PqlEvaluator::StoreClauseResultInTable(QueryResultSet result_list,
                                             string new_header_name) {
   if (pql_result_.GetResultTable().empty()) {
     pql_result_.InitTable(result_list, new_header_name);
@@ -141,32 +141,8 @@ void PqlEvaluator::StoreClauseResultInTable(QueryResultList result_list,
   }
 }
 
-void PqlEvaluator::StoreClauseResultInTable(QueryResultSet result_set,
-                                            string new_header_name) {
-  if (pql_result_.GetResultTable().empty()) {
-    pql_result_.InitTable(result_set, new_header_name);
-  } else {
-    ColumnHeader col_header = pql_result_.GetColumnHeader();
-    // Conflict found
-    if (col_header.find(new_header_name) != col_header.end()) {
-      pql_result_.MergeResults(result_set, kConflict,
-                               col_header.find(new_header_name)->second,
-                               new_header_name);
-    }
-    // No conflict
-    else {
-      pql_result_.MergeResults(result_set, kNoConflict, -1, new_header_name);
-    }
-  }
-
-  // If after merging result, result table is empty
-  if (pql_result_.GetResultTable().empty()) {
-    SetClauseFlag(false);
-  }
-}
-
 void PqlEvaluator::StoreClauseResultInTable(
-    QueryResultPairList result_pair_list, string header_name_left,
+    QueryResultPairSet result_pair_list, string header_name_left,
     string header_name_right) {
   if (pql_result_.GetResultTable().empty()) {
     pql_result_.InitTable(result_pair_list, header_name_left,

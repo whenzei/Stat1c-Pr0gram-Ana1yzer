@@ -18,10 +18,11 @@
 using std::list;
 using std::string;
 using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 using FinalResult = list<string>;
-using QueryResultList = vector<int>;
-using QueryResultPairList = vector<pair<int, int>>;
+using QueryResultSet = unordered_set<int>;
+using QueryResultPairSet = unordered_set<pair<int, int>>;
 using ResultTableList = vector<ResultTable>;
 using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
 
@@ -60,19 +61,13 @@ class PqlEvaluator {
    * Stores the list of results into the PqlResult table
    * @param the vector<int> of results and synonym-variable name
    */
-  void StoreClauseResultInTable(QueryResultList, string);
-
-  /**
-   * Stores the list of results into the PqlResult table
-   * @param the set<int> of results and synonym-variable name
-   */
   void StoreClauseResultInTable(QueryResultSet, string);
 
   /**
    * Stores the list of pair into the PqlResult table
    * @param the vector<int> of pairs and the pair's synonym-variable name
    */
-  void StoreClauseResultInTable(QueryResultPairList, string, string);
+  void StoreClauseResultInTable(QueryResultPairSet, string, string);
 
   /**
    * Stores the list of results into the PqlResult table

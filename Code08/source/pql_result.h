@@ -21,9 +21,8 @@ using MergeMap = unordered_map<int, vector<int>>;
 using MergeSet = unordered_set<string>;
 using ResultTable = unordered_set<vector<int>>;
 using ResultRow = vector<int>;
-using QueryResultList = vector<int>;
 using QueryResultSet = unordered_set<int>;
-using QueryResultPairList = vector<pair<int, int>>;
+using QueryResultPairSet = unordered_set<pair<int, int>>;
 
 /*
 This class stores the PQL result as a table
@@ -42,33 +41,27 @@ class PqlResult {
   /* Constructor */
   PqlResult();
 
-  void InitTable(QueryResultList, string);
-
   void InitTable(QueryResultSet, string);
 
-  void InitTable(QueryResultPairList, string, string);
+  void InitTable(QueryResultPairSet, string, string);
 
   void InitTable(AffectsMap, string, string);
 
-  void MergeResults(QueryResultList, PqlResultTableConflict, int, string);
-
   void MergeResults(QueryResultSet, PqlResultTableConflict, int, string);
 
-  void MergeResults(QueryResultPairList, PqlResultTableConflict, int, int,
+  void MergeResults(QueryResultPairSet, PqlResultTableConflict, int, int,
                     string, string);
 
   void MergeResults(AffectsMap, PqlResultTableConflict, int, int, string,
                     string);
 
-  void SetupMergeMap(QueryResultPairList, PqlResultTableConflict);
+  void SetupMergeMap(QueryResultPairSet, PqlResultTableConflict);
 
   void SetupMergeMap(AffectsMap, PqlResultTableConflict);
 
-  void SetupMergeSet(QueryResultList);
-
   void SetupMergeSet(QueryResultSet);
 
-  void SetupMergeSet(QueryResultPairList);
+  void SetupMergeSet(QueryResultPairSet);
 
   void SetupMergeSet(AffectsMap);
 

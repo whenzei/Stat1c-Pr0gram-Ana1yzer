@@ -16,9 +16,8 @@ using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using FinalResult = list<string>;
-using QueryResultList = vector<int>;
-using QueryResultPairList = vector<pair<int, int>>;
+using QueryResultSet = unordered_set<int>;
+using QueryResultPairSet = unordered_set<pair<int, int>>;
 using VarProcToIndexMap = unordered_map<string, int>;
 using IndexToVarProcMap = unordered_map<int, string>;
 
@@ -55,7 +54,7 @@ class PqlEvaluateWith {
    * @returns a vector<int> if there is result,
    * or an empty list otherwise
    */
-  QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
+  QueryResultSet GetSelectAllResult(PqlDeclarationEntity select_type);
 
   /**
    * Return a list of all the result in pairs of a certain type
@@ -63,7 +62,7 @@ class PqlEvaluateWith {
    * @returns a vector<pair<int>> if there is result,
    * or an empty list otherwise
    */
-  QueryResultPairList GetSelectAllTwinResult(PqlDeclarationEntity select_type);
+  QueryResultPairSet GetSelectAllTwinResult(PqlDeclarationEntity select_type);
 
   /**
    * Evaluate with clause (1 synonym) and store result in PqlResult table
@@ -94,8 +93,8 @@ class PqlEvaluateWith {
    * @returns vector<int> list that only contains result of a certain entity
    * type
    */
-  QueryResultPairList FilterWithRight(QueryResultList unfiltered_result,
-                                      QueryResultList,
+  QueryResultPairSet FilterWithRight(QueryResultSet unfiltered_result,
+                                      QueryResultSet,
                                       PqlDeclarationEntity entity_type,
                                       PqlDeclarationEntity);
 
@@ -105,8 +104,8 @@ class PqlEvaluateWith {
    * @returns vector<int> list that only contains result of a certain entity
    * type
    */
-  QueryResultPairList FilterWithLeft(QueryResultList unfiltered_result,
-                                     QueryResultList,
+  QueryResultPairSet FilterWithLeft(QueryResultSet unfiltered_result,
+                                     QueryResultSet,
                                      PqlDeclarationEntity entity_type,
                                      PqlDeclarationEntity);
 };

@@ -48,8 +48,8 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
       pattern.GetFirstParameter();
   string left_name = first_parameter.first;
   PqlDeclarationEntity left_type = first_parameter.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating While Pattern." << endl;
 
@@ -93,8 +93,8 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
       pattern.GetFirstParameter();
   string left_name = first_parameter.first;
   PqlDeclarationEntity left_type = first_parameter.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating If Pattern." << endl;
 
@@ -141,8 +141,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
   PqlDeclarationEntity left_type = first_parameter.second;
   PqlPatternExpressionType expression_type = expression.first;
   TokenList expression_token = expression.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Assign Pattern." << endl;
 

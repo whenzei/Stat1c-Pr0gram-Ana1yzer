@@ -17,8 +17,8 @@ using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using QueryResultList = vector<int>;
-using QueryResultPairList = vector<pair<int, int>>;
+using QueryResultSet = unordered_set<int>;
+using QueryResultPairSet = unordered_set<pair<int, int>>;
 
 /*A class to evaluate the pql pattern clause*/
 class PqlEvaluatePattern {

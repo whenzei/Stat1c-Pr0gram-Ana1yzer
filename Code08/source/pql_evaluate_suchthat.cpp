@@ -86,9 +86,9 @@ bool PqlEvaluateSuchthat::EvaluateSuchthatClause(PqlEvaluator* pql_eval,
   return IsValidClause();
 }
 
-QueryResultList PqlEvaluateSuchthat::GetSelectAllResult(
+QueryResultSet PqlEvaluateSuchthat::GetSelectAllResult(
     PqlDeclarationEntity select_type) {
-  QueryResultList results;
+  QueryResultSet results;
 
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
@@ -169,8 +169,8 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
   VarProcToIndexMap proc_to_index = pkb_->GetProcToIndexMapping();
 
   cout << "Evaluating Calls" << endl;
@@ -276,8 +276,8 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Calls*" << endl;
 
@@ -366,8 +366,8 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Next" << endl;
 
@@ -458,8 +458,8 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Next*" << endl;
 
@@ -907,8 +907,8 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Dominates" << endl;
 
@@ -1000,8 +1000,8 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Follows." << endl;
 
@@ -1096,8 +1096,8 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Follows*" << endl;
 
@@ -1194,8 +1194,8 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Parent." << endl;
 
@@ -1291,8 +1291,8 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating Parent*" << endl;
 
@@ -1388,8 +1388,8 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating UsesS." << endl;
 
@@ -1464,8 +1464,8 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating UsesP." << endl;
 
@@ -1539,8 +1539,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating ModifiesS." << endl;
 
@@ -1614,8 +1614,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultList result_list;
-  QueryResultPairList result_pair_list;
+  QueryResultSet result_list;
+  QueryResultPairSet result_pair_list;
 
   cout << "Evaluating ModifiesP." << endl;
 
@@ -1677,9 +1677,9 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
   }
 }
 
-QueryResultList PqlEvaluateSuchthat::FilterResult(
-    QueryResultList unfiltered_result, PqlDeclarationEntity entity_type) {
-  QueryResultList filtered_result;
+QueryResultSet PqlEvaluateSuchthat::FilterResult(
+    QueryResultSet unfiltered_result, PqlDeclarationEntity entity_type) {
+  QueryResultSet filtered_result;
 
   // If its of type stmt (not assign, if, while etc) just return the list,
   // nothing to filter
@@ -1692,34 +1692,34 @@ QueryResultList PqlEvaluateSuchthat::FilterResult(
     int result = iter;
 
     if (pkb_->GetStmtType(result) == entity_type) {
-      filtered_result.push_back(result);
+      filtered_result.emplace(result);
     }
   }
 
   return filtered_result;
 }
 
-QueryResultList PqlEvaluateSuchthat::FilterVariableResult(
-    QueryResultList unfiltered_result, PqlDeclarationEntity variable_type) {
-  QueryResultList filtered_result;
+QueryResultSet PqlEvaluateSuchthat::FilterVariableResult(
+    QueryResultSet unfiltered_result, PqlDeclarationEntity variable_type) {
+  QueryResultSet filtered_result;
 
   for (auto& iter : unfiltered_result) {
     if (variable_type == PqlDeclarationEntity::kConstant &&
         pkb_->IsConstValue(iter)) {
-      filtered_result.push_back(iter);
+      filtered_result.emplace(iter);
     } else if (variable_type == PqlDeclarationEntity::kVariable &&
                pkb_->IsVarIndex(iter)) {
-      filtered_result.push_back(iter);
+      filtered_result.emplace(iter);
     }
   }
 
   return filtered_result;
 }
 
-QueryResultPairList PqlEvaluateSuchthat::FilterPairResult(
-    PqlResultFilterType filter_type, QueryResultPairList unfiltered_pair_result,
+QueryResultPairSet PqlEvaluateSuchthat::FilterPairResult(
+    PqlResultFilterType filter_type, QueryResultPairSet unfiltered_pair_result,
     PqlDeclarationEntity left_type, PqlDeclarationEntity right_type) {
-  QueryResultPairList filtered_result;
+  QueryResultPairSet filtered_result;
 
   // Nothing to filter if the type is stmt
   if (filter_type == kFilterLeft) {
@@ -1754,18 +1754,18 @@ QueryResultPairList PqlEvaluateSuchthat::FilterPairResult(
     switch (filter_type) {
       case kFilterLeft:
         if (pkb_->GetStmtType(left_result) == left_type) {
-          filtered_result.push_back(iter);
+          filtered_result.emplace(iter);
         }
         break;
       case kFilterRight:
         if (pkb_->GetStmtType(right_result) == right_type) {
-          filtered_result.push_back(iter);
+          filtered_result.emplace(iter);
         }
         break;
       case kFilterBoth:
         if (pkb_->GetStmtType(left_result) == left_type &&
             pkb_->GetStmtType(right_result) == right_type) {
-          filtered_result.push_back(iter);
+          filtered_result.emplace(iter);
         }
         break;
     }
