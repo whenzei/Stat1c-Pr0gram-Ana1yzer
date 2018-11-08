@@ -2,17 +2,19 @@
 
 #include "follows_table.h"
 
-void FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
-  if (!IsFollowsT(stmt_num1, stmt_num2)) {
-    // follows map has to store stmt numbers in descending order
-    // follows by map has to store stmt numbers in ascending order
-    follows_map_[stmt_num2].insert(follows_map_[stmt_num2].begin(), stmt_num1);
-    followed_by_map_[stmt_num1].push_back(stmt_num2);
-    if (follows_set_.insert(stmt_num2).second) {
-      follows_list_.push_back(stmt_num2);
+void FollowsTable::InsertFollows(StmtNum stmt_1, StmtNum stmt_2) {
+  if (!IsFollowsT(stmt_1, stmt_2)) {
+    if (direct_followed_by_map_.find(stmt_1) == direct_followed_by_map_.end()) {
+      direct_followed_by_map_[stmt_1].insert(stmt_2);
+      direct_follows_map_[stmt_2].insert(stmt_1);
     }
-    if (followed_by_set_.insert(stmt_num1).second) {
-      followed_by_list_.push_back(stmt_num1);
+    followed_by_map_[stmt_1].insert(stmt_2);
+    follows_map_[stmt_2].insert(stmt_1);
+    if (follows_set_.insert(stmt_2).second) {
+      follows_list_.push_back(stmt_2);
+    }
+    if (followed_by_set_.insert(stmt_1).second) {
+      followed_by_list_.push_back(stmt_1);
     }
   }
 }
@@ -20,7 +22,7 @@ void FollowsTable::InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
 bool FollowsTable::IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2) {
   if (followed_by_map_.find(stmt_num1) != followed_by_map_.end()) {
     return (find(followed_by_map_[stmt_num1].begin(),
-                 followed_by_map_[stmt_num1].end(),
+      followed_by_map_[stmt_num1].end(),
                  stmt_num2) != followed_by_map_[stmt_num1].end());
   } else {
     return false;
@@ -28,65 +30,67 @@ bool FollowsTable::IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2) {
 }
 
 bool FollowsTable::IsFollows(StmtNum stmt_num1, StmtNum stmt_num2) {
-  if (followed_by_map_.find(stmt_num1) != followed_by_map_.end()) {
-    return (followed_by_map_[stmt_num1].front() == stmt_num2);
+  if (direct_followed_by_map_.find(stmt_num1) != direct_followed_by_map_.end()) {
+    return (find(direct_followed_by_map_[stmt_num1].begin(),
+      direct_followed_by_map_[stmt_num1].end(),
+      stmt_num2) != direct_followed_by_map_[stmt_num1].end());
   } else {
     return false;
   }
 }
 
-StmtNumList FollowsTable::GetFollowsT(StmtNum stmt_num) {
-  StmtNumList follows_list;
+StmtNumSet FollowsTable::GetFollowsT(StmtNum stmt_num) {
   if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
-    follows_list = followed_by_map_[stmt_num];
+    return followed_by_map_[stmt_num];
   }
-  return follows_list;
+  return StmtNumSet();
 }
 
-StmtNumList FollowsTable::GetFollows(StmtNum stmt_num) {
-  StmtNumList follows;
-  if (followed_by_map_.find(stmt_num) != followed_by_map_.end()) {
-    follows.push_back(followed_by_map_[stmt_num].front());
+StmtNumSet FollowsTable::GetFollows(StmtNum stmt_num) {
+  if (direct_followed_by_map_.find(stmt_num) != direct_followed_by_map_.end()) {
+    return direct_followed_by_map_[stmt_num];
   }
-  return follows;
+  return StmtNumSet();
 }
 
-StmtNumList FollowsTable::GetAllFollows() { return follows_list_; }
+StmtNumSet FollowsTable::GetAllFollows() { return follows_set_; }
 
-StmtNumList FollowsTable::GetFollowedByT(StmtNum stmt_num) {
-  StmtNumList followed_by_list;
+StmtNumSet FollowsTable::GetFollowedByT(StmtNum stmt_num) {
   if (follows_map_.find(stmt_num) != follows_map_.end()) {
-    followed_by_list = follows_map_[stmt_num];
+    return follows_map_[stmt_num];
   }
-  return followed_by_list;
+  return StmtNumSet();
 }
 
-StmtNumList FollowsTable::GetFollowedBy(StmtNum stmt_num) {
-  StmtNumList followed_by;
-  if (follows_map_.find(stmt_num) != follows_map_.end()) {
-    followed_by.push_back(follows_map_[stmt_num].front());
+StmtNumSet FollowsTable::GetFollowedBy(StmtNum stmt_num) {
+  if (direct_follows_map_.find(stmt_num) != direct_follows_map_.end()) {
+    return direct_follows_map_[stmt_num];
   }
-  return followed_by;
+  return StmtNumSet();
 }
 
-StmtNumList FollowsTable::GetAllFollowedBy() { return followed_by_list_; }
+StmtNumSet FollowsTable::GetAllFollowedBy() { return followed_by_set_; }
 
-bool FollowsTable::HasFollowsRelationship() { return (!follows_map_.empty()); }
+bool FollowsTable::HasFollowsRelationship() { 
+  return (!follows_map_.empty()); 
+}
 
-StmtNumPairList FollowsTable::GetAllFollowsTPair() {
-  StmtNumPairList follows_pair_t_list;
+StmtNumPairSet FollowsTable::GetAllFollowsTPair() {
+  StmtNumPairSet follows_pair_t_set;
   for (auto entry : followed_by_map_) {
     for (auto follower_stmt_num : entry.second) {
-      follows_pair_t_list.push_back(make_pair(entry.first, follower_stmt_num));
+      follows_pair_t_set.insert(make_pair(entry.first, follower_stmt_num));
     }
   }
-  return follows_pair_t_list;
+  return follows_pair_t_set;
 }
 
-StmtNumPairList FollowsTable::GetAllFollowsPair() {
-  StmtNumPairList follows_pair_list;
-  for (auto entry : followed_by_map_) {
-    follows_pair_list.push_back(make_pair(entry.first, entry.second.front()));
+StmtNumPairSet FollowsTable::GetAllFollowsPair() {
+  StmtNumPairSet follows_pair_set;
+  for (auto entry : direct_followed_by_map_) {
+    for (auto stmt : entry.second) {
+      follows_pair_set.insert(make_pair(entry.first, stmt));
+    }
   }
-  return follows_pair_list;
+  return follows_pair_set;
 }

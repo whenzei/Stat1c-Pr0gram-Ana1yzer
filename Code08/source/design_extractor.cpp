@@ -48,7 +48,7 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
   ProcIndexList toposorted_calls = pkb_->GetToposortedCalls();
   for (ProcIndex proc_id : toposorted_calls) {
     // get all call statement numbers that calls the proc_name
-    StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_id);
+    StmtNumSet calling_stmts = pkb_->GetCallingStmts(proc_id);
     for (StmtNum call_stmt : calling_stmts) {
       ProcIndex proc_of_stmt =
           pkb_->GetProcIndex(pkb_->GetProcOfStmt(call_stmt));
@@ -79,9 +79,9 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
 }
 
 void DesignExtractor::UpdateCallT() {
-  ProcNameList procs = pkb_->GetAllCallerName();
+  ProcNameSet procs = pkb_->GetAllCallerName();
   for (auto& proc : procs) {
-    ProcNameList callee_procs = pkb_->GetCallee(proc);
+    ProcNameSet callee_procs = pkb_->GetCallee(proc);
     for (auto& direct_callee : callee_procs) {
       DescentForCallee(proc, direct_callee);
     }
@@ -215,7 +215,7 @@ void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
 
 void DesignExtractor::DescentForCallee(ProcName true_caller,
                                        ProcName curr_callee) {
-  ProcNameList callees = pkb_->GetCallee(curr_callee);
+  ProcNameSet callees = pkb_->GetCallee(curr_callee);
   for (auto& callee : callees) {
     pkb_->InsertIndirectCallRelationship(true_caller, callee);
     DescentForCallee(true_caller, callee);

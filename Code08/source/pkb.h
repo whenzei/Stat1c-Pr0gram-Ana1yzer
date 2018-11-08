@@ -332,32 +332,32 @@ class PKB {
   // @returns true if Follows(followee, follower) holds
   bool IsFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num);
 
-  // @returns a list of all n's that satisfy Follows*(stmt_num, n)
-  StmtNumList GetFollowsT(StmtNum stmt_num);
+  // @returns a set of all n's that satisfy Follows*(stmt_num, n)
+  StmtNumSet GetFollowsT(StmtNum stmt_num);
 
-  // @returns a list of all n's that satisfy Follows(stmt_num, n)
-  StmtNumList GetFollows(StmtNum stmt_num);
+  // @returns a set of all n's that satisfy Follows(stmt_num, n)
+  StmtNumSet GetFollows(StmtNum stmt_num);
 
-  // @returns a list of all n's that satisfy Follows(_, n)
-  StmtNumList GetAllFollows();
+  // @returns a set of all n's that satisfy Follows(_, n)
+  StmtNumSet GetAllFollows();
 
-  // @returns a list of all n's that satisfy Follows*(n, stmt_num)
-  StmtNumList GetFollowedByT(StmtNum stmt_num);
+  // @returns a set of all n's that satisfy Follows*(n, stmt_num)
+  StmtNumSet GetFollowedByT(StmtNum stmt_num);
 
-  // @returns a list of all n's that satisfy Follows(n, stmt_num)
-  StmtNumList GetFollowedBy(StmtNum stmt_num);
+  // @returns a set of all n's that satisfy Follows(n, stmt_num)
+  StmtNumSet GetFollowedBy(StmtNum stmt_num);
 
-  // @returns a list of all n's that satisfy Follows*(n, _)
-  StmtNumList GetAllFollowedBy();
+  // @returns a set of all n's that satisfy Follows*(n, _)
+  StmtNumSet GetAllFollowedBy();
 
   // @returns true if Follows(_, _) holds
   bool HasFollowsRelationship();
 
-  // @returns list of all pairs of <s1, s2> that satisfy Follows*(s1, s2)
-  StmtNumPairList GetAllFollowsTPair();
+  // @returns set of all pairs of <s1, s2> that satisfy Follows*(s1, s2)
+  StmtNumPairSet GetAllFollowsTPair();
 
-  // @returns list of all pairs of <s1, s2> that satisfy Follows(s1, s2)
-  StmtNumPairList GetAllFollowsPair();
+  // @returns set of all pairs of <s1, s2> that satisfy Follows(s1, s2)
+  StmtNumPairSet GetAllFollowsPair();
 
   /***********************
    * Parent Table Functions *
@@ -447,28 +447,28 @@ class PKB {
    * Uses Table Functions *
    ***********************/
 
-  // @returns a list of all n's that satisfy Uses(stmt_num, n)
-  VarIndexList GetUsedVarS(StmtNum stmt_num);
+  // @returns a set of all n's that satisfy Uses(stmt_num, n)
+  VarIndexSet GetUsedVarS(StmtNum stmt_num);
 
   // @params proc_name the name of the procedure to check Uses(proc_name, n)
-  // @returns a list of all n's that satisfy Uses(proc_name, n)
-  VarIndexList GetUsedVarP(ProcName proc_name);
+  // @returns a set of all n's that satisfy Uses(proc_name, n)
+  VarIndexSet GetUsedVarP(ProcName proc_name);
 
   // @params proc_id the id of the proc_name to check Uses(proc_name, n)
-  // @returns a list of all n's that satisfy Uses(proc_name, n)
-  VarIndexList GetUsedVarP(ProcIndex proc_id);
+  // @returns a set of all n's that satisfy Uses(proc_name, n)
+  VarIndexSet GetUsedVarP(ProcIndex proc_id);
 
-  // @returns a list of all stmt_num's that satisfy Uses(stmt_num, _)
-  StmtNumList GetAllUsingStmt();
+  // @returns a set of all stmt_num's that satisfy Uses(stmt_num, _)
+  StmtNumSet GetAllUsingStmt();
 
-  // @returns a list of all proc_name's that satisfy Uses(proc_name, _)
-  ProcIndexList GetAllUsingProc();
+  // @returns a set of all proc_name's that satisfy Uses(proc_name, _)
+  ProcIndexSet GetAllUsingProc();
 
-  // @returns a list of all stmt_num's that satisfy Uses(stmt_num, var_name)
-  StmtNumList GetUsingStmt(VarName var_name);
+  // @returns a set of all stmt_num's that satisfy Uses(stmt_num, var_name)
+  StmtNumSet GetUsingStmt(VarName var_name);
 
-  // @returns a list of all proc_name's that satisfy Uses(proc_name, var_name)
-  ProcIndexList GetUsingProc(VarName var_name);
+  // @returns a set of all proc_name's that satisfy Uses(proc_name, var_name)
+  ProcIndexSet GetUsingProc(VarName var_name);
 
   // @returns true if Uses(stmt_num, var_name) holds
   bool IsUsedByS(StmtNum stmt_num, VarName var_name);
@@ -479,13 +479,13 @@ class PKB {
   // @returns true if Uses(proc_name, var_name) holds
   bool IsUsedByP(ProcName proc_name, VarName var_name);
 
-  // @returns a list of all pairs of <stmt_num, var_name> that satisfy
+  // @returns a set of all pairs of <stmt_num, var_name> that satisfy
   // Uses(stmt_num, var_name)
-  StmtVarIndexPairList GetAllUsesPairS();
+  StmtVarIndexPairSet GetAllUsesPairS();
 
-  // @returns a list of all pairs of <proc_name, var_name> that satisfy
+  // @returns a set of all pairs of <proc_name, var_name> that satisfy
   // Uses(proc_name, var_name)
-  ProcVarPairList GetAllUsesPairP();
+  ProcVarPairSet GetAllUsesPairP();
 
   /***************************
    * Pattern Table Functions *
@@ -532,9 +532,6 @@ class PKB {
   bool InsertIndirectCallRelationship(ProcName caller_proc,
                                       ProcName callee_proc);
 
-  bool InsertIndirectCallRelationship(ProcIndex caller_proc_id,
-                                      ProcIndex callee_proc_id);
-
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
   // @params caller procedure name and callee procedure name
@@ -545,89 +542,89 @@ class PKB {
   // @params proc name of the procedure *being called*
   void InsertCalls(StmtNum stmt_num, ProcName callee_proc);
 
-  // Finds and returns a list of statement numbers calling the given proc.
+  // Finds and returns a set of statement numbers calling the given proc.
   // @params proc index of the procedure being called
-  // @returns a list of stmt numbers (can be empty)
-  StmtNumList GetCallingStmts(ProcIndex callee_proc_id);
+  // @returns a set of stmt numbers (can be empty)
+  StmtNumSet GetCallingStmts(ProcIndex callee_proc_id);
 
-  // Finds and returns a list of pairs of all stmt numbers
+  // Finds and returns a set of pairs of all stmt numbers
   // and procedures called by that stmt number.
-  // @returns a list of <stmt_num, proc> pairs
-  StmtNumProcPairList GetAllCallingStmtPairs();
+  // @returns a set of <stmt_num, proc> pairs
+  StmtNumProcPairSet GetAllCallingStmtPairs();
 
   // Finds and returns all indices of direct callees for given procedure.
   // @params caller procedure index
-  // @returns a list containing all direct callees' indices for given proc (can
+  // @returns a set containing all direct callees' indices for given proc (can
   // be empty)
-  ProcIndexList GetCallee(ProcIndex caller_proc_id);
+  ProcIndexSet GetCallee(ProcIndex caller_proc_id);
 
   // Finds and returns all names of direct callees for given procedure.
   // @params caller procedure name
-  // @returns a list containing all direct callees' names for given proc (can be
+  // @returns a set containing all direct callees' names for given proc (can be
   // empty)
-  ProcNameList GetCallee(ProcName caller_proc);
+  ProcNameSet GetCallee(ProcName caller_proc);
 
   // Finds and returns all indices of callees for given procedure.
   // @params caller procedure index
-  // @returns a list containing all callees' indices for given proc (can be
+  // @returns a set containing all callees' indices for given proc (can be
   // empty)
-  ProcIndexList GetCalleeT(ProcIndex caller_proc_id);
+  ProcIndexSet GetCalleeT(ProcIndex caller_proc_id);
 
     // Finds and returns all indices of callees for given procedure.
   // @params caller procedure name
-  // @returns a list containing all callees' indices for given proc (can be
+  // @returns a set containing all callees' indices for given proc (can be
   // empty)
-  ProcIndexList GetCalleeT(ProcName caller_proc);
+  ProcIndexSet GetCalleeT(ProcName caller_proc);
 
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure index
-  // @returns a list containing all direct callers' indices for given proc (can
+  // @returns a set containing all direct callers' indices for given proc (can
   // be empty)
-  ProcIndexList GetCaller(ProcIndex callee_proc_id);
+  ProcIndexSet GetCaller(ProcIndex callee_proc_id);
 
   // Finds and returns all indices of direct callers for given procedure.
   // @params callee procedure name
-  // @returns a list containing all direct callers' indices for given proc (can
+  // @returns a set containing all direct callers' indices for given proc (can
   // be empty)
-  ProcIndexList GetCaller(ProcName callee_proc);
+  ProcIndexSet GetCaller(ProcName callee_proc);
 
   // Finds and returns all indices of callers for given procedure.
   // @params callee procedure index
-  // @returns a list containing all callers' indices for given proc (can be
+  // @returns a set containing all callers' indices for given proc (can be
   // empty)
-  ProcIndexList GetCallerT(ProcIndex callee_proc_id);
+  ProcIndexSet GetCallerT(ProcIndex callee_proc_id);
 
   // Finds and returns all indices of callers for given procedure.
   // @params callee procedure name
-  // @returns a list containing all callers' indices for given proc (can be
+  // @returns a set containing all callers' indices for given proc (can be
   // empty)
-  ProcIndexList GetCallerT(ProcName callee_proc);
+  ProcIndexSet GetCallerT(ProcName callee_proc);
 
   // @returns all procedures calling some other proc (can be empty)
-  ProcIndexList GetAllCaller();
+  ProcIndexSet GetAllCaller();
 
   // Special method to retrieve all caller procs in String format.
   // To be only used by DE when populating PKB.
-  // @returns a list of all procedures calling some other proc, in string form
-  ProcNameList GetAllCallerName();
+  // @returns a set of all procedures calling some other proc, in string form
+  ProcNameSet GetAllCallerName();
 
   // @returns all procedures being called by some other proc (can be empty)
-  ProcIndexList GetAllCallee();
+  ProcIndexSet GetAllCallee();
 
   // Special method to retrieve all caller procs in String format.
   // To be only used by DE when populating PKB.
-  // @returns a list of all procedures calling some other proc, in string form
-  ProcNameList GetAllCalleeName();
+  // @returns a set of all procedures calling some other proc, in string form
+  ProcNameSet GetAllCalleeName();
 
   // @returns all procedures being called by some other proc (in pairs)
-  ProcIndexPairList GetAllCalleeTwin();
+  ProcIndexPairSet GetAllCalleeTwin();
 
-  // @returns a list of all <caller, direct callee> pairs
-  ProcIndexPairList GetAllCallPairs();
+  // @returns a set of all <caller, direct callee> pairs
+  ProcIndexPairSet GetAllCallPairs();
 
-  // @returns a list of all <caller, callee> pairs
-  ProcIndexPairList GetAllCallTPairs();
+  // @returns a set of all <caller, callee> pairs
+  ProcIndexPairSet GetAllCallTPairs();
 
   // @returns true if Call(caller, callee) is true
   bool IsCall(ProcName caller_proc, ProcName callee_proc);

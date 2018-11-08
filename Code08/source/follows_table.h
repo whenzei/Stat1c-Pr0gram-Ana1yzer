@@ -19,26 +19,38 @@ using StmtNum = int;
 using StmtNumList = vector<int>;
 using StmtNumSet = unordered_set<int>;
 using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
-using FollowsMap = unordered_map<int, vector<int>>;
-using FollowedByMap = unordered_map<int, vector<int>>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
+using FollowsMap = unordered_map<int, unordered_set<int>>;
+using FollowedByMap = unordered_map<int, unordered_set<int>>;
 
 // The follows table class for the PKB component
 // Used to store follows relationships between stmts that are passed into PKB
 // from the parser
 class FollowsTable {
-  // Stores follows relationship in <key=follower, value=followed_by>
+  /*
+  If stmt 1 -> 2, (-> denotes follows)
+  stmt 1 is the 'followed' and stmt 2 is the 'follower'.
+  */
+
+  // Stores follows relationship in <key=follower, value=set of followed>
+  FollowsMap direct_follows_map_;
   FollowsMap follows_map_;
-  // Stores follows relationship in <key=followed by, value=follower>
+  // Stores follows relationship in <key=followed, value=set of followers>
+  FollowedByMap direct_followed_by_map_;
   FollowedByMap followed_by_map_;
+  // List & Set of stmts that follow another stmt
   StmtNumList follows_list_;
   StmtNumSet follows_set_;
+  // List & Set of stmts that are followed by another stmt
   StmtNumList followed_by_list_;
   StmtNumSet followed_by_set_;
 
  public:
-  // Inserts a follows relationship to the follows map and followed by map.
-  // @params 2 stmt nums; stmt_num2 that follows stmt_num1
-  void InsertFollows(StmtNum stmt_num1, StmtNum stmt_num2);
+
+  // Inserts a generic follows relationship to the follows map and followed by map.
+  // Decides on its own whether it should be inserted as direct or indirect.
+  // @params 2 stmt nums; stmt_1 that follows stmt_2
+  void InsertFollows(StmtNum stmt_1, StmtNum stmt_2);
 
   // @returns true if follows*(stmt_num1, stmt_num2) holds
   bool IsFollows(StmtNum stmt_num1, StmtNum stmt_num2);
@@ -46,41 +58,41 @@ class FollowsTable {
   // @returns true if follows(stmt_num1, stmt_num2) holds
   bool IsFollowsT(StmtNum stmt_num1, StmtNum stmt_num2);
 
-  // @returns a list of statements that directly or indirectly follow stmt_num
+  // @returns a set of statements that directly or indirectly follow stmt_num
   // can be empty
-  StmtNumList GetFollowsT(StmtNum stmt_num);
+  StmtNumSet GetFollowsT(StmtNum stmt_num);
 
-  // @returns a list of statements that directly follow stmt_num
+  // @returns a set of statements that directly follow stmt_num
   // conly one element or empty
-  StmtNumList GetFollows(StmtNum stmt_num);
+  StmtNumSet GetFollows(StmtNum stmt_num);
 
-  // @returns a list of all statements that follow some statement
+  // @returns a set of all statements that follow some statement
   // can be empty
-  StmtNumList GetAllFollows();
+  StmtNumSet GetAllFollows();
 
-  // @returns a list of statements that are directly or indirectly followed by
+  // @returns a set of statements that are directly or indirectly followed by
   // stmt_num can be empty
-  StmtNumList GetFollowedByT(StmtNum stmt_num);
+  StmtNumSet GetFollowedByT(StmtNum stmt_num);
 
-  // @returns a list of statements that are directly followed by stmt_num
+  // @returns a set of statements that are directly followed by stmt_num
   // only one element or empty
-  StmtNumList GetFollowedBy(StmtNum stmt_num);
+  StmtNumSet GetFollowedBy(StmtNum stmt_num);
 
-  // @returns a list of all statements that are followed by some statement
+  // @returns a set of all statements that are followed by some statement
   // can be empty
-  StmtNumList GetAllFollowedBy();
+  StmtNumSet GetAllFollowedBy();
 
   // @returns true if there are any follows relationships
   // @returns false if follows map is empty
   bool HasFollowsRelationship();
 
-  // @returns a list of all (followee, follower) pairs (direct + indirect)
+  // @returns a set of all (followee, follower) pairs (direct + indirect)
   // can be empty
-  StmtNumPairList GetAllFollowsTPair();
+  StmtNumPairSet GetAllFollowsTPair();
 
-  // @returns a list of all (followee, follower) pairs (direct only)
+  // @returns a set of all (followee, follower) pairs (direct only)
   // can be empty
-  StmtNumPairList GetAllFollowsPair();
+  StmtNumPairSet GetAllFollowsPair();
 };
 
 #endif !SPA_FOLLOWS_TABLE_H

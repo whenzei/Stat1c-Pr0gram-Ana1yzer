@@ -20,10 +20,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex2);
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex2);
-    VarIndexList used_vars = uses.GetUsedVarS(kSampleStmtIdx2);
+    VarIndexSet used_vars = uses.GetUsedVarS(kSampleStmtIdx2);
     Assert::IsTrue(used_vars.size() == 2);
-    Assert::AreEqual(kSampleVarIndex1, used_vars.front());
-    Assert::AreEqual(kSampleVarIndex2, used_vars.back());
+    VarIndexSet expected_results = VarIndexSet{kSampleVarIndex1, kSampleVarIndex2};
+    Assert::AreEqual(expected_results, used_vars);
   }
 
   TEST_METHOD(TestGetUsedVarP) {
@@ -31,10 +31,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex1);
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex2);
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex2);
-    VarIndexList used_vars = uses.GetUsedVarP(kSampleProcIndex1);
+    VarIndexSet used_vars = uses.GetUsedVarP(kSampleProcIndex1);
     Assert::IsTrue(used_vars.size() == 2);
-    Assert::AreEqual(kSampleVarIndex1, used_vars.front());
-    Assert::AreEqual(kSampleVarIndex2, used_vars.back());
+    VarIndexSet expected_results = VarIndexSet{ kSampleVarIndex1, kSampleVarIndex2 };
+    Assert::AreEqual(expected_results, used_vars);
   }
 
   TEST_METHOD(TestGetAllUsingStmt) {
@@ -42,10 +42,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx3, kSampleVarIndex2);
     uses.InsertUsesS(kSampleStmtIdx3, kSampleVarIndex1);
-    StmtNumList using_stmts = uses.GetAllUsingStmt();
+    StmtNumSet using_stmts = uses.GetAllUsingStmt();
     Assert::IsTrue(using_stmts.size() == 2);
-    Assert::AreEqual(kSampleStmtIdx2, using_stmts.front());
-    Assert::AreEqual(kSampleStmtIdx3, using_stmts.back());
+    VarIndexSet expected_results = VarIndexSet{ kSampleStmtIdx2, kSampleStmtIdx3 };
+    Assert::AreEqual(expected_results, using_stmts);
   }
 
   TEST_METHOD(TestGetAllUsingProc) {
@@ -53,10 +53,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex1);
     uses.InsertUsesP(kSampleProcIndex2, kSampleVarIndex2);
     uses.InsertUsesP(kSampleProcIndex2, kSampleVarIndex1);
-    ProcIndexList using_stmts = uses.GetAllUsingProc();
-    Assert::IsTrue(using_stmts.size() == 2);
-    Assert::AreEqual(kSampleProcIndex1, using_stmts.front());
-    Assert::AreEqual(kSampleProcIndex2, using_stmts.back());
+    ProcIndexSet using_proc = uses.GetAllUsingProc();
+    Assert::IsTrue(using_proc.size() == 2);
+    ProcIndexSet expected_results = ProcIndexSet{ kSampleProcIndex1, kSampleProcIndex2 };
+    Assert::AreEqual(expected_results, using_proc);
   }
 
   TEST_METHOD(TestGetUsingStmt) {
@@ -64,10 +64,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesS(kSampleStmtIdx1, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx1, kSampleVarIndex1);
-    StmtNumList using_stmts = uses.GetUsingStmt(kSampleVarIndex1);
+    StmtNumSet using_stmts = uses.GetUsingStmt(kSampleVarIndex1);
     Assert::IsTrue(using_stmts.size() == 2);
-    Assert::AreEqual(kSampleStmtIdx1, using_stmts.front());
-    Assert::AreEqual(kSampleStmtIdx2, using_stmts.back());
+    StmtNumSet expected_results = StmtNumSet{ kSampleStmtIdx1, kSampleStmtIdx2 };
+    Assert::AreEqual(expected_results, using_stmts);
   }
 
   TEST_METHOD(TestGetUsingProc) {
@@ -75,10 +75,10 @@ TEST_CLASS(TestUsesTable) {
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex1);
     uses.InsertUsesP(kSampleProcIndex2, kSampleVarIndex1);
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex1);
-    ProcIndexList using_proc = uses.GetUsingProc(kSampleVarIndex1);
+    ProcIndexSet using_proc = uses.GetUsingProc(kSampleVarIndex1);
     Assert::IsTrue(using_proc.size() == 2);
-    Assert::AreEqual(kSampleProcIndex1, using_proc.front());
-    Assert::AreEqual(kSampleProcIndex2, using_proc.back());
+    ProcIndexSet expected_results = ProcIndexSet{ kSampleProcIndex1, kSampleProcIndex2 };
+    Assert::AreEqual(expected_results, using_proc);
   }
 
   TEST_METHOD(TestIsUsedByS) {
@@ -99,24 +99,24 @@ TEST_CLASS(TestUsesTable) {
     UsesTable uses;
     uses.InsertUsesS(kSampleStmtIdx1, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex1);
-    StmtVarIndexPairList uses_pair_list = uses.GetAllUsesSPair();
-    Assert::IsTrue(uses_pair_list.size() == 2);
-    Assert::AreEqual(kSampleStmtIdx1, uses_pair_list.front().first);
-    Assert::AreEqual(kSampleVarIndex1, uses_pair_list.front().second);
-    Assert::AreEqual(kSampleStmtIdx2, uses_pair_list.back().first);
-    Assert::AreEqual(kSampleVarIndex1, uses_pair_list.back().second);
+    StmtVarIndexPairSet uses_pair_set = uses.GetAllUsesSPair();
+    Assert::IsTrue(uses_pair_set.size() == 2);
+    StmtVarIndexPairSet expected_result = StmtVarIndexPairSet{ 
+      {kSampleStmtIdx1,kSampleVarIndex1},
+      {kSampleStmtIdx2,kSampleVarIndex1} };
+    Assert::AreEqual(expected_result, uses_pair_set);
   }
 
   TEST_METHOD(TestGetAllUsesPPair) {
     UsesTable uses;
     uses.InsertUsesP(kSampleProcIndex1, kSampleVarIndex1);
     uses.InsertUsesP(kSampleProcIndex2, kSampleVarIndex1);
-    ProcVarPairList uses_pair_list = uses.GetAllUsesPPair();
-    Assert::IsTrue(uses_pair_list.size() == 2);
-    Assert::AreEqual(kSampleProcIndex1, uses_pair_list.front().first);
-    Assert::AreEqual(kSampleVarIndex1, uses_pair_list.front().second);
-    Assert::AreEqual(kSampleProcIndex2, uses_pair_list.back().first);
-    Assert::AreEqual(kSampleVarIndex1, uses_pair_list.back().second);
+    ProcVarPairSet uses_pair_set = uses.GetAllUsesSPair();
+    Assert::IsTrue(uses_pair_set.size() == 2);
+    ProcVarPairSet expected_result = ProcVarPairSet{
+      {kSampleProcIndex1,kSampleVarIndex1},
+      {kSampleProcIndex2,kSampleVarIndex1} };
+    Assert::AreEqual(expected_result, uses_pair_set);
   }
 };
 }  // namespace PKBTests

@@ -30,10 +30,10 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertCalls(kStmtNum1, kProcIndex1);
     call_table.InsertCalls(kStmtNum2, kProcIndex3);
     call_table.InsertCalls(kStmtNum3, kProcIndex2);
-    StmtNumList calling_stmts = call_table.GetCallingStmts(kProcIndex3);
+    StmtNumSet calling_stmts = call_table.GetCallingStmts(kProcIndex3);
     Assert::IsTrue(calling_stmts.size() == 1);
-    StmtNumList::iterator iter = calling_stmts.begin();
-    Assert::AreEqual(kStmtNum2, *iter);
+    StmtNumSet expected_results = StmtNumSet{kStmtNum2};
+    Assert::AreEqual(expected_results, calling_stmts);
   }
 
   TEST_METHOD(TestGetAllCallingStmtPairs) {
@@ -41,81 +41,79 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertCalls(kStmtNum1, kProcIndex1);
     call_table.InsertCalls(kStmtNum2, kProcIndex3);
     call_table.InsertCalls(kStmtNum3, kProcIndex2);
-    StmtNumProcPairList stmt_proc_pair_list =
+    StmtNumProcPairSet stmt_proc_pair_set =
         call_table.GetAllCallingStmtPairs();
-    Assert::IsTrue(stmt_proc_pair_list.size() == 3);
-    StmtNumProcPairList::iterator iter = stmt_proc_pair_list.begin();
-    Assert::AreEqual(kStmtNum1, (*iter).first);
-    Assert::AreEqual(kProcIndex1, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum2, (*iter).first);
-    Assert::AreEqual(kProcIndex3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kStmtNum3, (*iter).first);
-    Assert::AreEqual(kProcIndex2, (*iter).second);
+    Assert::IsTrue(stmt_proc_pair_set.size() == 3);
+    StmtNumProcPairSet expected_results = StmtNumProcPairSet{ {kStmtNum1, kProcIndex1},
+                                                              {kStmtNum2, kProcIndex3},
+                                                              {kStmtNum3, kProcIndex2} };
+    Assert::AreEqual(expected_results, stmt_proc_pair_set);
   }
 
   TEST_METHOD(TestGetCallee) {
     CallTable call_table;
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-    ProcIndexList direct_callee_list;
-    direct_callee_list = call_table.GetCallee(kProcIndex2);
-    Assert::IsTrue(direct_callee_list.size() == 0);
-    direct_callee_list = call_table.GetCallee(kProcIndex1);
-    Assert::IsTrue(direct_callee_list.size() == 1);
-    Assert::AreEqual(kProcIndex2, direct_callee_list.front());
+    ProcIndexSet direct_callee_set;
+    direct_callee_set = call_table.GetCallee(kProcIndex2);
+    Assert::IsTrue(direct_callee_set.size() == 0);
+    direct_callee_set = call_table.GetCallee(kProcIndex1);
+    Assert::IsTrue(direct_callee_set.size() == 1);
+    ProcIndexSet expected_results_1 = { kProcIndex2 };
+    Assert::AreEqual(expected_results_1, direct_callee_set);
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex3);
-    direct_callee_list = call_table.GetCallee(kProcIndex1);
-    Assert::IsTrue(direct_callee_list.size() == 2);
-    Assert::AreEqual(kProcIndex2, direct_callee_list.front());
-    Assert::AreEqual(kProcIndex3, direct_callee_list.back());
+    direct_callee_set = call_table.GetCallee(kProcIndex1);
+    Assert::IsTrue(direct_callee_set.size() == 2);
+    ProcIndexSet expected_results_2 = { kProcIndex2, kProcIndex3 };
+    Assert::AreEqual(expected_results_2, direct_callee_set);
   }
 
   TEST_METHOD(TestGetCalleeT) {
     CallTable call_table;
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-    ProcIndexList callee_list;
-    callee_list = call_table.GetCalleeT(kProcIndex2);
-    Assert::IsTrue(callee_list.size() == 0);
-    callee_list = call_table.GetCalleeT(kProcIndex1);
-    Assert::IsTrue(callee_list.size() == 1);
-    Assert::AreEqual(kProcIndex2, callee_list.front());
+    ProcIndexSet callee_set;
+    callee_set = call_table.GetCalleeT(kProcIndex2);
+    Assert::IsTrue(callee_set.size() == 0);
+    callee_set = call_table.GetCalleeT(kProcIndex1);
+    Assert::IsTrue(callee_set.size() == 1);
+    ProcIndexSet expected_results_1 = ProcIndexSet{ kProcIndex2 };
+    Assert::AreEqual(expected_results_1, callee_set);
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex3);
-    callee_list = call_table.GetCalleeT(kProcIndex1);
-    Assert::IsTrue(callee_list.size() == 2);
-    Assert::AreEqual(kProcIndex2, callee_list.front());
-    Assert::AreEqual(kProcIndex3, callee_list.back());
+    callee_set = call_table.GetCalleeT(kProcIndex1);
+    Assert::IsTrue(callee_set.size() == 2);
+    ProcIndexSet expected_results_2 = ProcIndexSet{ kProcIndex2, kProcIndex3 };
+    Assert::AreEqual(expected_results_2, callee_set);
   }
 
   TEST_METHOD(TestGetCaller) {
     CallTable call_table;
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-    ProcIndexList direct_caller_list;
-    direct_caller_list = call_table.GetCaller(kProcIndex1);
-    Assert::IsTrue(direct_caller_list.size() == 0);
-    direct_caller_list = call_table.GetCaller(kProcIndex2);
-    Assert::IsTrue(direct_caller_list.size() == 1);
-    Assert::AreEqual(kProcIndex1, direct_caller_list.front());
+    ProcIndexSet direct_caller_set; 
+    direct_caller_set = call_table.GetCaller(kProcIndex1);
+    Assert::IsTrue(direct_caller_set.size() == 0);
+    direct_caller_set = call_table.GetCaller(kProcIndex2);
+    Assert::IsTrue(direct_caller_set.size() == 1);
+    ProcIndexSet expected_results_1 = ProcIndexSet{ kProcIndex1 };
+    Assert::AreEqual(expected_results_1, direct_caller_set);
     call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex2);
-    direct_caller_list = call_table.GetCaller(kProcIndex2);
-    Assert::IsTrue(direct_caller_list.size() == 2);
-    Assert::AreEqual(kProcIndex1, direct_caller_list.front());
-    Assert::AreEqual(kProcIndex3, direct_caller_list.back());
+    direct_caller_set = call_table.GetCaller(kProcIndex2);
+    Assert::IsTrue(direct_caller_set.size() == 2);
+    ProcIndexSet expected_results_2 = ProcIndexSet{ kProcIndex1, kProcIndex3 };
+    Assert::AreEqual(expected_results_2, direct_caller_set);
   }
 
   TEST_METHOD(TestGetCallerT) {
     CallTable call_table;
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
-    ProcIndexList caller_list;
-    caller_list = call_table.GetCallerT(kProcIndex1);
-    // Assert::IsTrue(caller_list.size() == 0);
-    caller_list = call_table.GetCallerT(kProcIndex2);
-    Assert::IsTrue(caller_list.size() == 1);
-    Assert::AreEqual(kProcIndex1, caller_list.front());
+    ProcIndexSet caller_set;
+    caller_set = call_table.GetCallerT(kProcIndex1);
+    caller_set = call_table.GetCallerT(kProcIndex2);
+    Assert::IsTrue(caller_set.size() == 1);
+    ProcIndexSet expected_results_1 = ProcIndexSet{ kProcIndex1 };
+    Assert::AreEqual(expected_results_1, caller_set);
     call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex2);
-    caller_list = call_table.GetCallerT(kProcIndex2);
-    Assert::AreEqual(kProcIndex1, caller_list.front());
-    Assert::AreEqual(kProcIndex3, caller_list.back());
+    caller_set = call_table.GetCallerT(kProcIndex2);
+    ProcIndexSet expected_results_2 = ProcIndexSet{ kProcIndex1, kProcIndex3 };
+    Assert::AreEqual(expected_results_2, caller_set);
   }
 
   TEST_METHOD(TestGetAllCaller) {
@@ -123,15 +121,11 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
     call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
     call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
-    ProcIndexList caller_list;
-    caller_list = call_table.GetAllCaller();
-    Assert::IsTrue(caller_list.size() == 3);
-    ProcIndexList::iterator iter = caller_list.begin();
-    Assert::AreEqual(kProcIndex1, *iter);
-    iter++;
-    Assert::AreEqual(kProcIndex2, *iter);
-    iter++;
-    Assert::AreEqual(kProcIndex3, *iter);
+    ProcIndexSet caller_set;
+    caller_set = call_table.GetAllCaller();
+    Assert::IsTrue(caller_set.size() == 3);
+    ProcIndexSet expected_results = ProcIndexSet{ kProcIndex1, kProcIndex2, kProcIndex3 };
+    Assert::AreEqual(expected_results, caller_set);
   }
 
   TEST_METHOD(TestGetAllCallee) {
@@ -139,15 +133,11 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
     call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
     call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
-    ProcIndexList callee_list;
-    callee_list = call_table.GetAllCallee();
-    Assert::IsTrue(callee_list.size() == 3);
-    ProcIndexList::iterator iter = callee_list.begin();
-    Assert::AreEqual(kProcIndex2, *iter);
-    iter++;
-    Assert::AreEqual(kProcIndex3, *iter);
-    iter++;
-    Assert::AreEqual(kProcIndex4, *iter);
+    ProcIndexSet callee_set;
+    callee_set = call_table.GetAllCallee();
+    Assert::IsTrue(callee_set.size() == 3);
+    ProcIndexSet expected_results = ProcIndexSet{ kProcIndex2, kProcIndex3, kProcIndex4 };
+    Assert::AreEqual(expected_results, callee_set);
   }
 
   TEST_METHOD(TestGetAllCalleeTwin) {
@@ -155,18 +145,13 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
     call_table.InsertDirectCallRelationship(kProcIndex2, kProcIndex3);
     call_table.InsertDirectCallRelationship(kProcIndex3, kProcIndex4);
-    ProcIndexPairList callee_list;
-    callee_list = call_table.GetAllCalleeTwin();
-    Assert::IsTrue(callee_list.size() == 3);
-    ProcIndexPairList::iterator iter = callee_list.begin();
-    Assert::AreEqual(kProcIndex2, (*iter).first);
-    Assert::AreEqual(kProcIndex2, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex3, (*iter).first);
-    Assert::AreEqual(kProcIndex3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex4, (*iter).first);
-    Assert::AreEqual(kProcIndex4, (*iter).second);
+    ProcIndexPairSet callee_set;
+    callee_set = call_table.GetAllCalleeTwin();
+    Assert::IsTrue(callee_set.size() == 3);
+    ProcIndexPairSet expected_results = ProcIndexPairSet{ {kProcIndex2, kProcIndex2},
+                                                          {kProcIndex3, kProcIndex3},
+                                                          {kProcIndex4, kProcIndex4} };
+    Assert::AreEqual(expected_results, callee_set);
   }
 
   TEST_METHOD(TestGetCallPairs) {
@@ -177,17 +162,12 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex3);
     call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex4);
     call_table.InsertIndirectCallRelationship(kProcIndex2, kProcIndex4);
-    ProcIndexPairList pair_list = call_table.GetAllCallPairs();
-    Assert::IsTrue(pair_list.size() == 3);
-    ProcIndexPairList::iterator iter = pair_list.begin();
-    Assert::AreEqual(kProcIndex1, (*iter).first);
-    Assert::AreEqual(kProcIndex2, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex2, (*iter).first);
-    Assert::AreEqual(kProcIndex3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex3, (*iter).first);
-    Assert::AreEqual(kProcIndex4, (*iter).second);
+    ProcIndexPairSet pair_set = call_table.GetAllCallPairs();
+    Assert::IsTrue(pair_set.size() == 3);
+    ProcIndexPairSet expected_results = ProcIndexPairSet{ {kProcIndex1, kProcIndex2},
+                                                          {kProcIndex2, kProcIndex3},
+                                                          {kProcIndex3, kProcIndex4} };
+    Assert::AreEqual(expected_results, pair_set);
   }
 
   TEST_METHOD(TestGetAllCallTPairs) {
@@ -198,26 +178,15 @@ TEST_CLASS(TestCallTable) {
     call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex3);
     call_table.InsertIndirectCallRelationship(kProcIndex1, kProcIndex4);
     call_table.InsertIndirectCallRelationship(kProcIndex2, kProcIndex4);
-    ProcIndexPairList pair_list = call_table.GetAllCallTPairs();
-    Assert::IsTrue(pair_list.size() == 6);
-    ProcIndexPairList::iterator iter = pair_list.begin();
-    Assert::AreEqual(kProcIndex1, (*iter).first);
-    Assert::AreEqual(kProcIndex2, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex1, (*iter).first);
-    Assert::AreEqual(kProcIndex3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex1, (*iter).first);
-    Assert::AreEqual(kProcIndex4, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex2, (*iter).first);
-    Assert::AreEqual(kProcIndex3, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex2, (*iter).first);
-    Assert::AreEqual(kProcIndex4, (*iter).second);
-    iter++;
-    Assert::AreEqual(kProcIndex3, (*iter).first);
-    Assert::AreEqual(kProcIndex4, (*iter).second);
+    ProcIndexPairSet pair_set = call_table.GetAllCallTPairs();
+    Assert::IsTrue(pair_set.size() == 6);
+    ProcIndexPairSet expected_results = ProcIndexPairSet{ {kProcIndex1, kProcIndex2},
+                                                          {kProcIndex1, kProcIndex3},
+                                                          {kProcIndex1, kProcIndex4},
+                                                          {kProcIndex2, kProcIndex3},
+                                                          {kProcIndex2, kProcIndex4},
+                                                          {kProcIndex3, kProcIndex4} };
+    Assert::AreEqual(expected_results, pair_set);
   }
 
   TEST_METHOD(TestIsCall) {
