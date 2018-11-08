@@ -3,23 +3,15 @@
 #include "uses_table.h"
 
 void UsesTable::InsertUsesS(StmtNum stmt_num, VarIndex var_name_id) {
-  if (!IsUsedByS(stmt_num, var_name_id)) {
-    if (using_stmt_set_.insert(stmt_num).second) {
-      using_stmt_list_.push_back(stmt_num);
-    }
-    uses_s_map_[stmt_num].insert(var_name_id);
-    used_by_s_map_[var_name_id].insert(stmt_num);
-  }
+  using_stmt_set_.insert(stmt_num);
+  uses_s_map_[stmt_num].insert(var_name_id);
+  used_by_s_map_[var_name_id].insert(stmt_num);
 }
 
 void UsesTable::InsertUsesP(ProcIndex proc_name_id, VarIndex var_name_id) {
-  if (!IsUsedByP(proc_name_id, var_name_id)) {
-    if (using_proc_set_.insert(proc_name_id).second) {
-      using_proc_list_.push_back(proc_name_id);
-    }
-    uses_p_map_[proc_name_id].insert(var_name_id);
-    used_by_p_map_[var_name_id].insert(proc_name_id);
-  }
+  using_proc_set_.insert(proc_name_id);
+  uses_p_map_[proc_name_id].insert(var_name_id);
+  used_by_p_map_[var_name_id].insert(proc_name_id);
 }
 
 VarIndexSet UsesTable::GetUsedVarS(StmtNum stmt_num) {
@@ -61,8 +53,7 @@ ProcIndexSet UsesTable::GetUsingProc(VarIndex var_name_id) {
 bool UsesTable::IsUsedByS(StmtNum stmt_num, VarIndex var_name_id) {
   if (uses_s_map_.find(stmt_num) != uses_s_map_.end()) {
     VarIndexSet var_name_set = (*uses_s_map_.find(stmt_num)).second;
-    return find(var_name_set.begin(), var_name_set.end(), var_name_id) !=
-        var_name_set.end();
+    return var_name_set.find(var_name_id) != var_name_set.end();
   } else {
     return false;
   }
@@ -78,8 +69,8 @@ bool UsesTable::IsUsedByP(ProcIndex proc_name_id, VarIndex var_name_id) {
   }
 }
 
-StmtVarIndexPairSet UsesTable::GetAllUsesSPair() {
-  StmtVarIndexPairSet uses_pairs;
+StmtVarPairSet UsesTable::GetAllUsesSPair() {
+  StmtVarPairSet uses_pairs;
   for (auto entry : uses_s_map_) {
     for (auto var_name : entry.second) {
       uses_pairs.insert(make_pair(entry.first, var_name));

@@ -21,15 +21,15 @@ bool PqlExtractor::IsPreviousT(StmtNum stmt_num) {
   return ne_.IsPreviousT(stmt_num);
 }
 
-StmtNumList PqlExtractor::GetNextT(StmtNum stmt_num) {
+StmtNumSet PqlExtractor::GetNextT(StmtNum stmt_num) {
   return ne_.GetNextT(stmt_num);
 }
 
-StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
+StmtNumSet PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   return ne_.GetPreviousT(stmt_num);
 }
 
-StmtNumPairList PqlExtractor::GetAllNextTPairs() {
+StmtNumPairSet PqlExtractor::GetAllNextTPairs() {
   return ne_.GetAllNextTPairs();
 }
 

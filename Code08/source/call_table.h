@@ -3,31 +3,24 @@
 #ifndef SPA_CALL_TABLE_H
 #define SPA_CALL_TABLE_H
 
-#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 using std::make_pair;
 using std::pair;
-using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 
 using StmtNum = int;
 using ProcIndex = int;
-using ProcName = string;
 using ProcIndexList = vector<ProcIndex>;
 using ProcIndexSet = unordered_set<ProcIndex>;
-using ProcNameSet = unordered_set<ProcName>;
-using ProcIndexPairList = vector<pair<ProcIndex, ProcIndex>>;
 using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>>;
 // int can be StmtNum or ProcIndex.
 using CallMap = unordered_map<int, unordered_set<ProcIndex>>;
-using StmtNumProcPairList = vector<pair<StmtNum, ProcIndex>>;
 using StmtNumProcPairSet = unordered_set<pair<StmtNum, ProcIndex>>;
-using StmtNumList = vector<StmtNum>;
 using StmtNumSet = unordered_set<StmtNum>;
 using StmtProcMap = unordered_map<StmtNum, ProcIndex>;
 
@@ -39,13 +32,12 @@ class CallTable {
   CallMap
       stmt_num_proc_table_;  // stores <procedure called, stmt_nums calling it>
 
-  ProcIndexList caller_list_;  // stores procs calling any other proc
-  ProcIndexSet caller_set_;    // stores procs calling any other proc
-  ProcIndexList callee_list_;  // stores procs called by any other proc
+  ProcIndexSet caller_set_;  // stores procs calling any other proc
   ProcIndexPairSet
-      callee_twin_set_;     // stores procs called by any other proc (in pairs)
+      callee_twin_set_;      // stores procs called by any other proc (in pairs)
   ProcIndexSet callee_set_;  // stores procs called by any other proc
-  StmtProcMap stmt_to_call_table_;  // retrieve the procedure name called at StmtNum
+  StmtProcMap
+      stmt_to_call_table_;  // retrieve the procedure name called at StmtNum
 
  public:
   // PROC-PROC RELATIONSHIP INSERT
@@ -60,7 +52,8 @@ class CallTable {
   // @returns true if insertion is successful, false if relationship
   // already exists or if insertion fails.
   // @params caller procedure name and callee procedure name
-  bool InsertDirectCallRelationship(ProcIndex caller_proc, ProcIndex callee_proc);
+  bool InsertDirectCallRelationship(ProcIndex caller_proc,
+                                    ProcIndex callee_proc);
 
   // STATEMENT-PROC RELATIONSHIP INSERT
   // Inserts a calls relationship to the call table.
@@ -107,10 +100,12 @@ class CallTable {
   // @returns a set of all procedures calling some other proc (can be empty)
   ProcIndexSet GetAllCaller();
 
-  // @returns a set of all procedures being called by some other proc (can be empty)
+  // @returns a set of all procedures being called by some other proc (can be
+  // empty)
   ProcIndexSet GetAllCallee();
 
-  // @returns a set of all procedures being called by some other proc (can be empty)
+  // @returns a set of all procedures being called by some other proc (can be
+  // empty)
   ProcIndexPairSet GetAllCalleeTwin();
 
   // @returns a set of all <caller, direct callee> pairs

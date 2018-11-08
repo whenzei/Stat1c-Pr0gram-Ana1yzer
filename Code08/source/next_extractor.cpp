@@ -54,14 +54,14 @@ bool NextExtractor::IsPreviousT(StmtNum stmt_num) {
   return pkb_->IsPrevious(stmt_num);
 }
 
-StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
-  StmtNumList res_list;
+StmtNumSet NextExtractor::GetNextT(StmtNum stmt_num) {
+  StmtNumSet res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> next_stmt_queue;
 
   ProcName p = pkb_->GetProcOfStmt(stmt_num);
   if (p.empty()) {
-    return StmtNumList();
+    return StmtNumSet();
   }
 
   for (auto& next_stmt : pkb_->GetNext(stmt_num)) {
@@ -77,7 +77,7 @@ StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
       continue;
     }
     visited_stmts.emplace(curr_stmt);
-    res_list.push_back(curr_stmt);
+    res_list.emplace(curr_stmt);
 
     StmtNumSet curr_next_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_next_stmts) {
@@ -90,15 +90,15 @@ StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
   return res_list;
 }
 
-StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
-  StmtNumList res_list;
+StmtNumSet NextExtractor::GetPreviousT(StmtNum stmt_num) {
+  StmtNumSet res_list;
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
 
   ProcName p = pkb_->GetProcOfStmt(stmt_num);
 
   if (p.empty()) {
-    return StmtNumList();
+    return StmtNumSet();
   }
 
   for (auto& next_stmt : pkb_->GetPrevious(stmt_num)) {
@@ -115,7 +115,7 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
     }
 
     visited_stmts.emplace(curr_stmt);
-    res_list.push_back(curr_stmt);
+    res_list.emplace(curr_stmt);
 
     StmtNumSet curr_prev_stmts = pkb_->GetPrevious(curr_stmt);
     for (StmtNum curr_prev : curr_prev_stmts) {
@@ -128,9 +128,9 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
   return res_list;
 }
 
-StmtNumPairList NextExtractor::GetAllNextTPairs() {
+StmtNumPairSet NextExtractor::GetAllNextTPairs() {
   StmtNumSet prev_list = pkb_->GetAllPrevious();
-  StmtNumPairList res_list;
+  StmtNumPairSet res_list;
 
   for (auto& prev : prev_list) {
     FormPairBFS(prev, &res_list);
@@ -139,7 +139,7 @@ StmtNumPairList NextExtractor::GetAllNextTPairs() {
   return res_list;
 }
 
-void NextExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
+void NextExtractor::FormPairBFS(StmtNum start, StmtNumPairSet* res_list) {
   unordered_set<StmtNum> visited_stmts;
   queue<StmtNum> prev_stmt_queue;
 
@@ -158,7 +158,7 @@ void NextExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
 
     visited_stmts.emplace(curr_stmt);
 
-    (*res_list).push_back(make_pair(start, curr_stmt));
+    (*res_list).emplace(start, curr_stmt);
 
     StmtNumSet curr_prev_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_prev_stmts) {
