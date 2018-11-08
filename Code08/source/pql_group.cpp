@@ -11,7 +11,7 @@ PqlGroup::PqlGroup() {
 
 void PqlGroup::SortClauses() {
   int max_priority = 0;
-  int max_index;
+  int max_index = 0;
   unordered_set<int> available_set;
   for(unsigned i = 0; i <  clauses_.size(); i++) {
     // Get clause with highest priority
