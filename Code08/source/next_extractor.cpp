@@ -19,7 +19,7 @@ bool NextExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
     return false;
   }
 
-  StmtNumList temp_next_stmts = pkb_->GetNext(previous_stmt);
+  StmtNumSet temp_next_stmts = pkb_->GetNext(previous_stmt);
   for (auto& temp_next_stmt : temp_next_stmts) {
     next_stmt_queue.push(temp_next_stmt);
   }
@@ -38,7 +38,7 @@ bool NextExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
       return true;
     }
 
-    StmtNumList curr_next_stmts = pkb_->GetNext(curr_stmt);
+    StmtNumSet curr_next_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_next_stmts) {
       if (visited_stmts.count(curr_next) == 0) {
         next_stmt_queue.push(curr_next);
@@ -79,7 +79,7 @@ StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
     visited_stmts.emplace(curr_stmt);
     res_list.push_back(curr_stmt);
 
-    StmtNumList curr_next_stmts = pkb_->GetNext(curr_stmt);
+    StmtNumSet curr_next_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_next_stmts) {
       if (visited_stmts.count(curr_next) == 0) {
         next_stmt_queue.push(curr_next);
@@ -117,7 +117,7 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
     visited_stmts.emplace(curr_stmt);
     res_list.push_back(curr_stmt);
 
-    StmtNumList curr_prev_stmts = pkb_->GetPrevious(curr_stmt);
+    StmtNumSet curr_prev_stmts = pkb_->GetPrevious(curr_stmt);
     for (StmtNum curr_prev : curr_prev_stmts) {
       if (visited_stmts.count(curr_prev) == 0) {
         prev_stmt_queue.push(curr_prev);
@@ -129,7 +129,7 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
 }
 
 StmtNumPairList NextExtractor::GetAllNextTPairs() {
-  StmtNumList prev_list = pkb_->GetAllPrevious();
+  StmtNumSet prev_list = pkb_->GetAllPrevious();
   StmtNumPairList res_list;
 
   for (auto& prev : prev_list) {
@@ -160,7 +160,7 @@ void NextExtractor::FormPairBFS(StmtNum start, StmtNumPairList* res_list) {
 
     (*res_list).push_back(make_pair(start, curr_stmt));
 
-    StmtNumList curr_prev_stmts = pkb_->GetNext(curr_stmt);
+    StmtNumSet curr_prev_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_prev_stmts) {
       if (visited_stmts.count(curr_next) == 0) {
         prev_stmt_queue.push(curr_next);
