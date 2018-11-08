@@ -34,75 +34,75 @@ procedure Alpha {
   www = zzz + d + alpha;				\\20
 }
 
-procedure Beta {					\\21
-  while (b != 1) {					\\22
-     a = b + c * d / 2;					\\23
-     while (c != 1) {					\\24
-        b = c + d - 3;					\\25
-       while (d != 1) {					\\26
-          c = d - m % alpha + 6 + 3 *(beta * alpha);    \\27
-	  d = a + s / 2 / 2;				\\28
+procedure Beta {					
+  while (b != 1) {					\\21
+     a = b + c * d / 2;					\\22
+     while (c != 1) {					\\23
+        b = c + d - 3;					\\24
+       while (d != 1) {					\\25
+          c = d - m % alpha + 6 + 3 *(beta * alpha);    \\26
+	  d = a + s / 2 / 2;				\\27
        }
      }  
   }
-  read alpha;						\\29
-  call Delta;						\\30
-  foxtrot = foxtrot + 2 * z;				\\31
+  read alpha;						\\28
+  call Delta;						\\29
+  foxtrot = foxtrot + 2 * z;				\\30
 }	
 
 procedure Charlie {
-  call Delta;						\\32
-  echo = 6 % 2 + 5;					\\33
-  if ((c==1) || (g > 1)) then {				\\34
-     call Me;						\\35
+  call Delta;						\\31
+  echo = 6 % 2 + 5;					\\32
+  if ((c==1) || (g > 1)) then {				\\33
+     call Me;						\\34
   } else {
-     call You;						\\36
+     call You;						\\35
   }
-  call = echo % 2 + 3 + (echo * call);			\\37
+  call = echo % 2 + 3 + (echo * call);			\\36
 }
 
 procedure Delta {
-   zzz = 0;						\\38
-   k = g + Alpha % 2;					\\39
-   read x;						\\40
-   print Alpha;						\\41
+   zzz = 0;						\\37
+   k = g + Alpha % 2;					\\38
+   read x;						\\39
+   print Alpha;						\\40
 }
 
 procedure Me {
-   read echo;						\\42
-   print echo;						\\43
-   while (echo != 1) {					\\44
-     if = while + call + read;				\\45
-     c = if * 8;					\\46
-     if (c != 0) then {					\\47
-       ORANGE = 8;					\\48
-       while (delta == charline) {			\\49
-         if (APPLE < ORANGE) then {			\\50
-            if = (7+ a)/ (me * 8)/ 2;			\\51
+   read echo;						\\41
+   print echo;						\\42
+   while (echo != 1) {					\\43
+     if = while + call + read;				\\44
+     c = if * 8;					\\45
+     if (c != 0) then {					\\46
+       ORANGE = 8;					\\47
+       while (delta == charline) {			\\48
+         if (APPLE < ORANGE) then {			\\49
+            if = (7+ a)/ (me * 8)/ 2;			\\50
          } else {
-            me = me + c + if;				\\52
-            while (g == 0) {				\\53
-              me = Orange;				\\54
+            me = me + c + if;				\\51
+            while (g == 0) {				\\52
+              me = Orange;				\\53
             }
-	    me = ORANGE * 8 + 1;			\\55
+	    me = ORANGE * 8 + 1;			\\54
          }
        }
      } else {
-       while = if + c;					\\56
+       while = if + c;					\\55
      }   
    }
 }
 
 procedure You {
-  print Alpha;						\\57
-  print = a;						\\58
-  call = print;						\\59
+  print Alpha;						\\56
+  print = a;						\\57
+  call = print;						\\58
 }
 
 procedure Foxtrot{
-   echo = 0;						\\60
-   delta = x + c;					\\61
-   call Charlie;					\\62
-   echo = echo + 1;					\\63
-   procedure = delta* 7;				\\64
+   echo = 0;						\\59
+   delta = x + c;					\\60
+   call Charlie;					\\61
+   echo = echo + 1;					\\62
+   procedure = delta* 7;				\\63
 }
