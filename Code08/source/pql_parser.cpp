@@ -369,7 +369,7 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   // 9. Early termination for Follows, Follows*, Parent, Parent*, Next if both syns params are same
   if (suchthat_type == PqlSuchthatType::kFollows || suchthat_type == PqlSuchthatType::kFollowsT || 
   suchthat_type == PqlSuchthatType::kParent || suchthat_type == PqlSuchthatType::kParentT || 
-  suchthat_type == PqlSuchthatType::kNext) {
+  suchthat_type == PqlSuchthatType::kNext || suchthat_type == PqlSuchthatType::kCalls || suchthat_type == PqlSuchthatType::kCallsT) {
     if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore && first == second) {
       error_message_ = "Follows, Follows*, Parent, Parent*, Next, can not have both params being same synonym.";
       return false;
