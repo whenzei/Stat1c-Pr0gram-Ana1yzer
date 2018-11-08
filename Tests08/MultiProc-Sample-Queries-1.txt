@@ -1181,7 +1181,7 @@ b, c
 241 - WITH syn-digit [assign]
 assign a; stmt s;
 Select BOOLEAN with a.stmt# = 2
-true
+TRUE
 5000
 242 - WITH syn-ident [call]
 call c;
@@ -1221,7 +1221,7 @@ Select w pattern w("count", _)
 48 - AFFECTS constant-constant valid
 
 Select BOOLEAN such that Affects(11, 11)
-true
+TRUE
 5000
 49 - AFFECTS constant-syn valid
 assign a;
