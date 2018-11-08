@@ -1,0 +1,20 @@
+1 - Modifies, Uses, Affects(constant, syn) and Next*(constant, syn)
+variable v; assign a; 
+Select a such that Next*(1, a) such that Modifies(a, v) and Uses(a,v) and Affects(a, a)
+11
+5000
+2 - Parent*, With, Follows*, Affects(syn,syn), Modifies
+assign a, a1; procedure p; variable v;
+Select <a,a1> such that Affects(a,a1) and Modifies(p,v) with p.procName = "Charlie" such that Modifies(a,v) such that Follows*(32,a1)
+32 36
+5000
+3 - Affects(syn,syn), Parent, Next, Calls
+if ifs; stmt s, s1; procedure p;
+Select <s, s1, p> such that Affects(s, s1) and Parent(ifs, s) and Calls(p, "Beta") and Next*(s,s1)
+10 20 Alpha, 10 11 Alpha, 17 20 Alpha, 11 6 Alpha, 11 11 Alpha, 47 54 Alpha, 50 51 Alpha, 54 50 Alpha, 54 51 Alpha, 55 44 Alpha
+5000
+4 - Pattern, Parent, Next*, Uses
+while w; if ifs; stmt s;
+Select s such that Next*(w, s) pattern w("delta",_) and ifs("ORANGE",_,_) such that Parent(w, ifs) and Parent(ifs, s) and Uses(s, "me")
+50, 51
+5000
