@@ -557,9 +557,9 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       if (next_map.empty()) {
         SetClauseFlag(false);
         cout << " no map of Next*(lefttype,righttype)" << endl;
-      } 
-	  // two syn same
-	  else if ((left_name.compare(right_name)) == 0) {
+      }
+      // two syn same
+      else if ((left_name.compare(right_name)) == 0) {
         for (auto& before : next_map) {
           for (auto& next : before.second) {
             if (before.first == next) {
@@ -1846,25 +1846,29 @@ QueryResultPairList PqlEvaluateSuchthat::FilterPairResult(
   return filtered_result;
 }
 
-AffectsMap PqlEvaluateSuchthat::FilterNextTTable(
-    AffectsMap result_map, PqlDeclarationEntity entity_type) {
+NextTMap PqlEvaluateSuchthat::FilterNextTTable(
+    NextTMap result_map, PqlDeclarationEntity entity_type) {
   // If its of type stmt (not assign, if, while etc) just return the list,
   // nothing to filter
   if (entity_type == PqlDeclarationEntity::kStmt ||
       entity_type == PqlDeclarationEntity::kProgline) {
     return result_map;
   }
-  
-  for (auto& key : result_map) {
-    for (auto& val : key.second) {
-      if (pkb_->GetStmtType(val) != entity_type) {
-        key.second.erase(val);
+
+  for (auto& kv : result_map) {
+    StmtNumSet stmts = kv.second;
+    auto iterator = stmts.begin();
+    while (iterator != stmts.end()) {
+      if (pkb_->GetStmtType(*iterator) != entity_type) {
+        iterator = stmts.erase(iterator);
+      } else {
+        iterator++;
       }
     }
   }
 
   return result_map;
-} 
+}
 
 SuchthatParamType PqlEvaluateSuchthat::CheckSuchthatParamType(
     Parameters such_that_param) {
