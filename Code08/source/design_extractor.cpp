@@ -110,7 +110,8 @@ void DesignExtractor::PopulateProgramCFG() {
   pkb_->SetReverseProgramCFG(cfgs.second);
 }
 
-pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg, CFG* rev_combined_cfg) {
+pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg,
+                                                  CFG* rev_combined_cfg) {
   // must clone, or the combined cfg will be mutated
   CFG program_cfg = CFG(*combined_cfg);
   CFG rev_program_cfg = CFG(*rev_combined_cfg);
@@ -119,13 +120,12 @@ pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg, CFG* rev_co
   for (auto v : program_cfg.GetAllVertices()) {
     // not visited yet
     if (!visited.count(v)) {
-        DfsConnect(v, &program_cfg, &rev_program_cfg, &visited);
+      DfsConnect(v, &program_cfg, &rev_program_cfg, &visited);
     }
   }
 
   return make_pair(program_cfg, rev_program_cfg);
 }
-
 
 void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
                                  VisitedMap* visited) {
@@ -134,8 +134,7 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
   }
 
   visited->emplace(v, true);
-
-  VertexList terminal_nodes;
+  VertexList neighbours = cfg->GetNeighboursList(v);
 
   StmtType stmt_type = pkb_->GetStmtType(v);
   if (stmt_type == StmtType::kCall) {
@@ -144,22 +143,13 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
     ProcName proc_name = pkb_->GetProcName(pkb_->GetCalledProcedure(v));
     CFG* called_cfg = pkb_->GetCFG(proc_name);
     Vertex called_cfg_root = called_cfg->GetRoot();
-    // add root of the procedure's cfg as neighbour of call statement's
-    // previouses
-    VertexList previouses = pkb_->GetPrevious(v);
-    for (auto& previous : previouses) {
-      cfg->AddEdge(previous, called_cfg_root);
-      rev_cfg->AddEdge(called_cfg_root, previous);
-    }
 
-    // remove the whole call node
-    // must be done before obtaining terminal nodes in case the call statement
-    // is a terminal node
-    cfg->RemoveNode(v);
-    rev_cfg->RemoveNode(v);
+    // add root of the procedure's cfg as neighbour of call statement
+    cfg->AddEdge(v, called_cfg_root);
+    rev_cfg->AddEdge(called_cfg_root, v);
 
     // get terminal nodes of the called cfg
-    terminal_nodes = called_cfg->GetTerminalNodes();
+    VertexList terminal_nodes = called_cfg->GetTerminalNodes();
 
     for (auto& neighbour : neighbours) {
       // add the neighbours to the terminal nodes of the procedure
@@ -167,21 +157,15 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
         cfg->AddEdge(terminal_node, neighbour);
         rev_cfg->AddEdge(neighbour, terminal_node);
       }
-    }
 
-    // get all the neighbours of the previous node again and dfs
-    for (auto& previous : previouses) {
-      VertexList prev_neighbours = cfg->GetNeighboursList(previous);
-      for (auto& prev_neighbour : prev_neighbours) {
-        DfsConnect(prev_neighbour, cfg, rev_cfg, visited);
-      }
+      // remove link between neighbour and call statement
+      cfg->RemoveEdge(v, neighbour);
+      rev_cfg->RemoveEdge(neighbour, v);
     }
-  } else {
-    // Default path for non calls: Get the neighbours
-    VertexList neighbours = cfg->GetNeighboursList(v);
-    for (auto& neighbour : neighbours) {
-      DfsConnect(neighbour, cfg, rev_cfg, visited);
-    }
+  }
+
+  for (auto& neighbour : neighbours) {
+    DfsConnect(neighbour, cfg, rev_cfg, visited);
   }
 }
 
