@@ -1186,7 +1186,7 @@ TRUE
 242 - WITH syn-ident [call]
 call c;
 Select BOOLEAN with c.procName = "first"
-false
+FALSE
 5000
 243 - PATTERN if syn [variable]
 variable v; if ifs;

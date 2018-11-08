@@ -29,8 +29,32 @@ StmtNumList PqlExtractor::GetPreviousT(StmtNum stmt_num) {
   return ne_.GetPreviousT(stmt_num);
 }
 
-StmtNumPairList PqlExtractor::GetAllNextTPairs() {
-  return ne_.GetAllNextTPairs();
+NextTMap PqlExtractor::GetNextTMap() {
+  return ne_.GetNextTMap();
+}
+
+NextTMap PqlExtractor::GetAssignNextTMap() {
+  return ne_.GetAssignNextTMap();
+}
+
+NextTMap PqlExtractor::GetWhileNextTMap() {
+  return ne_.GetWhileNextTMap();
+}
+
+NextTMap PqlExtractor::GetIfNextTMap() {
+  return ne_.GetIfNextTMap();
+}
+
+NextTMap PqlExtractor::GetCallNextTMap() {
+  return ne_.GetCallNextTMap();
+}
+
+NextTMap PqlExtractor::GetReadNextTMap() {
+  return ne_.GetReadNextTMap();
+}
+
+NextTMap PqlExtractor::GetPrintNextTMap() {
+  return ne_.GetPrintNextTMap();
 }
 
 /**********************************
@@ -43,6 +67,10 @@ bool PqlExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2) {
 
 bool PqlExtractor::IsAffects(StmtNum stmt_num) {
   return ae_.IsAffects(stmt_num);
+}
+
+bool PqlExtractor::HasAffectsRelationship() {
+  return ae_.HasAffectsRelationship();
 }
 
 bool PqlExtractor::IsAffected(StmtNum stmt_num) {

@@ -13,6 +13,8 @@ PqlOptimizer::PqlOptimizer() {}
 vector<PqlGroup> PqlOptimizer::Optimize() {
   vector<PqlGroup> groups;
   unordered_map<int, PqlGroup> group_map;
+
+  // Put clauses into groups
   for (unsigned i = 0; i < clauses_.size(); i++) {
     if (clauses_[i]->GetSynonyms().first != "") { // if there is a synonym
       int root = union_.at(clauses_[i]->GetSynonyms().first);
@@ -40,6 +42,7 @@ vector<PqlGroup> PqlOptimizer::Optimize() {
     }
   }
 
+  // Sort clauses within groups
   for (unordered_map<int, PqlGroup>::iterator it = group_map.begin(); it != group_map.end(); it++) {
     PqlGroup group = it->second;
     group.SortClauses(); // sort clauses within a group
@@ -55,6 +58,7 @@ vector<PqlGroup> PqlOptimizer::Optimize() {
 
 void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntity first_type, string second, PqlDeclarationEntity second_type) {
   clauses_.push_back(clause);
+
   // CASE 1: Both are synoynms
   if (PqlValidator::IsSynonym(first_type) && PqlValidator::IsSynonym(second_type)) {
     clause->SetSynonyms(first, second);
@@ -77,7 +81,7 @@ void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
     }
     // CASE 1b: Both have groups
     else if (first_group != -1 && second_group != -1) {
-      // Check if both are in the same group
+      // Check if both are not in the same group
       if (first_group != second_group) {
         // CASE 1c.1: Both have no group ref
         if (find_.at(first_group) == -1 && find_.at(second_group) == -1) {
@@ -91,7 +95,7 @@ void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
         }
         // CASE 1c.2: Only 1 have group ref
         else {
-          if (find_.at(first_group) != -1) find_[second_group] = first_group;
+          if (find_.at(first_group) == -1) find_[second_group] = first_group;
           else find_[first_group] = second_group;
         }
       }
@@ -117,7 +121,7 @@ void PqlOptimizer::AddUnion(PqlClause* clause, string first, PqlDeclarationEntit
     }
     // CASE 2b: Group exist, just ignore
   }
-  // CASE 3: No synonyms, just ignore 
+  // CASE 3: No synonyms, just ignore
 }
 
 bool PqlOptimizer::ClauseUsesSelection(PqlClause* clause) {
