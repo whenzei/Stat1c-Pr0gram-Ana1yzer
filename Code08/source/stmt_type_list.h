@@ -3,26 +3,23 @@
 #ifndef SPA_STMT_TYPE_LIST_H
 #define SPA_STMT_TYPE_LIST_H
 
-#include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "pql_global.h"
 
-// StmtNum is defined as a string inside PKB, because query results have to be
-// in the format vector<string>. For consistency, all StmtNum inside PKB is
-// string so that it is easier to search and update the PKB data structures.
 using std::pair;
-using std::string;
 using std::unordered_map;
-using std::vector;
+using std::unordered_set;
 
 using StmtNum = int;
-using StmtNumList = vector<int>;
-using StmtNumPairList = vector<pair<int, int>>;
-using StmtTypeMap = unordered_map<PqlDeclarationEntity, vector<int>>;
+using StmtNumSet = unordered_set<StmtNum>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
+using StmtType = PqlDeclarationEntity;
+using StmtTypeMap = unordered_map<StmtType, StmtNumSet>;
 using StmtTypePairMap =
-    unordered_map<PqlDeclarationEntity, vector<pair<int, int>>>;
+    unordered_map<PqlDeclarationEntity, unordered_set<pair<StmtNum, StmtNum>>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g.
@@ -38,49 +35,49 @@ class StmtTypeList {
   // Insert a statement into the StmtTypeList using type provided
   // @param stmt_num the statement number of the statement to be inserted
   // @param stmt_type the PqlDeclarationEntity type of statement
-  void InsertStmt(StmtNum stmt_num, PqlDeclarationEntity stmt_type);
+  void InsertStmt(StmtNum stmt_num, StmtType stmt_type);
 
   // Get the list of all statements
-  StmtNumList GetAllStmt();
+  StmtNumSet GetAllStmt();
 
   // Get the list of all statements in pairs
-  StmtNumPairList GetAllStmtTwin();
+  StmtNumPairSet GetAllStmtTwin();
 
   // Get the list of all assign statements
-  StmtNumList GetAllAssignStmt();
+  StmtNumSet GetAllAssignStmt();
 
   // Get the list of all assign statements in pairs
-  StmtNumPairList GetAllAssignStmtTwin();
+  StmtNumPairSet GetAllAssignStmtTwin();
 
   // Get the list of all while statements
-  StmtNumList GetAllWhileStmt();
+  StmtNumSet GetAllWhileStmt();
 
   // Get the list of all while statements in pairs
-  StmtNumPairList GetAllWhileStmtTwin();
+  StmtNumPairSet GetAllWhileStmtTwin();
 
   // Get the list of all if statements
-  StmtNumList GetAllIfStmt();
+  StmtNumSet GetAllIfStmt();
 
   // Get the list of all if statements in pairs
-  StmtNumPairList GetAllIfStmtTwin();
+  StmtNumPairSet GetAllIfStmtTwin();
 
   // Get the list of all read statements
-  StmtNumList GetAllReadStmt();
+  StmtNumSet GetAllReadStmt();
 
   // Get the list of all read statements in pairs
-  StmtNumPairList GetAllReadStmtTwin();
+  StmtNumPairSet GetAllReadStmtTwin();
 
   // Get the list of all print statements
-  StmtNumList GetAllPrintStmt();
+  StmtNumSet GetAllPrintStmt();
 
   // Get the list of all print statements in pairs
-  StmtNumPairList GetAllPrintStmtTwin();
+  StmtNumPairSet GetAllPrintStmtTwin();
 
   // Get the list of all call statements
-  StmtNumList GetAllCallStmt();
+  StmtNumSet GetAllCallStmt();
 
   // Get the list of all call statements in pairs
-  StmtNumPairList GetAllCallStmtTwin();
+  StmtNumPairSet GetAllCallStmtTwin();
 };
 
 #endif !SPA_STMT_TYPE_LIST_H

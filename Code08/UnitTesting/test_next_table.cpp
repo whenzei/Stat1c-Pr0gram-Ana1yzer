@@ -56,16 +56,16 @@ TEST_CLASS(TestNextTable) {
     next_table.InsertNext(kProcName1, kStmtNum1, kStmtNum2);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum3);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum4);
-    StmtNumList result1 = next_table.GetNext(kStmtNum1);
+    StmtNumSet result1 = next_table.GetNext(kStmtNum1);
     Assert::IsTrue(result1.size() == 1);
-    Assert::AreEqual(kStmtNum2, result1.front());
-    StmtNumList result2 = next_table.GetNext(kStmtNum2);
+    Assert::IsTrue(result1.count(kStmtNum2));
+    StmtNumSet result2 = next_table.GetNext(kStmtNum2);
     Assert::IsTrue(result2.size() == 2);
-    Assert::AreEqual(kStmtNum3, result2.front());
-    Assert::AreEqual(kStmtNum4, result2.back());
-    StmtNumList result3 = next_table.GetNext(kStmtNum3);
+    Assert::IsTrue(result2.count(kStmtNum3));
+    Assert::IsTrue(result2.count(kStmtNum4));
+    StmtNumSet result3 = next_table.GetNext(kStmtNum3);
     Assert::IsTrue(result3.empty());
-    StmtNumList result4 = next_table.GetNext(kStmtNum4);
+    StmtNumSet result4 = next_table.GetNext(kStmtNum4);
     Assert::IsTrue(result4.empty());
   }
 
@@ -75,17 +75,17 @@ TEST_CLASS(TestNextTable) {
     next_table.InsertNext(kProcName1, kStmtNum1, kStmtNum2);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum3);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum4);
-    StmtNumList result1 = next_table.GetPrevious(kStmtNum1);
+    StmtNumSet result1 = next_table.GetPrevious(kStmtNum1);
     Assert::IsTrue(result1.empty());
-    StmtNumList result2 = next_table.GetPrevious(kStmtNum2);
+    StmtNumSet result2 = next_table.GetPrevious(kStmtNum2);
     Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(kStmtNum1, result2.front());
-    StmtNumList result3 = next_table.GetPrevious(kStmtNum3);
+    Assert::IsTrue(result2.count(kStmtNum1));
+    StmtNumSet result3 = next_table.GetPrevious(kStmtNum3);
     Assert::IsTrue(result3.size() == 1);
-    Assert::AreEqual(kStmtNum2, result3.front());
-    StmtNumList result4 = next_table.GetPrevious(kStmtNum4);
+    Assert::IsTrue(result3.count(kStmtNum2));
+    StmtNumSet result4 = next_table.GetPrevious(kStmtNum4);
     Assert::IsTrue(result4.size() == 1);
-    Assert::AreEqual(kStmtNum2, result4.front());
+    Assert::IsTrue(result4.count(kStmtNum2));
   }
 
   TEST_METHOD(TestGetAllNext) {
@@ -94,14 +94,11 @@ TEST_CLASS(TestNextTable) {
     next_table.InsertNext(kProcName1, kStmtNum1, kStmtNum2);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum3);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum4);
-    StmtNumList result1 = next_table.GetAllNext();
+    StmtNumSet result1 = next_table.GetAllNext();
     Assert::IsTrue(result1.size() == 3);
-    StmtNumList::iterator iter = result1.begin();
-    Assert::AreEqual(kStmtNum2, *iter);
-    iter++;
-    Assert::AreEqual(kStmtNum3, *iter);
-    iter++;
-    Assert::AreEqual(kStmtNum4, *iter);
+    Assert::IsTrue(result1.count(kStmtNum2));
+    Assert::IsTrue(result1.count(kStmtNum3));
+    Assert::IsTrue(result1.count(kStmtNum4));
   }
 
   TEST_METHOD(TestGetAllPrevious) {
@@ -110,10 +107,10 @@ TEST_CLASS(TestNextTable) {
     next_table.InsertNext(kProcName1, kStmtNum1, kStmtNum2);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum3);
     next_table.InsertNext(kProcName1, kStmtNum2, kStmtNum4);
-    StmtNumList result1 = next_table.GetAllPrevious();
+    StmtNumSet result1 = next_table.GetAllPrevious();
     Assert::IsTrue(result1.size() == 2);
-    Assert::AreEqual(kStmtNum1, result1.front());
-    Assert::AreEqual(kStmtNum2, result1.back());
+    Assert::IsTrue(result1.count(kStmtNum1));
+    Assert::IsTrue(result1.count(kStmtNum2));
   }
 
   TEST_METHOD(TestHasNextRelationship) {

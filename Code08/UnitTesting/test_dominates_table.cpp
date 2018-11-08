@@ -38,23 +38,22 @@ TEST_CLASS(TestDominatesTable) {
     dominates_table.InsertDominates(2, {2});
     dominates_table.InsertDominates(3, {3, 4});
     dominates_table.InsertDominates(4, {4});
-    StmtNumList result1 = dominates_table.GetDominating(1);
+    StmtNumSet result1 = dominates_table.GetDominating(1);
     Assert::IsTrue(result1.size() == 1);
-    Assert::AreEqual(1, result1.front());
-    StmtNumList result2 = dominates_table.GetDominating(2);
+    Assert::IsTrue(result1.count(1));
+    StmtNumSet result2 = dominates_table.GetDominating(2);
     Assert::IsTrue(result2.size() == 2);
-    Assert::AreEqual(1, result2.front());
-    Assert::AreEqual(2, result2.back());
-    StmtNumList result3 = dominates_table.GetDominating(3);
+    Assert::IsTrue(result2.count(1));
+    Assert::IsTrue(result2.count(2));
+    StmtNumSet result3 = dominates_table.GetDominating(3);
     Assert::IsTrue(result3.size() == 2);
-    Assert::AreEqual(1, result3.front());
-    Assert::AreEqual(3, result3.back());
-    StmtNumList result4 = dominates_table.GetDominating(4);
+    Assert::IsTrue(result3.count(1));
+    Assert::IsTrue(result3.count(3));
+    StmtNumSet result4 = dominates_table.GetDominating(4);
     Assert::IsTrue(result4.size() == 3);
-    StmtNumList::iterator iter = result4.begin();
-    Assert::AreEqual(1, (*iter++));
-    Assert::AreEqual(3, (*iter++));
-    Assert::AreEqual(4, (*iter));
+    Assert::IsTrue(result4.count(1));
+    Assert::IsTrue(result4.count(3));
+    Assert::IsTrue(result4.count(4));
   }
 
   TEST_METHOD(TestGetDominated) {
@@ -63,23 +62,23 @@ TEST_CLASS(TestDominatesTable) {
     dominates_table.InsertDominates(2, {2});
     dominates_table.InsertDominates(3, {3, 4});
     dominates_table.InsertDominates(4, {4});
-    StmtNumList result1 = dominates_table.GetDominated(1);
+    StmtNumSet result1 = dominates_table.GetDominated(1);
     Assert::IsTrue(result1.size() == 4);
-    StmtNumList::iterator iter = result1.begin();
+    StmtNumSet::iterator iter = result1.begin();
     Assert::AreEqual(1, (*iter++));
     Assert::AreEqual(2, (*iter++));
     Assert::AreEqual(3, (*iter++));
     Assert::AreEqual(4, (*iter));
-    StmtNumList result2 = dominates_table.GetDominated(2);
+    StmtNumSet result2 = dominates_table.GetDominated(2);
     Assert::IsTrue(result2.size() == 1);
-    Assert::AreEqual(2, result2.front());
-    StmtNumList result3 = dominates_table.GetDominated(3);
+    Assert::IsTrue(result2.count(2));
+    StmtNumSet result3 = dominates_table.GetDominated(3);
     Assert::IsTrue(result3.size() == 2);
-    Assert::AreEqual(3, result3.front());
-    Assert::AreEqual(4, result3.back());
-    StmtNumList result4 = dominates_table.GetDominated(4);
+    Assert::IsTrue(result3.count(3));
+    Assert::IsTrue(result3.count(4));
+    StmtNumSet result4 = dominates_table.GetDominated(4);
     Assert::IsTrue(result4.size() == 1);
-    Assert::AreEqual(4, result4.front());
+    Assert::IsTrue(result4.count(4));
   }
 
   TEST_METHOD(TestGetAllDominatesPairs) {
@@ -88,8 +87,8 @@ TEST_CLASS(TestDominatesTable) {
     dominates_table.InsertDominates(2, {2});
     dominates_table.InsertDominates(3, {3, 4});
     dominates_table.InsertDominates(4, {4});
-    StmtNumPairList result = dominates_table.GetAllDominatesPairs();
-    StmtNumPairList expected = StmtNumPairList(
+    StmtNumPairSet result = dominates_table.GetAllDominatesPairs();
+    StmtNumPairSet expected = StmtNumPairSet(
         {make_pair(1, 1), make_pair(1, 2), make_pair(1, 3), make_pair(1, 4),
          make_pair(2, 2), make_pair(3, 3), make_pair(3, 4), make_pair(4, 4)});
     Assert::IsTrue(expected == result);

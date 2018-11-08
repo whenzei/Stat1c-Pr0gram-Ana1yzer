@@ -10,17 +10,17 @@ void PKB::InsertProcName(ProcName proc_name) {
   next_table_.InsertCFG(proc_name);
 }
 
-ProcNameList PKB::GetAllProcNames() { return proc_list_.GetAllProcNames(); }
+ProcNameSet PKB::GetAllProcNames() { return proc_list_.GetAllProcNames(); }
 
-ProcIndexList PKB::GetAllProcIndices() {
+ProcIndexSet PKB::GetAllProcIndices() {
   return proc_list_.GetAllProcIndices();
 }
 
-ProcIndexPairList PKB::GetAllProcIndexTwin() {
+ProcIndexPairSet PKB::GetAllProcIndexTwin() {
   return proc_list_.GetAllProcIndexTwin();
 }
 
-ProcNamePairList PKB::GetAllProcNameTwin() {
+ProcNamePairSet PKB::GetAllProcNameTwin() {
   return proc_list_.GetAllProcNameTwin();
 }
 
@@ -40,9 +40,9 @@ ProcIndex PKB::GetProcIndex(ProcName proc_name) {
   return proc_list_.GetProcIndex(proc_name);
 }
 
-VarIndexList PKB::GetAllVarIndices() { return var_list_.GetAllVarIndices(); }
+VarIndexSet PKB::GetAllVarIndices() { return var_list_.GetAllVarIndices(); }
 
-VarIndexPairList PKB::GetAllVarIndexTwin() {
+VarIndexPairSet PKB::GetAllVarIndexTwin() {
   return var_list_.GetAllVarIndexTwin();
 }
 
@@ -68,11 +68,11 @@ VarIndex PKB::GetPrintVar(StmtNum stmt_num) {
   return var_list_.GetPrintVar(stmt_num);
 }
 
-StmtNumList PKB::GetReadStmt(VarName var_name) {
+StmtNumSet PKB::GetReadStmt(VarName var_name) {
   return var_list_.GetReadStmt(GetVarIndex(var_name));
 }
 
-StmtNumList PKB::GetPrintStmt(VarName var_name) {
+StmtNumSet PKB::GetPrintStmt(VarName var_name) {
   return var_list_.GetPrintStmt(GetVarIndex(var_name));
 }
 
@@ -84,23 +84,23 @@ bool PKB::IsPrintVar(VarName var_name) {
   return var_list_.IsPrintVar(GetVarIndex(var_name));
 }
 
-VarIndexList PKB::GetAllReadVar() { return var_list_.GetAllReadVar(); }
+VarIndexSet PKB::GetAllReadVar() { return var_list_.GetAllReadVar(); }
 
-VarIndexList PKB::GetAllPrintVar() { return var_list_.GetAllPrintVar(); }
+VarIndexSet PKB::GetAllPrintVar() { return var_list_.GetAllPrintVar(); }
 
-VarIndexPairList PKB::GetAllReadVarTwin() {
+VarIndexPairSet PKB::GetAllReadVarTwin() {
   return var_list_.GetAllReadVarTwin();
 }
 
-VarIndexPairList PKB::GetAllPrintVarTwin() {
+VarIndexPairSet PKB::GetAllPrintVarTwin() {
   return var_list_.GetAllPrintVarTwin();
 }
 
-ConstValueList PKB::GetAllConstValue() {
+ConstValueSet PKB::GetAllConstValue() {
   return const_list_.GetAllConstValue();
 }
 
-ConstValuePairList PKB::GetAllConstValueTwin() {
+ConstValuePairSet PKB::GetAllConstValueTwin() {
   return const_list_.GetAllConstValueTwin();
 }
 
@@ -249,51 +249,51 @@ void PKB::InsertNext(ProcName proc_name, StmtNum previous_stmt,
   next_table_.InsertNext(proc_name, previous_stmt, next_stmt);
 }
 
-void PKB::SetAllNextPairs(StmtNumPairList next_pair_list) {
+void PKB::SetAllNextPairs(StmtNumPairSet next_pair_list) {
   next_table_.SetAllNextPairs(next_pair_list);
 }
 
-StmtNumList PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
+StmtNumSet PKB::GetAllStmt() { return stmt_type_list_.GetAllStmt(); }
 
-StmtNumPairList PKB::GetAllStmtTwin() {
+StmtNumPairSet PKB::GetAllStmtTwin() {
   return stmt_type_list_.GetAllStmtTwin();
 }
 
-StmtNumList PKB::GetAllAssignStmt() {
+StmtNumSet PKB::GetAllAssignStmt() {
   return stmt_type_list_.GetAllAssignStmt();
 }
 
-StmtNumPairList PKB::GetAllAssignStmtTwin() {
+StmtNumPairSet PKB::GetAllAssignStmtTwin() {
   return stmt_type_list_.GetAllAssignStmtTwin();
 }
 
-StmtNumList PKB::GetAllWhileStmt() { return stmt_type_list_.GetAllWhileStmt(); }
+StmtNumSet PKB::GetAllWhileStmt() { return stmt_type_list_.GetAllWhileStmt(); }
 
-StmtNumPairList PKB::GetAllWhileStmtTwin() {
+StmtNumPairSet PKB::GetAllWhileStmtTwin() {
   return stmt_type_list_.GetAllWhileStmtTwin();
 }
 
-StmtNumList PKB::GetAllIfStmt() { return stmt_type_list_.GetAllIfStmt(); }
+StmtNumSet PKB::GetAllIfStmt() { return stmt_type_list_.GetAllIfStmt(); }
 
-StmtNumPairList PKB::GetAllIfStmtTwin() {
+StmtNumPairSet PKB::GetAllIfStmtTwin() {
   return stmt_type_list_.GetAllIfStmtTwin();
 }
 
-StmtNumList PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
+StmtNumSet PKB::GetAllReadStmt() { return stmt_type_list_.GetAllReadStmt(); }
 
-StmtNumPairList PKB::GetAllReadStmtTwin() {
+StmtNumPairSet PKB::GetAllReadStmtTwin() {
   return stmt_type_list_.GetAllReadStmtTwin();
 }
 
-StmtNumList PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
+StmtNumSet PKB::GetAllPrintStmt() { return stmt_type_list_.GetAllPrintStmt(); }
 
-StmtNumPairList PKB::GetAllPrintStmtTwin() {
+StmtNumPairSet PKB::GetAllPrintStmtTwin() {
   return stmt_type_list_.GetAllPrintStmtTwin();
 }
 
-StmtNumList PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
+StmtNumSet PKB::GetAllCallStmt() { return stmt_type_list_.GetAllCallStmt(); }
 
-StmtNumPairList PKB::GetAllCallStmtTwin() {
+StmtNumPairSet PKB::GetAllCallStmtTwin() {
   return stmt_type_list_.GetAllCallStmtTwin();
 }
 
@@ -391,40 +391,40 @@ bool PKB::IsParentT(StmtNum parent_stmt_num, StmtNum child_stmt_num) {
   return parent_table_.IsParentT(parent_stmt_num, child_stmt_num);
 }
 
-StmtNumList PKB::GetParent(StmtNum stmt_num) {
-  StmtNumList direct_parent_stmtnum_list;
+StmtNumSet PKB::GetParent(StmtNum stmt_num) {
+  StmtNumSet direct_parent_stmtnum_list;
   StmtNum direct_parent_stmtnum = parent_table_.GetParent(stmt_num);
   if (direct_parent_stmtnum != 0) {
-    direct_parent_stmtnum_list.push_back(direct_parent_stmtnum);
+    direct_parent_stmtnum_list.insert(direct_parent_stmtnum);
   }
   return direct_parent_stmtnum_list;
 }
 
-StmtNumList PKB::GetParentT(StmtNum stmt_num) {
+StmtNumSet PKB::GetParentT(StmtNum stmt_num) {
   return parent_table_.GetParentT(stmt_num);
 }
 
-StmtNumList PKB::GetAllParent() { return parent_table_.GetAllParent(); }
+StmtNumSet PKB::GetAllParent() { return parent_table_.GetAllParent(); }
 
-StmtNumList PKB::GetChild(StmtNum stmt_num) {
+StmtNumSet PKB::GetChild(StmtNum stmt_num) {
   return parent_table_.GetChild(stmt_num);
 }
 
-StmtNumList PKB::GetChildT(StmtNum stmt_num) {
+StmtNumSet PKB::GetChildT(StmtNum stmt_num) {
   return parent_table_.GetChildT(stmt_num);
 }
 
-StmtNumList PKB::GetAllChild() { return parent_table_.GetAllChild(); }
+StmtNumSet PKB::GetAllChild() { return parent_table_.GetAllChild(); }
 
 bool PKB::HasParentRelationship() {
   return parent_table_.HasParentRelationship();
 }
 
-StmtNumPairList PKB::GetAllParentPair() {
+StmtNumPairSet PKB::GetAllParentPair() {
   return parent_table_.GetAllParentPair();
 }
 
-StmtNumPairList PKB::GetAllParentTPair() {
+StmtNumPairSet PKB::GetAllParentTPair() {
   return parent_table_.GetAllParentTPair();
 }
 
@@ -441,39 +441,39 @@ bool PKB::IsModifiedByP(ProcName proc_name, VarName var_name) {
                                        GetVarIndex(var_name));
 }
 
-VarIndexList PKB::GetModifiedVarS(StmtNum stmt_num) {
+VarIndexSet PKB::GetModifiedVarS(StmtNum stmt_num) {
   return modifies_table_.GetModifiedVarS(stmt_num);
 }
 
-VarIndexList PKB::GetModifiedVarP(ProcName proc_name) {
+VarIndexSet PKB::GetModifiedVarP(ProcName proc_name) {
   return modifies_table_.GetModifiedVarP(GetProcIndex(proc_name));
 }
 
-VarIndexList PKB::GetModifiedVarP(ProcIndex proc_id) {
+VarIndexSet PKB::GetModifiedVarP(ProcIndex proc_id) {
   return modifies_table_.GetModifiedVarP(proc_id);
 }
 
-StmtNumList PKB::GetModifyingS(VarName var_name) {
+StmtNumSet PKB::GetModifyingS(VarName var_name) {
   return modifies_table_.GetModifyingStmt(GetVarIndex(var_name));
 }
 
-ProcIndexList PKB::GetModifyingP(VarName var_name) {
+ProcIndexSet PKB::GetModifyingP(VarName var_name) {
   return modifies_table_.GetModifyingProc(GetVarIndex(var_name));
 }
 
-StmtNumList PKB::GetAllModifyingS() {
+StmtNumSet PKB::GetAllModifyingS() {
   return modifies_table_.GetAllModifyingStmt();
 }
 
-ProcIndexList PKB::GetAllModifyingP() {
+ProcIndexSet PKB::GetAllModifyingP() {
   return modifies_table_.GetAllModifyingProc();
 }
 
-StmtVarIndexPairList PKB::GetAllModifiesPairS() {
+StmtVarPairSet PKB::GetAllModifiesPairS() {
   return modifies_table_.GetAllModifiesPairS();
 }
 
-ProcVarPairList PKB::GetAllModifiesPairP() {
+ProcVarPairSet PKB::GetAllModifiesPairP() {
   return modifies_table_.GetAllModifiesPairP();
 }
 
@@ -519,7 +519,7 @@ StmtVarIndexPairSet PKB::GetAllUsesPairS() {
 
 ProcVarPairSet PKB::GetAllUsesPairP() { return uses_table_.GetAllUsesPPair(); }
 
-StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
+StmtNumSet PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   if (var_name.compare("") == 0) {
     return pattern_table_.GetAssignWithSubExpr(sub_expr);
   } else if (sub_expr.empty()) {
@@ -529,7 +529,7 @@ StmtNumList PKB::GetAssignWithPattern(VarName var_name, TokenList sub_expr) {
   }
 }
 
-StmtNumList PKB::GetAssignWithExactPattern(VarName var_name,
+StmtNumSet PKB::GetAssignWithExactPattern(VarName var_name,
                                            TokenList exact_expr) {
   if (var_name.compare("") == 0) {
     return pattern_table_.GetAssignWithExactExpr(exact_expr);
@@ -539,35 +539,37 @@ StmtNumList PKB::GetAssignWithExactPattern(VarName var_name,
   }
 }
 
-StmtVarPairList PKB::GetAllAssignPatternPair(TokenList sub_expr) {
+StmtVarPairSet PKB::GetAllAssignPatternPair(TokenList sub_expr) {
   return pattern_table_.GetAllAssignPatternPair(sub_expr);
 }
 
-StmtVarPairList PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
+StmtVarPairSet PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
   return pattern_table_.GetAllAssignExactPatternPair(exact_expr);
 }
 
-StmtNumList PKB::GetWhileWithPattern(VarName var_name) {
-  if (var_name.compare("") == 0) {
+StmtNumSet PKB::GetWhileWithPattern(VarName var_name) {
+  /*if (var_name.compare("") == 0) {
     return GetAllWhileStmt();
   } else {
     return pattern_table_.GetWhileWithPattern(GetVarIndex(var_name));
-  }
+  }*/
+  return StmtNumSet();
 }
 
-StmtVarPairList PKB::GetAllWhilePatternPair() {
+StmtVarPairSet PKB::GetAllWhilePatternPair() {
   return pattern_table_.GetAllWhilePatternPair();
 }
 
-StmtNumList PKB::GetIfWithPattern(VarName var_name) {
-  if (var_name.compare("") == 0) {
+StmtNumSet PKB::GetIfWithPattern(VarName var_name) {
+  /*if (var_name.compare("") == 0) {
     return GetAllIfStmt();
   } else {
     return pattern_table_.GetIfWithPattern(GetVarIndex(var_name));
-  }
+  }*/
+  return StmtNumSet();
 }
 
-StmtVarPairList PKB::GetAllIfPatternPair() {
+StmtVarPairSet PKB::GetAllIfPatternPair() {
   return pattern_table_.GetAllIfPatternPair();
 }
 
@@ -704,19 +706,19 @@ bool PKB::IsPrevious(StmtNum stmt_num) {
   return next_table_.IsPrevious(stmt_num);
 }
 
-StmtNumList PKB::GetNext(StmtNum stmt_num) {
+StmtNumSet PKB::GetNext(StmtNum stmt_num) {
   return next_table_.GetNext(stmt_num);
 }
 
-StmtNumList PKB::GetPrevious(StmtNum stmt_num) {
+StmtNumSet PKB::GetPrevious(StmtNum stmt_num) {
   return next_table_.GetPrevious(stmt_num);
 }
 
-StmtNumList PKB::GetAllNext() { return next_table_.GetAllNext(); }
+StmtNumSet PKB::GetAllNext() { return next_table_.GetAllNext(); }
 
-StmtNumList PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
+StmtNumSet PKB::GetAllPrevious() { return next_table_.GetAllPrevious(); }
 
-StmtNumPairList PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
+StmtNumPairSet PKB::GetAllNextPairs() { return next_table_.GetAllNextPairs(); }
 
 bool PKB::HasNextRelationship() { return next_table_.HasNextRelationship(); }
 
@@ -765,19 +767,19 @@ bool PKB::IsDominating(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
 
 bool PKB::IsDominated(StmtNum stmt_num) { return IsStmtNum(stmt_num); }
 
-StmtNumList PKB::GetDominating(StmtNum stmt_num) {
+StmtNumSet PKB::GetDominating(StmtNum stmt_num) {
   return dominates_table_.GetDominating(stmt_num);
 }
 
-StmtNumList PKB::GetDominated(StmtNum stmt_num) {
+StmtNumSet PKB::GetDominated(StmtNum stmt_num) {
   return dominates_table_.GetDominated(stmt_num);
 }
 
-StmtNumList PKB::GetAllDominating() { return GetAllStmt(); }
+StmtNumSet PKB::GetAllDominating() { return GetAllStmt(); }
 
-StmtNumList PKB::GetAllDominated() { return GetAllStmt(); }
+StmtNumSet PKB::GetAllDominated() { return GetAllStmt(); }
 
-StmtNumPairList PKB::GetAllDominatesPairs() {
+StmtNumPairSet PKB::GetAllDominatesPairs() {
   return dominates_table_.GetAllDominatesPairs();
 }
 

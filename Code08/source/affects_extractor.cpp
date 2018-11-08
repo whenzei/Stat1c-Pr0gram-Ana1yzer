@@ -54,7 +54,7 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
     return false;
   }
 
-  VarIndex modified_var = pkb_->GetModifiedVarS(stmt_1).front();
+  VarIndex modified_var = *(pkb_->GetModifiedVarS(stmt_1).begin());
 
   // Check if variable modified in stmt_1 is used in stmt_2
   if (!pkb_->IsUsedByS(stmt_2, modified_var)) {
@@ -130,7 +130,7 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt, bool is_bip) {
   CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
+  VarIndex affecting_var = *(pkb_->GetModifiedVarS(stmt).begin());
   VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
     if (DfsIsAffects(neighbour, affecting_var, cfg, &visited)) {
@@ -197,8 +197,7 @@ bool AffectsExtractor::EvaluateIsAffected(StmtNum stmt, bool is_bip) {
   CFG* cfg = is_bip ? pkb_->GetReverseProgramCFG() : pkb_->GetReverseCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
-  VarIndexSet rhs_vars = VarIndexSet(var_indices.begin(), var_indices.end());
+  VarIndexSet rhs_vars = pkb_->GetUsedVarS(stmt);
   VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
     if (DfsIsAffected(neighbour, rhs_vars, VarIndexSet(), cfg, &visited)) {
@@ -221,7 +220,7 @@ bool AffectsExtractor::DfsIsAffected(Vertex curr, VarIndexSet used_vars,
 
   // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
-    VarIndex curr_modified_var = pkb_->GetModifiedVarS(curr).front();
+    VarIndex curr_modified_var = *(pkb_->GetModifiedVarS(curr).begin());
 
     // Check if the current assignment statement modifies a variable in the
     // rhs_vars, that has not been modified before
@@ -281,7 +280,7 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
   CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
+  VarIndex affecting_var = *(pkb_->GetModifiedVarS(stmt).begin());
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
@@ -345,8 +344,7 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
   CFG* cfg = is_bip ? pkb_->GetReverseProgramCFG() : pkb_->GetReverseCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
-  VarIndexSet used_vars = VarIndexSet(var_indices.begin(), var_indices.end());
+  VarIndexSet used_vars = pkb_->GetUsedVarS(stmt);
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
@@ -372,7 +370,7 @@ void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
 
   // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
-    VarIndex curr_modified_var = pkb_->GetModifiedVarS(curr).front();
+    VarIndex curr_modified_var = *(pkb_->GetModifiedVarS(curr).begin());
 
     // Check if the current assignment statement modifies a variable in the
     // used_vars, that has not been modified before
@@ -681,7 +679,7 @@ AffectsTable AffectsExtractor::GetAffectedByBipTTable() {
  ****************/
 
 void AffectsExtractor::SetAffectsTables() {
-  ProcNameList all_procs = pkb_->GetAllProcNames();
+  ProcNameSet all_procs = pkb_->GetAllProcNames();
   for (auto proc_name : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc_name);
     // Special DFS each CFG for affects
@@ -798,11 +796,11 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
 
   if (IsModifyingType(stmt_type)) {
     // assert only 1 modified_var
-    VarIndex modified_var = pkb_->GetModifiedVarS(v).front();
+    VarIndex modified_var = *(pkb_->GetModifiedVarS(v).begin());
 
     if (stmt_type == StmtType::kAssign) {
       // add used to affects table if found in lmm
-      VarIndexList used_vars = pkb_->GetUsedVarS(v);
+      VarIndexSet used_vars = pkb_->GetUsedVarS(v);
       for (auto& used_var : used_vars) {
         if (lmm.count(used_var)) {
           StmtNum affecting_stmt = lmm[used_var];

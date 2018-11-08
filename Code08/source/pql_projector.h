@@ -8,6 +8,8 @@
 #include "pql_query.h"
 #include "pql_result.h"
 
+using std::to_string;
+
 using ResultTableList = vector<ResultTable>;
 // first int represents the result table, second int represents the column
 using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;

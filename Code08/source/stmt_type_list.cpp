@@ -4,82 +4,82 @@
 
 // add more entity types as needed
 StmtTypeList::StmtTypeList() {
-  stmt_type_map_.emplace(PqlDeclarationEntity::kAll, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kAssign, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kWhile, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kIf, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kRead, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumList());
-  stmt_type_map_.emplace(PqlDeclarationEntity::kCall, StmtNumList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kAll, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kAssign, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kWhile, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kIf, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kRead, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumPairList());
-  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kCall, StmtNumPairList());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kAll, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kAssign, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kWhile, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kIf, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kRead, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumSet());
+  stmt_type_map_.emplace(PqlDeclarationEntity::kCall, StmtNumSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kAll, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kAssign, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kWhile, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kIf, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kRead, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kPrint, StmtNumPairSet());
+  stmt_type_twin_map_.emplace(PqlDeclarationEntity::kCall, StmtNumPairSet());
 }
 
-void StmtTypeList::InsertStmt(StmtNum stmt_num, PqlDeclarationEntity type) {
-  stmt_type_map_.at(type).push_back(stmt_num);
-  stmt_type_map_.at(PqlDeclarationEntity::kAll).push_back(stmt_num);
-  stmt_type_twin_map_.at(type).push_back(std::make_pair(stmt_num, stmt_num));
-  stmt_type_twin_map_.at(PqlDeclarationEntity::kAll)
-      .push_back(std::make_pair(stmt_num, stmt_num));
+void StmtTypeList::InsertStmt(StmtNum stmt_num, StmtType type) {
+  stmt_type_map_.at(type).insert(stmt_num);
+  stmt_type_map_.at(StmtType::kAll).insert(stmt_num);
+  stmt_type_twin_map_.at(type).insert(std::make_pair(stmt_num, stmt_num));
+  stmt_type_twin_map_.at(StmtType::kAll)
+      .insert(std::make_pair(stmt_num, stmt_num));
 }
 
-StmtNumList StmtTypeList::GetAllStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kAll);
+StmtNumSet StmtTypeList::GetAllStmt() {
+  return stmt_type_map_.at(StmtType::kAll);
 }
 
-StmtNumPairList StmtTypeList::GetAllStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kAll);
+StmtNumPairSet StmtTypeList::GetAllStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kAll);
 }
 
-StmtNumList StmtTypeList::GetAllAssignStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kAssign);
+StmtNumSet StmtTypeList::GetAllAssignStmt() {
+  return stmt_type_map_.at(StmtType::kAssign);
 }
 
-StmtNumPairList StmtTypeList::GetAllAssignStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kAssign);
+StmtNumPairSet StmtTypeList::GetAllAssignStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kAssign);
 }
 
-StmtNumList StmtTypeList::GetAllWhileStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kWhile);
+StmtNumSet StmtTypeList::GetAllWhileStmt() {
+  return stmt_type_map_.at(StmtType::kWhile);
 }
 
-StmtNumPairList StmtTypeList::GetAllWhileStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kWhile);
+StmtNumPairSet StmtTypeList::GetAllWhileStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kWhile);
 }
 
-StmtNumList StmtTypeList::GetAllIfStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kIf);
+StmtNumSet StmtTypeList::GetAllIfStmt() {
+  return stmt_type_map_.at(StmtType::kIf);
 }
 
-StmtNumPairList StmtTypeList::GetAllIfStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kIf);
+StmtNumPairSet StmtTypeList::GetAllIfStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kIf);
 }
 
-StmtNumList StmtTypeList::GetAllReadStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kRead);
+StmtNumSet StmtTypeList::GetAllReadStmt() {
+  return stmt_type_map_.at(StmtType::kRead);
 }
 
-StmtNumPairList StmtTypeList::GetAllReadStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kRead);
+StmtNumPairSet StmtTypeList::GetAllReadStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kRead);
 }
 
-StmtNumList StmtTypeList::GetAllPrintStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kPrint);
+StmtNumSet StmtTypeList::GetAllPrintStmt() {
+  return stmt_type_map_.at(StmtType::kPrint);
 }
 
-StmtNumPairList StmtTypeList::GetAllPrintStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kPrint);
+StmtNumPairSet StmtTypeList::GetAllPrintStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kPrint);
 }
 
-StmtNumList StmtTypeList::GetAllCallStmt() {
-  return stmt_type_map_.at(PqlDeclarationEntity::kCall);
+StmtNumSet StmtTypeList::GetAllCallStmt() {
+  return stmt_type_map_.at(StmtType::kCall);
 }
 
-StmtNumPairList StmtTypeList::GetAllCallStmtTwin() {
-  return stmt_type_twin_map_.at(PqlDeclarationEntity::kCall);
+StmtNumPairSet StmtTypeList::GetAllCallStmtTwin() {
+  return stmt_type_twin_map_.at(StmtType::kCall);
 }

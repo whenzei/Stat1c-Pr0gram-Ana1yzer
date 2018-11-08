@@ -6,12 +6,12 @@ int ProcList::InsertProcName(ProcName proc_name) {
   if (proc_id_map_.find(proc_name) == proc_id_map_.end()) {
     int proc_id = num_procs++;
     // populate index list
-    proc_id_list_.push_back(proc_id);
-    proc_id_twin_list_.push_back(make_pair(proc_id, proc_id));
+    proc_id_set_.insert(proc_id);
+    proc_id_twin_set_.insert(make_pair(proc_id, proc_id));
 
     // populate name list
-    proc_name_list_.push_back(proc_name);
-    proc_name_twin_list_.push_back(make_pair(proc_name, proc_name));
+    proc_name_set_.insert(proc_name);
+    proc_name_twin_set_.insert(make_pair(proc_name, proc_name));
 
     proc_id_map_[proc_name] = proc_id;
     id_proc_map_[proc_id] = proc_name;
@@ -20,9 +20,9 @@ int ProcList::InsertProcName(ProcName proc_name) {
   return -1;
 }
 
-ProcNameList ProcList::GetAllProcNames() { return proc_name_list_; }
+ProcNameSet ProcList::GetAllProcNames() { return proc_name_set_; }
 
-ProcIndexList ProcList::GetAllProcIndices() { return proc_id_list_; }
+ProcIndexSet ProcList::GetAllProcIndices() { return proc_id_set_; }
 
 bool ProcList::IsProcIndex(ProcIndex proc_id) {
   return id_proc_map_.find(proc_id) != id_proc_map_.end();
@@ -32,9 +32,9 @@ bool ProcList::IsProcName(ProcName proc_name) {
   return proc_id_map_.find(proc_name) != proc_id_map_.end();
 }
 
-ProcNamePairList ProcList::GetAllProcNameTwin() { return proc_name_twin_list_; }
+ProcNamePairSet ProcList::GetAllProcNameTwin() { return proc_name_twin_set_; }
 
-ProcIndexPairList ProcList::GetAllProcIndexTwin() { return proc_id_twin_list_; }
+ProcIndexPairSet ProcList::GetAllProcIndexTwin() { return proc_id_twin_set_; }
 
 IndexProcMap ProcList::GetIndexToProcMapping() { return id_proc_map_; }
 
@@ -52,6 +52,5 @@ ProcIndex ProcList::GetProcIndex(ProcName proc_name) {
   if (proc_id_map_.count(proc_name)) {
     return proc_id_map_.at(proc_name);
   }
-
   return -1;
 }

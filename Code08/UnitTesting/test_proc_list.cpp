@@ -25,20 +25,18 @@ TEST_CLASS(TestProcList) {
     Assert::AreEqual(-1, result);
   }
 
-  TEST_METHOD(TestGetAllProcName) {
+  TEST_METHOD(TestGetAllProcIndices) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     proc_list.InsertProcName(kProcName3);
     // duplicate
     proc_list.InsertProcName(kProcName1);
-    ProcIndexList proc_list_result = proc_list.GetAllProcIndices();
+    ProcIndexSet proc_list_result = proc_list.GetAllProcIndices();
     Assert::IsTrue(proc_list_result.size() == 3);
-    Assert::AreEqual(kProcIndex1, proc_list_result.front());
-    ProcIndexList::iterator iter = proc_list_result.begin();
-    iter++;
-    Assert::AreEqual(kProcIndex2, *iter);
-    Assert::AreEqual(kProcIndex3, proc_list_result.back());
+    Assert::IsTrue(proc_list_result.count(kProcIndex1));
+    Assert::IsTrue(proc_list_result.count(kProcIndex2));
+    Assert::IsTrue(proc_list_result.count(kProcIndex3));
   }
 
   TEST_METHOD(TestIsProcName) {
@@ -59,18 +57,16 @@ TEST_CLASS(TestProcList) {
     Assert::IsFalse(result);
   }
 
-  TEST_METHOD(TestGetAllProcNameTwin) {
+  TEST_METHOD(TestGetAllProcIndexTwin) {
     ProcList proc_list;
     proc_list.InsertProcName(kProcName1);
     proc_list.InsertProcName(kProcName2);
     // duplicate
     proc_list.InsertProcName(kProcName1);
-    ProcIndexPairList proc_list_result = proc_list.GetAllProcIndexTwin();
+    ProcIndexPairSet proc_list_result = proc_list.GetAllProcIndexTwin();
     Assert::IsTrue(proc_list_result.size() == 2);
-    Assert::AreEqual(kProcIndex1, proc_list_result.front().first);
-    Assert::AreEqual(kProcIndex1, proc_list_result.front().second);
-    Assert::AreEqual(kProcIndex2, proc_list_result.back().first);
-    Assert::AreEqual(kProcIndex2, proc_list_result.back().second);
+    Assert::IsTrue(proc_list_result.count(make_pair(kProcIndex1, kProcIndex1)));
+    Assert::IsTrue(proc_list_result.count(make_pair(kProcIndex2, kProcIndex2)));
   }
 
   TEST_METHOD(TestGetIndexToProcMapping) {

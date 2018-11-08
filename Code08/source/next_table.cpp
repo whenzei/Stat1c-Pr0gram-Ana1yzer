@@ -18,12 +18,8 @@ void NextTable::InsertNext(ProcName proc_name, StmtNum previous_stmt,
   proc_cfg_->AddEdge(previous_stmt, next_stmt);
   proc_reverse_cfg_->AddEdge(next_stmt, previous_stmt);
 
-  if (previous_set_.insert(previous_stmt).second) {
-    previous_list_.push_back(previous_stmt);
-  }
-  if (next_set_.insert(next_stmt).second) {
-    next_list_.push_back(next_stmt);
-  }
+  previous_set_.insert(previous_stmt);
+  next_set_.insert(next_stmt);
 }
 
 void NextTable::InsertStatement(ProcName proc_name, StmtNum stmt_num) {
@@ -56,26 +52,26 @@ bool NextTable::IsPrevious(StmtNum stmt_num) {
   return previous_set_.find(stmt_num) != previous_set_.end();
 }
 
-StmtNumList NextTable::GetNext(StmtNum stmt_num) {
-  return combined_cfg_.GetNeighboursList(stmt_num);
+StmtNumSet NextTable::GetNext(StmtNum stmt_num) {
+  return combined_cfg_.GetNeighboursSet(stmt_num);
 }
 
-StmtNumList NextTable::GetPrevious(StmtNum stmt_num) {
-  return reversed_combined_cfg_.GetNeighboursList(stmt_num);
+StmtNumSet NextTable::GetPrevious(StmtNum stmt_num) {
+  return reversed_combined_cfg_.GetNeighboursSet(stmt_num);
 }
 
-StmtNumList NextTable::GetAllNext() { return next_list_; }
+StmtNumSet NextTable::GetAllNext() { return next_set_; }
 
-StmtNumList NextTable::GetAllPrevious() { return previous_list_; }
+StmtNumSet NextTable::GetAllPrevious() { return previous_set_; }
 
-StmtNumPairList NextTable::GetAllNextPairs() { return next_pair_list_; }
+StmtNumPairSet NextTable::GetAllNextPairs() { return next_pair_set_; }
 
 CFG* NextTable::GetCombinedCFG() { return &combined_cfg_; }
 
 CFG* NextTable::GetReverseCombinedCFG() { return &reversed_combined_cfg_; }
 
-void NextTable::SetAllNextPairs(StmtNumPairList next_pair_list) {
-  next_pair_list_ = next_pair_list;
+void NextTable::SetAllNextPairs(StmtNumPairSet next_pair_list) {
+  next_pair_set_ = next_pair_list;
 }
 
 void NextTable::SetProgramCFG(const CFG& program_cfg) {

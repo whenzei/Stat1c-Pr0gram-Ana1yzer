@@ -29,10 +29,10 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarIndexList result_list = var_list.GetAllVarIndices();
+    VarIndexSet result_list = var_list.GetAllVarIndices();
     Assert::IsTrue(result_list.size() == 2);
-    Assert::AreEqual(kSampleVarIndex1, result_list.front());
-    Assert::AreEqual(kSampleVarIndex2, result_list.back());
+    Assert::IsTrue(result_list.count(kSampleVarIndex1));
+    Assert::IsTrue(result_list.count(kSampleVarIndex2));
   }
 
   TEST_METHOD(TestIsVarName) {
@@ -59,12 +59,12 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2);
     // duplicate
     var_list.InsertVarName(kSampleVar1);
-    VarIndexPairList result_list = var_list.GetAllVarIndexTwin();
+    VarIndexPairSet result_list = var_list.GetAllVarIndexTwin();
     Assert::IsTrue(result_list.size() == 2);
-    Assert::AreEqual(kSampleVarIndex1, result_list.front().first);
-    Assert::AreEqual(kSampleVarIndex1, result_list.front().second);
-    Assert::AreEqual(kSampleVarIndex2, result_list.back().first);
-    Assert::AreEqual(kSampleVarIndex2, result_list.back().second);
+    Assert::IsTrue(
+        result_list.count(make_pair(kSampleVarIndex1, kSampleVarIndex1)));
+    Assert::IsTrue(
+        result_list.count(make_pair(kSampleVarIndex2, kSampleVarIndex2)));
   }
 
   TEST_METHOD(TestGetIndexToVarMapping) {
@@ -116,11 +116,11 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kPrint, 5);
     var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 6);
     var_list.InsertVarName(kSampleVar3);
-    StmtNumList result =
+    StmtNumSet result =
         var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar1));
     Assert::IsTrue(result.size() == 2);
-    Assert::AreEqual(3, result.front());
-    Assert::AreEqual(6, result.back());
+    Assert::IsTrue(result.count(3));
+    Assert::IsTrue(result.count(6));
     result = var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar2));
     Assert::IsTrue(result.empty());
     result = var_list.GetReadStmt(var_list.GetVarIndex(kSampleVar3));
@@ -131,7 +131,7 @@ TEST_CLASS(TestVarList) {
     Assert::IsTrue(result.empty());
     result = var_list.GetPrintStmt(var_list.GetVarIndex(kSampleVar2));
     Assert::IsTrue(result.size() == 1);
-    Assert::AreEqual(5, result.front());
+    Assert::IsTrue(result.count(5));
     result = var_list.GetPrintStmt(var_list.GetVarIndex(kSampleVar3));
     Assert::IsTrue(result.empty());
     result = var_list.GetPrintStmt(var_list.GetVarIndex("non existent"));
@@ -158,14 +158,14 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar3);
     var_list.InsertVarName(kSampleVar3, PqlDeclarationEntity::kPrint, 6);
     var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kRead, 10);
-    VarIndexList read_vars = var_list.GetAllReadVar();
+    VarIndexSet read_vars = var_list.GetAllReadVar();
     Assert::IsTrue(read_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar1), read_vars.front());
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2), read_vars.back());
-    VarIndexList print_vars = var_list.GetAllPrintVar();
+    Assert::IsTrue(read_vars.count(var_list.GetVarIndex(kSampleVar1)));
+    Assert::IsTrue(read_vars.count(var_list.GetVarIndex(kSampleVar2)));
+    VarIndexSet print_vars = var_list.GetAllPrintVar();
     Assert::IsTrue(print_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2), print_vars.front());
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar3), print_vars.back());
+    Assert::IsTrue(print_vars.count(var_list.GetVarIndex(kSampleVar2)));
+    Assert::IsTrue(print_vars.count(var_list.GetVarIndex(kSampleVar3)));
   }
 
   TEST_METHOD(TestGetAllReadPrintVarTwin) {
@@ -175,25 +175,18 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar3);
     var_list.InsertVarName(kSampleVar3, PqlDeclarationEntity::kPrint, 6);
     var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kRead, 10);
-    VarIndexPairList read_vars = var_list.GetAllReadVarTwin();
+    VarIndexPairSet read_vars = var_list.GetAllReadVarTwin();
     Assert::IsTrue(read_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar1),
-                     read_vars.front().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar1),
-                     read_vars.front().second);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2), read_vars.back().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     read_vars.back().second);
-    VarIndexPairList print_vars = var_list.GetAllPrintVarTwin();
+    Assert::IsTrue(read_vars.count(make_pair(
+        var_list.GetVarIndex(kSampleVar1), var_list.GetVarIndex(kSampleVar1))));
+    Assert::IsTrue(read_vars.count(make_pair(
+        var_list.GetVarIndex(kSampleVar2), var_list.GetVarIndex(kSampleVar2))));
+    VarIndexPairSet print_vars = var_list.GetAllPrintVarTwin();
     Assert::IsTrue(print_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     print_vars.front().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     print_vars.front().second);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar3),
-                     print_vars.back().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar3),
-                     print_vars.back().second);
+    Assert::IsTrue(print_vars.count(make_pair(
+        var_list.GetVarIndex(kSampleVar2), var_list.GetVarIndex(kSampleVar2))));
+    Assert::IsTrue(print_vars.count(make_pair(
+        var_list.GetVarIndex(kSampleVar3), var_list.GetVarIndex(kSampleVar3))));
   }
 };
 }  // namespace PKBTests
