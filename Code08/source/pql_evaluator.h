@@ -4,6 +4,7 @@
 #define PQL_EVALUATOR_H
 
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -17,13 +18,14 @@
 #include "result_hasher.h"
 
 using std::list;
+using std::set;
 using std::string;
 using std::unordered_map;
 using std::unordered_set;
 using std::vector;
 using FinalResult = list<string>;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultSet = set<int>;
+using QueryResultPairSet = set<pair<int, int>>;
 using ResultTableList = vector<ResultTable>;
 using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
 

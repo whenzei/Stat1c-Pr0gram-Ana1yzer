@@ -4,23 +4,25 @@
 #define PQL_EVALUATE_SUCHTHAT_H
 
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
-#include "pql_extractor.h"
 #include "result_hasher.h"
 
 using std::list;
+using std::set;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultSet = set<int>;
+using QueryResultPairSet = set<pair<int, int>>;
 using VarProcToIndexMap = unordered_map<string, int>;
 using IndexToVarProcMap = unordered_map<int, string>;
 
@@ -173,7 +175,7 @@ class PqlEvaluateSuchthat {
   void EvaluateAffectsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
 
-    /**
+  /**
    * Evaluate AffectsBip clause and store result in PqlResult table
    * @param The evaluator and affectsbip clause in the Query and arrangement of
    * clause arguments
@@ -212,7 +214,7 @@ class PqlEvaluateSuchthat {
    * type
    */
   QueryResultSet FilterResult(QueryResultSet unfiltered_result,
-                               PqlDeclarationEntity entity_type);
+                              PqlDeclarationEntity entity_type);
 
   /**
    * Filter the pkb list based on the variable entity type
@@ -221,7 +223,7 @@ class PqlEvaluateSuchthat {
    * type
    */
   QueryResultSet FilterVariableResult(QueryResultSet unfiltered_result,
-                                       PqlDeclarationEntity variable_type);
+                                      PqlDeclarationEntity variable_type);
 
   /**
    * Filter the pkb list of pairs based on the declaration entity type
@@ -230,10 +232,10 @@ class PqlEvaluateSuchthat {
    * @returns vector<int> of result pair that only contains result of a
    * certain entity type
    */
-  QueryResultPairSet FilterPairResult(
-      PqlResultFilterType filter_type,
-      QueryResultPairSet unfiltered_pair_result,
-      PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+  QueryResultPairSet FilterPairResult(PqlResultFilterType filter_type,
+                                      QueryResultPairSet unfiltered_pair_result,
+                                      PqlDeclarationEntity left_type,
+                                      PqlDeclarationEntity right_type);
 };
 
 #endif  // !PQL_EVALUATE_SUCHTHAT_H

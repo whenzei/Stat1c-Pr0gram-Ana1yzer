@@ -7,17 +7,19 @@
 #include <list>
 #include <string>
 #include <unordered_set>
+#include <set>
 #include <vector>
 
 using std::pair;
 using std::string;
 using std::unordered_map;
+using std::set;
 using std::vector;
 using ColumnHeader = unordered_map<string, int>;
-using ResultTable = unordered_set<vector<int>>;
+using ResultTable = set<vector<int>>;
 using ResultRow = vector<int>;
-using QueryResultList = unordered_set<int>;
-using QueryResultPairList = unordered_set<pair<int, int>>;
+using QueryResultList = set<int>;
+using QueryResultPairList = set<pair<int, int>>;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

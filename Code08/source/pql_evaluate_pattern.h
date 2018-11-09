@@ -4,6 +4,7 @@
 #define PQL_EVALUATE_PATTERN_H
 
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -15,16 +16,17 @@
 #include "result_hasher.h"
 
 using std::list;
+using std::set;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultSet = set<int>;
+using QueryResultPairSet = set<pair<int, int>>;
 
 /*A class to evaluate the pql pattern clause*/
 class PqlEvaluatePattern {
  private:
-  PKB* pkb_;           // pkb database
+  PKB* pkb_;          // pkb database
   bool clause_flag_;  // to determine if clauses are true/false
 
  public:

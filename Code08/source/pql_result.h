@@ -3,16 +3,18 @@
 #ifndef PQL_RESULT_H
 #define PQL_RESULT_H
 
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "result_hasher.h"
 #include "pql_extractor.h"
 #include "pql_global.h"
+#include "result_hasher.h"
 
 using std::pair;
+using std::set;
 using std::string;
 using std::unordered_map;
 using std::unordered_set;
@@ -20,10 +22,10 @@ using std::vector;
 using ColumnHeader = unordered_map<string, int>;
 using MergeMap = unordered_map<int, vector<int>>;
 using MergeSet = unordered_set<string>;
-using ResultTable = unordered_set<vector<int>>;
+using ResultTable = set<vector<int>>;
 using ResultRow = vector<int>;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultSet = set<int>;
+using QueryResultPairSet = set<pair<int, int>>;
 
 /*
 This class stores the PQL result as a table

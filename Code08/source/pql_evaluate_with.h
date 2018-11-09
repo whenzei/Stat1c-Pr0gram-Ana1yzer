@@ -4,6 +4,7 @@
 #define PQL_EVALUATE_WITH_H
 
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -14,11 +15,12 @@
 #include "result_hasher.h"
 
 using std::list;
+using std::set;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultSet = set<int>;
+using QueryResultPairSet = set<pair<int, int>>;
 using VarProcToIndexMap = unordered_map<string, int>;
 using IndexToVarProcMap = unordered_map<int, string>;
 
@@ -95,9 +97,9 @@ class PqlEvaluateWith {
    * type
    */
   QueryResultPairSet FilterWithRight(QueryResultSet unfiltered_result,
-                                      QueryResultSet,
-                                      PqlDeclarationEntity entity_type,
-                                      PqlDeclarationEntity);
+                                     QueryResultSet,
+                                     PqlDeclarationEntity entity_type,
+                                     PqlDeclarationEntity);
 
   /**
    * Filter the result list based on the declaration entity type
@@ -106,9 +108,9 @@ class PqlEvaluateWith {
    * type
    */
   QueryResultPairSet FilterWithLeft(QueryResultSet unfiltered_result,
-                                     QueryResultSet,
-                                     PqlDeclarationEntity entity_type,
-                                     PqlDeclarationEntity);
+                                    QueryResultSet,
+                                    PqlDeclarationEntity entity_type,
+                                    PqlDeclarationEntity);
 };
 
 #endif  // !PQL_EVALUATE_WITH_H
