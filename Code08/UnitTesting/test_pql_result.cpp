@@ -16,8 +16,8 @@ using std::vector;
 using ColumnHeader = unordered_map<string, int>;
 using ResultTable = unordered_set<vector<int>>;
 using ResultRow = vector<int>;
-using QueryResultList = vector<int>;
-using QueryResultPairList = vector<pair<int, int>>;
+using QueryResultList = unordered_set<int>;
+using QueryResultPairList = unordered_set<pair<int, int>>;
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -33,9 +33,9 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestInitTable) {
     PqlResult pql_result;
 
-    test_result_list.push_back(1);
-    test_result_list.push_back(2);
-    test_result_list.push_back(3);
+    test_result_list.emplace(1);
+    test_result_list.emplace(2);
+    test_result_list.emplace(3);
 
     pql_result.InitTable(test_result_list, "a");
 
@@ -64,9 +64,9 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestInitPairTable) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
@@ -97,15 +97,15 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableNoConflict) {
     PqlResult pql_result;
 
-    test_result_list.push_back(1);
-    test_result_list.push_back(2);
-    test_result_list.push_back(3);
+    test_result_list.emplace(1);
+    test_result_list.emplace(2);
+    test_result_list.emplace(3);
 
     pql_result.InitTable(test_result_list, "a");
 
-    test_merge_list.push_back(7);
-    test_merge_list.push_back(8);
-    test_merge_list.push_back(9);
+    test_merge_list.emplace(7);
+    test_merge_list.emplace(8);
+    test_merge_list.emplace(9);
 
     pql_result.MergeResults(test_merge_list, kNoConflict, -1, "b");
 
@@ -139,15 +139,15 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableNoConflictPair) {
     PqlResult pql_result;
 
-    test_result_list.push_back(1);
-    test_result_list.push_back(2);
-    test_result_list.push_back(3);
+    test_result_list.emplace(1);
+    test_result_list.emplace(2);
+    test_result_list.emplace(3);
 
     pql_result.InitTable(test_result_list, "a");
 
-    test_mergepair_list.push_back(std::make_pair(7, 4));
-    test_mergepair_list.push_back(std::make_pair(8, 5));
-    test_mergepair_list.push_back(std::make_pair(9, 6));
+    test_mergepair_list.emplace(std::make_pair(7, 4));
+    test_mergepair_list.emplace(std::make_pair(8, 5));
+    test_mergepair_list.emplace(std::make_pair(9, 6));
 
     pql_result.MergeResults(test_mergepair_list, kNoConflict, -1, -1, "c", "b");
 
@@ -183,16 +183,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithConflict) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_merge_list.push_back(1);
-    test_merge_list.push_back(5);
+    test_merge_list.emplace(1);
+    test_merge_list.emplace(5);
 
     // Conflict with column 0
     pql_result.MergeResults(test_merge_list, kConflict, 0, "a");
@@ -224,16 +224,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictLeftPair) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(1, 21));
-    test_mergepair_list.push_back(std::make_pair(5, 22));
+    test_mergepair_list.emplace(std::make_pair(1, 21));
+    test_mergepair_list.emplace(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
@@ -268,18 +268,18 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictLeftPairNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(8, 21));
-    test_mergepair_list.push_back(std::make_pair(9, 22));
-    test_mergepair_list.push_back(std::make_pair(9, 22));
-    test_mergepair_list.push_back(std::make_pair(10, 23));
+    test_mergepair_list.emplace(std::make_pair(8, 21));
+    test_mergepair_list.emplace(std::make_pair(9, 22));
+    test_mergepair_list.emplace(std::make_pair(9, 22));
+    test_mergepair_list.emplace(std::make_pair(10, 23));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
@@ -297,16 +297,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictRightPair) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(31, 8));
-    test_mergepair_list.push_back(std::make_pair(32, 9));
+    test_mergepair_list.emplace(std::make_pair(31, 8));
+    test_mergepair_list.emplace(std::make_pair(32, 9));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
@@ -341,18 +341,18 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithOneConflictRightPairNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(31, 21));
-    test_mergepair_list.push_back(std::make_pair(32, 22));
-    test_mergepair_list.push_back(std::make_pair(31, 23));
-    test_mergepair_list.push_back(std::make_pair(32, 24));
+    test_mergepair_list.emplace(std::make_pair(31, 21));
+    test_mergepair_list.emplace(std::make_pair(32, 22));
+    test_mergepair_list.emplace(std::make_pair(31, 23));
+    test_mergepair_list.emplace(std::make_pair(32, 24));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictRight, -1, 1, "c",
@@ -370,16 +370,16 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestMergeTableWithTwoConflict) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(10, 4));
-    test_mergepair_list.push_back(std::make_pair(8, 2));
+    test_mergepair_list.emplace(std::make_pair(10, 4));
+    test_mergepair_list.emplace(std::make_pair(8, 2));
 
     // Conflict with column 0 & 1
     pql_result.MergeResults(test_mergepair_list, kTwoConflict, 1, 0, "b", "a");
@@ -411,23 +411,23 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestTwoMerge) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(1, 21));
-    test_mergepair_list.push_back(std::make_pair(5, 22));
+    test_mergepair_list.emplace(std::make_pair(1, 21));
+    test_mergepair_list.emplace(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
                             "c");
 
-    test_mergepair_list2.push_back(std::make_pair(8, 21));
-    test_mergepair_list2.push_back(std::make_pair(9, 23));
+    test_mergepair_list2.emplace(std::make_pair(8, 21));
+    test_mergepair_list2.emplace(std::make_pair(9, 23));
 
     // Conflict with column 2
     pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
@@ -461,33 +461,33 @@ TEST_CLASS(TestPqlResult) {
   TEST_METHOD(TestTwoMergeNoResult) {
     PqlResult pql_result;
 
-    test_resultpair_list.push_back(std::make_pair(1, 7));
-    test_resultpair_list.push_back(std::make_pair(2, 8));
-    test_resultpair_list.push_back(std::make_pair(3, 9));
-    test_resultpair_list.push_back(std::make_pair(4, 10));
-    test_resultpair_list.push_back(std::make_pair(5, 11));
+    test_resultpair_list.emplace(std::make_pair(1, 7));
+    test_resultpair_list.emplace(std::make_pair(2, 8));
+    test_resultpair_list.emplace(std::make_pair(3, 9));
+    test_resultpair_list.emplace(std::make_pair(4, 10));
+    test_resultpair_list.emplace(std::make_pair(5, 11));
 
     pql_result.InitTable(test_resultpair_list, "a", "b");
 
-    test_mergepair_list.push_back(std::make_pair(1, 21));
-    test_mergepair_list.push_back(std::make_pair(5, 22));
+    test_mergepair_list.emplace(std::make_pair(1, 21));
+    test_mergepair_list.emplace(std::make_pair(5, 22));
 
     // Conflict with column 0
     pql_result.MergeResults(test_mergepair_list, kOneConflictLeft, 0, -1, "a",
                             "c");
 
-    test_mergepair_list2.push_back(std::make_pair(8, 21));
-    test_mergepair_list2.push_back(std::make_pair(9, 23));
+    test_mergepair_list2.emplace(std::make_pair(8, 21));
+    test_mergepair_list2.emplace(std::make_pair(9, 23));
 
     // Conflict with column 2
     pql_result.MergeResults(test_mergepair_list2, kOneConflictRight, -1, 2, "d",
                             "c");
 
     // This final constraint 1 b does not match the table with 1 a
-    test_mergepair_list3.push_back(std::make_pair(1, 8));
-    test_mergepair_list3.push_back(std::make_pair(2, 7));
-    test_mergepair_list3.push_back(std::make_pair(1, 8));
-    test_mergepair_list3.push_back(std::make_pair(3, 9));
+    test_mergepair_list3.emplace(std::make_pair(1, 8));
+    test_mergepair_list3.emplace(std::make_pair(2, 7));
+    test_mergepair_list3.emplace(std::make_pair(1, 8));
+    test_mergepair_list3.emplace(std::make_pair(3, 9));
 
     // Conflict with column 0, 1
     pql_result.MergeResults(test_mergepair_list3, kTwoConflict, 0, 1, "a", "b");
