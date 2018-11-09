@@ -18,10 +18,10 @@ using StmtNum = int;
 using ProcIndex = int;
 using ProcIndexList = vector<ProcIndex>;
 using ProcIndexSet = unordered_set<ProcIndex>;
-using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>, ResultHasher>;
+using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>>;
 // int can be StmtNum or ProcIndex.
 using CallMap = unordered_map<int, unordered_set<ProcIndex>>;
-using StmtNumProcPairSet = unordered_set<pair<StmtNum, ProcIndex>, ResultHasher>;
+using StmtNumProcPairSet = unordered_set<pair<StmtNum, ProcIndex>>;
 using StmtNumSet = unordered_set<StmtNum>;
 using StmtProcMap = unordered_map<StmtNum, ProcIndex>;
 

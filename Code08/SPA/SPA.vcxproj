@@ -100,7 +100,6 @@
     <ClInclude Include="..\source\pql_evaluate_pattern.h" />
     <ClInclude Include="..\source\pql_evaluate_suchthat.h" />
     <ClInclude Include="..\source\pql_projector.h" />
-    <ClInclude Include="..\source\result_hasher.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
