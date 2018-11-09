@@ -175,7 +175,7 @@ TEST_CLASS(TestPatternTable) {
     Assert::IsTrue(result2.count(std::make_pair(kStmtNum2, kVarIndex1)));
     StmtVarPairSet result3 = pattern_table.GetAllAssignPatternPair({kTokenB});
     Assert::IsTrue(result3.size() == 1);
-    Assert::IsTrue(result3.count(std::make_pair(kStmtNum3, kVarIndex1)));
+    Assert::IsTrue(result3.count(std::make_pair(kStmtNum2, kVarIndex1)));
     pattern_table.InsertAssignPattern(kStmtNum3, kVarIndex2, kTokenList1);
     StmtVarPairSet result4 =
         pattern_table.GetAllAssignPatternPair(TokenList());

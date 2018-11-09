@@ -11,6 +11,7 @@ bool CallTable::InsertIndirectCallRelationship(ProcIndex caller_proc,
   callee_table_[callee_proc].insert(caller_proc);
   caller_set_.insert(caller_proc);
   callee_set_.insert(callee_proc);
+  callee_twin_set_.insert(make_pair(callee_proc, callee_proc));
   return true;
 }
 

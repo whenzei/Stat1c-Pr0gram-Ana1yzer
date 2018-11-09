@@ -41,7 +41,7 @@ TEST_CLASS(TestFollowsTable) {
     follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);  // indirect
     follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx4);  // direct
     StmtNumSet followers = follows_table.GetFollowsT(kSampleStmtIdx1);
-    Assert::AreEqual(expected_results, followers);
+    Assert::IsTrue(expected_results == followers);
   }
 
   TEST_METHOD(TestGetFollows) {
@@ -51,7 +51,7 @@ TEST_CLASS(TestFollowsTable) {
 
     StmtNumSet follower = follows_table.GetFollows(kSampleStmtIdx1);
     StmtNumSet expected_results = StmtNumSet{kSampleStmtIdx2};
-    Assert::AreEqual(expected_results, follower);
+    Assert::IsTrue(expected_results == follower);
   }
 
   TEST_METHOD(TestGetAllFollows) {
@@ -65,7 +65,7 @@ TEST_CLASS(TestFollowsTable) {
 
     StmtNumSet followers = follows_table.GetAllFollows();
     Assert::IsTrue(followers.size() == 3);
-    Assert::AreEqual(expected_results, followers);
+    Assert::IsTrue(expected_results == followers);
   }
 
   TEST_METHOD(TestGetFollowedByT) {
@@ -75,7 +75,7 @@ TEST_CLASS(TestFollowsTable) {
     follows_table.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);  // direct
     follows_table.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);  // direct
     StmtNumSet followees = follows_table.GetFollowedByT(kSampleStmtIdx3);
-    Assert::AreEqual(expected_results, followees);
+    Assert::IsTrue(expected_results == followees);
   }
 
   TEST_METHOD(TestGetFollowedBy) {
@@ -86,7 +86,7 @@ TEST_CLASS(TestFollowsTable) {
     follows_table.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);  // direct
 
     StmtNumSet followee = follows_table.GetFollowedBy(kSampleStmtIdx3);
-    Assert::AreEqual(expected_results, followee);
+    Assert::IsTrue(expected_results == followee);
   }
 
   TEST_METHOD(TestGetAllFollowedBy) {
@@ -101,7 +101,7 @@ TEST_CLASS(TestFollowsTable) {
 
     StmtNumSet followees = follows_table.GetAllFollowedBy();
     Assert::IsTrue(followees.size() == 4);
-    Assert::AreEqual(expected_results, followees);
+    Assert::IsTrue(expected_results == followees);
   }
 
   TEST_METHOD(TestHasFollowsRelationship) {
@@ -129,7 +129,7 @@ TEST_CLASS(TestFollowsTable) {
     follows_pair = follows_table.GetAllFollowsTPair();
     StmtNumPairSet expected_results = StmtNumPairSet{
         {kSampleStmtIdx1, kSampleStmtIdx2}, {kSampleStmtIdx3, kSampleStmtIdx4}};
-    Assert::AreEqual(expected_results, follows_pair);
+    Assert::IsTrue(expected_results == follows_pair);
   }
 
   TEST_METHOD(TestGetFollowsPairTMultipleFollower) {
@@ -139,7 +139,7 @@ TEST_CLASS(TestFollowsTable) {
     StmtNumPairSet follows_pair = follows_table.GetAllFollowsTPair();
     StmtNumPairSet expected_results = StmtNumPairSet{
         {kSampleStmtIdx1, kSampleStmtIdx2}, {kSampleStmtIdx1, kSampleStmtIdx3}};
-    Assert::AreEqual(expected_results, follows_pair);
+    Assert::IsTrue(expected_results == follows_pair);
   }
 
   TEST_METHOD(TestGetFollowsPair) {
@@ -151,11 +151,11 @@ TEST_CLASS(TestFollowsTable) {
     follows_pair = follows_table_1.GetAllFollowsPair();
     StmtNumPairSet expected_results_1 =
         StmtNumPairSet{{kSampleStmtIdx1, kSampleStmtIdx2}};
-    Assert::AreEqual(expected_results_1, follows_pair);
+    Assert::IsTrue(expected_results_1 == follows_pair);
     // Indirect relationship inserted. Results should not change.
     follows_table_1.InsertFollows(kSampleStmtIdx1, kSampleStmtIdx3);
     follows_pair = follows_table_1.GetAllFollowsPair();
-    Assert::AreEqual(expected_results_1, follows_pair);
+    Assert::IsTrue(expected_results_1 == follows_pair);
     // More direct relationships inserted. Results should change.
     follows_table_1.InsertFollows(kSampleStmtIdx2, kSampleStmtIdx3);
     follows_table_1.InsertFollows(kSampleStmtIdx3, kSampleStmtIdx4);
@@ -164,7 +164,7 @@ TEST_CLASS(TestFollowsTable) {
                        {kSampleStmtIdx2, kSampleStmtIdx3},
                        {kSampleStmtIdx3, kSampleStmtIdx4}};
     follows_pair = follows_table_1.GetAllFollowsPair();
-    Assert::AreEqual(expected_results_2, follows_pair);
+    Assert::IsTrue(expected_results_2 == follows_pair);
   }
 };
 }  // namespace PKBTests

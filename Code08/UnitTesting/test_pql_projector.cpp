@@ -117,18 +117,36 @@ TEST_CLASS(TestPqlProjector) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
         kIntermediateResultTable2, kColumnHeader2, kSelections6, &pkb, true);
-    Assert::IsTrue(result == FinalResult{"2 22 12 3", "2 22 14 3", "2 22 16 3",
-                                         "5 22 12 6", "5 22 14 6",
-                                         "5 22 16 6"});
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 12 3") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 14 3") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 16 3") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 12 6") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 14 6") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 16 6") !=
+                   result.end());
   }
 
   TEST_METHOD(TestMultipleGroupSelectRepeat) {
     PqlProjector pql_projector;
     FinalResult result = pql_projector.GetFinalResult(
         kIntermediateResultTable2, kColumnHeader2, kSelections7, &pkb, true);
-    Assert::IsTrue(result == FinalResult{"2 22 12 3 2", "2 22 14 3 2",
-                                         "2 22 16 3 2", "5 22 12 6 5",
-                                         "5 22 14 6 5", "5 22 16 6 5"});
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 12 3 2") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 14 3 2") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "2 22 16 3 2") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 12 6 5") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 14 6 5") !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(), "5 22 16 6 5") !=
+                   result.end());
   }
 
   TEST_METHOD(TestMultipleGroupSelectVarNameProcName) {
@@ -146,12 +164,24 @@ TEST_CLASS(TestPqlProjector) {
     ProcName p5 = pkb.GetProcName(5);
     VarName v3 = pkb.GetVarName(3);
     VarName v6 = pkb.GetVarName(6);
-    Assert::IsTrue(result == FinalResult{p2 + " 22 12 " + v3 + " " + p2,
-                                         p2 + " 22 14 " + v3 + " " + p2,
-                                         p2 + " 22 16 " + v3 + " " + p2,
-                                         p5 + " 22 12 " + v6 + " " + p5,
-                                         p5 + " 22 14 " + v6 + " " + p5,
-                                         p5 + " 22 16 " + v6 + " " + p5});
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p2 + " 22 12 " + v3 + " " + p2) !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p2 + " 22 14 " + v3 + " " + p2) !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p2 + " 22 16 " + v3 + " " + p2) !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p5 + " 22 12 " + v6 + " " + p5) !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p5 + " 22 14 " + v6 + " " + p5) !=
+                   result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             p5 + " 22 16 " + v6 + " " + p5) !=
+                   result.end());
   }
 
   TEST_METHOD(TestMultipleGroupSelectNotInClause) {
@@ -162,13 +192,30 @@ TEST_CLASS(TestPqlProjector) {
     pkb.InsertProcName(kProcName3);
     FinalResult result = pql_projector.GetFinalResult(
         kIntermediateResultTable2, kColumnHeader2, kSelections9, &pkb, true);
-    Assert::IsTrue(result == FinalResult{"11 " + kProcName0, "11 " + kProcName1,
-                                         "11 " + kProcName2, "11 " + kProcName3,
-                                         "13 " + kProcName0, "13 " + kProcName1,
-                                         "13 " + kProcName2, "13 " + kProcName3,
-                                         "15 " + kProcName0, "15 " + kProcName1,
-                                         "15 " + kProcName2,
-                                         "15 " + kProcName3});
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "11 " + kProcName0) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "11 " + kProcName1) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "11 " + kProcName2) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "11 " + kProcName3) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "13 " + kProcName0) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "13 " + kProcName1) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "13 " + kProcName2) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "13 " + kProcName3) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "15 " + kProcName0) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "15 " + kProcName1) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "15 " + kProcName2) != result.end());
+    Assert::IsTrue(std::find(result.begin(), result.end(),
+                             "15 " + kProcName3) != result.end());
   }
 };
 

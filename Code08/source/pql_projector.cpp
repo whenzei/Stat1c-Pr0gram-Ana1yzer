@@ -8,35 +8,35 @@ void PqlProjector::SortSelections() {
   }
 }
 
-void PqlProjector::TrimIntermediateResultTables() {
-  for (int group : selected_groups_) {
-    ResultTable* result_table = &intermediate_result_tables_[group];
-    vector<VarName> selected_synonyms = selection_group_table_[group];
-    // trim result table if not all columns are selected
-    if (selected_synonyms.size() != (*(*result_table).begin()).size()) {
-      vector<int> selected_columns;
-      ResultTable trimmed_result_table;
-      for (VarName& syn : selected_synonyms) {
-        selected_columns.push_back(intermediate_column_header_[syn].second);
-      }
-      for (auto& row : (*result_table)) {
-        ResultRow new_row;
-        // only keep columns that are selected
-        for (int column : selected_columns) {
-          new_row.push_back(row[column]);
-        }
-        trimmed_result_table.insert(new_row);
-      }
-      result_table = &trimmed_result_table;
-    } else {
-      // if all columns are selected, changed the order of synonyms in
-      // selection_group_table_[group] to follow the column order in result
-      // table
-      for (VarName& syn : selected_synonyms) {
-        int column = intermediate_column_header_[syn].second;
-        selection_group_table_[group][column] = syn;
-      }
+ResultTable* PqlProjector::TrimIntermediateResultTable(int group) {
+  ResultTable* result_table = &intermediate_result_tables_[group];
+  vector<VarName> selected_synonyms = selection_group_table_[group];
+  // trim result table if not all columns are selected
+  if (selected_synonyms.size() != (*(*result_table).begin()).size()) {
+    vector<int> selected_columns;
+    ResultTable trimmed_result_table;
+    for (VarName& syn : selected_synonyms) {
+      selected_columns.push_back(intermediate_column_header_[syn].second);
     }
+    for (auto& row : (*result_table)) {
+      ResultRow new_row;
+      // only keep columns that are selected
+      for (int column : selected_columns) {
+        new_row.push_back(row[column]);
+      }
+      trimmed_result_table.emplace(new_row);
+    }
+    *result_table = trimmed_result_table;
+    return result_table;
+  } else {
+    // if all columns are selected, changed the order of synonyms in
+    // selection_group_table_[group] to follow the column order in result
+    // table
+    for (VarName& syn : selected_synonyms) {
+      int column = intermediate_column_header_[syn].second;
+      selection_group_table_[group][column] = syn;
+    }
+    return result_table;
   }
 }
 
@@ -45,15 +45,22 @@ void PqlProjector::MergeIntermediateResultTables() {
     int group = *selected_groups_.begin();
     ResultTable* result_table = &intermediate_result_tables_[group];
     if (final_result_table_.empty()) {
-      final_result_table_ = *result_table;
+      final_result_table_ = *TrimIntermediateResultTable(group);
     } else {
       // cross product
       ResultTable new_table;
+      vector<VarName> selected_synonyms = selection_group_table_[group];
+      vector<int> selected_columns;
+      for (VarName& syn : selected_synonyms) {
+        selected_columns.push_back(intermediate_column_header_[syn].second);
+      }
       for (auto& row_1 : final_result_table_) {
         for (auto& row_2 : *result_table) {
           ResultRow new_row = row_1;
-          new_row.insert(new_row.end(), row_2.begin(), row_2.end());
-          new_table.insert(new_row);
+          for (int& column : selected_columns) {
+            new_row.push_back(row_2[column]);
+          }
+          new_table.emplace(new_row);
         }
       }
       final_result_table_ = new_table;
@@ -137,7 +144,7 @@ bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
         int column_id = intermediate_column_header_[call_stmt].second;
         ResultTable result_table = intermediate_result_tables_[result_table_id];
         for (auto& row : result_table) {
-          query_result_set.insert(pkb_->GetCalledProcedure(row[column_id]));
+          query_result_set.emplace(pkb_->GetCalledProcedure(row[column_id]));
         }
       } else {
         // Get all call stmt from PKB and store into query_result_set
@@ -172,7 +179,7 @@ bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
         int column_id = intermediate_column_header_[read_stmt].second;
         ResultTable result_table = intermediate_result_tables_[result_table_id];
         for (auto& row : result_table) {
-          query_result_set.insert(pkb_->GetReadVar(row[column_id]));
+          query_result_set.emplace(pkb_->GetReadVar(row[column_id]));
         }
       } else {
         // Get all read stmt var from PKB and store into results
@@ -191,7 +198,7 @@ bool PqlProjector::AddSelectAllResult(Synonym selected_syn) {
         int column_id = intermediate_column_header_[print_stmt].second;
         ResultTable result_table = intermediate_result_tables_[result_table_id];
         for (auto& row : result_table) {
-          query_result_set.insert(pkb_->GetPrintVar(row[column_id]));
+          query_result_set.emplace(pkb_->GetPrintVar(row[column_id]));
         }
       } else {
         // Get all print var from PKB and store into results
@@ -263,7 +270,6 @@ FinalResult PqlProjector::GetFinalResult(
   }
 
   SortSelections();
-  TrimIntermediateResultTables();
   MergeIntermediateResultTables();
   GenerateFinalResult();
 

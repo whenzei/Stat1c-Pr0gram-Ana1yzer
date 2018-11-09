@@ -39,7 +39,7 @@ class PqlProjector {
   void SortSelections();
 
   // keep only the columns that are selected, remove unselected columns
-  void TrimIntermediateResultTables();
+  ResultTable* TrimIntermediateResultTable(int group);
 
   // store the cross product of intermediate result tables as final_result_table
   void MergeIntermediateResultTables();
