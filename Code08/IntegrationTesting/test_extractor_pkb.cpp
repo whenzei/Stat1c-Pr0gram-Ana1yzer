@@ -76,22 +76,22 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positive
-    StmtNumList test_result_1 = extractor.GetPreviousT(8);
-    StmtNumList expected_result_1 =
-        StmtNumList{12, 7, 11, 4, 10, 3, 9, 2, 8, 1};
+    StmtNumSet test_result_1 = extractor.GetPreviousT(8);
+    StmtNumSet expected_result_1 =
+        StmtNumSet{12, 7, 11, 4, 10, 3, 9, 2, 8, 1};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
-    StmtNumList test_result_2 = extractor.GetPreviousT(6);
-    StmtNumList expected_result_2 = StmtNumList{5, 4, 3, 2, 1};
+    StmtNumSet test_result_2 = extractor.GetPreviousT(6);
+    StmtNumSet expected_result_2 = StmtNumSet{5, 4, 3, 2, 1};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     // Negative
-    StmtNumList test_result_3 = extractor.GetPreviousT(1);
-    StmtNumList expected_result_3 = StmtNumList{};
+    StmtNumSet test_result_3 = extractor.GetPreviousT(1);
+    StmtNumSet expected_result_3 = StmtNumSet{};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
-    StmtNumList test_result_4 = extractor.GetPreviousT(222);
-    StmtNumList expected_result_4 = StmtNumList{};
+    StmtNumSet test_result_4 = extractor.GetPreviousT(222);
+    StmtNumSet expected_result_4 = StmtNumSet{};
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
@@ -99,21 +99,21 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(&pkb2);
 
     // Positive
-    StmtNumList test_result_1 = extractor.GetNextT(9);
-    StmtNumList expected_result_1 = StmtNumList{10, 11, 12, 8, 9, 13};
+    StmtNumSet test_result_1 = extractor.GetNextT(9);
+    StmtNumSet expected_result_1 = StmtNumSet{10, 11, 12, 8, 9, 13};
     Assert::IsTrue(test_result_1 == expected_result_1);
 
-    StmtNumList test_result_2 = extractor.GetNextT(5);
-    StmtNumList expected_result_2 = StmtNumList{6, 13};
+    StmtNumSet test_result_2 = extractor.GetNextT(5);
+    StmtNumSet expected_result_2 = StmtNumSet{6, 13};
     Assert::IsTrue(test_result_2 == expected_result_2);
 
     // Negative
-    StmtNumList test_result_3 = extractor.GetNextT(13);
-    StmtNumList expected_result_3 = StmtNumList{};
+    StmtNumSet test_result_3 = extractor.GetNextT(13);
+    StmtNumSet expected_result_3 = StmtNumSet{};
     Assert::IsTrue(test_result_3 == expected_result_3);
 
-    StmtNumList test_result_4 = extractor.GetNextT(222);
-    StmtNumList expected_result_4 = StmtNumList{};
+    StmtNumSet test_result_4 = extractor.GetNextT(222);
+    StmtNumSet expected_result_4 = StmtNumSet{};
     Assert::IsTrue(test_result_4 == expected_result_4);
   }
 
@@ -121,13 +121,13 @@ TEST_CLASS(TestPkbPqlExtractor) {
     PqlExtractor extractor = PqlExtractor(&pkb7);
 
     // Positive
-    StmtNumPairList test_result_1 = extractor.GetAllNextTPairs();
+    StmtNumPairSet test_result_1 = extractor.GetAllNextTPairs();
     std::set<pair<int, int>> test_result_1_set;
     for (pair<int, int> res : test_result_1) {
       test_result_1_set.emplace(res);
     }
 
-    StmtNumPairList expected_result_1 = StmtNumPairList{
+    StmtNumPairSet expected_result_1 = StmtNumPairSet{
         make_pair(1, 2), make_pair(1, 3), make_pair(1, 4), make_pair(1, 5),
         make_pair(1, 1), make_pair(1, 6), make_pair(2, 3), make_pair(2, 4),
         make_pair(2, 5), make_pair(2, 1), make_pair(2, 2), make_pair(2, 6),

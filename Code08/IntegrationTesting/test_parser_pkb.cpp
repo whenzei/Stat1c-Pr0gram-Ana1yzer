@@ -37,28 +37,29 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet stmt_nums_true_get_all_followed_by =
         true_pkb.GetAllFollowedBy();
 
-    Assert::AreEqual(stmt_nums_test_get_all_followed_by, stmt_nums_true_get_all_followed_by);
+    Assert::IsTrue(stmt_nums_test_get_all_followed_by ==
+                   stmt_nums_true_get_all_followed_by);
 
     //***********************************
 
     StmtNumSet stmt_nums_test_get_all_follows = test_pkb.GetAllFollows();
     StmtNumSet stmt_nums_true_get_all_follows = true_pkb.GetAllFollows();
 
-    Assert::AreEqual(stmt_nums_test_get_all_follows, stmt_nums_true_get_all_follows);
+    Assert::IsTrue(stmt_nums_test_get_all_follows == stmt_nums_true_get_all_follows);
 
     //*************************************
 
     StmtNumSet stmt_num_test_get_follows = test_pkb.GetFollows(2);
     StmtNumSet stmt_num_true_get_follows = true_pkb.GetFollows(2);
 
-    Assert::AreEqual(stmt_num_test_get_follows, stmt_num_true_get_follows);
+    Assert::IsTrue(stmt_num_test_get_follows == stmt_num_true_get_follows);
 
     //*************************************
 
     StmtNumSet stmt_num_test_get_follows_t = test_pkb.GetFollowsT(1);
     StmtNumSet stmt_num_true_get_follows_t = true_pkb.GetFollowsT(1);
 
-    Assert::AreEqual(stmt_num_test_get_follows_t, stmt_num_true_get_follows_t);
+    Assert::IsTrue(stmt_num_test_get_follows_t == stmt_num_true_get_follows_t);
 
   }  // namespace ParserPKBTests
 
@@ -98,28 +99,30 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet stmt_nums_true_get_all_followed_by =
         true_pkb.GetAllFollowedBy();
 
-    Assert::AreEqual(stmt_nums_test_get_all_followed_by, stmt_nums_true_get_all_followed_by);
+    Assert::IsTrue(stmt_nums_test_get_all_followed_by ==
+                   stmt_nums_true_get_all_followed_by);
 
     //**************************************
 
     StmtNumSet stmt_nums_test_get_all_follows = test_pkb.GetAllFollows();
     StmtNumSet stmt_nums_true_get_all_follows = true_pkb.GetAllFollows();
 
-    Assert::AreEqual(stmt_nums_test_get_all_follows, stmt_nums_true_get_all_follows);
+    Assert::IsTrue(stmt_nums_test_get_all_follows ==
+                   stmt_nums_true_get_all_follows);
 
     //**************************************
 
     StmtNumSet stmt_num_test_get_follows = test_pkb.GetFollows(1);
     StmtNumSet stmt_num_true_get_follows = true_pkb.GetFollows(1);
 
-    Assert::AreEqual(stmt_num_test_get_follows, stmt_num_test_get_follows);
+    Assert::IsTrue(stmt_num_test_get_follows == stmt_num_test_get_follows);
 
     //*************************************
 
     StmtNumSet stmt_num_test_get_follows_t = test_pkb.GetFollowsT(1);
     StmtNumSet stmt_num_true_get_follows_t = true_pkb.GetFollowsT(1);
 
-    Assert::AreEqual(stmt_num_test_get_follows_t, stmt_num_true_get_follows_t);
+    Assert::IsTrue(stmt_num_test_get_follows_t == stmt_num_true_get_follows_t);
   }
   TEST_METHOD(TestParentOfOneNestedStatements) {
     PKB test_pkb = PKB();
@@ -153,27 +156,27 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_parents = test_pkb.GetAllParent();
     StmtNumSet true_all_parents = true_pkb.GetAllParent();
 
-    Assert::AreEqual(test_all_parents, true_all_parents);
+    Assert::IsTrue(test_all_parents == true_all_parents);
 
     //*******************************
 
     StmtNumSet test_all_children = test_pkb.GetAllChild();
     StmtNumSet true_all_children = true_pkb.GetAllChild();
 
-    Assert::AreEqual(test_all_children, true_all_children);
+    Assert::IsTrue(test_all_children == true_all_children);
 
     //*********************************
 
     StmtNumSet test_child_of_stmt = test_pkb.GetChild(2);
     StmtNumSet true_child_of_stmt = true_pkb.GetChild(2);
 
-    Assert::AreEqual(test_child_of_stmt, true_child_of_stmt);
+    Assert::IsTrue(test_child_of_stmt == true_child_of_stmt);
 
     //**********************************
     StmtNumSet test_parent_of_stmt = test_pkb.GetParent(7);
     StmtNumSet true_parent_of_stmt = true_pkb.GetParent(7);
 
-    Assert::AreEqual(test_parent_of_stmt, true_parent_of_stmt);
+    Assert::IsTrue(test_parent_of_stmt == true_parent_of_stmt);
   }
   TEST_METHOD(TestParentOfNestedStatements) {
     PKB test_pkb = PKB();
@@ -210,28 +213,28 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_parents = test_pkb.GetAllParent();
     StmtNumSet true_all_parents = true_pkb.GetAllParent();
 
-    Assert::AreEqual(test_all_parents, true_all_parents);
+    Assert::IsTrue(test_all_parents == true_all_parents);
 
     //*******************************
 
     StmtNumSet test_all_children = test_pkb.GetAllChild();
     StmtNumSet true_all_children = true_pkb.GetAllChild();
 
-    Assert::AreEqual(test_all_children, true_all_children);
+    Assert::IsTrue(test_all_children == true_all_children);
 
     //*********************************
 
     StmtNumSet test_child_of_stmt = test_pkb.GetChild(5);
     StmtNumSet true_child_of_stmt = true_pkb.GetChild(5);
 
-    Assert::AreEqual(test_child_of_stmt, true_child_of_stmt);
+    Assert::IsTrue(test_child_of_stmt == true_child_of_stmt);
 
     //**********************************
 
     StmtNumSet test_parent_of_stmt = test_pkb.GetParent(5);
     StmtNumSet true_parent_of_stmt = true_pkb.GetParent(5);
 
-    Assert::AreEqual(test_parent_of_stmt, true_parent_of_stmt);
+    Assert::IsTrue(test_parent_of_stmt == true_parent_of_stmt);
   }
   TEST_METHOD(TestParentStarOfNestedStatements) {
     PKB test_pkb = PKB();
@@ -278,14 +281,14 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_parent_t = test_pkb.GetParentT(9);
     StmtNumSet true_parent_t = true_pkb.GetParentT(9);
 
-    Assert::AreEqual(test_parent_t, true_parent_t);
+    Assert::IsTrue(test_parent_t == true_parent_t);
 
     //*******************************
 
     StmtNumSet test_child_t = test_pkb.GetChildT(2);
     StmtNumSet true_child_t = true_pkb.GetChildT(2);
 
-    Assert::AreEqual(test_child_t, true_child_t);
+    Assert::IsTrue(test_child_t == true_child_t);
 
     //*******************************
   }
@@ -318,14 +321,14 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_using_stmts = test_pkb.GetAllUsingStmt();
     StmtNumSet true_all_using_stmts = true_pkb.GetAllUsingStmt();
 
-    Assert::AreEqual(test_all_using_stmts, true_all_using_stmts);
+    Assert::IsTrue(test_all_using_stmts == true_all_using_stmts);
 
     //*******************************
 
     VarIndexSet test_used_var_of_stmt = test_pkb.GetUsedVarS(3);
     VarIndexSet true_used_var_of_stmt = true_pkb.GetUsedVarS(3);
 
-    Assert::AreEqual(test_used_var_of_stmt, true_used_var_of_stmt);
+    Assert::IsTrue(test_used_var_of_stmt == true_used_var_of_stmt);
 
     //*******************************
   }
@@ -405,19 +408,19 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_using_stmts = test_pkb.GetAllUsingStmt();
     StmtNumSet true_all_using_stmts = true_pkb.GetAllUsingStmt();
 
-    Assert::AreEqual(test_all_using_stmts, true_all_using_stmts);
+    Assert::IsTrue(test_all_using_stmts == true_all_using_stmts);
 
     //*******************************
     StmtNumSet test_used_var_of_stmt = test_pkb.GetUsedVarS(2);
     StmtNumSet true_used_var_of_stmt = true_pkb.GetUsedVarS(2);
 
-    Assert::AreEqual(test_used_var_of_stmt, true_used_var_of_stmt);
+    Assert::IsTrue(test_used_var_of_stmt == true_used_var_of_stmt);
 
     //*******************************
     StmtNumSet test_used_vars_proc = test_pkb.GetUsedVarP("one");
     StmtNumSet true_used_vars_proc = true_pkb.GetUsedVarP("one");
 
-    Assert::AreEqual(test_used_vars_proc, true_used_vars_proc);
+    Assert::IsTrue(test_used_vars_proc == true_used_vars_proc);
 
     //*******************************
   }
@@ -453,21 +456,21 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_modified_stmts = test_pkb.GetAllModifyingS();
     StmtNumSet true_all_modified_stmts = true_pkb.GetAllModifyingS();
 
-    Assert::AreEqual(test_all_modified_stmts, true_all_modified_stmts);
+    Assert::IsTrue(test_all_modified_stmts == true_all_modified_stmts);
 
     //*******************************
 
     StmtNumSet test_modified_var_at_stmts = test_pkb.GetModifyingS("if");
     StmtNumSet true_modified_var_at_stmts = true_pkb.GetModifyingS("if");
 
-    Assert::AreEqual(test_modified_var_at_stmts, true_modified_var_at_stmts);
+    Assert::IsTrue(test_modified_var_at_stmts == true_modified_var_at_stmts);
 
     //*******************************
 
     StmtNumSet test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
     StmtNumSet true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
-    Assert::AreEqual(test_modified_stmt_get_var, true_modified_stmt_get_var);
+    Assert::IsTrue(test_modified_stmt_get_var == true_modified_stmt_get_var);
 
     //*******************************
   }
@@ -553,28 +556,28 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet test_all_modified_stmts = test_pkb.GetAllModifyingS();
     StmtNumSet true_all_modified_stmts = true_pkb.GetAllModifyingS();
 
-    Assert::AreEqual(test_all_modified_stmts, true_all_modified_stmts);
+    Assert::IsTrue(test_all_modified_stmts == true_all_modified_stmts);
 
     //*******************************
 
     StmtNumSet test_modified_var_at_stmts = test_pkb.GetModifyingS("a");
     StmtNumSet true_modified_var_at_stmts = true_pkb.GetModifyingS("a");
 
-    Assert::AreEqual(test_modified_var_at_stmts, true_modified_var_at_stmts);
+    Assert::IsTrue(test_modified_var_at_stmts == true_modified_var_at_stmts);
 
     //*******************************
 
     StmtNumSet test_modified_stmt_get_var = test_pkb.GetModifiedVarS(2);
     StmtNumSet true_modified_stmt_get_var = true_pkb.GetModifiedVarS(2);
 
-    Assert::AreEqual(test_modified_stmt_get_var, true_modified_stmt_get_var);
+    Assert::IsTrue(test_modified_stmt_get_var == true_modified_stmt_get_var);
 
     //*******************************
 
     StmtNumSet test_modified_vars_proc = test_pkb.GetModifiedVarP("one");
     StmtNumSet true_modified_vars_proc = true_pkb.GetModifiedVarP("one");
 
-    Assert::AreEqual(test_modified_vars_proc, true_modified_vars_proc);
+    Assert::IsTrue(test_modified_vars_proc == true_modified_vars_proc);
 
     //*******************************
   }
@@ -776,18 +779,18 @@ TEST_CLASS(TestParserPkb) {
     StmtNumSet expected_stmts = StmtNumSet{1, 2, 3, 4, 5};
     StmtNumSet call_stmts = test_pkb.GetAllCallStmt();
     Assert::IsTrue(call_stmts.size() == 5);
-    Assert::AreEqual(expected_stmts, call_stmts);
+    Assert::IsTrue(expected_stmts == call_stmts);
 
     ProcNameSet callers = test_pkb.GetAllCallerName();
     ProcNameSet expected_callers = ProcNameSet{"one", "two", "three", "four"};
     Assert::IsTrue(callers.size() == 4);
-    Assert::AreEqual(expected_callers, callers);
+    Assert::IsTrue(expected_callers == callers);
 
     ProcNameSet callees = test_pkb.GetAllCalleeName();
     ProcNameSet expected_callees =
       ProcNameSet{"two", "three", "four", "five"};
     Assert::IsTrue(callees.size() == 4);
-    Assert::AreEqual(expected_callees, callees);
+    Assert::IsTrue(expected_callees == callees);
 
     ProcIndexList proc_id_order = test_pkb.GetToposortedCalls();
     ProcNameSet proc_order;
@@ -796,7 +799,7 @@ TEST_CLASS(TestParserPkb) {
     }
     ProcNameSet expected_order =
       ProcNameSet{"five", "three", "four", "two", "one"};
-    Assert::AreEqual(expected_order, proc_order);
+    Assert::IsTrue(expected_order == proc_order);
   }
   TEST_METHOD(TestCallsTWithOneCallPerProc) {
     PKB test_pkb = PKB();
@@ -884,7 +887,7 @@ TEST_CLASS(TestParserPkb) {
     StmtNumPairSet result = test_pkb.GetAllNextPairs();
     Assert::IsTrue(result.size() == 3);
     StmtNumPairSet expected_result = StmtNumPairSet{ {1,2}, {2,3}, {2,4} };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestPopulateProgramCFG) {

@@ -49,7 +49,7 @@ TEST_CLASS(TestPKB) {
     ProcIndexSet proc_indices = pkb.GetAllProcIndices();
     Assert::IsTrue(proc_indices.size() == 2);
     ProcIndexSet expected_result = ProcIndexSet{kProcIndex1, kProcIndex2};
-    Assert::AreEqual(expected_result, proc_indices);
+    Assert::IsTrue(expected_result == proc_indices);
   }
 
   TEST_METHOD(TestGetAllVarName) {
@@ -60,14 +60,14 @@ TEST_CLASS(TestPKB) {
     VarIndexSet result1 = pkb.GetAllVarIndices();
     Assert::IsTrue(result1.size() == 1);
     VarIndexSet expected_result1 = VarIndexSet{ kVarIndex1 };
-    Assert::AreEqual(expected_result1, result1);
+    Assert::IsTrue(expected_result1 == result1);
     pkb.InsertAssignStmt(&AssignStmtData(kStmtNum2, kProcIndex1, kVarName2,
                                          kVarNameSet1, kConstValueSet1,
                                          kTokenList));
     VarIndexSet result2 = pkb.GetAllVarIndices();
     Assert::IsTrue(result2.size() == 3);
     VarIndexSet expected_result2 = VarIndexSet{kVarIndex1, kVarIndex2, kVarIndex3};
-    Assert::AreEqual(expected_result2, result2);
+    Assert::IsTrue(expected_result2 == result2);
   }
 
   TEST_METHOD(TestGetAllConstValue) {
@@ -78,7 +78,7 @@ TEST_CLASS(TestPKB) {
     ConstValueSet result = pkb.GetAllConstValue();
     Assert::IsTrue(result.size() == 2);
     ConstValueSet expected_result = ConstValueSet{ 1, 2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetStmtType) {
@@ -113,7 +113,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllAssignStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllWhileStmt) {
@@ -125,7 +125,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllWhileStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllIfStmt) {
@@ -137,7 +137,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllIfStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllReadStmt) {
@@ -147,7 +147,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllReadStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllPrintStmt) {
@@ -157,7 +157,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllPrintStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllCallStmt) {
@@ -167,7 +167,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result = pkb.GetAllCallStmt();
     Assert::IsTrue(result.size() == 2);
     StmtNumSet expected_result = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAllStmt) {
@@ -186,7 +186,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet expected_result
       = StmtNumSet{ kStmtNum1, kStmtNum2, kStmtNum3, kStmtNum4, kStmtNum5 };
 
-    Assert::AreEqual(expected_result, result);
+    Assert::IsTrue(expected_result == result);
   }
 
   TEST_METHOD(TestGetAssignWithPattern) {
@@ -203,22 +203,22 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result1 = pkb.GetAssignWithPattern(kVarName1, {kToken32});
     Assert::IsTrue(result1.size() == 2);
     StmtNumSet expected_result1 = StmtNumSet{ kStmtNum1, kStmtNum3 };
-    Assert::AreEqual(expected_result1, result1);
+    Assert::IsTrue(expected_result1 == result1);
     
     StmtNumSet result2 = pkb.GetAssignWithPattern(kVarName2, kTokenList);
     Assert::IsTrue(result2.size() == 1);
     StmtNumSet expected_result2 = StmtNumSet{ kStmtNum2 };
-    Assert::AreEqual(expected_result2, result2);
+    Assert::IsTrue(expected_result2 == result2);
 
     StmtNumSet result3 = pkb.GetAssignWithPattern("", {kTokenA});
     Assert::IsTrue(result3.size() == 3);
     StmtNumSet expected_result3 = StmtNumSet{ kStmtNum1, kStmtNum2, kStmtNum3 };
-    Assert::AreEqual(expected_result3, result3);
+    Assert::IsTrue(expected_result3 == result3);
 
     StmtNumSet result4 = pkb.GetAssignWithPattern("", kTokenList);
     Assert::IsTrue(result4.size() == 3);
     StmtNumSet expected_result4 = StmtNumSet{ kStmtNum1, kStmtNum2, kStmtNum3 };
-    Assert::AreEqual(expected_result4, result4);
+    Assert::IsTrue(expected_result4 == result4);
   }
 
   TEST_METHOD(TestGetAssignWithExactPattern) {
@@ -235,7 +235,7 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result1 = pkb.GetAssignWithExactPattern(kVarName1, kTokenList1);
     Assert::IsTrue(result1.size() == 1);
     StmtNumSet expected_result1 = StmtNumSet{ kStmtNum1 };
-    Assert::AreEqual(expected_result1, result1);
+    Assert::IsTrue(expected_result1 == result1);
 
     StmtNumSet result2 = pkb.GetAssignWithExactPattern(kVarName1, {kTokenA});
     Assert::IsTrue(result2.empty());
@@ -243,12 +243,12 @@ TEST_CLASS(TestPKB) {
     StmtNumSet result3 = pkb.GetAssignWithExactPattern("", kTokenList1);
     Assert::IsTrue(result3.size() == 2);
     StmtNumSet expected_result3 = StmtNumSet{ kStmtNum1, kStmtNum2 };
-    Assert::AreEqual(expected_result3, result3);
+    Assert::IsTrue(expected_result3 == result3);
     
     StmtNumSet result4 = pkb.GetAssignWithExactPattern("", kTokenList2);
     Assert::IsTrue(result4.size() == 1);
     StmtNumSet expected_result4 = StmtNumSet{ kStmtNum3 };
-    Assert::AreEqual(expected_result4, result4);
+    Assert::IsTrue(expected_result4 == result4);
     
     StmtNumSet result5 = pkb.GetAssignWithExactPattern(kVarName1, kTokenList);
     Assert::IsTrue(result5.empty());
@@ -268,26 +268,26 @@ TEST_CLASS(TestPKB) {
     StmtVarPairSet result1 = pkb.GetAllAssignPatternPair({kTokenB});
     Assert::IsTrue(result1.size() == 1);
     StmtVarPairSet expected_result1 = { { kStmtNum3, kVarIndex1 } };
-    Assert::AreEqual(expected_result1, result1);
+    Assert::IsTrue(expected_result1 == result1);
 
     StmtVarPairSet result2 = pkb.GetAllAssignPatternPair({kTokenA});
     Assert::IsTrue(result2.size() == 3);
     StmtVarPairSet expected_result2 = { { kStmtNum1, kVarIndex1 },
                                         { kStmtNum2, kVarIndex2 },
                                         { kStmtNum3, kVarIndex1 } };
-    Assert::AreEqual(expected_result2, result2);
+    Assert::IsTrue(expected_result2 == result2);
 
     StmtVarPairSet result3 = pkb.GetAllAssignPatternPair(kTokenList2);
     Assert::IsTrue(result3.size() == 1);
     StmtVarPairSet expected_result3 = { { kStmtNum3, kVarIndex1 } };
-    Assert::AreEqual(expected_result3, result3);
+    Assert::IsTrue(expected_result3 == result3);
 
     StmtVarPairSet result4 = pkb.GetAllAssignPatternPair(kTokenList);
     Assert::IsTrue(result4.size() == 3);
     StmtVarPairSet expected_result4 = { { kStmtNum1, kVarIndex1 },
                                         { kStmtNum2, kVarIndex2 },
                                         { kStmtNum3, kVarIndex1 } };
-    Assert::AreEqual(expected_result4, result4);
+    Assert::IsTrue(expected_result4 == result4);
 
     StmtVarPairSet result5 = pkb.GetAllAssignPatternPair({kTokenPlus});
     Assert::IsTrue(result5.empty());
@@ -307,13 +307,13 @@ TEST_CLASS(TestPKB) {
     StmtVarPairSet result1 = pkb.GetAllAssignExactPatternPair(kTokenList2);
     Assert::IsTrue(result1.size() == 1);
     StmtVarPairSet expected_result1 = StmtVarPairSet{ { kStmtNum3, kVarIndex1 } };
-    Assert::AreEqual(expected_result1, result1);
+    Assert::IsTrue(expected_result1 == result1);
 
     StmtVarPairSet result2 = pkb.GetAllAssignExactPatternPair(kTokenList1);
     Assert::IsTrue(result2.size() == 2);
     StmtVarPairSet expected_result2 = StmtVarPairSet{ { kStmtNum1, kVarIndex1 },
                                                       { kStmtNum2, kVarIndex2 } };
-    Assert::AreEqual(expected_result2, result2);
+    Assert::IsTrue(expected_result2 == result2);
     
     
     StmtVarPairSet result3 = pkb.GetAllAssignExactPatternPair({kToken32});
