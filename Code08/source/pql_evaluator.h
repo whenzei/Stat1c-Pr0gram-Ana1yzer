@@ -14,7 +14,7 @@
 #include "pql_global.h"
 #include "pql_query.h"
 #include "pql_result.h"
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::list;
 using std::string;
@@ -23,7 +23,7 @@ using std::unordered_set;
 using std::vector;
 using FinalResult = list<string>;
 using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>, pair_hash>;
+using QueryResultPairSet = unordered_set<pair<int, int>, ResultHasher>;
 using ResultTableList = vector<ResultTable>;
 using ResultTableColumnHeader = unordered_map<string, pair<int, int>>;
 

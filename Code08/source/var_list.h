@@ -8,7 +8,7 @@
 #include <unordered_set>
 
 #include "pql_global.h"
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::make_pair;
 using std::pair;
@@ -19,7 +19,7 @@ using std::unordered_set;
 using VarName = string;
 using VarIndex = int;
 using VarIndexSet = unordered_set<VarIndex>;
-using VarIndexPairSet = unordered_set<pair<VarIndex, VarIndex>, pair_hash>;
+using VarIndexPairSet = unordered_set<pair<VarIndex, VarIndex>, ResultHasher>;
 using VarNameSet = unordered_set<VarName>;
 using VarIndexMap = unordered_map<VarName, VarIndex>;
 using IndexVarMap = unordered_map<VarIndex, VarName>;

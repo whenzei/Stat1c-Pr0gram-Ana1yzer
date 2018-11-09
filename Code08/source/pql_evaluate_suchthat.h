@@ -13,14 +13,14 @@
 #include "pql_global.h"
 #include "pql_query.h"
 #include "pql_extractor.h"
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
 using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>, pair_hash>;
+using QueryResultPairSet = unordered_set<pair<int, int>, ResultHasher>;
 using VarProcToIndexMap = unordered_map<string, int>;
 using IndexToVarProcMap = unordered_map<int, string>;
 

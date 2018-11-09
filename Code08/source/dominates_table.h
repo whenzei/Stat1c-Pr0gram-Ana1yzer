@@ -7,7 +7,7 @@
 #include <unordered_set>
 
 #include "graph.h"
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::make_pair;
 using std::pair;
@@ -16,7 +16,7 @@ using std::unordered_set;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairSet = unordered_set<pair<int, int>, pair_hash>;
+using StmtNumPairSet = unordered_set<pair<int, int>, ResultHasher>;
 using DominatesMap = unordered_map<Vertex, VertexSet>;
 
 // The dominates table class for the PKB component

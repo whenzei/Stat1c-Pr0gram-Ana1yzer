@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::make_pair;
 using std::pair;
@@ -23,8 +23,8 @@ using ProcIndexSet = unordered_set<ProcIndex>;
 // int can be StmtNum or ProcIndex
 using UsesMap = unordered_map<int, VarIndexSet>;
 using UsedByMap = unordered_map<VarIndex, unordered_set<int>>;
-using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>, pair_hash>;
-using ProcVarPairSet = unordered_set<pair<StmtNum, VarIndex>, pair_hash>;
+using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>, ResultHasher>;
+using ProcVarPairSet = unordered_set<pair<StmtNum, VarIndex>, ResultHasher>;
 
 // The uses table class for the PKB component
 // Used to store uses relationships between stmt/proc and variables that are

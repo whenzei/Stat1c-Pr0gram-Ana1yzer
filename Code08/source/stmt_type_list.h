@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "pql_global.h"
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::pair;
 using std::unordered_map;
@@ -16,11 +16,11 @@ using std::unordered_set;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<StmtNum>;
-using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>, pair_hash>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>, ResultHasher>;
 using StmtType = PqlDeclarationEntity;
 using StmtTypeMap = unordered_map<StmtType, StmtNumSet>;
 using StmtTypePairMap =
-    unordered_map<PqlDeclarationEntity, unordered_set<pair<StmtNum, StmtNum>, pair_hash>>;
+    unordered_map<PqlDeclarationEntity, unordered_set<pair<StmtNum, StmtNum>, ResultHasher>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g.

@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include "pair_hash.h"
+#include "result_hasher.h"
 
 using std::make_pair;
 using std::pair;
@@ -19,8 +19,8 @@ using ProcName = string;
 using ProcIndex = int;
 using ProcIndexSet = unordered_set<ProcIndex>;
 using ProcNameSet = unordered_set<ProcName>;
-using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>, pair_hash>;
-using ProcNamePairSet = unordered_set<pair<ProcName, ProcName>, pair_hash>;
+using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>, ResultHasher>;
+using ProcNamePairSet = unordered_set<pair<ProcName, ProcName>, ResultHasher>;
 using ProcIndexMap = unordered_map<ProcName, ProcIndex>;
 using IndexProcMap = unordered_map<ProcIndex, ProcName>;
 

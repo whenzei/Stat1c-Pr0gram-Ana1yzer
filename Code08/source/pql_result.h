@@ -8,9 +8,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "result_hasher.h"
 #include "pql_extractor.h"
 #include "pql_global.h"
-#include "pair_hash.h"
 
 using std::pair;
 using std::string;
@@ -23,7 +23,7 @@ using MergeSet = unordered_set<string>;
 using ResultTable = unordered_set<vector<int>>;
 using ResultRow = vector<int>;
 using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>, pair_hash>;
+using QueryResultPairSet = unordered_set<pair<int, int>,ResultHasher>;
 
 /*
 This class stores the PQL result as a table
