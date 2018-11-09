@@ -3,8 +3,11 @@
 #ifndef AFFECTS_EXTRACTOR_H
 #define AFFECTS_EXTRACTOR_H
 
+#include <stack>
+
 #include "pkb.h"
 
+using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
@@ -30,15 +33,30 @@ class AffectsExtractor {
   AffectsTable affected_by_bip_table_;
   AffectsTable affected_by_bip_t_table_;
 
-  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip);
+  /* Affects evaluation */
 
-  bool EvaluateIsAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
-  bool EvaluateIsAffected(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt);
 
-  VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffected(StmtNum stmt);
 
-  VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffects(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedBy(StmtNum stmt);
+
+  /* AffectsBip evaluation */
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1);
+
+  bool EvaluateIsAffectedBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectsBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedByBip(StmtNum stmt);
+
 
   // internal helper methods to get the tables regardless of whether the tables
   // have been initialized
@@ -76,7 +94,7 @@ class AffectsExtractor {
   // @returns true if the current vertex can reach the target vertex without
   // being modified by the given affects_var, false otherwise
   bool DfsIsAffects(Vertex curr, Vertex target, VarIndex affects_var, CFG* cfg,
-                    VisitedMap* visited, bool is_bip);
+                    VisitedMap* visited);
 
   // @params: curr the current vertex
   // @params: affects_var the variable (belonging to LHS of the assignment
@@ -85,7 +103,7 @@ class AffectsExtractor {
   // @params: VisitedMap* the map to keep track of visited vertices
   // @returns true if affects_var affects any other assignment statements
   bool DfsIsAffects(Vertex curr, VarIndex affects_var, CFG* cfg,
-                    VisitedMap* visited, bool is_bip);
+                    VisitedMap* visited);
 
   // @params: curr the current vertex
   // @params: used_vars the set of variables to be affected (contains variables
@@ -98,7 +116,7 @@ class AffectsExtractor {
   // assignment statement
   bool DfsIsAffected(Vertex curr, VarIndexSet used_vars,
                      VarIndexSet affected_used_vars, CFG* cfg,
-                     VisitedMap* visited, bool is_bip);
+                     VisitedMap* visited);
 
   // @params: curr the current vertex
   // @params: affects_var the LHS of an assignment statement to check if it
@@ -108,7 +126,7 @@ class AffectsExtractor {
   // @params: VisitedMap* the map to keep track of visited vertices
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffects(Vertex curr, VarIndex affects_var, VertexSet* res_list,
-                     CFG* cfg, VisitedMap visited, bool is_bip);
+                     CFG* cfg, VisitedMap visited);
 
   // @params: curr the current vertex
   // @params: used_vars the set of variables to be affected (contains variables
@@ -121,7 +139,7 @@ class AffectsExtractor {
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                         VarIndexSet affected_used_vars, VertexSet* res_list,
-                        CFG* cfg, VisitedMap visited, bool is_bip);
+                        CFG* cfg, VisitedMap visited);
 
   // Helper to populate the AffectsTable and AffectedByTable using DFS
   // @params: Vertex the vertex to start from
@@ -136,8 +154,12 @@ class AffectsExtractor {
                            LastModMap last_mod_map, VisitedCountMap vcm,
                            CFG* cfg, bool is_bip);
 
+  void DfsSetAffectsBipTables(Vertex v, AffectsTable* at, AffectsTable* abt,
+                              VisitedMap* visited, LastModMap lmm,
+                              VisitedCountMap vcm, CFG* cfg, stack<Vertex> prev_entrance);
+
   // @returns true if StmtType is either kAssign, kCall, or kRead
-  bool IsModifyingType(StmtType stmt_type, bool is_bip);
+  bool IsModifyingType(StmtType stmt_type, bool is_bip = false);
 
  public:
   AffectsExtractor();
