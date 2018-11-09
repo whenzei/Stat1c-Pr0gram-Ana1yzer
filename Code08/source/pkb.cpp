@@ -548,12 +548,11 @@ StmtVarPairSet PKB::GetAllAssignExactPatternPair(TokenList exact_expr) {
 }
 
 StmtNumSet PKB::GetWhileWithPattern(VarName var_name) {
-  /*if (var_name.compare("") == 0) {
+  if (var_name.compare("") == 0) {
     return GetAllWhileStmt();
   } else {
     return pattern_table_.GetWhileWithPattern(GetVarIndex(var_name));
-  }*/
-  return StmtNumSet();
+  }
 }
 
 StmtVarPairSet PKB::GetAllWhilePatternPair() {
@@ -561,12 +560,11 @@ StmtVarPairSet PKB::GetAllWhilePatternPair() {
 }
 
 StmtNumSet PKB::GetIfWithPattern(VarName var_name) {
-  /*if (var_name.compare("") == 0) {
+  if (var_name.compare("") == 0) {
     return GetAllIfStmt();
   } else {
     return pattern_table_.GetIfWithPattern(GetVarIndex(var_name));
-  }*/
-  return StmtNumSet();
+  }
 }
 
 StmtVarPairSet PKB::GetAllIfPatternPair() {
