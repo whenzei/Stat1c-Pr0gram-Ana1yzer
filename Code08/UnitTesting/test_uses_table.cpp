@@ -99,9 +99,9 @@ TEST_CLASS(TestUsesTable) {
     UsesTable uses;
     uses.InsertUsesS(kSampleStmtIdx1, kSampleVarIndex1);
     uses.InsertUsesS(kSampleStmtIdx2, kSampleVarIndex1);
-    StmtVarIndexPairSet uses_pair_set = uses.GetAllUsesSPair();
+    StmtVarPairSet uses_pair_set = uses.GetAllUsesSPair();
     Assert::IsTrue(uses_pair_set.size() == 2);
-    StmtVarIndexPairSet expected_result = StmtVarIndexPairSet{ 
+    StmtVarPairSet expected_result = StmtVarPairSet{ 
       {kSampleStmtIdx1,kSampleVarIndex1},
       {kSampleStmtIdx2,kSampleVarIndex1} };
     Assert::AreEqual(expected_result, uses_pair_set);
