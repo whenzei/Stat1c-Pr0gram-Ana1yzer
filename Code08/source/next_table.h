@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "graph.h"
+#include "pair_hash.h"
 
 using std::pair;
 using std::string;
@@ -19,7 +20,7 @@ using std::vector;
 using StmtNum = int;
 using ProcName = string;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairSet = unordered_set<pair<int, int>>;
+using StmtNumPairSet = unordered_set<pair<int, int>, pair_hash>;
 using CFG = Graph;
 using CFGTable = unordered_map<string, CFG>;
 

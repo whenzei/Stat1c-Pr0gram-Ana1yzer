@@ -4,13 +4,14 @@
 #define SPA_CONST_LIST_H
 
 #include <unordered_set>
+#include "pair_hash.h"
 
 using std::make_pair;
 using std::pair;
 using std::unordered_set;
 
 using ConstValue = int;
-using ConstValuePairSet = unordered_set<pair<ConstValue, ConstValue>>;
+using ConstValuePairSet = unordered_set<pair<ConstValue, ConstValue>, pair_hash>;
 using ConstValueSet = unordered_set<ConstValue>;
 
 // The constant list class for the PKB component

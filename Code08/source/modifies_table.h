@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "pair_hash.h"
 
 using std::pair;
 using std::unordered_map;
@@ -21,8 +22,8 @@ using ProcIndexSet = unordered_set<ProcIndex>;
 // int can be either ProcName or StmtNum.
 using ModifiesMap = unordered_map<StmtNum, VarIndexSet>;
 using ModifiedByMap = unordered_map<VarIndex, StmtNumSet>;
-using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>>;
-using ProcVarPairSet = unordered_set<pair<ProcIndex, VarIndex>>;
+using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>, pair_hash>;
+using ProcVarPairSet = unordered_set<pair<ProcIndex, VarIndex>, pair_hash>;
 
 // The modifies table class for the PKB component
 // Used to store modifies relationships between stmt/proc and variables that are

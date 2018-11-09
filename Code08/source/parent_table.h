@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include "pair_hash.h"
 
 using std::make_pair;
 using std::pair;
@@ -19,7 +20,7 @@ using ParentsMap = unordered_map<int, StmtNumSet>;
 using DirectParentMap = unordered_map<int, int>;
 using ChildrenMap = unordered_map<int, StmtNumSet>;
 using DirectChildrenMap = unordered_map<int, StmtNumSet>;
-using StmtNumPairSet = unordered_set<pair<int, int>>;
+using StmtNumPairSet = unordered_set<pair<int, int>, pair_hash>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships

@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include "pair_hash.h"
 
 using std::make_pair;
 using std::pair;
@@ -14,7 +15,7 @@ using std::vector;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>, pair_hash>;
 using FollowsMap = unordered_map<int, unordered_set<int>>;
 using FollowedByMap = unordered_map<int, unordered_set<int>>;
 

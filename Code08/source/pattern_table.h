@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include "tokenizer.h"
+#include "pair_hash.h"
 
 using std::pair;
 using std::string;
@@ -18,7 +19,7 @@ using StmtNumSet = unordered_set<int>;
 using VarName = string;
 using VarIndex = int;
 using Expr = string;
-using StmtVarPairSet = unordered_set<pair<int, VarIndex>>;
+using StmtVarPairSet = unordered_set<pair<int, VarIndex>, pair_hash>;
 using VarStmtMap = unordered_map<VarIndex, StmtNumSet>;
 using StmtVarMap = unordered_map<int, VarIndex>;
 using ExprStmtMap = unordered_map<string, StmtNumSet>;

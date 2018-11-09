@@ -12,13 +12,14 @@
 #include "pql_evaluator.h"
 #include "pql_global.h"
 #include "pql_query.h"
+#include "pair_hash.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
 using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using QueryResultPairSet = unordered_set<pair<int, int>, pair_hash>;
 
 /*A class to evaluate the pql pattern clause*/
 class PqlEvaluatePattern {

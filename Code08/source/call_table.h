@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "pair_hash.h"
 
 using std::make_pair;
 using std::pair;
@@ -17,10 +18,10 @@ using StmtNum = int;
 using ProcIndex = int;
 using ProcIndexList = vector<ProcIndex>;
 using ProcIndexSet = unordered_set<ProcIndex>;
-using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>>;
+using ProcIndexPairSet = unordered_set<pair<ProcIndex, ProcIndex>, pair_hash>;
 // int can be StmtNum or ProcIndex.
 using CallMap = unordered_map<int, unordered_set<ProcIndex>>;
-using StmtNumProcPairSet = unordered_set<pair<StmtNum, ProcIndex>>;
+using StmtNumProcPairSet = unordered_set<pair<StmtNum, ProcIndex>, pair_hash>;
 using StmtNumSet = unordered_set<StmtNum>;
 using StmtProcMap = unordered_map<StmtNum, ProcIndex>;
 
