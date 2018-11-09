@@ -15,7 +15,7 @@ using std::vector;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>, ResultHasher>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
 using FollowsMap = unordered_map<int, unordered_set<int>>;
 using FollowedByMap = unordered_map<int, unordered_set<int>>;
 

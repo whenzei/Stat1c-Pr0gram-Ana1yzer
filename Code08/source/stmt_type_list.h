@@ -16,11 +16,11 @@ using std::unordered_set;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<StmtNum>;
-using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>, ResultHasher>;
+using StmtNumPairSet = unordered_set<pair<StmtNum, StmtNum>>;
 using StmtType = PqlDeclarationEntity;
 using StmtTypeMap = unordered_map<StmtType, StmtNumSet>;
 using StmtTypePairMap =
-    unordered_map<PqlDeclarationEntity, unordered_set<pair<StmtNum, StmtNum>, ResultHasher>>;
+    unordered_map<PqlDeclarationEntity, unordered_set<pair<StmtNum, StmtNum>>>;
 
 // The statement type list class for the PKB component
 // Used to store the statement numbers that belong to each statement type (e.g.
