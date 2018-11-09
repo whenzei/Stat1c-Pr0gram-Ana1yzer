@@ -166,25 +166,25 @@ const EntitySet next_t_second = {
 
 // Affects
 const EntitySet affects_first = {PqlDeclarationEntity::kAssign,
-								 PqlDeclarationEntity::kStmt,
-								 PqlDeclarationEntity::kProgline,
+								                 PqlDeclarationEntity::kStmt,
+								                 PqlDeclarationEntity::kProgline,
                                  PqlDeclarationEntity::kUnderscore,
                                  PqlDeclarationEntity::kInteger};
 const EntitySet affects_second = {PqlDeclarationEntity::kAssign,
-								 PqlDeclarationEntity::kStmt,
-								 PqlDeclarationEntity::kProgline,
+								                  PqlDeclarationEntity::kStmt,
+								                  PqlDeclarationEntity::kProgline,
                                   PqlDeclarationEntity::kUnderscore,
                                   PqlDeclarationEntity::kInteger};
 
 // AffectsT
 const EntitySet affects_t_first = {PqlDeclarationEntity::kAssign,
-								  PqlDeclarationEntity::kStmt,
-								  PqlDeclarationEntity::kProgline,
+								                   PqlDeclarationEntity::kStmt,
+								                   PqlDeclarationEntity::kProgline,
                                    PqlDeclarationEntity::kUnderscore,
                                    PqlDeclarationEntity::kInteger};
 const EntitySet affects_t_second = {PqlDeclarationEntity::kAssign,
-								    PqlDeclarationEntity::kStmt,
-								    PqlDeclarationEntity::kProgline,
+								                    PqlDeclarationEntity::kStmt,
+								                    PqlDeclarationEntity::kProgline,
                                     PqlDeclarationEntity::kUnderscore,
                                     PqlDeclarationEntity::kInteger};
 
@@ -299,6 +299,8 @@ class PqlQuery {
   PqlOptimizer optimizer_;
   /* collection of groups of clauses from optimization */
   vector<PqlGroup> groups_;
+  /* flag to denote that result is false */
+  bool result_is_false_;
 
   /* LEGACY: TO BE DELETED */
   string var_name_;
@@ -317,12 +319,14 @@ class PqlQuery {
   bool AddDeclaration(PqlDeclarationEntity, string);
   void AddSelection(string, PqlDeclarationEntity);
   void AddClause(PqlClause*);
+  void SetResultIsFalse(bool);
 
   /* Getters */
   Declarations GetDeclarations();
   vector<Synonym> GetSelections();
   vector<PqlClause*> GetClauses();
   vector<PqlGroup> GetGroups();
+  bool GetResultIsFalse();
 
   void Optimize();
 

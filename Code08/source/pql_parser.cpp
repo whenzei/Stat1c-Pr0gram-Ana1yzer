@@ -21,10 +21,17 @@ bool PqlParser::Parse() {
   // 1. Split up individual statements by semicolon
   vector<string> statements = Util::Split(query_text_, ';');
 
-  // 2. Process each statement
+  // 2. Check if Select BOOLEAN
+  bool isBoolean = false;
+  if (statements.back().substr(0, 14) == "Select BOOLEAN") isBoolean = true;
+
+  // 3. Process each statement
   for (vector<string>::const_iterator i = statements.begin();
        i != statements.end(); ++i) {
-    if (!ParseStatement(*i, i + 1 == statements.end())) return false;
+    if (!ParseStatement(*i, i + 1 == statements.end())) {
+      if (isBoolean) query_->SetResultIsFalse(true);
+      return false;
+    } 
   }
 
   return true;
@@ -359,9 +366,19 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     }
   }
 
-  // 9. Check if parameters are acceptable for the type
+  // 9. Early termination for Follows, Follows*, Parent, Parent*, Next if both syns params are same
+  if (suchthat_type == PqlSuchthatType::kFollows || suchthat_type == PqlSuchthatType::kFollowsT || 
+  suchthat_type == PqlSuchthatType::kParent || suchthat_type == PqlSuchthatType::kParentT || 
+  suchthat_type == PqlSuchthatType::kNext || suchthat_type == PqlSuchthatType::kCalls || suchthat_type == PqlSuchthatType::kCallsT) {
+    if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore && first == second) {
+      error_message_ = "Follows, Follows*, Parent, Parent*, Next, can not have both params being same synonym.";
+      return false;
+    }
+  }
+
+  // 10. Check if parameters are acceptable for the type
   SuchthatParameters acceptable_parameters = suchthat_table.at(suchthat_type);
-  // 9.1 Check first parameter
+  // 10.1 Check first parameter
   if (acceptable_parameters.first.find(first_type) ==
       acceptable_parameters.first.end()) {
     error_message_ =
@@ -369,7 +386,7 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     return false;
   }
 
-  // 9.2 Check second parameter
+  // 10.2 Check second parameter
   if (acceptable_parameters.second.find(second_type) ==
       acceptable_parameters.second.end()) {
     error_message_ =
@@ -377,10 +394,50 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
     return false;
   }
 
-  // 9. Create such that object
+  // 11. Create such that object
   PqlClause* clause = new PqlSuchthat(suchthat_type, first, first_type, second, second_type);
-  if (first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger || 
-  first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) {
+  if (suchthat_type == PqlSuchthatType::kAffects || suchthat_type == PqlSuchthatType::kAffectsB) {
+    if (first_type == PqlDeclarationEntity::kInteger && second_type == PqlDeclarationEntity::kInteger) {
+      clause->SetPriority(PRIORITY_AFFECTS_CONST_CONST);
+    }
+    else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger) &&
+      first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_CONST_SYN);
+    }
+    else if (first_type == PqlDeclarationEntity::kUnderscore && second_type == PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_UNDERSCORE);
+    }
+    else if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_SYN_SYN);
+    }
+    else {
+      clause->SetPriority(PRIORITY_AFFECTS_OTHERS);
+    }
+  }
+  else if (suchthat_type == PqlSuchthatType::kAffectsT || suchthat_type == PqlSuchthatType::kAffectsBT) {
+    if (first_type == PqlDeclarationEntity::kInteger && second_type == PqlDeclarationEntity::kInteger) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_CONST_CONST);
+    }
+    else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger) && 
+    first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_CONST_SYN);
+    }
+    else if (first_type == PqlDeclarationEntity::kUnderscore && second_type == PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_UNDERSCORE);
+    }
+    else if (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore) {
+      clause->SetPriority(PRIORITY_AFFECTS_T_SYN_SYN);
+    }
+    else {
+      clause->SetPriority(PRIORITY_AFFECTS_T_OTHERS);
+    }
+  }
+  else if (suchthat_type == PqlSuchthatType::kNextT) {
+    clause->SetPriority(PRIORITY_NEXT_T);
+  }
+  else if ((first_type == PqlDeclarationEntity::kInteger || second_type == PqlDeclarationEntity::kInteger ||
+    first_type == PqlDeclarationEntity::kIdent || second_type == PqlDeclarationEntity::kIdent) && 
+    (first_type != PqlDeclarationEntity::kUnderscore && second_type != PqlDeclarationEntity::kUnderscore)) {
     clause->SetPriority(PRIORITY_CONSTANT_AND_SYNONYM);
   }
   else if (suchthat_type == PqlSuchthatType::kFollows) {
@@ -391,12 +448,6 @@ bool PqlParser::ParseSuchthat(TokenList tokens, int* current_index) {
   }
   else if (suchthat_type == PqlSuchthatType::kModifiesP || suchthat_type == PqlSuchthatType::kModifiesS) {
     clause->SetPriority(PRIORITY_MODIFIES);
-  }
-  else if (suchthat_type == PqlSuchthatType::kAffects || suchthat_type == PqlSuchthatType::kAffectsB) {
-    clause->SetPriority(PRIORITY_AFFECTS);
-  }
-  else if (suchthat_type == PqlSuchthatType::kAffectsT || suchthat_type == PqlSuchthatType::kAffectsBT) {
-    clause->SetPriority(PRIORITY_AFFECTS_T);
   }
   else {
     clause->SetPriority(PRIORITY_NORMAL);
@@ -842,11 +893,23 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   }
 
   // 9. If left and right is the same then ignore the clause
-  if (left == right && left_type == right_type) return true;
+  if (left_type == right_type) {
+    if (left == right) return true;
+    if (left_type == PqlDeclarationEntity::kInteger || left_type == PqlDeclarationEntity::kIdent) {
+      if (left != right) {
+        error_message_ = "With clause of both INTEGER params or IDENT params evaluate to false.";
+        return false;
+      }
+    }
+  }
 
   // 10. Create with clause
   PqlClause* clause = new PqlWith(left, left_type, right, right_type);
-  clause->SetPriority(PRIORITY_WITH);
+  if (left_type == PqlDeclarationEntity::kInteger || left_type == PqlDeclarationEntity::kIdent || 
+    right_type == PqlDeclarationEntity::kInteger || right_type == PqlDeclarationEntity::kIdent) {
+    clause->SetPriority(PRIORITY_WITH_CONST_SYN);
+  }
+  else clause->SetPriority(PRIORITY_WITH_SYN_SYN);
   query_->AddClause(clause);
 
   --*current_index; // move back 1 step because ParseParameter and ParseAttribute took a step forward at the end

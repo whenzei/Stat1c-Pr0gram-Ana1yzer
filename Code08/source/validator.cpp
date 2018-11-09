@@ -1,6 +1,6 @@
 #include "validator.h"
-#include "tokenizer.h"
 #include "debug.h"
+#include "tokenizer.h"
 
 #include <stack>
 #include <unordered_set>
@@ -34,14 +34,23 @@ void Validator::ResetTokenList(TokenList tokens) {
 bool Validator::ValidateProgram() {
   do {
     if (!IsValidProcedure()) {
-      Debug::PrintLn(Debug::kError, "Validation failed, invalid procedure detected");
+      Debug::PrintLn(
+          Debug::kError,
+          "Validation failed, invalid procedure detected. Previous 5 tokens: " +
+              tokens_[curr_index_ - 5].value + " " +
+              tokens_[curr_index_ - 5].value + " " +
+              tokens_[curr_index_ - 3].value + " " +
+              tokens_[curr_index_ - 2].value + " " +
+              tokens_[curr_index_ - 1].value + " " +
+              tokens_[curr_index_].value);
       return false;
     }
   } while (PeekNextToken().subtype == ts::kProcedure);
 
   // last token should be kEOF if everything is processed
   if (!IsAtEnd()) {
-    Debug::PrintLn(Debug::kError, "Validation failed, stream not fully consumed");
+    Debug::PrintLn(Debug::kError,
+                   "Validation failed, stream not fully consumed");
     return false;
   }
 

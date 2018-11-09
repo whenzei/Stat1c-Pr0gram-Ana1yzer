@@ -5,12 +5,18 @@
 
 #include "pkb.h"
 
+using NextTTable = Graph;
+using NextTMap = unordered_map<int, unordered_set<int>>;
+
 class NextExtractor {
   PKB* pkb_;
+  NextTTable next_t_table_;
+  NextTTable previous_t_table_;
 
-  //@params: start is the StmtNum that should be in the LHS of all pairs
-  //@params: res_list is passed by reference
-  void FormPairBFS(StmtNum start, StmtNumPairList* res_list);
+  void SetNextTTables();
+  void BFSSetNextTTables(StmtNum start);
+
+  NextTMap GetTypedNextTMap(StmtType type);
 
  public:
   NextExtractor();
@@ -31,8 +37,17 @@ class NextExtractor {
   // @returns a list of all n's that satisfy Next*(n, stmt_num)
   StmtNumList GetPreviousT(StmtNum stmt_num);
 
-  // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
-  StmtNumPairList GetAllNextTPairs();
+  // Get the NextT mapping of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all nextT StmtNums
+  NextTMap GetNextTMap();
+
+  /* Helper API for PQLEvaluator to call specific typed NextT table */
+  NextTMap GetAssignNextTMap();
+  NextTMap GetWhileNextTMap();
+  NextTMap GetIfNextTMap();
+  NextTMap GetCallNextTMap();
+  NextTMap GetReadNextTMap();
+  NextTMap GetPrintNextTMap();
 };
 
 #endif  // !NEXT_EXTRACTOR_H
