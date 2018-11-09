@@ -20,7 +20,7 @@ using ParentsMap = unordered_map<int, StmtNumSet>;
 using DirectParentMap = unordered_map<int, int>;
 using ChildrenMap = unordered_map<int, StmtNumSet>;
 using DirectChildrenMap = unordered_map<int, StmtNumSet>;
-using StmtNumPairSet = unordered_set<pair<int, int>>;
+using StmtNumPairSet = unordered_set<pair<int, int>, ResultHasher>;
 
 // The parent table class for the PKB component
 // Used to store (both direct and indirect) parent-children relationships

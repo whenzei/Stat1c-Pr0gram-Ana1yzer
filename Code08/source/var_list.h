@@ -19,7 +19,7 @@ using std::unordered_set;
 using VarName = string;
 using VarIndex = int;
 using VarIndexSet = unordered_set<VarIndex>;
-using VarIndexPairSet = unordered_set<pair<VarIndex, VarIndex>>;
+using VarIndexPairSet = unordered_set<pair<VarIndex, VarIndex>, ResultHasher>;
 using VarNameSet = unordered_set<VarName>;
 using VarIndexMap = unordered_map<VarName, VarIndex>;
 using IndexVarMap = unordered_map<VarIndex, VarName>;

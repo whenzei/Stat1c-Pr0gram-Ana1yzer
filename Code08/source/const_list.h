@@ -11,7 +11,7 @@ using std::pair;
 using std::unordered_set;
 
 using ConstValue = int;
-using ConstValuePairSet = unordered_set<pair<ConstValue, ConstValue>>;
+using ConstValuePairSet = unordered_set<pair<ConstValue, ConstValue>, ResultHasher>;
 using ConstValueSet = unordered_set<ConstValue>;
 
 // The constant list class for the PKB component

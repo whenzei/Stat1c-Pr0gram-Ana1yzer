@@ -22,8 +22,8 @@ using ProcIndexSet = unordered_set<ProcIndex>;
 // int can be either ProcName or StmtNum.
 using ModifiesMap = unordered_map<StmtNum, VarIndexSet>;
 using ModifiedByMap = unordered_map<VarIndex, StmtNumSet>;
-using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>>;
-using ProcVarPairSet = unordered_set<pair<ProcIndex, VarIndex>>;
+using StmtVarPairSet = unordered_set<pair<StmtNum, VarIndex>, ResultHasher>;
+using ProcVarPairSet = unordered_set<pair<ProcIndex, VarIndex>, ResultHasher>;
 
 // The modifies table class for the PKB component
 // Used to store modifies relationships between stmt/proc and variables that are

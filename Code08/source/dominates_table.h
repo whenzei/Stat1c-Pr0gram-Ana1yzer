@@ -16,7 +16,7 @@ using std::unordered_set;
 
 using StmtNum = int;
 using StmtNumSet = unordered_set<int>;
-using StmtNumPairSet = unordered_set<pair<int, int>>;
+using StmtNumPairSet = unordered_set<pair<int, int>, ResultHasher>;
 using DominatesMap = unordered_map<Vertex, VertexSet>;
 
 // The dominates table class for the PKB component
