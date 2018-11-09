@@ -281,6 +281,9 @@
     <ClInclude Include="..\source\syntactic_error_exception.h">
       <Filter>Header Files\General</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\result_hasher.h">
+      <Filter>Header Files\General</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\affects_extractor.h">
       <Filter>Header Files\PQL</Filter>
     </ClInclude>
