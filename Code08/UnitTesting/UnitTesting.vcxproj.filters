@@ -107,5 +107,8 @@
     <ClCompile Include="test_pql_projector.cpp">
       <Filter>Source Files\PQL</Filter>
     </ClCompile>
+    <ClCompile Include="test_pkb.cpp">
+      <Filter>Source Files\PQL</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

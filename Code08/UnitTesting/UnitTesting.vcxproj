@@ -194,6 +194,7 @@
     <ClCompile Include="test_query_evaluator.cpp" />
     <ClCompile Include="test_pql_result.cpp" />
     <ClCompile Include="test_pql_projector.cpp" />
+    <ClCompile Include="test_pkb.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SPA\SPA.vcxproj">
