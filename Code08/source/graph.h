@@ -36,7 +36,7 @@ class Graph {
   void Toposort(const Vertex& v, VisitedMap* visited, queue<Vertex>* topoqueue);
 
   // Helper method to determine if there are cycles
-  bool HasCycle(const Vertex& v, VisitedMap* visited, VertexSet* neighbours);
+  bool HasCycle(const Vertex& v, VisitedMap* visited);
 
   // Generic DFS method, keeps a list of the path traversed
   void DFS(const Vertex& v, VisitedMap*, VertexSet* path);

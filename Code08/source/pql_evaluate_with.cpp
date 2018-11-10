@@ -52,9 +52,9 @@ bool PqlEvaluateWith::EvaluateWithClause(PqlEvaluator* pql_eval, PKB* pkb,
   return IsValidClause();
 }
 
-QueryResultSet PqlEvaluateWith::GetSelectAllResult(
+QueryResultList PqlEvaluateWith::GetSelectAllResult(
     PqlDeclarationEntity select_type) {
-  QueryResultSet results;
+  QueryResultList results;
 
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
@@ -134,9 +134,9 @@ QueryResultSet PqlEvaluateWith::GetSelectAllResult(
   return results;
 }
 
-QueryResultPairSet PqlEvaluateWith::GetSelectAllTwinResult(
+QueryResultPairList PqlEvaluateWith::GetSelectAllTwinResult(
     PqlDeclarationEntity select_type) {
-  QueryResultPairSet results;
+  QueryResultPairList results;
 
   switch (select_type) {
     case PqlDeclarationEntity::kProcedure:
@@ -197,8 +197,8 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
   string right_name = right_param.first;
   PqlDeclarationEntity left_type = left_param.second;
   PqlDeclarationEntity right_type = right_param.second;
-  QueryResultSet result_left, result_right;
-  QueryResultPairSet filtered_result;
+  QueryResultList result_left, result_right;
+  QueryResultPairList filtered_result;
 
   // Change the 0c/0r/0p to c/r/p while evaluating
   if (left_type == PqlDeclarationEntity::kCallName ||
@@ -213,7 +213,7 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
 
   // If same type, get twin pair
   if (left_type == right_type) {
-    QueryResultPairSet result_list = GetSelectAllTwinResult(left_type);
+    QueryResultPairList result_list = GetSelectAllTwinResult(left_type);
     if (result_list.empty()) {
       SetClauseFlag(false);
     } else {
@@ -269,7 +269,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
   // Getting parameter of with
   string syn_name = with_syn.first;
   PqlDeclarationEntity syn_type = with_syn.second;
-  QueryResultSet result_list;
+  QueryResultList result_list;
   VarProcToIndexMap proc_to_index = pkb_->GetProcToIndexMapping();
   VarProcToIndexMap var_to_index = pkb_->GetVarToIndexMapping();
 
@@ -285,7 +285,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       cout << "Is procedure?" << endl;
       if (proc_to_index.find(comparison_val) != proc_to_index.end()) {
         if (pkb_->IsProcIndex(proc_to_index[comparison_val])) {
-          result_list.emplace(proc_to_index[comparison_val]);
+          result_list.push_back(proc_to_index[comparison_val]);
           pql_eval->StoreClauseResultInTable(result_list, syn_name);
         } else {
           SetClauseFlag(false);
@@ -298,7 +298,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
       cout << "Is variable?" << endl;
       if (var_to_index.find(comparison_val) != var_to_index.end()) {
         if (pkb_->IsVarIndex(var_to_index[comparison_val])) {
-          result_list.emplace(var_to_index[comparison_val]);
+          result_list.push_back(var_to_index[comparison_val]);
           pql_eval->StoreClauseResultInTable(result_list, syn_name);
         } else {
           SetClauseFlag(false);
@@ -310,7 +310,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kAssign:
       cout << "Is assign?" << endl;
       if (pkb_->IsAssignStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -319,7 +319,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kStmt:
       cout << "Is stmt?" << endl;
       if (pkb_->IsStmtNum(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -328,7 +328,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kRead:
       cout << "Is read?" << endl;
       if (pkb_->IsReadStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -347,7 +347,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kPrint:
       cout << "Is print?" << endl;
       if (pkb_->IsPrintStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -366,7 +366,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kCall:
       cout << "Is call?" << endl;
       if (pkb_->IsCallStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -389,7 +389,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kWhile:
       cout << "Is while?" << endl;
       if (pkb_->IsWhileStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -398,7 +398,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kIf:
       cout << "Is if?" << endl;
       if (pkb_->IsIfStmt(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -407,7 +407,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kConstant:
       cout << "Is const?" << endl;
       if (pkb_->IsConstValue(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -416,7 +416,7 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
     case PqlDeclarationEntity::kProgline:
       cout << "Is progline?" << endl;
       if (pkb_->IsStmtNum(stoi(comparison_val))) {
-        result_list.emplace(stoi(comparison_val));
+        result_list.push_back(stoi(comparison_val));
         pql_eval->StoreClauseResultInTable(result_list, syn_name);
       } else {
         SetClauseFlag(false);
@@ -425,40 +425,43 @@ void PqlEvaluateWith::EvaluateWithOneSynonym(PqlEvaluator* pql_eval,
   }
 }
 
-QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
-    QueryResultSet unfiltered_result, QueryResultSet comparison_result,
-    PqlDeclarationEntity entity_type, PqlDeclarationEntity compare_type) {
-  QueryResultPairSet filtered_result;
+QueryResultPairList PqlEvaluateWith::FilterWithLeft(
+    QueryResultList unfiltered_result, QueryResultList comparison_result,
+    PqlDeclarationEntity comparison_type,
+    PqlDeclarationEntity unfiltered_type) {
+  QueryResultPairList filtered_result;
   IndexToVarProcMap index_to_var = pkb_->GetIndexToVarMapping();
   IndexToVarProcMap index_to_proc = pkb_->GetIndexToProcMapping();
 
-  switch (entity_type) {
+  switch (comparison_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Filter Proc vs var" << endl;
-      if (compare_type == PqlDeclarationEntity::kVariable) {
-        unordered_set<string> comparison;
-        for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_var[compare_value]);
-        }
-        for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_proc[iter])) {
-            // If proc name = var name
-            filtered_result.emplace(std::make_pair(iter, iter));
-          }
-        }
-      }
-      break;
-    case PqlDeclarationEntity::kVariable:
-      cout << "Filter Var vs proc" << endl;
-      if (compare_type == PqlDeclarationEntity::kProcedure) {
+      if (unfiltered_type == PqlDeclarationEntity::kVariable) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
           comparison.insert(index_to_proc[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_var[iter])) {
+            // If proc name = var name
+            filtered_result.push_back(
+                std::make_pair(pkb_->GetProcIndex(index_to_var[iter]), iter));
+          }
+        }
+      }
+      break;
+    case PqlDeclarationEntity::kVariable:
+      cout << "Filter Var vs proc" << endl;
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure) {
+        unordered_set<string> comparison;
+        for (auto& compare_value : comparison_result) {
+          comparison.insert(index_to_var[compare_value]);
+        }
+        for (auto& iter : unfiltered_result) {
+          if (comparison.count(index_to_proc[iter])) {
             // If var name = proc name
-            filtered_result.emplace(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(pkb_->GetVarIndex(index_to_proc[iter]), iter));
           }
         }
       }
@@ -467,7 +470,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Assign" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsAssignStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -475,7 +478,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Stmt" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsStmtNum(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -483,24 +486,24 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Read" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsReadStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kReadName:
       cout << "Filter Read var" << endl;
       // If its vs proc
-      if (compare_type == PqlDeclarationEntity::kProcedure ||
-          compare_type == PqlDeclarationEntity::kCallName) {
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure ||
+          unfiltered_type == PqlDeclarationEntity::kCallName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_proc[compare_value]);
+          comparison.insert(index_to_var[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_var[iter])) {
-            QueryResultSet result_list = pkb_->GetReadStmt(index_to_var[iter]);
+          if (comparison.count(index_to_proc[iter])) {
+            QueryResultList result_list = pkb_->GetReadStmt(index_to_var[iter]);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(result, iter));
+              filtered_result.push_back(std::make_pair(result, iter));
             }
           }
         }
@@ -510,10 +513,10 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
         for (auto& iter : unfiltered_result) {
           if (index_to_var.find(iter) != index_to_var.end()) {
             if (pkb_->IsReadVar(index_to_var[iter])) {
-              QueryResultSet result_list =
+              QueryResultList result_list =
                   pkb_->GetReadStmt(index_to_var[iter]);
               for (auto& result : result_list) {
-                filtered_result.emplace(std::make_pair(result, iter));
+                filtered_result.push_back(std::make_pair(result, iter));
               }
             }
           }
@@ -524,25 +527,25 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Print" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsPrintStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kPrintName:
       cout << "Filter Print var" << endl;
       // If its vs proc
-      if (compare_type == PqlDeclarationEntity::kProcedure ||
-          compare_type == PqlDeclarationEntity::kCallName) {
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure ||
+          unfiltered_type == PqlDeclarationEntity::kCallName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_proc[compare_value]);
+          comparison.insert(index_to_var[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_var[iter])) {
-            QueryResultSet result_list =
+          if (comparison.count(index_to_proc[iter])) {
+            QueryResultList result_list =
                 pkb_->GetPrintStmt(index_to_var[iter]);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(result, iter));
+              filtered_result.push_back(std::make_pair(result, iter));
             }
           }
         }
@@ -552,10 +555,10 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
         for (auto& iter : unfiltered_result) {
           if (index_to_var.find(iter) != index_to_var.end()) {
             if (pkb_->IsPrintVar(index_to_var[iter])) {
-              QueryResultSet result_list =
+              QueryResultList result_list =
                   pkb_->GetPrintStmt(index_to_var[iter]);
               for (auto& result : result_list) {
-                filtered_result.emplace(std::make_pair(result, iter));
+                filtered_result.push_back(std::make_pair(result, iter));
               }
             }
           }
@@ -566,25 +569,25 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Call" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsCallStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kCallName:
       cout << "Filter Call proc" << endl;
       // If its vs var
-      if (compare_type == PqlDeclarationEntity::kVariable ||
-          compare_type == PqlDeclarationEntity::kReadName ||
-          compare_type == PqlDeclarationEntity::kPrintName) {
+      if (unfiltered_type == PqlDeclarationEntity::kVariable ||
+          unfiltered_type == PqlDeclarationEntity::kReadName ||
+          unfiltered_type == PqlDeclarationEntity::kPrintName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_var[compare_value]);
+          comparison.insert(index_to_proc[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_proc[iter])) {
-            QueryResultSet result_list = pkb_->GetCallingStmts(iter);
+          if (comparison.count(index_to_var[iter])) {
+            QueryResultList result_list = pkb_->GetCallingStmts(iter);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(result, iter));
+              filtered_result.push_back(std::make_pair(result, iter));
             }
           }
         }
@@ -593,9 +596,9 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       else {
         for (auto& iter : unfiltered_result) {
           if (pkb_->IsCalledProc(iter)) {
-            QueryResultSet result_list = pkb_->GetCallingStmts(iter);
+            QueryResultList result_list = pkb_->GetCallingStmts(iter);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(result, iter));
+              filtered_result.push_back(std::make_pair(result, iter));
             }
           }
         }
@@ -605,7 +608,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter While" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsWhileStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -613,7 +616,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter If" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsIfStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -621,7 +624,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Constant" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsConstValue(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -629,7 +632,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
       cout << "Filter Progline" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsStmtNum(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -638,40 +641,43 @@ QueryResultPairSet PqlEvaluateWith::FilterWithLeft(
   return filtered_result;
 }
 
-QueryResultPairSet PqlEvaluateWith::FilterWithRight(
-    QueryResultSet unfiltered_result, QueryResultSet comparison_result,
-    PqlDeclarationEntity entity_type, PqlDeclarationEntity compare_type) {
-  QueryResultPairSet filtered_result;
+QueryResultPairList PqlEvaluateWith::FilterWithRight(
+    QueryResultList unfiltered_result, QueryResultList comparison_result,
+    PqlDeclarationEntity comparison_type,
+    PqlDeclarationEntity unfiltered_type) {
+  QueryResultPairList filtered_result;
   IndexToVarProcMap index_to_var = pkb_->GetIndexToVarMapping();
   IndexToVarProcMap index_to_proc = pkb_->GetIndexToProcMapping();
 
-  switch (entity_type) {
+  switch (comparison_type) {
     case PqlDeclarationEntity::kProcedure:
       cout << "Filter Proc vs var" << endl;
-      if (compare_type == PqlDeclarationEntity::kVariable) {
-        unordered_set<string> comparison;
-        for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_var[compare_value]);
-        }
-        for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_proc[iter])) {
-            // If proc name = var name
-            filtered_result.emplace(std::make_pair(iter, iter));
-          }
-        }
-      }
-      break;
-    case PqlDeclarationEntity::kVariable:
-      cout << "Filter Var vs proc" << endl;
-      if (compare_type == PqlDeclarationEntity::kProcedure) {
+      if (unfiltered_type == PqlDeclarationEntity::kVariable) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
           comparison.insert(index_to_proc[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
           if (comparison.count(index_to_var[iter])) {
+            // If proc name = var name
+            filtered_result.push_back(
+                std::make_pair(iter, pkb_->GetProcIndex(index_to_var[iter])));
+          }
+        }
+      }
+      break;
+    case PqlDeclarationEntity::kVariable:
+      cout << "Filter Var vs proc" << endl;
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure) {
+        unordered_set<string> comparison;
+        for (auto& compare_value : comparison_result) {
+          comparison.insert(index_to_var[compare_value]);
+        }
+        for (auto& iter : unfiltered_result) {
+          if (comparison.count(index_to_proc[iter])) {
             // If var name = proc name
-            filtered_result.emplace(std::make_pair(iter, iter));
+            filtered_result.push_back(
+                std::make_pair(iter, pkb_->GetVarIndex(index_to_proc[iter])));
           }
         }
       }
@@ -680,7 +686,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Assign" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsAssignStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -688,7 +694,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Stmt" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsStmtNum(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -696,24 +702,24 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Read" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsReadStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kReadName:
       cout << "Filter Read var" << endl;
       // If its vs proc
-      if (compare_type == PqlDeclarationEntity::kProcedure ||
-          compare_type == PqlDeclarationEntity::kCallName) {
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure ||
+          unfiltered_type == PqlDeclarationEntity::kCallName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_proc[compare_value]);
+          comparison.insert(index_to_var[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_var[iter])) {
-            QueryResultSet result_list = pkb_->GetReadStmt(index_to_var[iter]);
+          if (comparison.count(index_to_proc[iter])) {
+            QueryResultList result_list = pkb_->GetReadStmt(index_to_var[iter]);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(iter, result));
+              filtered_result.push_back(std::make_pair(iter, result));
             }
           }
         }
@@ -723,10 +729,10 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
         for (auto& iter : unfiltered_result) {
           if (index_to_var.find(iter) != index_to_var.end()) {
             if (pkb_->IsReadVar(index_to_var[iter])) {
-              QueryResultSet result_list =
+              QueryResultList result_list =
                   pkb_->GetReadStmt(index_to_var[iter]);
               for (auto& result : result_list) {
-                filtered_result.emplace(std::make_pair(iter, result));
+                filtered_result.push_back(std::make_pair(iter, result));
               }
             }
           }
@@ -737,25 +743,25 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Print" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsPrintStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kPrintName:
       cout << "Filter Print var" << endl;
       // If its vs proc
-      if (compare_type == PqlDeclarationEntity::kProcedure ||
-          compare_type == PqlDeclarationEntity::kCallName) {
+      if (unfiltered_type == PqlDeclarationEntity::kProcedure ||
+          unfiltered_type == PqlDeclarationEntity::kCallName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_proc[compare_value]);
+          comparison.insert(index_to_var[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_var[iter])) {
-            QueryResultSet result_list =
+          if (comparison.count(index_to_proc[iter])) {
+            QueryResultList result_list =
                 pkb_->GetPrintStmt(index_to_var[iter]);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(iter, result));
+              filtered_result.push_back(std::make_pair(iter, result));
             }
           }
         }
@@ -765,10 +771,10 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
         for (auto& iter : unfiltered_result) {
           if (index_to_var.find(iter) != index_to_var.end()) {
             if (pkb_->IsPrintVar(index_to_var[iter])) {
-              QueryResultSet result_list =
+              QueryResultList result_list =
                   pkb_->GetPrintStmt(index_to_var[iter]);
               for (auto& result : result_list) {
-                filtered_result.emplace(std::make_pair(iter, result));
+                filtered_result.push_back(std::make_pair(iter, result));
               }
             }
           }
@@ -779,25 +785,25 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Call" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsCallStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
     case PqlDeclarationEntity::kCallName:
       cout << "Filter Call proc" << endl;
       // If its vs var
-      if (compare_type == PqlDeclarationEntity::kVariable ||
-          compare_type == PqlDeclarationEntity::kReadName ||
-          compare_type == PqlDeclarationEntity::kPrintName) {
+      if (unfiltered_type == PqlDeclarationEntity::kVariable ||
+          unfiltered_type == PqlDeclarationEntity::kReadName ||
+          unfiltered_type == PqlDeclarationEntity::kPrintName) {
         unordered_set<string> comparison;
         for (auto& compare_value : comparison_result) {
-          comparison.insert(index_to_var[compare_value]);
+          comparison.insert(index_to_proc[compare_value]);
         }
         for (auto& iter : unfiltered_result) {
-          if (comparison.count(index_to_proc[iter])) {
-            QueryResultSet result_list = pkb_->GetCallingStmts(iter);
+          if (comparison.count(index_to_var[iter])) {
+            QueryResultList result_list = pkb_->GetCallingStmts(iter);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(iter, result));
+              filtered_result.push_back(std::make_pair(iter, result));
             }
           }
         }
@@ -806,9 +812,9 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       else {
         for (auto& iter : unfiltered_result) {
           if (pkb_->IsCalledProc(iter)) {
-            QueryResultSet result_list = pkb_->GetCallingStmts(iter);
+            QueryResultList result_list = pkb_->GetCallingStmts(iter);
             for (auto& result : result_list) {
-              filtered_result.emplace(std::make_pair(iter, result));
+              filtered_result.push_back(std::make_pair(iter, result));
             }
           }
         }
@@ -818,7 +824,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter While" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsWhileStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -826,7 +832,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter If" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsIfStmt(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -834,7 +840,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Constant" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsConstValue(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;
@@ -842,7 +848,7 @@ QueryResultPairSet PqlEvaluateWith::FilterWithRight(
       cout << "Filter Progline" << endl;
       for (auto& iter : unfiltered_result) {
         if (pkb_->IsStmtNum(iter)) {
-          filtered_result.emplace(std::make_pair(iter, iter));
+          filtered_result.push_back(std::make_pair(iter, iter));
         }
       }
       break;

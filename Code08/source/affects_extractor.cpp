@@ -1,3 +1,4 @@
+
 #include "affects_extractor.h"
 
 AffectsExtractor::AffectsExtractor() {}
@@ -8,6 +9,10 @@ AffectsExtractor::AffectsExtractor(PKB* pkb) {
   has_set_affects_t_tables_ = false;
   has_set_affects_bip_tables_ = false;
   has_set_affects_bip_t_tables_ = false;
+  has_checked_affects_relationship_ = false;
+
+  has_affects_relationship_ = false;
+
   affects_table_ = AffectsTable();
   affects_t_table_ = AffectsTable();
   affects_bip_table_ = AffectsTable();
@@ -26,25 +31,19 @@ bool AffectsExtractor::IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
     return affects_table_.GetNeighboursSet(stmt_1).count(stmt_2);
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetNeighboursSet(stmt_1).count(stmt_2);
-  }
-
-  // not pre-cached, faster to run dfs rather than retrieve table
-  return EvaluateIsAffects(stmt_1, stmt_2, is_bip);
+  // need table regardless for bips since the programcfg has multiple entry and
+  // exit points.
+  // Not pre-cached, Affects faster to run dfs rather than retrieve table for
+  // Affects
+  return is_bip ? EvaluateIsAffectsBip(stmt_1, stmt_2)
+                : EvaluateIsAffects(stmt_1, stmt_2);
 }
 
-bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
-                                         bool is_bip) {
+bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2) {
   ProcName p1 = pkb_->GetProcOfStmt(stmt_1);
   ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
 
-  // if is_bip, don't have to check if same procedure since its one big cfg
-  if (p1.empty() || p2.empty()) {
-    return false;
-  }
-
-  if ((!is_bip && p1 != p2)) {
+  if (p1.empty() || p2.empty() || p1 != p2) {
     return false;
   }
 
@@ -54,15 +53,14 @@ bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2,
     return false;
   }
 
-  VarIndex modified_var = *(pkb_->GetModifiedVarS(stmt_1).begin());
+  VarIndex modified_var = pkb_->GetModifiedVarS(stmt_1).front();
 
   // Check if variable modified in stmt_1 is used in stmt_2
   if (!pkb_->IsUsedByS(stmt_2, modified_var)) {
     return false;
   }
 
-  // get cfg depending on whether its an AffectsBip query or not
-  CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p1);
+  CFG* cfg = pkb_->GetCFG(p1);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt_1);
   VisitedMap visited = VisitedMap();
@@ -105,6 +103,50 @@ bool AffectsExtractor::DfsIsAffects(Vertex curr, Vertex target,
   return false;
 }
 
+bool AffectsExtractor::EvaluateIsAffectsBip(StmtNum stmt_1, StmtNum stmt_2) {
+  ProcName p1 = pkb_->GetProcOfStmt(stmt_1);
+  ProcName p2 = pkb_->GetProcOfStmt(stmt_2);
+
+  if (p1.empty() || p2.empty()) {
+    return false;
+  }
+
+  // Check if both stmts are assignment
+  if (pkb_->GetStmtType(stmt_1) != StmtType::kAssign ||
+      pkb_->GetStmtType(stmt_2) != StmtType::kAssign) {
+    return false;
+  }
+
+  return GetAffectsBipTable().GetNeighboursSet(stmt_1).count(stmt_2);
+}
+
+/**** Affects(_, _) methods ****/
+
+bool AffectsExtractor::HasAffectsRelationship() {
+  // already pre-cached
+  if (has_set_affects_tables_) {
+    return !affects_table_.IsEmpty();
+  }
+
+  if (has_checked_affects_relationship_) {
+    return has_affects_relationship_;
+  }
+
+  has_checked_affects_relationship_ = true;
+
+  // else check if any assign stmts affects with early termination
+  StmtNumList assign_stmts = pkb_->GetAllAssignStmt();
+  for (auto& assign_stmt : assign_stmts) {
+    has_affects_relationship_ =
+        has_affects_relationship_ || IsAffects(assign_stmt);
+    if (has_affects_relationship_) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 /**** Affects(const, _) methods ****/
 
 bool AffectsExtractor::IsAffects(StmtNum stmt, bool is_bip) {
@@ -113,24 +155,20 @@ bool AffectsExtractor::IsAffects(StmtNum stmt, bool is_bip) {
     return affects_table_.GetNeighboursSet(stmt).empty();
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetNeighboursSet(stmt).empty();
-  }
-
-  return EvaluateIsAffects(stmt, is_bip);
+  return is_bip ? EvaluateIsAffectsBip(stmt) : EvaluateIsAffects(stmt);
 }
 
-bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt, bool is_bip) {
+bool AffectsExtractor::EvaluateIsAffects(StmtNum stmt) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
     return false;
   }
 
-  CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p);
+  CFG* cfg = pkb_->GetCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndex affecting_var = *(pkb_->GetModifiedVarS(stmt).begin());
+  VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
   VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
     if (DfsIsAffects(neighbour, affecting_var, cfg, &visited)) {
@@ -171,6 +209,16 @@ bool AffectsExtractor::DfsIsAffects(Vertex curr, VarIndex affects_var, CFG* cfg,
   return false;
 }
 
+bool AffectsExtractor::EvaluateIsAffectsBip(StmtNum stmt) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+  return !GetAffectsBipTable().GetNeighboursSet(stmt).empty();
+}
+
 /**** Affects(_, const) methods ****/
 
 bool AffectsExtractor::IsAffected(StmtNum stmt, bool is_bip) {
@@ -179,25 +227,22 @@ bool AffectsExtractor::IsAffected(StmtNum stmt, bool is_bip) {
     return affected_by_table_.GetNeighboursSet(stmt).empty();
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetNeighboursSet(stmt).empty();
-  }
-
-  // not pre-cached, faster to run dfs rather than retrieve table
-  return EvaluateIsAffected(stmt, is_bip);
+  // not pre-cached, faster to run dfs rather than retrieve table for Affects
+  return is_bip ? EvaluateIsAffectedBip(stmt) : EvaluateIsAffected(stmt);
 }
 
-bool AffectsExtractor::EvaluateIsAffected(StmtNum stmt, bool is_bip) {
+bool AffectsExtractor::EvaluateIsAffected(StmtNum stmt) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
     return false;
   }
 
-  CFG* cfg = is_bip ? pkb_->GetReverseProgramCFG() : pkb_->GetReverseCFG(p);
+  CFG* cfg = pkb_->GetReverseCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndexSet rhs_vars = pkb_->GetUsedVarS(stmt);
+  VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
+  VarIndexSet rhs_vars = VarIndexSet(var_indices.begin(), var_indices.end());
   VisitedMap visited = VisitedMap();
   for (Vertex& neighbour : neighbours) {
     if (DfsIsAffected(neighbour, rhs_vars, VarIndexSet(), cfg, &visited)) {
@@ -220,7 +265,7 @@ bool AffectsExtractor::DfsIsAffected(Vertex curr, VarIndexSet used_vars,
 
   // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
-    VarIndex curr_modified_var = *(pkb_->GetModifiedVarS(curr).begin());
+    VarIndex curr_modified_var = pkb_->GetModifiedVarS(curr).front();
 
     // Check if the current assignment statement modifies a variable in the
     // rhs_vars, that has not been modified before
@@ -254,6 +299,16 @@ bool AffectsExtractor::DfsIsAffected(Vertex curr, VarIndexSet used_vars,
   return false;
 }
 
+bool AffectsExtractor::EvaluateIsAffectedBip(StmtNum stmt) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
+    return false;
+  }
+
+  return !GetAffectedByBipTable().GetNeighboursSet(stmt).empty();
+}
+
 /**** Affects(const, syn) methods ****/
 
 VertexSet AffectsExtractor::GetAffects(StmtNum stmt, bool is_bip) {
@@ -262,29 +317,25 @@ VertexSet AffectsExtractor::GetAffects(StmtNum stmt, bool is_bip) {
     return affects_table_.GetNeighboursSet(stmt);
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetNeighboursSet(stmt);
-  }
-
-  // not pre-cached, faster to run dfs rather than retrieve table
-  return EvaluateGetAffects(stmt, is_bip);
+  // not pre-cached, faster to run dfs rather than retrieve table for bips
+  return is_bip ? EvaluateGetAffectsBip(stmt) : EvaluateGetAffects(stmt);
 }
 
-VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
     return VertexSet();
   }
 
-  CFG* cfg = is_bip ? pkb_->GetProgramCFG() : pkb_->GetCFG(p);
+  CFG* cfg = pkb_->GetCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndex affecting_var = *(pkb_->GetModifiedVarS(stmt).begin());
+  VarIndex affecting_var = pkb_->GetModifiedVarS(stmt).front();
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex neighbour : neighbours) {
-    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, &visited);
+    DfsGetAffects(neighbour, affecting_var, &res_list, cfg, visited);
   }
 
   return res_list;
@@ -292,13 +343,13 @@ VertexSet AffectsExtractor::EvaluateGetAffects(StmtNum stmt, bool is_bip) {
 
 void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
                                      VertexSet* res_list, CFG* cfg,
-                                     VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                     VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   if (curr_stmt_type == StmtType::kAssign) {
     if (pkb_->IsUsedByS(curr, affects_var)) {
@@ -318,6 +369,16 @@ void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
   }
 }
 
+VertexSet AffectsExtractor::EvaluateGetAffectsBip(StmtNum stmt) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
+    return VertexSet();
+  }
+
+  return GetAffectsBipTable().GetNeighboursSet(stmt);
+}
+
 /**** Affects(syn, const) methods ****/
 
 VertexSet AffectsExtractor::GetAffectedBy(StmtNum stmt, bool is_bip) {
@@ -326,30 +387,27 @@ VertexSet AffectsExtractor::GetAffectedBy(StmtNum stmt, bool is_bip) {
     return affected_by_table_.GetNeighboursSet(stmt);
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetNeighboursSet(stmt);
-  }
-
-  // not pre-cached, faster to run dfs rather than retrieve table
-  return EvaluateGetAffectedBy(stmt, is_bip);
+  // not pre-cached, faster to run dfs rather than retrieve table for Affects
+  return is_bip ? EvaluateGetAffectedByBip(stmt) : EvaluateGetAffectedBy(stmt);
 }
 
-VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
+VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt) {
   ProcName p = pkb_->GetProcOfStmt(stmt);
 
   if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
     return VertexSet();
   }
 
-  CFG* cfg = is_bip ? pkb_->GetReverseProgramCFG() : pkb_->GetReverseCFG(p);
+  CFG* cfg = pkb_->GetReverseCFG(p);
 
   VertexList neighbours = cfg->GetNeighboursList(stmt);
-  VarIndexSet used_vars = pkb_->GetUsedVarS(stmt);
+  VarIndexList var_indices = pkb_->GetUsedVarS(stmt);
+  VarIndexSet used_vars = VarIndexSet(var_indices.begin(), var_indices.end());
   VisitedMap visited = VisitedMap();
   VertexSet res_list = VertexSet();
   for (Vertex& neighbour : neighbours) {
     DfsGetAffectedBy(neighbour, used_vars, VarIndexSet(), &res_list, cfg,
-                     &visited);
+                     visited);
   }
 
   return res_list;
@@ -358,19 +416,19 @@ VertexSet AffectsExtractor::EvaluateGetAffectedBy(StmtNum stmt, bool is_bip) {
 void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                                         VarIndexSet affected_used_vars,
                                         VertexSet* res_list, CFG* cfg,
-                                        VisitedMap* visited) {
-  if (visited->count(curr)) {
+                                        VisitedMap visited) {
+  if (visited.count(curr)) {
     return;
   }
 
-  visited->emplace(curr, true);
+  visited.emplace(curr, true);
 
   bool has_affects = false;
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
 
   // Check potential affecting statement
   if (curr_stmt_type == StmtType::kAssign) {
-    VarIndex curr_modified_var = *(pkb_->GetModifiedVarS(curr).begin());
+    VarIndex curr_modified_var = pkb_->GetModifiedVarS(curr).front();
 
     // Check if the current assignment statement modifies a variable in the
     // used_vars, that has not been modified before
@@ -408,20 +466,25 @@ void AffectsExtractor::DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
   }
 }
 
+VertexSet AffectsExtractor::EvaluateGetAffectedByBip(StmtNum stmt) {
+  ProcName p = pkb_->GetProcOfStmt(stmt);
+
+  if (p.empty() || pkb_->GetStmtType(stmt) != StmtType::kAssign) {
+    return VertexSet();
+  }
+
+  return GetAffectedByBipTable().GetNeighboursSet(stmt);
+}
+
+/* Obtaining left or right hand side of the Affects tables*/
+
 VertexSet AffectsExtractor::GetAllAffects(bool is_bip) {
   if (!is_bip && has_set_affects_tables_) {
     return affects_table_.GetParentVertices();
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affects_bip_table_.GetParentVertices();
-  }
-
-  if (is_bip) {
-    return GetAffectsBipTable().GetParentVertices();
-  }
-
-  return GetAffectsTable().GetParentVertices();
+  return is_bip ? GetAffectsBipTable().GetParentVertices()
+                : GetAffectsTable().GetParentVertices();
 }
 
 VertexSet AffectsExtractor::GetAllAffectedBy(bool is_bip) {
@@ -429,15 +492,8 @@ VertexSet AffectsExtractor::GetAllAffectedBy(bool is_bip) {
     return affected_by_table_.GetParentVertices();
   }
 
-  if (is_bip && has_set_affects_bip_tables_) {
-    return affected_by_bip_table_.GetParentVertices();
-  }
-
-  if (is_bip) {
-    return GetAffectedByBipTable().GetParentVertices();
-  }
-
-  return GetAffectedByTable().GetParentVertices();
+  return is_bip ? GetAffectedByBipTable().GetParentVertices()
+                : GetAffectedByTable().GetParentVertices();
 }
 
 AffectsMap AffectsExtractor::GetAffectsMap() {
@@ -499,7 +555,8 @@ bool AffectsExtractor::IsAffectsT(StmtNum stmt_1, StmtNum stmt_2, bool is_bip) {
     return affects_bip_table_.CanReach(stmt_1, stmt_2);
   }
 
-  // Do a DFS(start, end) on affects_table. Return boolean value from CanReach.
+  // Do a DFS(start, end) on affects_table. Return boolean value from
+  // CanReach.
   return is_bip ? GetAffectsBipTable().CanReach(stmt_1, stmt_2)
                 : GetAffectsTable().CanReach(stmt_1, stmt_2);
 }
@@ -520,16 +577,16 @@ VertexSet AffectsExtractor::GetAffectsT(StmtNum stmt, bool is_bip) {
     return VertexSet();
   }
 
-  // If only looking for Affects* in local procedure and AffectsTable is already
-  // set, perform DFS on AffectsTable and return all the statements that stmt
-  // can reach.
+  // If only looking for Affects* in local procedure and AffectsTable is
+  // already set, perform DFS on AffectsTable and return all the statements
+  // that stmt can reach.
   if (!is_bip && has_set_affects_tables_) {
     return affects_table_.DFSNeighbours(stmt);
   }
 
   // If looking for Affects* in entire program and AffectsBipTable is already
-  // set, perform DFS on AffectsBipTable and return all the statements that stmt
-  // can reach.
+  // set, perform DFS on AffectsBipTable and return all the statements that
+  // stmt can reach.
   if (is_bip && has_set_affects_bip_tables_) {
     return affects_bip_table_.DFSNeighbours(stmt);
   }
@@ -552,15 +609,15 @@ VertexSet AffectsExtractor::GetAffectedByT(StmtNum stmt, bool is_bip) {
   }
 
   // If only for local procedure and AffectedByTable is already set
-  // Perform DFS on AffectedByTable and return all the statements that stmt can
-  // reach.
+  // Perform DFS on AffectedByTable and return all the statements that stmt
+  // can reach.
   if (!is_bip && has_set_affects_tables_) {
     return affected_by_table_.DFSNeighbours(stmt);
   }
 
   // If for entire program and AffectsBipTable is already set
-  // Perform DFS on AffectsBipTable and return all the statements that stmt can
-  // reach.
+  // Perform DFS on AffectsBipTable and return all the statements that stmt
+  // can reach.
   if (is_bip && has_set_affects_bip_tables_) {
     return affected_by_bip_table_.DFSNeighbours(stmt);
   }
@@ -679,12 +736,13 @@ AffectsTable AffectsExtractor::GetAffectedByBipTTable() {
  ****************/
 
 void AffectsExtractor::SetAffectsTables() {
-  ProcNameSet all_procs = pkb_->GetAllProcNames();
+  ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto proc_name : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc_name);
     // Special DFS each CFG for affects
     DfsSetAffectsTables(cfg->GetRoot(), &affects_table_, &affected_by_table_,
-                        &VisitedMap(), LastModMap(), VisitedCountMap(), cfg);
+                        &VisitedMap(), LastModMap(), VisitedCountMap(), cfg,
+                        false);
   }
 
   has_set_affects_tables_ = true;
@@ -725,8 +783,9 @@ void AffectsExtractor::SetAffectsBipTables() {
   // since program cfg must start from 1 and go to n, loop through
   for (int i = 1; i <= cfg->GetSize(); i++) {
     if (!visited.count(i)) {
-      DfsSetAffectsTables(i, &affects_bip_table_, &affected_by_bip_table_,
-                          &visited, LastModMap(), VisitedCountMap(), cfg);
+      DfsSetAffectsBipTables(i, &affects_bip_table_, &affected_by_bip_table_,
+                             &visited, LastModMap(), VisitedCountMap(), cfg,
+                             stack<Vertex>());
     }
   }
 
@@ -767,40 +826,43 @@ void AffectsExtractor::SetAffectsBipTTables() {
  * DFS / Util *
  ****************/
 
-// at -> AffectsTable
-// abt -> AffectedByTable
-// lmm -> LastModMap
-// vcm -> VisitedCountMap
-void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
-                                           AffectsTable* abt,
-                                           VisitedMap* visited, LastModMap lmm,
-                                           VisitedCountMap vcm, CFG* cfg) {
+void AffectsExtractor::DfsSetAffectsBipTables(Vertex v, AffectsTable* at,
+                                              AffectsTable* abt,
+                                              VisitedMap* visited,
+                                              LastModMap lmm,
+                                              VisitedCountMap vcm, CFG* cfg,
+                                              stack<Vertex> incoming_edges) {
+  // return if this is the third time reaching this vertex
   StmtType stmt_type = pkb_->GetStmtType(v);
-  // only return when hit while loop a second time and last_while_mod_map_ is
-  // stable
-
-   // update wlmm
-  if (stmt_type == StmtType::kWhile) {
-    if (vcm.count(v)) {
-      if (vcm[v] < 2) {
-        vcm[v] += 1;
+  if (vcm.count(v)) {
+    if (vcm[v] < 2) {
+      vcm[v] += 1;
+    } else {
+      if (!incoming_edges.empty()) {
+        StmtNumList nexts = pkb_->GetNext(incoming_edges.top());
+        incoming_edges.pop();
+        for (auto& stmt : nexts) {
+          DfsSetAffectsBipTables(stmt, at, abt, visited, lmm, vcm, cfg,
+                                 incoming_edges);
+        }
       } else {
         return;
       }
-    } else {
-      vcm.emplace(v, 1);
     }
+  } else {
+    vcm.emplace(v, 1);
   }
 
   visited->emplace(v, true);
 
-  if (IsModifyingType(stmt_type)) {
+  if (IsModifyingType(stmt_type, true)) {
     // assert only 1 modified_var
-    VarIndex modified_var = *(pkb_->GetModifiedVarS(v).begin());
+    VarIndexList modified_vars = pkb_->GetModifiedVarS(v);
 
     if (stmt_type == StmtType::kAssign) {
+      VarIndex modified_var = modified_vars.front();
       // add used to affects table if found in lmm
-      VarIndexSet used_vars = pkb_->GetUsedVarS(v);
+      VarIndexList used_vars = pkb_->GetUsedVarS(v);
       for (auto& used_var : used_vars) {
         if (lmm.count(used_var)) {
           StmtNum affecting_stmt = lmm[used_var];
@@ -813,22 +875,107 @@ void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
       lmm[modified_var] = v;
     } else {
       // not assign statement, but modifies something. Need to clear from lmm
-      if (lmm.count(modified_var)) {
-        lmm.erase(modified_var);
+      for (auto& modified_var : modified_vars) {
+        if (lmm.count(modified_var)) {
+          lmm.erase(modified_var);
+        }
       }
     }
   }
 
+  if (stmt_type == StmtType::kCall) {
+    incoming_edges.push(v);
+    Vertex called_proc_root =
+        pkb_->GetCFG(pkb_->GetProcName(pkb_->GetCalledProcedure(v)))->GetRoot();
+    DfsSetAffectsBipTables(called_proc_root, at, abt, visited, lmm, vcm, cfg,
+                           incoming_edges);
+  } else {
+    // this vertex is a terminal vertex and has a incoming edge
+    if (pkb_->GetNext(v).empty()) {
+      if (!incoming_edges.empty()) {
+        StmtNumList nexts = pkb_->GetNext(incoming_edges.top());
+        incoming_edges.pop();
+        for (auto& stmt : nexts) {
+          DfsSetAffectsBipTables(stmt, at, abt, visited, lmm, vcm, cfg,
+                                 incoming_edges);
+        }
+      } else {
+        return;
+      }
+    } else {
+      // dfs neighbours
+      VertexSet neighbours = cfg->GetNeighboursSet(v);
+      for (auto& neighbour : neighbours) {
+        DfsSetAffectsBipTables(neighbour, at, abt, visited, lmm, vcm, cfg,
+                               incoming_edges);
+      }
+    }
+  }
+}
 
+// at -> AffectsTable
+// abt -> AffectedByTable
+// lmm -> LastModMap
+// vcm -> VisitedCountMap
+void AffectsExtractor::DfsSetAffectsTables(Vertex v, AffectsTable* at,
+                                           AffectsTable* abt,
+                                           VisitedMap* visited, LastModMap lmm,
+                                           VisitedCountMap vcm, CFG* cfg,
+                                           bool is_bip) {
+  // return if this is the third time reaching this vertex
+  if (vcm.count(v)) {
+    if (vcm[v] < 2) {
+      vcm[v] += 1;
+    } else {
+      return;
+    }
+  } else {
+    vcm.emplace(v, 1);
+  }
+
+  visited->emplace(v, true);
+
+  StmtType stmt_type = pkb_->GetStmtType(v);
+
+  if (IsModifyingType(stmt_type, is_bip)) {
+    // assert only 1 modified_var
+    VarIndexList modified_vars = pkb_->GetModifiedVarS(v);
+
+    if (stmt_type == StmtType::kAssign) {
+      VarIndex modified_var = modified_vars.front();
+      // add used to affects table if found in lmm
+      VarIndexList used_vars = pkb_->GetUsedVarS(v);
+      for (auto& used_var : used_vars) {
+        if (lmm.count(used_var)) {
+          StmtNum affecting_stmt = lmm[used_var];
+          at->AddEdge(affecting_stmt, v);
+          abt->AddEdge(v, affecting_stmt);
+        }
+      }
+
+      // add modified to lmm
+      lmm[modified_var] = v;
+    } else {
+      // not assign statement, but modifies something. Need to clear from lmm
+      for (auto& modified_var : modified_vars) {
+        if (lmm.count(modified_var)) {
+          lmm.erase(modified_var);
+        }
+      }
+    }
+  }
 
   // dfs neighbours
   VertexSet neighbours = cfg->GetNeighboursSet(v);
   for (auto& neighbour : neighbours) {
-    DfsSetAffectsTables(neighbour, at, abt, visited, lmm, vcm, cfg);
+    DfsSetAffectsTables(neighbour, at, abt, visited, lmm, vcm, cfg, is_bip);
   }
 }
 
-bool AffectsExtractor::IsModifyingType(StmtType stmt_type) {
+bool AffectsExtractor::IsModifyingType(StmtType stmt_type, bool is_bip) {
+  if (is_bip) {
+    return stmt_type == StmtType::kRead || stmt_type == StmtType::kAssign;
+  }
   return stmt_type == StmtType::kCall || stmt_type == StmtType::kRead ||
          stmt_type == StmtType::kAssign;
 }

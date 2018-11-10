@@ -10,8 +10,8 @@ PqlGroup::PqlGroup() {
 }
 
 void PqlGroup::SortClauses() {
-  int max_priority = 0;
-  int max_index;
+  int max_priority = INT_MIN;
+  int max_index = 0;
   unordered_set<int> available_set;
   for(unsigned i = 0; i <  clauses_.size(); i++) {
     // Get clause with highest priority
@@ -28,7 +28,9 @@ void PqlGroup::SortClauses() {
         synonym_map_.at(first).insert(i);
       }
       else {
-        synonym_map_.insert(std::make_pair(first, unordered_set<int>({i})));
+        unordered_set<int> set;
+        set.insert(i);
+        synonym_map_.insert(std::make_pair(first, set));
       }
     }
     if (second != "") {
@@ -36,7 +38,9 @@ void PqlGroup::SortClauses() {
         synonym_map_.at(second).insert(i);
       }
       else {
-        synonym_map_.insert(std::make_pair(second, unordered_set<int>({i})));
+        unordered_set<int> set;
+        set.insert(i);
+        synonym_map_.insert(std::make_pair(second, set));
       }
     }
 

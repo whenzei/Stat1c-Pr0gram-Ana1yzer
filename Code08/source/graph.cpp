@@ -129,29 +129,32 @@ VertexList Graph::Toposort() {
 bool Graph::HasCycle() {
   // mark all the vertices as not visited
   VisitedMap visited;
-  for (auto &kv : adj_set_) {
-    visited[kv.first] = false;
+  for (auto &vertex : all_vertices_) {
+    visited[vertex] = false;
   }
 
-  // call the recursive helper function
-  for (int i = 0; i < size_; i++) {
-    if (HasCycle(i, &visited, &adj_set_[i])) {
-      return true;
+  for (auto &vertex : all_vertices_) {
+    if (!visited[vertex]) {
+      if (HasCycle(vertex, &visited)) {
+        return true;
+      }
     }
   }
 
   return false;
 }
 
-bool Graph::HasCycle(const Vertex &v, VisitedMap *visited, VertexSet *adj) {
+bool Graph::HasCycle(const Vertex &v, VisitedMap *visited) {
+  std::cout << std::to_string(v) + " " << std::endl;
+
   if (!(*visited)[v]) {
     (*visited)[v] = true;
 
-    for (auto &node : *adj) {
+    for (auto &node : adj_set_[v]) {
       if ((*visited)[node]) {
         return true;
       }
-      if (HasCycle(node, visited, &adj_set_[node])) {
+      if (HasCycle(node, visited)) {
         return true;
       }
     }
@@ -187,7 +190,7 @@ VertexSet Graph::DFS(const Vertex from) {
 VertexSet Graph::DFSNeighbours(const Vertex from) {
   VertexSet neighbours = GetNeighboursSet(from);
   VertexSet final_path;
-  for (auto& neighbour : neighbours) {
+  for (auto &neighbour : neighbours) {
     VertexSet inter_path = DFS(neighbour);
     final_path.insert(inter_path.begin(), inter_path.end());
   }
@@ -206,7 +209,7 @@ bool Graph::DFS(Vertex v, Vertex target, VisitedMap *visited) {
   }
   VertexList neighbours = GetNeighboursList(v);
 
-  for (auto& neighbour : neighbours) {
+  for (auto &neighbour : neighbours) {
     if (DFS(neighbour, target, visited)) {
       return true;
     }

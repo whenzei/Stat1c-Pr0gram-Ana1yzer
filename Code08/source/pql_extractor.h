@@ -25,13 +25,39 @@ class PqlExtractor {
   bool IsPreviousT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Next*(stmt_num, n)
-  StmtNumSet GetNextT(StmtNum stmt_num);
+  StmtNumList GetNextT(StmtNum stmt_num);
 
   // @returns a list of all n's that satisfy Next*(n, stmt_num)
-  StmtNumSet GetPreviousT(StmtNum stmt_num);
+  StmtNumList GetPreviousT(StmtNum stmt_num);
 
-  // @returns a list of all pairs of <n1, n2> that satisfy Next*(n1, n2)
-  StmtNumPairSet GetAllNextTPairs();
+  // Get the NextT mapping of the whole program
+  // @returns a hashmap of <key> StmtNum <value> set of all nextT StmtNums
+  NextTMap GetNextTMap();
+
+  // Get the NextT mapping of assign statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all assign nextT
+  // StmtNums
+  NextTMap GetAssignNextTMap();
+
+  // Get the NextT mapping of while statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all while nextT StmtNums
+  NextTMap GetWhileNextTMap();
+
+  // Get the NextT mapping of if statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all if nextT StmtNums
+  NextTMap GetIfNextTMap();
+
+  // Get the NextT mapping of call statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all call nextT StmtNums
+  NextTMap GetCallNextTMap();
+
+  // Get the NextT mapping of read statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all read nextT StmtNums
+  NextTMap GetReadNextTMap();
+
+  // Get the NextT mapping of print statements in the program
+  // @returns a hashmap of <key> StmtNum <value> set of all print nextT StmtNums
+  NextTMap GetPrintNextTMap();
 
   //****************** Affects *******************************
 
@@ -40,6 +66,10 @@ class PqlExtractor {
 
   // @returns true if stmt_num affects any statement
   bool IsAffects(StmtNum stmt_num);
+
+  // Can be used to check for all Affects/*(_,_) and AffectsBip/*(_,_)
+  // @returns true if Affects(_, _) holds, otherwise false
+  bool HasAffectsRelationship();
 
   // @returns true if stmt_num is affected by any statement
   bool IsAffected(StmtNum stmt_num);

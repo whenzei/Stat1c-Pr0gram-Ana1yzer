@@ -3,8 +3,11 @@
 #ifndef AFFECTS_EXTRACTOR_H
 #define AFFECTS_EXTRACTOR_H
 
+#include <stack>
+
 #include "pkb.h"
 
+using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
@@ -17,6 +20,10 @@ class AffectsExtractor {
   bool has_set_affects_t_tables_;
   bool has_set_affects_bip_tables_;
   bool has_set_affects_bip_t_tables_;
+  bool has_checked_affects_relationship_;
+
+  bool has_affects_relationship_;  // cache for Affects(_, _)
+
   AffectsTable affects_table_;
   AffectsTable affects_t_table_;
   AffectsTable affected_by_table_;
@@ -26,15 +33,30 @@ class AffectsExtractor {
   AffectsTable affected_by_bip_table_;
   AffectsTable affected_by_bip_t_table_;
 
-  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip);
+  /* Affects evaluation */
 
-  bool EvaluateIsAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
-  bool EvaluateIsAffected(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt);
 
-  VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffected(StmtNum stmt);
 
-  VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffects(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedBy(StmtNum stmt);
+
+  /* AffectsBip evaluation */
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1);
+
+  bool EvaluateIsAffectedBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectsBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedByBip(StmtNum stmt);
+
 
   // internal helper methods to get the tables regardless of whether the tables
   // have been initialized
@@ -49,7 +71,6 @@ class AffectsExtractor {
 
   AffectsTable GetAffectsBipTTable();
   AffectsTable GetAffectedByBipTTable();
-
 
   /* SETTER METHODS */
   // Sets the affects_table_ and affected_by_table_ of this class
@@ -105,7 +126,7 @@ class AffectsExtractor {
   // @params: VisitedMap* the map to keep track of visited vertices
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffects(Vertex curr, VarIndex affects_var, VertexSet* res_list,
-                     CFG* cfg, VisitedMap* visited);
+                     CFG* cfg, VisitedMap visited);
 
   // @params: curr the current vertex
   // @params: used_vars the set of variables to be affected (contains variables
@@ -118,7 +139,7 @@ class AffectsExtractor {
   // @return: there is no return value as pass by reference is used for res_list
   void DfsGetAffectedBy(Vertex curr, VarIndexSet used_vars,
                         VarIndexSet affected_used_vars, VertexSet* res_list,
-                        CFG* cfg, VisitedMap* visited);
+                        CFG* cfg, VisitedMap visited);
 
   // Helper to populate the AffectsTable and AffectedByTable using DFS
   // @params: Vertex the vertex to start from
@@ -130,11 +151,15 @@ class AffectsExtractor {
   // @params: CFG* pointer to cfg to run DFS on
   void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
                            AffectsTable* affected_by_table, VisitedMap* visited,
-                           LastModMap last_mod_map,
-                           VisitedCountMap vcm, CFG* cfg);
+                           LastModMap last_mod_map, VisitedCountMap vcm,
+                           CFG* cfg, bool is_bip);
+
+  void DfsSetAffectsBipTables(Vertex v, AffectsTable* at, AffectsTable* abt,
+                              VisitedMap* visited, LastModMap lmm,
+                              VisitedCountMap vcm, CFG* cfg, stack<Vertex> prev_entrance);
 
   // @returns true if StmtType is either kAssign, kCall, or kRead
-  bool IsModifyingType(StmtType stmt_type);
+  bool IsModifyingType(StmtType stmt_type, bool is_bip = false);
 
  public:
   AffectsExtractor();
@@ -144,7 +169,7 @@ class AffectsExtractor {
    * IsAffects *
    *************/
 
-  // @returns true if Affects(stmt_1, stmt_2) holds, else false
+  // @returns true if Affects(stmt_1, stmt_2) holds, otherwise false
   bool IsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip = false);
 
   // @returns true if stmt affects any statement
@@ -152,6 +177,10 @@ class AffectsExtractor {
 
   // @returns true if stmt is affected by any statement
   bool IsAffected(StmtNum stmt, bool is_bip = false);
+
+  // Can be used to check for all Affects/*(_,_) and AffectsBip/*(_,_)
+  // @returns true if Affects(_, _) holds, otherwise false
+  bool HasAffectsRelationship();
 
   // @returns a list of n that Affects(stmt_1, n) holds true
   VertexSet GetAffects(StmtNum stmt_1, bool is_bip = false);

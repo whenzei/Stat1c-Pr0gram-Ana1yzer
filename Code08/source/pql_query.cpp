@@ -6,7 +6,7 @@
 using std::cout;
 using std::endl;
 
-PqlQuery::PqlQuery() {}
+PqlQuery::PqlQuery() { result_is_false_ = false; }
 
 PqlQuery::~PqlQuery() {
   for(unsigned i = 0; i < clauses_.size(); i++) {
@@ -102,3 +102,7 @@ PqlDeclarationEntity PqlQuery::DeclarationStringToType(string input) {
 }
 
 void PqlQuery::Optimize() { groups_ = optimizer_.Optimize(); }
+
+void PqlQuery::SetResultIsFalse(bool set) { result_is_false_ = set; }
+
+bool PqlQuery::GetResultIsFalse() { return result_is_false_; }

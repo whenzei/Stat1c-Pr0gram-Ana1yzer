@@ -23,21 +23,21 @@ void DesignExtractor::CheckCyclicCalls() {
 
 void DesignExtractor::PopulateAllNextPairs() {
   CFG* cfg = pkb_->GetCombinedCFG();
-  StmtNumPairSet next_pair_set;
+  StmtNumPairList next_pair_list;
   for (auto entry : cfg->GetAdjList()) {
     int prev_stmt = entry.first;
     for (int& next_stmt : entry.second) {
-      next_pair_set.insert(std::make_pair(prev_stmt, next_stmt));
+      next_pair_list.push_back(std::make_pair(prev_stmt, next_stmt));
     }
   }
-  pkb_->SetAllNextPairs(next_pair_set);
+  pkb_->SetAllNextPairs(next_pair_list);
 }
 
 void DesignExtractor::UpdateParentT() {
-  StmtNumSet parent_stmts = pkb_->GetAllParent();
+  StmtNumList parent_stmts = pkb_->GetAllParent();
 
   for (auto& parent : parent_stmts) {
-    StmtNumSet direct_child_stmts = pkb_->GetChild(parent);
+    StmtNumList direct_child_stmts = pkb_->GetChild(parent);
     for (auto& direct_child : direct_child_stmts) {
       DescentForChild(parent, direct_child);
     }
@@ -48,12 +48,12 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
   ProcIndexList toposorted_calls = pkb_->GetToposortedCalls();
   for (ProcIndex proc_id : toposorted_calls) {
     // get all call statement numbers that calls the proc_name
-    StmtNumSet calling_stmts = pkb_->GetCallingStmts(proc_id);
+    StmtNumList calling_stmts = pkb_->GetCallingStmts(proc_id);
     for (StmtNum call_stmt : calling_stmts) {
       ProcIndex proc_of_stmt =
           pkb_->GetProcIndex(pkb_->GetProcOfStmt(call_stmt));
       // get all ParentT of call statement
-      StmtNumSet parent_stmts = pkb_->GetParentT(call_stmt);
+      StmtNumList parent_stmts = pkb_->GetParentT(call_stmt);
 
       // update uses for call statement AND its Parent(T)
       for (VarIndex used_var : pkb_->GetUsedVarP(proc_id)) {
@@ -79,9 +79,9 @@ void DesignExtractor::UpdateUsesAndModifiesWithCallGraph() {
 }
 
 void DesignExtractor::UpdateCallT() {
-  ProcNameSet procs = pkb_->GetAllCallerName();
+  ProcNameList procs = pkb_->GetAllCallerName();
   for (auto& proc : procs) {
-    ProcNameSet callee_procs = pkb_->GetCallee(proc);
+    ProcNameList callee_procs = pkb_->GetCallee(proc);
     for (auto& direct_callee : callee_procs) {
       DescentForCallee(proc, direct_callee);
     }
@@ -89,7 +89,7 @@ void DesignExtractor::UpdateCallT() {
 }
 
 void DesignExtractor::PopulateDominates() {
-  ProcNameSet all_procs = pkb_->GetAllProcNames();
+  ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto& proc : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc);
     // we know a vertex dominates another if the vertex is a cut vertex
@@ -110,7 +110,8 @@ void DesignExtractor::PopulateProgramCFG() {
   pkb_->SetReverseProgramCFG(cfgs.second);
 }
 
-pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg, CFG* rev_combined_cfg) {
+pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg,
+                                                  CFG* rev_combined_cfg) {
   // must clone, or the combined cfg will be mutated
   CFG program_cfg = CFG(*combined_cfg);
   CFG rev_program_cfg = CFG(*rev_combined_cfg);
@@ -119,13 +120,12 @@ pair<CFG, CFG> DesignExtractor::ConnectProgramCFG(CFG* combined_cfg, CFG* rev_co
   for (auto v : program_cfg.GetAllVertices()) {
     // not visited yet
     if (!visited.count(v)) {
-        DfsConnect(v, &program_cfg, &rev_program_cfg, &visited);
+      DfsConnect(v, &program_cfg, &rev_program_cfg, &visited);
     }
   }
 
   return make_pair(program_cfg, rev_program_cfg);
 }
-
 
 void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
                                  VisitedMap* visited) {
@@ -134,8 +134,7 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
   }
 
   visited->emplace(v, true);
-
-  VertexList terminal_nodes;
+  VertexList neighbours = cfg->GetNeighboursList(v);
 
   StmtType stmt_type = pkb_->GetStmtType(v);
   if (stmt_type == StmtType::kCall) {
@@ -144,22 +143,13 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
     ProcName proc_name = pkb_->GetProcName(pkb_->GetCalledProcedure(v));
     CFG* called_cfg = pkb_->GetCFG(proc_name);
     Vertex called_cfg_root = called_cfg->GetRoot();
-    // add root of the procedure's cfg as neighbour of call statement's
-    // previouses
-    VertexSet previouses = pkb_->GetPrevious(v);
-    for (auto& previous : previouses) {
-      cfg->AddEdge(previous, called_cfg_root);
-      rev_cfg->AddEdge(called_cfg_root, previous);
-    }
 
-    // remove the whole call node
-    // must be done before obtaining terminal nodes in case the call statement
-    // is a terminal node
-    cfg->RemoveNode(v);
-    rev_cfg->RemoveNode(v);
+    // add root of the procedure's cfg as neighbour of call statement
+    cfg->AddEdge(v, called_cfg_root);
+    rev_cfg->AddEdge(called_cfg_root, v);
 
     // get terminal nodes of the called cfg
-    terminal_nodes = called_cfg->GetTerminalNodes();
+    VertexList terminal_nodes = called_cfg->GetTerminalNodes();
 
     for (auto& neighbour : neighbours) {
       // add the neighbours to the terminal nodes of the procedure
@@ -167,26 +157,20 @@ void DesignExtractor::DfsConnect(const Vertex v, CFG* cfg, CFG* rev_cfg,
         cfg->AddEdge(terminal_node, neighbour);
         rev_cfg->AddEdge(neighbour, terminal_node);
       }
-    }
 
-    // get all the neighbours of the previous node again and dfs
-    for (auto& previous : previouses) {
-      VertexList prev_neighbours = cfg->GetNeighboursList(previous);
-      for (auto& prev_neighbour : prev_neighbours) {
-        DfsConnect(prev_neighbour, cfg, rev_cfg, visited);
-      }
+      // remove link between neighbour and call statement
+      cfg->RemoveEdge(v, neighbour);
+      rev_cfg->RemoveEdge(neighbour, v);
     }
-  } else {
-    // Default path for non calls: Get the neighbours
-    VertexList neighbours = cfg->GetNeighboursList(v);
-    for (auto& neighbour : neighbours) {
-      DfsConnect(neighbour, cfg, rev_cfg, visited);
-    }
+  }
+
+  for (auto& neighbour : neighbours) {
+    DfsConnect(neighbour, cfg, rev_cfg, visited);
   }
 }
 
 void DesignExtractor::UpdateCFGRoots() {
-  ProcNameSet all_procs = pkb_->GetAllProcNames();
+  ProcNameList all_procs = pkb_->GetAllProcNames();
   for (auto& proc : all_procs) {
     CFG* cfg = pkb_->GetCFG(proc);
     Vertex min_vertex = GetMinVertex(cfg);
@@ -206,7 +190,7 @@ int DesignExtractor::GetMinVertex(CFG* cfg) {
 }
 
 void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
-  StmtNumSet child_stmts = pkb_->GetChild(curr_stmt);
+  StmtNumList child_stmts = pkb_->GetChild(curr_stmt);
   for (auto& child : child_stmts) {
     pkb_->InsertParentT(true_parent, child);
     DescentForChild(true_parent, child);
@@ -215,7 +199,7 @@ void DesignExtractor::DescentForChild(StmtNum true_parent, StmtNum curr_stmt) {
 
 void DesignExtractor::DescentForCallee(ProcName true_caller,
                                        ProcName curr_callee) {
-  ProcNameSet callees = pkb_->GetCallee(curr_callee);
+  ProcNameList callees = pkb_->GetCallee(curr_callee);
   for (auto& callee : callees) {
     pkb_->InsertIndirectCallRelationship(true_caller, callee);
     DescentForCallee(true_caller, callee);

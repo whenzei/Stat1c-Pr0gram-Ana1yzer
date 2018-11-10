@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "debug.h"
 #include "syntactic_error_exception.h"
 #include "tokenizer.h"
 
@@ -44,7 +45,7 @@ TokenList Tokenizer::Tokenize(string input) {
 // @returns vector of tokens
 TokenList Tokenizer::Tokenize(string input,
                               TokenizerFunc tokenizer_functions[]) {
-  size_t current_index = 0, vector_len = input.size();
+  unsigned current_index = 0, vector_len = input.size();
   TokenList tokens;
 
   while (current_index < vector_len) {
@@ -70,6 +71,8 @@ TokenList Tokenizer::Tokenize(string input,
     // unknown token, since none of the tokenizers can recognize it. Throw
     // exception
     if (!is_done) {
+      Debug::PrintLn(Debug::kError, "Unknown token encountered: " +
+                                        string(1, input[current_index]));
       throw SyntacticErrorException("Unknown token encountered.");
     }
   }

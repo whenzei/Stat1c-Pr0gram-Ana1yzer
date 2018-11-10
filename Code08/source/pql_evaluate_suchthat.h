@@ -10,17 +10,17 @@
 
 #include "pkb.h"
 #include "pql_evaluator.h"
+#include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_query.h"
-#include "pql_extractor.h"
-#include "result_hasher.h"
 
 using std::list;
 using std::string;
 using std::unordered_map;
 using std::vector;
-using QueryResultSet = unordered_set<int>;
-using QueryResultPairSet = unordered_set<pair<int, int>>;
+using FinalResult = list<string>;
+using QueryResultList = vector<int>;
+using QueryResultPairList = vector<pair<int, int>>;
 using VarProcToIndexMap = unordered_map<string, int>;
 using IndexToVarProcMap = unordered_map<int, string>;
 
@@ -59,7 +59,7 @@ class PqlEvaluateSuchthat {
    * @returns a vector<int> if there is result,
    * or an empty list otherwise
    */
-  QueryResultSet GetSelectAllResult(PqlDeclarationEntity select_type);
+  QueryResultList GetSelectAllResult(PqlDeclarationEntity select_type);
 
   /**
    * Evaluate follows clause and store result in PqlResult table
@@ -173,7 +173,7 @@ class PqlEvaluateSuchthat {
   void EvaluateAffectsT(PqlEvaluator*, PqlSuchthat suchthat,
                         SuchthatParamType arrangement);
 
-    /**
+  /**
    * Evaluate AffectsBip clause and store result in PqlResult table
    * @param The evaluator and affectsbip clause in the Query and arrangement of
    * clause arguments
@@ -211,7 +211,7 @@ class PqlEvaluateSuchthat {
    * @returns vector<int> list that only contains result of a certain entity
    * type
    */
-  QueryResultSet FilterResult(QueryResultSet unfiltered_result,
+  QueryResultList FilterResult(QueryResultList unfiltered_result,
                                PqlDeclarationEntity entity_type);
 
   /**
@@ -220,7 +220,7 @@ class PqlEvaluateSuchthat {
    * @returns vector<int> list that only contains result of a certain entity
    * type
    */
-  QueryResultSet FilterVariableResult(QueryResultSet unfiltered_result,
+  QueryResultList FilterVariableResult(QueryResultList unfiltered_result,
                                        PqlDeclarationEntity variable_type);
 
   /**
@@ -230,10 +230,19 @@ class PqlEvaluateSuchthat {
    * @returns vector<int> of result pair that only contains result of a
    * certain entity type
    */
-  QueryResultPairSet FilterPairResult(
+  QueryResultPairList FilterPairResult(
       PqlResultFilterType filter_type,
-      QueryResultPairSet unfiltered_pair_result,
+      QueryResultPairList unfiltered_pair_result,
       PqlDeclarationEntity left_type, PqlDeclarationEntity right_type);
+
+  /**
+   * Filter the table based on the variable entity type
+   * @param unfiltered list and variable entity type (e.g constant)
+   * @returns map that only contains result of a certain
+   * entity type
+   */
+  AffectsMap FilterNextTTable(AffectsMap unfiltered_result,
+                                       PqlDeclarationEntity filter_type);
 };
 
 #endif  // !PQL_EVALUATE_SUCHTHAT_H
