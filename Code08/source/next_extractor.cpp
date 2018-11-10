@@ -6,11 +6,30 @@ NextExtractor::NextExtractor(PKB* pkb) {
   pkb_ = pkb;
   next_t_table_ = NextTTable();
   previous_t_table_ = NextTTable();
+
+  // set up all types to be false
+  type_done_map_.emplace(StmtType::kAssign, false);
+  type_done_map_.emplace(StmtType::kCall, false);
+  type_done_map_.emplace(StmtType::kIf, false);
+  type_done_map_.emplace(StmtType::kPrint, false);
+  type_done_map_.emplace(StmtType::kRead, false);
+  type_done_map_.emplace(StmtType::kWhile, false);
+  type_done_map_.emplace(StmtType::kAll, false);
+
+  // set up typed Next* table
+  typed_next_t_table_.emplace(StmtType::kAssign, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kCall, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kIf, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kPrint, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kRead, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kWhile, NextTTable());
+  typed_next_t_table_.emplace(StmtType::kAll, NextTTable());
 }
 
 bool NextExtractor::IsNextT(StmtNum previous_stmt, StmtNum next_stmt) {
   // if is pre-cached
-  if (!next_t_table_.IsEmpty()) {
+  StmtType stmt_type = pkb_->GetStmtType(previous_stmt);
+  if (type_done_map_.count(stmt_type) && type_done_map_[stmt_type]) {
     return next_t_table_.GetNeighboursSet(previous_stmt).count(next_stmt);
   }
 
@@ -65,7 +84,8 @@ bool NextExtractor::IsPreviousT(StmtNum stmt_num) {
 
 StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
   // if pre-cached
-  if (!next_t_table_.IsEmpty()) {
+  StmtType stmt_type = pkb_->GetStmtType(stmt_num);
+  if (type_done_map_.count(stmt_type) && type_done_map_[stmt_type]) {
     return next_t_table_.GetNeighboursList(stmt_num);
   }
 
@@ -105,7 +125,9 @@ StmtNumList NextExtractor::GetNextT(StmtNum stmt_num) {
 }
 
 StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
-  if (!previous_t_table_.IsEmpty()) {
+  // pre-cached
+  StmtType stmt_type = pkb_->GetStmtType(stmt_num);
+  if (type_done_map_.count(stmt_type) && type_done_map_[stmt_type]) {
     return previous_t_table_.GetNeighboursList(stmt_num);
   }
 
@@ -147,22 +169,55 @@ StmtNumList NextExtractor::GetPreviousT(StmtNum stmt_num) {
 }
 
 NextTMap NextExtractor::GetNextTMap() {
-  if (next_t_table_.IsEmpty()) {
+  if (!type_done_map_[StmtType::kAll]) {
     SetNextTTables();
   }
+
   return next_t_table_.GetAdjSet();
 }
 
 void NextExtractor::SetNextTTables() {
-  StmtNumList prev_list = pkb_->GetAllPrevious();
-  StmtNumPairList res_list;
-
-  for (auto& prev : prev_list) {
-    BFSSetNextTTables(prev);
+  for (auto& kv : type_done_map_) {
+    StmtType type = kv.first;
+    if (!type_done_map_[type]) {
+      SetNextTTables(type);
+    }
   }
+
+  type_done_map_[StmtType::kAll] = true;
 }
 
-void NextExtractor::BFSSetNextTTables(StmtNum start) {
+void NextExtractor::SetNextTTables(StmtType type) {
+  StmtNumList stmts;
+
+  switch (type) {
+    case StmtType::kAssign:
+      stmts = pkb_->GetAllAssignStmt();
+      break;
+    case StmtType::kCall:
+      stmts = pkb_->GetAllCallStmt();
+      break;
+    case StmtType::kIf:
+      stmts = pkb_->GetAllIfStmt();
+      break;
+    case StmtType::kPrint:
+      stmts = pkb_->GetAllPrintStmt();
+      break;
+    case StmtType::kRead:
+      stmts = pkb_->GetAllReadStmt();
+      break;
+    case StmtType::kWhile:
+      stmts = pkb_->GetAllWhileStmt();
+  }
+
+  for (auto& stmt : stmts) {
+    BFSSetNextTTables(stmt, type);
+  }
+
+  type_done_map_[type] = true;
+}
+
+void NextExtractor::BFSSetNextTTables(StmtNum start, StmtType type) {
   VisitedMap visited;
   queue<StmtNum> prev_stmt_queue;
 
@@ -180,8 +235,11 @@ void NextExtractor::BFSSetNextTTables(StmtNum start) {
     }
 
     visited.emplace(curr_stmt, true);
+
     next_t_table_.AddEdge(start, curr_stmt);
     previous_t_table_.AddEdge(curr_stmt, start);
+
+    typed_next_t_table_[type].AddEdge(start, curr_stmt);
 
     StmtNumList curr_prev_stmts = pkb_->GetNext(curr_stmt);
     for (StmtNum curr_next : curr_prev_stmts) {
@@ -219,35 +277,9 @@ NextTMap NextExtractor::GetPrintNextTMap() {
 }
 
 NextTMap NextExtractor::GetTypedNextTMap(StmtType type) {
-  if (next_t_table_.IsEmpty()) {
-    SetNextTTables();
+  if (!type_done_map_[type]) {
+    SetNextTTables(type);
   }
-  NextTMap result;
-  StmtNumList stmts;
-
-  switch (type) {
-    case StmtType::kAssign:
-      stmts = pkb_->GetAllAssignStmt();
-      break;
-    case StmtType::kCall:
-      stmts = pkb_->GetAllCallStmt();
-      break;
-    case StmtType::kIf:
-      stmts = pkb_->GetAllIfStmt();
-      break;
-    case StmtType::kPrint:
-      stmts = pkb_->GetAllPrintStmt();
-      break;
-    case StmtType::kRead:
-      stmts = pkb_->GetAllReadStmt();
-      break;
-    case StmtType::kWhile:
-      stmts = pkb_->GetAllWhileStmt();
-  }
-
-  for (auto& stmt : stmts) {
-    result.emplace(stmt, next_t_table_.GetAdjSet()[stmt]);
-  }
-
-  return result;
+  
+  return typed_next_t_table_[type].GetAdjSet();
 }
