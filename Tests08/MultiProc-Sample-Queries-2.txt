@@ -18,3 +18,56 @@ while w; if ifs; stmt s;
 Select s such that Next*(w, s) pattern w("delta",_) and ifs("ORANGE",_,_) such that Parent(w, ifs) and Parent(ifs, s) and Uses(s, "me")
 50, 51
 5000
+5 - Pattern, With, Modifies, Uses
+assign a; variable v; stmt s; constant c; 
+Select <a,v> pattern a(v,_"1"_) such that Uses(s,v) and Modifies(s,"ORANGE") with a.stmt# = c.value
+1 a
+5000
+6 - Pattern, With, Parent, Modifies
+while w; if ifs; variable v; assign a; read r; 
+Select v such that Parent(w,ifs) and Modifies(a,v) pattern ifs(v,_,_) with r.varName = v.varName
+zzz
+5000
+7 - With, Uses, Modifes, Pattern, Calls
+call c; variable v; procedure p;  if ifs; 
+Select v with c.procName = p.procName and p.procName = "Me" such that Uses(p,v) and Modifies(p,v) and Calls(p1,p) pattern ifs(v,_,_)
+c, ORANGE
+5000
+8 - Uses Modifies Follows Parent* Pattern
+assign a; variable v; while w; 
+Select v such that Uses(a,v) and Modifies(a,v) and Follows(a,_) and Parent*(w,a) pattern w(_,_) 
+me
+5000
+9 -  triple Pattern With Modifies
+assign a; variable v, v2; while w; if ifs; 
+Select a pattern a(v,_) and w(v,_) and ifs(v,_,_) with v.varName = v2.varName such that Modifies(a,v2)
+26, 45
+5000
+10 - Pattern, Uses, With, Next*
+assign a; variable v; constant c; Select BOOLEAN pattern a(v,_) such that Uses(a,v) with a.stmt# = c.value such that Next*(17,15)
+FALSE
+5000
+11 - Next*, Affects, Calls, Pattern
+assign a, a1; procedure p,p1; variable v; 
+Select <a,a1,v> such that Next*(8,a) and Affects(a,a1) and Calls(p,p1) pattern a(v,_"YYY"_)
+11 6 YYY, 11 11 YYY
+5000
+12 - With, Uses, Follows*, Pattern
+variable v; read r; print p; stmt s; while w; 
+Select v with v.varName = r.varName and r.varName = p.varName such that Uses(s,v) and Follows*(s,_) pattern w(v,_)
+echo
+5000
+13 - Next*, Affects*, With, Calls*
+constant c; stmt s; 
+Select BOOLEAN such that Next*(5,10) and Affects*(11,6) with c.value = s.stmt# such that Calls*("Foxtrot","Charlie")
+TRUE
+5000
+14 - triple Parent, Pattern, With ident
+while w, w1, w2; assign a; variable v; Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test = "test"
+21 23 25
+5000
+15 -  Uses Pattern Follows* With
+assign a; variable v, v2; call c; 
+Select v2 such that Uses(a,v) pattern a(v,_"1"_) such that Follows*(c,a) with c.procName = "Charlie" and v2.varName = "charlie"
+charlie
+5000
