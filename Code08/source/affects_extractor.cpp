@@ -371,19 +371,18 @@ void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
 
 void AffectsExtractor::DfsSetAffectsTablePartial(Vertex curr, Vertex source, VarIndex affects_var,
                                           AffectsTable* at, AffectsTable* abt,
-                                          CFG* cfg, VisitedMap visited) {
-  if (visited.count(curr)) {
+                                          CFG* cfg, VisitedMap* visited) {
+  if (visited->count(curr)) {
     return;
   }
 
   StmtType curr_stmt_type = pkb_->GetStmtType(curr);
-  visited.emplace(curr, true);
+  visited->emplace(curr, true);
 
   if (curr_stmt_type == StmtType::kAssign) {
     if (pkb_->IsUsedByS(curr, affects_var)) {
       at->AddEdge(source, curr);
       abt->AddEdge(curr, source);
-
     }
   }
 
@@ -777,7 +776,7 @@ void AffectsExtractor::SetAffectsTables() {
     VarIndex affects_var = pkb_->GetModifiedVarS(assign_stmt).front();
     for (auto& neighbour : cfg->GetNeighboursList(assign_stmt)) {
       DfsSetAffectsTablePartial(neighbour, assign_stmt, affects_var, &affects_table_,
-                         &affected_by_table_, cfg, VisitedMap());
+                         &affected_by_table_, cfg, &VisitedMap());
     }
   }
 

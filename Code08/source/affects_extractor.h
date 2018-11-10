@@ -154,7 +154,7 @@ class AffectsExtractor {
   void DfsSetAffectsTablePartial(Vertex curr, Vertex source, VarIndex affects_var,
                           AffectsTable* affects_table,
                           AffectsTable* affected_by_table, CFG* cfg,
-                          VisitedMap visited);
+                          VisitedMap* visited);
   
   void DfsSetAffectsBipTables(Vertex v, AffectsTable* at, AffectsTable* abt,
                               VisitedMap* visited, LastModMap lmm,
