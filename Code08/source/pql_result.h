@@ -20,7 +20,7 @@ using std::vector;
 using ColumnHeader = unordered_map<string, int>;
 using MergeMap = unordered_map<int, vector<int>>;
 using MergeSet = unordered_set<string>;
-using ResultTable = unordered_set<vector<int>>;
+using ResultTable = vector<vector<int>>;
 using ResultRow = vector<int>;
 using QueryResultSet = unordered_set<int>;
 using QueryResultPairSet = unordered_set<pair<int, int>>;
