@@ -3,8 +3,11 @@
 #ifndef AFFECTS_EXTRACTOR_H
 #define AFFECTS_EXTRACTOR_H
 
+#include <stack>
+
 #include "pkb.h"
 
+using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
@@ -30,15 +33,30 @@ class AffectsExtractor {
   AffectsTable affected_by_bip_table_;
   AffectsTable affected_by_bip_t_table_;
 
-  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip);
+  /* Affects evaluation */
 
-  bool EvaluateIsAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
-  bool EvaluateIsAffected(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt);
 
-  VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffected(StmtNum stmt);
 
-  VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffects(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedBy(StmtNum stmt);
+
+  /* AffectsBip evaluation */
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1);
+
+  bool EvaluateIsAffectedBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectsBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedByBip(StmtNum stmt);
+
 
   // internal helper methods to get the tables regardless of whether the tables
   // have been initialized
@@ -134,10 +152,14 @@ class AffectsExtractor {
   void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
                            AffectsTable* affected_by_table, VisitedMap* visited,
                            LastModMap last_mod_map, VisitedCountMap vcm,
-                           CFG* cfg);
+                           CFG* cfg, bool is_bip);
+
+  void DfsSetAffectsBipTables(Vertex v, AffectsTable* at, AffectsTable* abt,
+                              VisitedMap* visited, LastModMap lmm,
+                              VisitedCountMap vcm, CFG* cfg, stack<Vertex> prev_entrance);
 
   // @returns true if StmtType is either kAssign, kCall, or kRead
-  bool IsModifyingType(StmtType stmt_type);
+  bool IsModifyingType(StmtType stmt_type, bool is_bip = false);
 
  public:
   AffectsExtractor();
