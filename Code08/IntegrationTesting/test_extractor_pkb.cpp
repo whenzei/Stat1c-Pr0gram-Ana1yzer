@@ -144,29 +144,59 @@ TEST_CLASS(TestPkbPqlExtractor) {
     NextTMap expected_result_1;
     // both 5 and 6 are assign stmts, but only 5 have nextTs
     expected_result_1.emplace(5, VertexSet{1, 2, 3, 4, 5, 6});
+
+    // insert empty vertices due to graph adjset
+    expected_result_1.emplace(1, VertexSet());
+    expected_result_1.emplace(2, VertexSet());
+    expected_result_1.emplace(3, VertexSet());
+    expected_result_1.emplace(4, VertexSet());
     expected_result_1.emplace(6, VertexSet());
+
     Assert::IsTrue(expected_result_1 == actual_result_1);
 
-    // While stmt + test caching, should be fast
+    // While stmt
     NextTMap actual_result_2 = extractor.GetWhileNextTMap();
     NextTMap expected_result_2;
     // only 1 is while stmt
     expected_result_2.emplace(1, VertexSet{1, 2, 3, 4, 5, 6});
+
+    // insert empty vertices due to graph adjset
+    expected_result_2.emplace(2, VertexSet());
+    expected_result_2.emplace(3, VertexSet());
+    expected_result_2.emplace(4, VertexSet());
+    expected_result_2.emplace(5, VertexSet());
+    expected_result_2.emplace(6, VertexSet());
+
     Assert::IsTrue(expected_result_2 == actual_result_2);
 
-    // If stmt + test caching, should be fast
+    // If stmt
     NextTMap actual_result_3 = extractor.GetIfNextTMap();
     NextTMap expected_result_3;
     // only 2 is if stmt
     expected_result_3.emplace(2, VertexSet{1, 2, 3, 4, 5, 6});
+
+    // insert empty vertices due to graph adjset
+    expected_result_3.emplace(1, VertexSet());
+    expected_result_3.emplace(3, VertexSet());
+    expected_result_3.emplace(4, VertexSet());
+    expected_result_3.emplace(5, VertexSet());
+    expected_result_3.emplace(6, VertexSet());
+
     Assert::IsTrue(expected_result_3 == actual_result_3);
 
-    // Read stmt + test caching, should be fast
+    // Read stmt
     NextTMap actual_result_4 = extractor.GetReadNextTMap();
     NextTMap expected_result_4;
     // both 3 and 4 are read stmts
     expected_result_4.emplace(3, VertexSet{1, 2, 3, 4, 5, 6});
     expected_result_4.emplace(4, VertexSet{1, 2, 3, 4, 5, 6});
+
+    // insert empty vertices due to graph adjset
+    expected_result_4.emplace(1, VertexSet());
+    expected_result_4.emplace(2, VertexSet());
+    expected_result_4.emplace(5, VertexSet());
+    expected_result_4.emplace(6, VertexSet());
+
     Assert::IsTrue(expected_result_4 == actual_result_4);
 
     // Negative tests, should have no calls
