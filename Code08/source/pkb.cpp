@@ -186,8 +186,7 @@ void PKB::InsertCallStmt(CallStmtData* stmt_data) {
 }
 
 void PKB::InsertFollows(StmtNum followee_stmt_num, StmtNum follower_stmt_num) {
-  follows_table_.InsertFollows(followee_stmt_num,
-                                           follower_stmt_num);
+  follows_table_.InsertFollows(followee_stmt_num, follower_stmt_num);
 }
 
 void PKB::InsertModifiesS(StmtNum modifying_stmt, VarName modified_var) {

@@ -32,8 +32,7 @@ bool CallTable::InsertDirectCallRelationship(ProcIndex caller_proc,
   }
   if (callee_set_.insert(callee_proc).second) {
     callee_list_.push_back(callee_proc);
-    callee_twin_list_.push_back(
-        make_pair(callee_proc, callee_proc));
+    callee_twin_list_.push_back(make_pair(callee_proc, callee_proc));
   }
   return true;
 }
@@ -140,8 +139,8 @@ ProcIndexPairList CallTable::GetAllCallTPairs() {
 bool CallTable::IsCall(ProcIndex caller_proc, ProcIndex callee_proc) {
   if (direct_call_table_.find(caller_proc) != direct_call_table_.end()) {
     ProcIndexList direct_callee_list = direct_call_table_[caller_proc];
-    return (find(direct_callee_list.begin(), direct_callee_list.end(), callee_proc)
-        != direct_callee_list.end());
+    return (find(direct_callee_list.begin(), direct_callee_list.end(),
+                 callee_proc) != direct_callee_list.end());
   }
   return false;
 }

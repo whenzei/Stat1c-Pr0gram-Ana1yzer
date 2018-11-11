@@ -43,4 +43,6 @@ StmtNumPairList DominatesTable::GetAllDominatesPairs() {
   return dominates_pair_list_;
 }
 
-bool DominatesTable::HasDominatesRelationship() { return !dominates_set_map_.empty(); }
+bool DominatesTable::HasDominatesRelationship() {
+  return !dominates_set_map_.empty();
+}

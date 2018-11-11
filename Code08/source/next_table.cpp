@@ -90,5 +90,4 @@ CFG* NextTable::GetProgramCFG() { return &program_cfg_; }
 
 CFG* NextTable::GetReverseProgramCFG() { return &reversed_program_cfg_; }
 
-
 bool NextTable::HasNextRelationship() { return !combined_cfg_.IsEmpty(); }

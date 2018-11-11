@@ -1,26 +1,13 @@
-#include <iostream>
-#include <list>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-
+#include "pql_evaluator.h"
+#include "debug.h"
 #include "pkb.h"
 #include "pql_evaluate_pattern.h"
 #include "pql_evaluate_suchthat.h"
 #include "pql_evaluate_with.h"
-#include "pql_evaluator.h"
 #include "pql_extractor.h"
 #include "pql_global.h"
 #include "pql_projector.h"
 #include "pql_query.h"
-
-using std::cout;
-using std::endl;
-using std::list;
-using std::map;
-using std::string;
-using std::vector;
 
 PqlEvaluator::PqlEvaluator() {}
 
@@ -71,8 +58,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
             }
             continue;
           case PqlClauseType::kWith:
-            tempbool =
-                with_evaluator.EvaluateWithClause(this, &pkb, *(PqlWith*)clause);
+            tempbool = with_evaluator.EvaluateWithClause(this, &pkb,
+                                                         *(PqlWith*)clause);
             // If valid then set boolean, if not dont change the invalidity
             if (IsValidClause()) {
               SetClauseFlag(tempbool);
@@ -112,7 +99,8 @@ FinalResult PqlEvaluator::GetResultFromQuery(PqlQuery* query, PKB pkb) {
         IsValidClause());
   }
 
-  cout << "Result size: " << final_results.size() << endl;
+  Debug::PrintLn(Debug::kLog,
+                 "Result size: " + to_string(final_results.size()));
 
   return final_results;
 }
@@ -209,7 +197,6 @@ void PqlEvaluator::StoreClauseResultInTable(
 void PqlEvaluator::StoreClauseResultInTable(AffectsMap affects_table,
                                             string header_name_left,
                                             string header_name_right) {
-
   if (pql_result_.GetResultTable().empty()) {
     pql_result_.InitTable(affects_table, header_name_left, header_name_right);
   } else {
@@ -218,26 +205,26 @@ void PqlEvaluator::StoreClauseResultInTable(AffectsMap affects_table,
     if (col_header.find(header_name_left) != col_header.end() &&
         col_header.find(header_name_right) != col_header.end()) {
       pql_result_.MergeResults(affects_table, kTwoConflict,
-                              col_header.find(header_name_left)->second,
-                              col_header.find(header_name_right)->second,
-                              header_name_left, header_name_right);
+                               col_header.find(header_name_left)->second,
+                               col_header.find(header_name_right)->second,
+                               header_name_left, header_name_right);
     }
     // One conflict Left
     else if (col_header.find(header_name_left) != col_header.end()) {
       pql_result_.MergeResults(affects_table, kOneConflictLeft,
-                              col_header.find(header_name_left)->second, -1,
-                              header_name_left, header_name_right);
+                               col_header.find(header_name_left)->second, -1,
+                               header_name_left, header_name_right);
     }
     // One conflict Right
     else if (col_header.find(header_name_right) != col_header.end()) {
       pql_result_.MergeResults(affects_table, kOneConflictRight, -1,
-                              col_header.find(header_name_right)->second,
-                              header_name_left, header_name_right);
+                               col_header.find(header_name_right)->second,
+                               header_name_left, header_name_right);
     }
     // No conflict
     else {
       pql_result_.MergeResults(affects_table, kNoConflict, -1, -1,
-                              header_name_left, header_name_right);
+                               header_name_left, header_name_right);
     }
   }
 

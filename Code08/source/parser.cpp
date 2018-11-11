@@ -280,9 +280,10 @@ ParseData Parser::ProcessAssignment() {
       rhsconst = rhsconst + " " + to_string(var);
     }
 
-    Debug::PrintLn(Debug::kInfo, "Assignment statement#" + to_string(stmt_num_) +
-                                   " added, lhs: " + lhs_var + ", rhs_vars: " +
-                                   rhsvar + ", rhs_consts: " + rhsconst);
+    Debug::PrintLn(Debug::kInfo,
+                   "Assignment statement#" + to_string(stmt_num_) +
+                       " added, lhs: " + lhs_var + ", rhs_vars: " + rhsvar +
+                       ", rhs_consts: " + rhsconst);
     //***********************************************
   }
 
@@ -300,8 +301,8 @@ ParseData Parser::ProcessIfBlock() {
       control_var_str = control_var_str + " " + var;
     }
     Debug::PrintLn(Debug::kInfo,
-                 "If statement#" + to_string(if_stmt_num) +
-                     " added, control_variable: " + control_var_str);
+                   "If statement#" + to_string(if_stmt_num) +
+                       " added, control_variable: " + control_var_str);
     //*************************************
   }
 
@@ -413,8 +414,8 @@ ParseData Parser::ProcessWhileBlock() {
       control_var_str = control_var_str + " " + var;
     }
     Debug::PrintLn(Debug::kInfo,
-                 "While statement#" + to_string(while_stmt_num) +
-                     " added, control_variable: " + control_var_str);
+                   "While statement#" + to_string(while_stmt_num) +
+                       " added, control_variable: " + control_var_str);
     //*************************************
   }
 

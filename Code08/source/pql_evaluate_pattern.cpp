@@ -1,21 +1,8 @@
-#include <iostream>
-#include <list>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#include "pkb.h"
 #include "pql_evaluate_pattern.h"
+#include "debug.h"
+#include "pkb.h"
 #include "pql_evaluator.h"
 #include "pql_global.h"
-
-using std::cout;
-using std::endl;
-using std::list;
-using std::map;
-using std::string;
-using std::vector;
 
 PqlEvaluatePattern::PqlEvaluatePattern() {}
 
@@ -51,14 +38,14 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating While Pattern." << endl;
+  Debug::PrintLn(Debug::kLog, "Evaluating While Pattern...");
 
   switch (left_type) {
     case PqlDeclarationEntity::kUnderscore:
       result_list = pkb_->GetWhileWithPattern("");
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern " << endl;
+        Debug::PrintLn(Debug::kLog, "No such pattern");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
       }
@@ -67,7 +54,8 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
       result_list = pkb_->GetWhileWithPattern(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern for variable" << left_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "No such pattern for variable: " + left_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
       }
@@ -76,7 +64,8 @@ void PqlEvaluatePattern::EvaluateWhilePattern(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllWhilePatternPair();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern for synonym " << left_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "No such pattern for synonym: " + left_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, pattern_var_name,
                                            left_name);
@@ -96,14 +85,14 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating If Pattern." << endl;
+  Debug::PrintLn(Debug::kLog, "Evaluating If Pattern");
 
   switch (left_type) {
     case PqlDeclarationEntity::kUnderscore:
       result_list = pkb_->GetIfWithPattern("");
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern " << endl;
+        Debug::PrintLn(Debug::kLog, "No such pattern");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
       }
@@ -112,7 +101,7 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
       result_list = pkb_->GetIfWithPattern(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern for variable" << left_name << endl;
+        Debug::PrintLn(Debug::kLog, "No such pattern for: " + left_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
       }
@@ -121,7 +110,8 @@ void PqlEvaluatePattern::EvaluateIfPattern(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllIfPatternPair();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " No such pattern for synonym " << left_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "No such pattern for synonym: " + left_name);
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, pattern_var_name,
                                            left_name);
@@ -144,17 +134,16 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Assign Pattern." << endl;
+  Debug::PrintLn(Debug::kLog, "Evaluating assign pattern");
 
   switch (expression_type) {
     case PqlPatternExpressionType::kExpression:
       switch (left_type) {
         case PqlDeclarationEntity::kUnderscore:
-          result_list =
-              pkb_->GetAssignWithExactPattern("", expression_token);
+          result_list = pkb_->GetAssignWithExactPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern " << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern");
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
@@ -164,7 +153,7 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
               pkb_->GetAssignWithExactPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for " << left_name << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
@@ -174,7 +163,8 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
               pkb_->GetAllAssignExactPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for variable " << left_name << endl;
+            Debug::PrintLn(Debug::kLog,
+                           "No such pattern for variable: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_pair_list,
                                                pattern_var_name, left_name);
@@ -187,27 +177,26 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           result_list = pkb_->GetAssignWithPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern " << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern");
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
           return;
         case PqlDeclarationEntity::kIdent:
-          result_list =
-              pkb_->GetAssignWithPattern(left_name, expression_token);
+          result_list = pkb_->GetAssignWithPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for " << left_name << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern for: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
           return;
         case PqlDeclarationEntity::kVariable:
-          result_pair_list =
-              pkb_->GetAllAssignPatternPair(expression_token);
+          result_pair_list = pkb_->GetAllAssignPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for variable " << left_name << endl;
+            Debug::PrintLn(Debug::kLog,
+                           "No such pattern for variable: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_pair_list,
                                                pattern_var_name, left_name);
@@ -220,27 +209,26 @@ void PqlEvaluatePattern::EvaluateAssignPattern(PqlEvaluator* pql_eval,
           result_list = pkb_->GetAssignWithPattern("", expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern " << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern");
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
           return;
         case PqlDeclarationEntity::kIdent:
-          result_list =
-              pkb_->GetAssignWithPattern(left_name, expression_token);
+          result_list = pkb_->GetAssignWithPattern(left_name, expression_token);
           if (result_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for " << left_name << endl;
+            Debug::PrintLn(Debug::kLog, "No such pattern for: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_list, pattern_var_name);
           }
           return;
         case PqlDeclarationEntity::kVariable:
-          result_pair_list =
-              pkb_->GetAllAssignPatternPair(expression_token);
+          result_pair_list = pkb_->GetAllAssignPatternPair(expression_token);
           if (result_pair_list.empty()) {
             SetClauseFlag(false);
-            cout << " No such pattern for variable " << left_name << endl;
+            Debug::PrintLn(Debug::kLog,
+                           "No such pattern for variable: " + left_name);
           } else {
             pql_eval->StoreClauseResultInTable(result_pair_list,
                                                pattern_var_name, left_name);

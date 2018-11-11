@@ -63,7 +63,8 @@ void PqlProjector::MergeIntermediateResultTables() {
 
       // clean duplicates, take P(nlogn) but may be worth it
       std::sort(new_table.begin(), new_table.end());
-      new_table.erase(std::unique(new_table.begin(), new_table.end()), new_table.end());
+      new_table.erase(std::unique(new_table.begin(), new_table.end()),
+                      new_table.end());
       final_result_table_ = new_table;
     }
     // add column header
