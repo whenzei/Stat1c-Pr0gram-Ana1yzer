@@ -1,9 +1,9 @@
-1 - AffectsBip*, two numbers, boolean false (due to line 37)
+1 - AffectsBip*, two numbers, boolean false
 
 Select BOOLEAN such that AffectsBip*(29,38)
 FALSE
 5000
-2 - AffectsBip*, num with wildcard (this would have been false in Affects)
+2 - AffectsBip*, num with wildcard
 
 Select BOOLEAN such that AffectsBip*(43,_)
 TRUE
