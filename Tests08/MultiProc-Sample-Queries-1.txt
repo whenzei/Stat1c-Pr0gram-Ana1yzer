@@ -1336,7 +1336,7 @@ second, third, fourth, fifth
 272 - WITH c.procName-c.procName
 call c, c1; 
 Select <c, c1> with c.procName = c1.procName
-4, 17, 26, 46, 57, 61
+4 4, 4 57, 17 17, 26 26, 46 46, 46 61, 57 4, 57 57, 61 61, 61 46
 5000
 273 - WITH r.varName-r.varName
 read r, r1; 
