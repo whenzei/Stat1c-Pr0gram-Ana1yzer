@@ -1,0 +1,65 @@
+1 - AffectsBip*, two numbers, boolean false (due to line 37)
+
+Select BOOLEAN such that AffectsBip*(29,38)
+FALSE
+5000
+2 - AffectsBip*, num with wildcard (this would have been false in Affects)
+
+Select BOOLEAN such that AffectsBip*(43,_)
+TRUE
+5000
+3 - AffectsBip*, two wildcard, boolean true
+
+Select BOOLEAN such that AffectsBip*(_,_)
+TRUE
+5000
+4 - AffectsBip*, two stmt syn, selecting affecter
+stmt s1, s2;
+Select s1 such that AffectsBip*(s1,s2)
+12,13,22,32,33,34,35,36,39,4,40,41,42,43,46,49,5,50,55,64,66,68,69,7,8,9
+5000
+5 - AffectsBip*, two stmt syn, selected affected
+stmt s1, s2;
+Select s2 such that AffectsBip*(s1,s2)
+10,11,12,13,33,34,36,39,41,42,43,47,49,5,50,52,57,6,66,68,69,7
+5000
+6 - AffectsBip*, stmt syn with number
+stmt s1;
+Select s1 such that AffectsBip*(s1,11)
+49, 50, 7, 8, 9
+5000
+7 - AffectsBip*, stmt syn with number, boolean true
+stmt s1;
+Select BOOLEAN such that AffectsBip*(s1,11)
+TRUE
+5000
+8 - AffectsBip*, stmt syn with number, boolean false
+stmt s1;
+Select BOOLEAN such that AffectsBip*(s1,16)
+FALSE
+5000
+9 - AffectsBip*, stmt syn with wildcard
+stmt s1;
+Select s1 such that AffectsBip*(s1,_)
+12,13,22,34,36,39,4,40,42,5,55,64,66,68,69,7,8,9,32,33,35,41,43,46,49,50
+5000
+10 - AffectsBip*, number with stmt syn
+stmt s1;
+Select s1 such that AffectsBip*(49,s1)
+11,49,52,7, 50
+5000
+11 - AffectsBip*, number with stmt syn, no result
+stmt s1;
+Select s1 such that AffectsBip*(44,s1)
+
+5000
+12 - AffectsBip*, number with stmt syn, no result
+stmt s1;
+Select s1 such that AffectsBip*(23,s1)
+
+5000
+13 - AffectsBip*, number with stmt syn
+stmt s1;
+Select s1 such that AffectsBip*(50,s1)
+11, 49, 50, 52,7
+5000
