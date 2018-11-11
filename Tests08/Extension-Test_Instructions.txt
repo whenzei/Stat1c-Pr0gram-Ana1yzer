@@ -1,0 +1,30 @@
+To test for AffectsBip run:
+
+Test 1
+=======
+Source: MultiProc-Sample-Source-2.txt
+Query: MultiProc-AffectsBip-Queries-2.txt
+
+Test 2
+======
+Source: MultiProc-Sample-Source-3.txt
+Query: MultiProc-AffectsBip-Queries-3.txt
+
+
+
+To test for AffectsBip* run :
+
+Test 1
+=======
+Source: MultiProc-Sample-Source-.txt
+Query: MultiProc-AffectsBipStar-Queries-3.txt
+
+
+
+To test for Dominates run :
+
+Test 1
+=======
+Source: MultiProc-Sample-Source-2.txt
+Query: MultiProc-Dominates-Queries-2.txt
+
