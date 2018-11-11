@@ -71,3 +71,28 @@ assign a; variable v, v2; call c;
 Select v2 such that Uses(a,v) pattern a(v,_"1"_) such that Follows*(c,a) with c.procName = "Charlie" and v2.varName = "charlie"
 charlie
 5000
+16 - Find variables used in Alpha which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Alpha" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, YYY, zzz, x, delta
+5000
+17 - Find variables used in Beta which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Beta" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c
+5000
+18 - Find variables used in Charlie which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Charlie" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, if, me, APPLE, ORANGE, Orange, delta, charline
+5000
+19 - Find variables used in Delta which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Delta" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g
+5000
+20 - Find variables used in Foxtrot which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Foxtrot" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, x, delta, if, me, APPLE, ORANGE, Orange, charline
+5000
