@@ -156,19 +156,19 @@ QueryResultPairList PqlEvaluateWith::GetSelectAllTwinResult(
       return pkb_->GetAllReadStmtTwin();
     case PqlDeclarationEntity::kReadName:
       cout << "Select all twin read var." << endl;
-      return pkb_->GetAllReadStmtTwin();
+      return pkb_->GetAllReadPairWithSameVar();
     case PqlDeclarationEntity::kPrint:
       cout << "Select all twin print statement." << endl;
       return pkb_->GetAllPrintStmtTwin();
     case PqlDeclarationEntity::kPrintName:
       cout << "Select all twin print var." << endl;
-      return pkb_->GetAllPrintStmtTwin();
+      return pkb_->GetAllPrintPairWithSameVar();
     case PqlDeclarationEntity::kCall:
       cout << "Select all twin call statement." << endl;
       return pkb_->GetAllCallStmtTwin();
     case PqlDeclarationEntity::kCallName:
       cout << "Select all twin call.procName statement." << endl;
-      return pkb_->GetAllCallStmtTwin();
+      return pkb_->GetAllCallPairWithSameProc();
     case PqlDeclarationEntity::kWhile:
       cout << "Select all twin while statement." << endl;
       return pkb_->GetAllWhileStmtTwin();
