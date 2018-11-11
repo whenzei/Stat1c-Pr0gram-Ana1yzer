@@ -1,0 +1,161 @@
+procedure dragon
+ {
+
+
+
+
+    call        whale;
+	tuna = 99; 
+}
+
+
+
+procedure bat{    
+	if (bat == 0) then{
+		plum           = 9 + rock;
+		pebble = bat+ 	44; 
+		fruits          = honey -    7; 
+		bat= octopi	 + 321;
+	}
+	else {
+		bat                   = 44; 
+		octopi             = tom; 
+		peter         = kiwi	 - 6;
+	}
+	stone          =          bat- 3;
+	bat= pebble + 1;   
+	pebble = bat;
+}
+procedure whale{
+	if (whale== 0) then {
+if (jack == 0) then {  
+		if (yeast == 0) then{  
+			onion = whale+ whale;
+			}
+			else  {
+				jack = jack+ 9;  
+			}
+		}
+		else{
+		 if (ice == 0) then { 
+			whale= whale+ 123 - berry+ (ice-sardine) * bob;  
+		}else{
+			jill = tuna * 	4 + eel;   
+		}
+	   }
+	} else {
+				jelly = jelly + 		123;
+		if (salmon == 0) then {    
+			if (alice == 0) then { 
+				whale= 99;
+			}			else {	yeast = 9;
+				call pony;
+			}
+		}
+		else{
+			if (gel == 0) then{
+				yeast = whale;
+			}
+			else{	jack = (yeast +    777) * 888 - (tom + fruits) + whale+ dragon * pebble * kiwi; 
+			}
+		}
+	}
+}
+
+
+procedure pony{
+	if (pony == 0) then {
+		pony= 44;   
+		jelly = pony + 123;    
+		horse =        pony- 55;
+	}
+	else{
+		horse = 44;    
+		kiwi = pony+ horse;
+	}
+while (horse ==0){
+		if (kiwi == 0) then{
+			horse = pony + kiwi;    
+			pear = 9;   
+		}
+		else{
+			kiwi = horse         + 44;  
+			pony= pear	 - 5;
+			honey = jelly - 2;
+			call       bat;
+		}
+	}
+}
+
+
+
+
+procedure      octopus{
+	if (charlie == 0) then{   
+		axolotl = bob + charlie; 
+	}	else{
+		sardine = axolotl + 888;  
+	}
+	while (octopus==0) {  
+		octopus = octopi + 44;
+	octopi = octopus;
+		call bat;
+		octopus =     octopi       ; }}
+
+
+
+
+
+procedure axolotl{
+	if (bob == 0) then {    
+
+		if (alice == 0) then{
+			axolotl= 9 + bob;
+			call octopus;
+			bob =          axolotl;
+		} else{
+			alice           = axolotl+ charlie + bob + 5;
+		}
+	} else{
+		if (charlie          == 0) then{  
+			bob = 1;  
+		} else{
+			charlie = bob +44;
+		}
+	}
+}
+
+
+procedure possum {
+	while (possum == 0){  
+		if (berry == 0) then{  
+			possum= 44;   
+		}
+		else    {
+			if (plum == 0) then{   
+		plum = possum;
+				call bat;
+			possum= plum;  
+			}			else{
+			plum = plum + possum;
+				call pony;
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

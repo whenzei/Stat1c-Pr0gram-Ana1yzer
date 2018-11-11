@@ -1,0 +1,300 @@
+1 - Modifies, Uses, Affects(constant, syn) and Next*(constant, syn)
+variable v; assign a; 
+Select a such that Next*(1, a) such that Modifies(a, v) and Uses(a,v) and Affects(a, a)
+11
+5000
+2 - Parent*, With, Follows*, Affects(syn,syn), Modifies
+assign a, a1; procedure p; variable v;
+Select <a,a1> such that Affects(a,a1) and Modifies(p,v) with p.procName = "Charlie" such that Modifies(a,v) such that Follows*(32,a1)
+32 36
+5000
+3 - Affects(syn,syn), Parent, Next, Calls
+if ifs; stmt s, s1; procedure p;
+Select <s, s1, p> such that Affects(s, s1) and Parent(ifs, s) and Calls(p, "Beta") and Next*(s,s1)
+10 20 Alpha, 10 11 Alpha, 17 20 Alpha, 11 6 Alpha, 11 11 Alpha, 47 54 Alpha, 50 51 Alpha, 54 50 Alpha, 54 51 Alpha, 55 44 Alpha
+5000
+4 - Pattern, Parent, Next*, Uses
+while w; if ifs; stmt s;
+Select s such that Next*(w, s) pattern w("delta",_) and ifs("ORANGE",_,_) such that Parent(w, ifs) and Parent(ifs, s) and Uses(s, "me")
+50, 51
+5000
+5 - Pattern, With, Modifies, Uses
+assign a; variable v; stmt s; constant c; 
+Select <a,v> pattern a(v,_"1"_) such that Uses(s,v) and Modifies(s,"ORANGE") with a.stmt# = c.value
+1 a
+5000
+6 - Pattern, With, Parent, Modifies
+while w; if ifs; variable v; assign a; read r; 
+Select v such that Parent(w,ifs) and Modifies(a,v) pattern ifs(v,_,_) with r.varName = v.varName
+zzz
+5000
+7 - With, Uses, Modifes, Pattern, Calls
+call c; variable v; procedure p, p1;  if ifs; 
+Select v with c.procName = p.procName and p.procName = "Me" such that Uses(p,v) and Modifies(p,v) and Calls(p1,p) pattern ifs(v,_,_)
+c, ORANGE
+5000
+8 - Uses Modifies Follows Parent* Pattern
+assign a; variable v; while w; 
+Select v such that Uses(a,v) and Modifies(a,v) and Follows(a,_) and Parent*(w,a) pattern w(_,_) 
+me
+5000
+9 -  triple Pattern With Modifies
+assign a; variable v, v2; while w; if ifs; 
+Select a pattern a(v,_) and w(v,_) and ifs(v,_,_) with v.varName = v2.varName such that Modifies(a,v2)
+26, 45
+5000
+10 - Pattern, Uses, With, Next*
+assign a; variable v; constant c; 
+Select BOOLEAN pattern a(v,_) such that Uses(a,v) with a.stmt# = c.value such that Next*(17,15)
+FALSE
+5000
+11 - Next*, Affects, Calls, Pattern
+assign a, a1; procedure p,p1; variable v; 
+Select <a,a1,v> such that Next*(8,a) and Affects(a,a1) and Calls(p,p1) pattern a(v,_"YYY"_)
+11 6 YYY, 11 11 YYY
+5000
+12 - With, Uses, Follows*, Pattern
+variable v; read r; print p; stmt s; while w; 
+Select v with v.varName = r.varName and r.varName = p.varName such that Uses(s,v) and Follows*(s,_) pattern w(v,_)
+echo
+5000
+13 - Next*, Affects*, With, Calls*
+constant c; stmt s; 
+Select BOOLEAN such that Next*(5,10) and Affects*(11,6) with c.value = s.stmt# such that Calls*("Foxtrot","Charlie")
+TRUE
+5000
+14 - triple Parent, Pattern, With ident
+while w, w1, w2; assign a; variable v;
+Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test" = "test"
+21 23 25
+5000
+15 -  Uses Pattern Follows* With
+assign a; variable v, v2; call c; 
+Select v2 such that Uses(a,v) pattern a(v,_"1"_) such that Follows*(c,a) with c.procName = "Charlie" and v2.varName = "charlie"
+charlie
+5000
+16 - Find variables used in Alpha which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Alpha" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, YYY, zzz, x, delta
+5000
+17 - Find variables used in Beta which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Beta" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c
+5000
+18 - Find variables used in Charlie which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Charlie" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, if, me, APPLE, ORANGE, Orange, delta, charline
+5000
+19 - Find variables used in Delta which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Delta" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g
+5000
+20 - Find variables used in Foxtrot which is in a nested if
+variable v; while w; if ifs; procedure p; 
+Select v with p.procName = "Foxtrot" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
+g, a, c, x, delta, if, me, APPLE, ORANGE, Orange, charline
+5000
+21 - Find nested statement which uses and modifies alpha
+variable v; stmt s; assign a; 
+Select s with v.varName = "alpha" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+2, 12
+5000
+22 - Find nested statement which uses and modifies beta
+variable v; stmt s; assign a; 
+Select s with v.varName = "beta" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+2
+5000
+23 - Find nested statement which uses and modifies charlie
+variable v; stmt s; assign a; 
+Select s with v.varName = "charlie" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+
+5000
+24 - Find nested statement which uses and modifies delta
+variable v; stmt s; assign a; 
+Select BOOLEAN with v.varName = "delta" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+FALSE
+5000
+25 - Find nested statement which uses and modifies me
+variable v; stmt s; assign a; 
+Select s with v.varName = "me" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+43, 46, 48, 49
+5000
+26 - Next*, Uses, Modifies, Pattern
+assign a1, a2; variable v; 
+Select <a1,a2> such that Next*(a1,a2) and Uses(a1,v) and Modifies(a2,v) pattern a1(v,_)
+11 11, 10 6, 10 10, 51 51, 51 53, 51 54
+5000
+27 - Linking with constraint
+variable v1, v2; stmt s; constant c; assign a; 
+Select <v1,v2> such that Uses(s,v1) and Modifies(s,v2) with s.stmt# = c.value and c.value = a.stmt#
+X a, f a, g X, a X, c X, YYY zzz, g zzz
+5000
+28 - Linking with print and read stmt
+variable v1; stmt s1, s2; read r; print p; 
+Select <s1,s2> with s1.stmt# = r.stmt# and s2.stmt# = p.stmt# and r.varName = v1.varName and p.varName = v1.varName
+41 42
+5000
+29 - Linking with print and read stmt and call procedure
+call c; variable v; stmt s1, s2; read r; print p; 
+Select <s1,s2> with s1.stmt# = r.stmt# and s2.stmt# = p.stmt# and r.varName = v.varName and p.varName = v.varName and c.procName = v.varName
+
+5000
+30 - Affects Next* With
+call c; variable v; stmt a1, a2;
+Select BOOLEAN with p.varName = v.varName and c.procName = v.varName such that Affects(a1,a2) and Next*(a1,a2)
+FALSE
+5000
+31 - Variable exist for print and read
+variable v; read r; print p; stmt s; while w; 
+Select BOOLEAN with v.varName = r.varName and r.varName = p.varName such that Uses(s,v) and Follows*(s,_) pattern w(v,_)
+TRUE
+5000
+32 - Find usage of read variable x
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="x"
+2, 4
+5000
+33 - variable exist in procedure name Me
+call c; variable v; procedure p, p1;  if ifs; 
+Select BOOLEAN with c.procName = p.procName and p.procName = "Me" such that Uses(p,v) and Modifies(p,v) and Calls(p1,p) pattern ifs(v,_,_)
+TRUE
+5000
+34 - Find usage of read variable d
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="d"
+2, 4, 5, 7, 21, 23, 25
+5000
+35 - Find usage of read variable zzz
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="zzz"
+2, 4, 8, 10
+5000
+36 - Find usage of call procedure Alpha
+variable v; call c; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with c.procName = v.varName and v.varName ="Alpha"
+
+5000
+37 - Modifies Uses With
+variable v; call c; procedure s;
+Select v such that Uses(s,v) and Modifies(s,v) with c.procName = s.procName and s.procName = "Beta"
+a, b, c, d, alpha, foxtrot
+5000
+38 - Affecting v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Modifies(a1, v) and Modifies(a2, v) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 50, 51, 53, 54
+5000
+39 - Affects v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Affects(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 45, 50, 54
+5000
+40 - Affects* v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Affects*(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 45, 47, 50, 54, 55
+5000
+41 - Modifies, Calls, With
+assign a; procedure p,p1; variable v; 
+Select v such that Modifies(p,v) and Calls(p1,p) with p1.procName = "Alpha"
+a, b, c, d, alpha, foxtrot, zzz, k, x
+5000
+42 - Parent, Parent, Parent
+stmt s1,s2,s3; assign a; 
+Select a such that Parent(s1,s2) and Parent(s2,s3) and Parent(s3,a)
+17, 16, 6, 10, 11, 26, 27, 53, 50, 51, 54
+5000
+43 - Next, Pattern, With, Parent*
+stmt s,s1; assign a; procedure p;
+Select s such that Next(a,s) and Parent*(s1,a) pattern a("me",_) with p.procName="Beta"
+48, 52
+5000
+44 - Uses, Uses, Next, Next
+print p; assign a; variable v; read r; stmt s;
+Select p such that Uses(a,v) and Uses(p,v) and Next(r,p) and Next(p,s)
+42
+5000
+45 - Follows, Parent, Pattern, With
+stmt s; assign a; variable v; 
+Select s such that Follows(a,s) and Parent(s,_) pattern a(v,_) with v.varName = "echo"
+33
+5000
+46 - Affects*, Follows, Pattern, With
+stmt s,s1; assign a; 
+Select s such that Affects*(s,11) and Follows(s1,s) pattern a(_,_"YYY"_) with a.stmt# = s.stmt#
+
+5000
+47 - Parent*, With, Patern, Follows
+stmt s; if ifs; assign a; 
+Select s such that Parent*(s,_) with s.stmt# = ifs.stmt# pattern ifs("c",_,_) such that Follows(a,s)
+33, 46
+5000
+48 - Modifies, Uses, Next*, Pattern
+assign a; variable v; print p; call c;
+Select a such that Modifies(a,v) and Uses(p,v) and Next*(a,c) pattern a(_,_"2"_)
+32
+5000
+49 - Next*, Next*, Affects*, Follows
+stmt s,s1; call c; read r; 
+Select s such that Next*(s,c) and Next*(s,r) and Affects*(s,11) and Follows(s1,s)
+10
+5000
+50 - Uses, Modifies, Calls, With
+variable v; procedure p, p1; 
+Select <p,v> such that Uses(p,v) and Modifies(p,v) and Calls(p,p1) with p1.procName = "Beta"
+Alpha a, Alpha beta, Alpha X, Alpha zzz, Alpha YYY, Alpha alpha, Alpha d, Alpha b, Alpha c, Alpha foxtrot, Alpha x
+5000
+51 - Parent*, Uses, Modifies, Pattern
+stmt s; variable v; while w; assign a;
+Select v such that Parent*(s,_) and Uses(a,v) and Modifies(a,v) pattern w(_,_)
+YYY, zzz, foxtrot, call, me, echo
+5000
+52 - Affects, Parent, Next*, Pattern
+assign a; stmt s; call c;
+Select a such that Affects(a,_) and Parent(s,a) and Next*(s,c) pattern a(_,_"YYY"_)
+11
+5000
+53 - Calls, Modifies, Modifies, Parent, With
+stmt s; procedure p1,p2; variable v; assign a; 
+Select v such that Calls(p1,p2) and Modifies(p2,v) and Modifies(a,v) and Parent(s,a) with s.stmt# = 21
+a
+5000
+54 - Next*, Uses, Next, Calls
+stmt s1,s2; call c; 
+Select s1 such that Next*(s1,s2) and Uses(s2,"echo") and Next(c,s1) and Calls(_,"Delta")
+32
+5000
+55 - Pattern, Parent*, Modifies, With
+assign a; stmt s;
+Select a pattern a(_,_"zzz"_) such that Parent*(s,a) and Modifies(a,"zzz") with s.stmt# = 2
+10
+5000
+56 - Pattern, Modifies, Follows, With
+assign a; variable v; stmt s; if ifs; 
+Select v pattern a(_,_"8"_) such that Modifies(a, v) and Follows(s,a) with s.stmt# = 44
+c
+5000
+57 - Affects, Affects, Next*, With
+assign a1,a2,a3; constant c; 
+Select a1 such that Affects(a1,a2) and Affects(a2,a3) and Next*(a1,a3) with a3.stmt# = c.value
+10, 11
+5000
+58 - Next*, With, With, Pattern
+prog_line p; print pr; stmt s; assign a; 
+Select pr such that Next*(s,pr) with p = s.stmt# with s.stmt# = a.stmt# pattern a("k",_)
+40
+5000
+59 - Next*, Next, Calls, Uses
+stmt s1,s2; call c; 
+Select BOOLEAN such that Next*(s1,s2) and Uses(s2,"echo") and Next(c,s1) and Calls(_,"Delta")
+TRUE
+5000
+60 - Modifies, Uses, Next*, Pattern
+assign a; variable v; print p; call c;
+Select BOOLEAN such that Modifies(a,v) and Uses(p,v) and Next*(a,c) pattern a(_,_"2"_)
+TRUE
+5000

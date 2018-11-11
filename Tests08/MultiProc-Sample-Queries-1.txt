@@ -331,7 +331,7 @@ b
 67 - MODIFIES syn-var [stmt]
 stmt s;
 Select s such that Modifies (s, "sum")
-17, 40, 45, 47, 48, 10, 12, 13, 5
+17, 40, 45, 47, 48, 12, 13, 10, 5
 5000
 68 - MODIFIES syn-wildcard [stmt]
 read re; stmt s;
@@ -1217,4 +1217,134 @@ Select w pattern w(_, _)
 while w;
 Select w pattern w("count", _)
 47
+5000
+249 - AFFECTS constant-constant valid
+
+Select BOOLEAN such that Affects(11, 11)
+TRUE
+5000
+250 - AFFECTS constant-constant valid
+
+Select BOOLEAN such that Affects(16, 19)
+TRUE
+5000
+251 - AFFECTS constant-constant invalid
+
+Select BOOLEAN such that Affects(2, 16)
+FALSE
+5000
+252 - AFFECTS constant-constant invalid
+
+Select BOOLEAN such that Affects(20, 20)
+FALSE
+5000
+253 - AFFECTS constant-constant not assign stmt
+
+Select BOOLEAN such that Affects(31, 32)
+FALSE
+5000
+254 - AFFECTS constant-syn valid
+assign a;
+Select a such that Affects(14, a)
+14, 16
+5000
+255 - AFFECTS constant-syn invalid stmt type
+while a;
+Select a such that Affects(14, a)
+
+5000
+256- AFFECTS syn-constant valid
+assign a;
+Select a such that Affects(a, 32)
+28, 34
+5000
+257 - AFFECTS syn-constant invalid stmt type
+read a;
+Select a such that Affects(a, 32)
+
+5000
+258 - AFFECTS syn-syn valid
+assign a1; stmt s;
+Select a1 such that Affects(a1, s) and Next*(s,37) and Next*(a1, 37)
+28, 32, 34
+5000
+259 - AFFECTS syn-syn valid
+stmt s;
+Select s such that Affects(s, s)
+11, 14, 19, 48, 55
+5000
+260 - AFFECTS* constant-constant valid
+
+Select BOOLEAN such that Affects*(28, 35)
+TRUE
+5000
+261 - AFFECTS* constant-constant valid
+
+Select BOOLEAN such that Affects*(49, 49)
+TRUE
+5000
+262 - AFFECTS* constant-constant invalid
+
+Select BOOLEAN such that Affects*(39, 58)
+FALSE
+5000
+263- AFFECTS* constant-syn valid
+assign a;
+Select a such that Affects*(50, a)
+48, 49, 50, 51, 58
+5000
+264 - AFFECTS* syn-constant valid
+assign a;
+Select a such that Affects*(a, 58)
+41, 42, 43, 45, 48, 49, 50, 51, 53, 54
+5000
+265 - AFFECTS* syn-syn valid
+stmt s;
+Select s such that Affects*(s, s)
+11, 14, 19, 20, 48, 49, 50, 51, 55
+5000
+266 - AFFECTS* syn-syn valid
+assign a1, a2;
+Select <a1, a2> such that Affects*(a1, a2) and Next*(38, a1)
+39 40, 41 48, 41 49, 41 50, 41 51, 41 58, 42 58, 43 48, 43 49, 43 50, 43 51, 43 58, 44 55, 45 48, 45 58, 48 48, 48 58, 49 48, 49 49, 49 50, 49 51, 49 58, 50 48, 50 49, 50 50, 50 51, 50 58, 51 48, 51 49, 51 50, 51 51, 51 58, 53 58, 54 58, 55 55
+5000
+267 - WITH stmt#-value
+while w; constant c;
+Select w with w.stmt# = c.value
+6, 10
+5000
+268 - WITH stmt#-stmt#
+while w, w1;
+Select <w, w1> with w.stmt# = w1.stmt#
+6 6, 8 8, 10 10, 13 13, 18 18, 30 30, 47 47
+5000
+269 - WITH value-value
+constant c, c1; 
+Select <c, c1> with c.value = c1.value
+0 0, 1 1, 2 2, 5 5, 6 6, 10 10, 19 19, 99 99, 200 200
+5000
+270 - WITH p.procName-p.procName
+procedure p, p1; 
+Select <p, p1> with p.procName = p1.procName
+first first, second second, third third, fourth fourth, fifth fifth, separate separate
+5000
+271 - WITH p.procName-c.procName
+procedure p; call c; 
+Select p with p.procName = c.procName
+second, third, fourth, fifth
+5000
+272 - WITH c.procName-c.procName
+call c, c1; 
+Select <c, c1> with c.procName = c1.procName
+4 4, 4 57, 17 17, 26 26, 46 46, 46 61, 57 4, 57 57, 61 61, 61 46
+5000
+273 - WITH r.varName-r.varName
+read r, r1; 
+Select <r, r1> with r.varName = r1.varName
+1 1, 31 31, 36 36, 36 60, 38 38, 60 36, 60 60, 63 63
+5000
+274 - WITH print.varName-print.varName
+print print, print1; 
+Select <print, print1> with print.varName = print1.varName
+22 22, 27 27, 27 56, 29 29, 56 27, 56 56, 59 59, 64 64
 5000

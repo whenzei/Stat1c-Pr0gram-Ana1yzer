@@ -1,0 +1,108 @@
+procedure Alpha {
+	a = X + 1 * f;					\\1
+ if (g == 1 ) then {						\\2
+ 	X = g + a + c;					\\3
+        while (t == 1) {				\\4
+		while (y == 1) {			\\5
+			zzz = YYY + g + 2;		\\6
+			call Beta;			\\7
+		}
+		if (zzz == 1) then {			\\8
+			read zzz;			\\9
+			zzz = zzz * 3;			\\10
+		} else {
+			YYY = x + YYY + zzz;		\\11
+		}
+	}
+ 
+ } else {
+   if ( (a == 1) && (s != 3)) then {			\\12
+   	if ( c > g) then {				\\13
+           read a;					\\14
+	} else {			
+		if (g != 4) then {			\\15
+		   a = charlie + delta;			\\16
+		} else {
+                   alpha = 1 + 2 + 3 * (4 + 5);		\\17
+		}
+	}
+   } else {
+ 	beta = a * g + alpha *5;			\\18
+   }
+ }
+  read d;						\\19
+  www = zzz + d + alpha;				\\20
+}
+
+procedure Beta {					
+  while (b != 1) {					\\21
+     a = b + c * d / 2;					\\22
+     while (c != 1) {					\\23
+        b = c + d - 3;					\\24
+       while (d != 1) {					\\25
+          c = d - m % alpha + 6 + 3 *(beta * alpha);    \\26
+	  d = a + s / 2 / 2;				\\27
+       }
+     }  
+  }
+  read alpha;						\\28
+  call Delta;						\\29
+  foxtrot = foxtrot + 2 * z;				\\30
+}	
+
+procedure Charlie {
+  call Delta;						\\31
+  echo = 6 % 2 + 5;					\\32
+  if ((c==1) || (g > 1)) then {				\\33
+     call Me;						\\34
+  } else {
+     call You;						\\35
+  }
+  call = echo % 2 + 3 + (echo * call);			\\36
+}
+
+procedure Delta {
+   zzz = 0;						\\37
+   k = g + Alpha % 2;					\\38
+   read x;						\\39
+   print Alpha;						\\40
+}
+
+procedure Me {
+   read echo;						\\41
+   print echo;						\\42
+   while (echo != 1) {					\\43
+     if = while + call + read;				\\44
+     c = if * 8;					\\45
+     if (c != 0) then {					\\46
+       ORANGE = 8;					\\47
+       while (delta == charline) {			\\48
+         if (APPLE < ORANGE) then {			\\49
+            if = (7+ a)/ (me * 8)/ 2;			\\50
+         } else {
+            me = me + c + if;				\\51
+            while (g == 0) {				\\52
+              me = Orange;				\\53
+            }
+	    me = ORANGE * 8 + 1;			\\54
+         }
+       }
+     } else {
+       while = if + c;					\\55
+     }   
+   }
+}
+
+procedure You {
+  print Alpha;						\\56
+  print = a;						\\57
+  call = print;						\\58
+}
+
+procedure Foxtrot{
+   echo = 0;						\\59
+   delta = x + c;					\\60
+   call Charlie;					\\61
+   echo = echo + 1;					\\62
+   procedure = delta* 7;				\\63
+}
