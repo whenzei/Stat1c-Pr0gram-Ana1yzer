@@ -1266,7 +1266,7 @@ Select a such that Affects(a, 32)
 258 - AFFECTS syn-syn valid
 assign a1; stmt s;
 Select a1 such that Affects(a1, s) and Next*(s,37) and Next*(a1, 37)
-8, 32, 34
+28, 32, 34
 5000
 259 - AFFECTS syn-syn valid
 stmt s;
@@ -1302,4 +1302,49 @@ Select a such that Affects*(a, 58)
 stmt s;
 Select s such that Affects*(s, s)
 11, 14, 19, 20, 48, 49, 50, 51, 55
+5000
+266 - AFFECTS* syn-syn valid
+assign a1, a2;
+Select <a1, a2> such that Affects*(a1, a2) and Next*(38, a1)
+39 40, 41 48, 41 49, 41 50, 41 51, 41 58, 42 58, 43 48, 43 49, 43 50, 43 51, 43 58, 44 55, 45 48, 45 58, 48 48, 48 58, 49 48, 49 49, 49 50, 49 51, 49 58, 50 48, 50 49, 50 50, 50 51, 50 58, 51 48, 51 49, 51 50, 51 51, 51 58, 53 58, 54 58, 55 55
+5000
+267 - WITH stmt#-value
+while w; constant c;
+Select w with w.stmt# = c.value
+6, 10
+5000
+268 - WITH stmt#-stmt#
+while w, w1;
+Select <w, w1> with w.stmt# = w1.stmt#
+6 6, 8 8, 10 10, 13 13, 18 18, 30 30, 47 47
+5000
+269 - WITH value-value
+constant c, c1; 
+Select <c, c1> with c.value = c1.value
+0 0, 1 1, 2 2, 5 5, 6 6, 10 10, 19 19, 99 99, 200 200
+5000
+270 - WITH p.procName-p.procName
+procedure p, p1; 
+Select <p, p1> with p.procName = p1.procName
+first first, second second, third third, fourth fourth, fifth fifth, separate separate
+5000
+271 - WITH p.procName-c.procName
+procedure p; call c; 
+Select p with p.procName = c.procName
+second, third, fourth, fifth
+5000
+272 - WITH c.procName-c.procName
+call c, c1; 
+Select <c, c1> with c.procName = c1.procName
+4, 17, 26, 46, 57, 61
+5000
+273 - WITH r.varName-r.varName
+read r, r1; 
+Select <r, r1> with r.varName = r1.varName
+1 1, 31 31, 36 36, 36 60, 38 38, 60 36, 60 60, 63 63
+5000
+274 - WITH print.varName-print.varName
+print print, print1; 
+Select <print, print1> with print.varName = print1.varName
+22 22, 27 27, 27 56, 29 29, 56 27, 56 56, 59 59, 64 64
 5000

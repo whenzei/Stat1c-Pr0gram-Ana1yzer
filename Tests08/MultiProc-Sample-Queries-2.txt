@@ -44,7 +44,8 @@ Select a pattern a(v,_) and w(v,_) and ifs(v,_,_) with v.varName = v2.varName su
 26, 45
 5000
 10 - Pattern, Uses, With, Next*
-assign a; variable v; constant c; Select BOOLEAN pattern a(v,_) such that Uses(a,v) with a.stmt# = c.value such that Next*(17,15)
+assign a; variable v; constant c; 
+Select BOOLEAN pattern a(v,_) such that Uses(a,v) with a.stmt# = c.value such that Next*(17,15)
 FALSE
 5000
 11 - Next*, Affects, Calls, Pattern
@@ -95,4 +96,44 @@ g
 variable v; while w; if ifs; procedure p; 
 Select v with p.procName = "Foxtrot" such that Parent(w,ifs) and Uses(p,v) and Uses(ifs,v)
 g, a, c, x, delta, if, me, APPLE, ORANGE, Orange, charline
+5000
+21 - Find nested statement which uses and modifies alpha
+variable v; stmt s; assign a; 
+Select s with v.varName = "alpha" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+2, 12
+5000
+22 - Find nested statement which uses and modifies beta
+variable v; stmt s; assign a; 
+Select s with v.varName = "beta" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+2
+5000
+23 - Find nested statement which uses and modifies charlie
+variable v; stmt s; assign a; 
+Select s with v.varName = "charlie" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+
+5000
+24 - Find nested statement which uses and modifies delta
+variable v; stmt s; assign a; 
+Select BOOLEAN with v.varName = "delta" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+FALSE
+5000
+25 - Find nested statement which uses and modifies me
+variable v; stmt s; assign a; 
+Select s with v.varName = "me" such that Uses(s,v) and Modifies(s,v) pattern a(v,_) such that Parent*(s,a)
+43, 46, 48, 49
+5000
+26 - Next*, Uses, Modifies, Pattern
+assign a1, a2; variable v; 
+Select <a1,a2> such that Next*(a1,a2) and Uses(a1,v) and Modifies(a2,v) pattern a1(v,_)
+11 11, 10 6, 10 10, 51 51, 51 53, 51 54
+5000
+27 - Linking with constraint
+variable v1, v2; stmt s; constant c; assign a; 
+Select <v1,v2> such that Uses(s,v1) and Modifies(s,v2) with s.stmt# = c.value and c.value = a.stmt#
+X a, f a, g X, a X, c X, YYY zzz, g zzz
+5000
+28 - Linking with print and read stmt
+variable v1; stmt s1, s2; read r; print p; 
+Select <s1,s2> with s1.stmt# = r.stmt# and s2.stmt# = p.stmt# and r.varName = v1.varName and p.varName = v1.varName
+41 42
 5000
