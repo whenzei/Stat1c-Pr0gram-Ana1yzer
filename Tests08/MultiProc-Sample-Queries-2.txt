@@ -65,7 +65,7 @@ TRUE
 5000
 14 - triple Parent, Pattern, With ident
 while w, w1, w2; assign a; variable v;
-Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test = "test"
+Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test" = "test"
 21 23 25
 5000
 15 -  Uses Pattern Follows* With
@@ -197,4 +197,104 @@ Select a1 such that Affects(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.var
 assign a1, a2; variable v, v2;
 Select a1 such that Affects*(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.varName
 44, 45, 47, 50, 54, 55
+5000
+41 - Modifies, Calls, With
+assign a; procedure p,p1; variable v; 
+Select v such that Modifies(p,v) and Calls(p1,p) with p1.procName = "Alpha"
+a, b, c, d, alpha, foxtrot, zzz, k, x
+5000
+42 - Parent, Parent, Parent
+stmt s1,s2,s3; assign a; 
+Select a such that Parent(s1,s2) and Parent(s2,s3) and Parent(s3,a)
+17, 16, 6, 10, 11, 26, 27, 53, 50, 51, 54
+5000
+43 - Next, Pattern, With, Parent*
+stmt s,s1; assign a; procedure p;
+Select s such that Next(a,s) and Parent*(s1,a) pattern a("me",_) with p.procName="Beta"
+48, 52
+5000
+44 - Uses, Uses, Next, Next
+print p; assign a; variable v; read r; stmt s;
+Select p such that Uses(a,v) and Uses(p,v) and Next(r,p) and Next(p,s)
+42
+5000
+45 - Follows, Parent, Pattern, With
+stmt s; assign a; variable v; 
+Select s such that Follows(a,s) and Parent(s,_) pattern a(v,_) with v.varName = "echo"
+33
+5000
+46 - Affects*, Follows, Pattern, With
+stmt s,s1; assign a; 
+Select s such that Affects*(s,11) and Follows(s1,s) pattern a(_,_"YYY"_) with a.stmt# = s.stmt#
+
+5000
+47 - Parent*, With, Patern, Follows
+stmt s; if ifs; assign a; 
+Select s such that Parent*(s,_) with s.stmt# = ifs.stmt# pattern ifs("c",_,_) such that Follows(a,s)
+33, 46
+5000
+48 - Modifies, Uses, Next*, Pattern
+assign a; variable v; print p; call c;
+Select a such that Modifies(a,v) and Uses(p,v) and Next*(a,c) pattern a(_,_"2"_)
+32
+5000
+49 - Next*, Next*, Affects*, Follows
+stmt s,s1; call c; read r; 
+Select s such that Next*(s,c) and Next*(s,r) and Affects*(s,11) and Follows(s1,s)
+10
+5000
+50 - Uses, Modifies, Calls, With
+variable v; procedure p, p1; 
+Select <p,v> such that Uses(p,v) and Modifies(p,v) and Calls(p,p1) with p1.procName = "Beta"
+Alpha a, Alpha beta, Alpha X, Alpha zzz, Alpha YYY, Alpha alpha, Alpha d, Alpha b, Alpha c, Alpha foxtrot, Alpha x
+5000
+51 - Parent*, Uses, Modifies, Pattern
+stmt s; variable v; while w; assign a;
+Select v such that Parent*(s,_) and Uses(a,v) and Modifies(a,v) pattern w(_,_)
+YYY, zzz, foxtrot, call, me, echo
+5000
+52 - Affects, Parent, Next*, Pattern
+assign a; stmt s; call c;
+Select a such that Affects(a,_) and Parent(s,a) and Next*(s,c) pattern a(_,_"YYY"_)
+11
+5000
+53 - Calls, Modifies, Modifies, Parent, With
+stmt s; procedure p1,p2; variable v; assign a; 
+Select v such that Calls(p1,p2) and Modifies(p2,v) and Modifies(a,v) and Parent(s,a) with s.stmt# = 21
+a
+5000
+54 - Next*, Uses, Next, Calls
+stmt s1,s2; call c; 
+Select s1 such that Next*(s1,s2) and Uses(s2,"echo") and Next(c,s1) and Calls(_,"Delta")
+32
+5000
+55 - Pattern, Parent*, Modifies, With
+assign a; stmt s;
+Select a pattern a(_,_"zzz"_) such that Parent*(s,a) and Modifies(a,"zzz") with s.stmt# = 2
+10
+5000
+56 - Pattern, Modifies, Follows, With
+assign a; variable v; stmt s; if ifs; 
+Select v pattern a(_,_"8"_) such that Modifies(a, v) and Follows(s,a) with s.stmt# = 44
+c
+5000
+57 - Affects, Affects, Next*, With
+assign a1,a2,a3; constant c; 
+Select a1 such that Affects(a1,a2) and Affects(a2,a3) and Next*(a1,a3) with a3.stmt# = c.value
+10, 11
+5000
+58 - Next*, With, With, Pattern
+prog_line p; print pr; stmt s; assign a; 
+Select pr such that Next*(s,pr) with p = s.stmt# with s.stmt# = a.stmt# pattern a("k",_)
+40
+5000
+59 - Next*, Next, Calls, Uses
+stmt s1,s2; call c; 
+Select BOOLEAN such that Next*(s1,s2) and Uses(s2,"echo") and Next(c,s1) and Calls(_,"Delta")
+TRUE
+5000
+60 - Modifies, Uses, Next*, Pattern
+assign a; variable v; print p; call c;
+Select BOOLEAN such that Modifies(a,v) and Uses(p,v) and Next*(a,c) pattern a(_,_"2"_)
+TRUE
 5000
