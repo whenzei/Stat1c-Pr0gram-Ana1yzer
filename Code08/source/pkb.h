@@ -640,6 +640,10 @@ class PKB {
   // false if otherwise
   bool HasCallsRelationship();
 
+  // @returns a list of all pairs of call statements that call the same
+  // procedure
+  StmtNumPairList GetAllCallPairWithSameProc();
+
   // @returns the index of procedure called at given statement number if exists, empty
   // string otherwise
   ProcIndex GetCalledProcedure(StmtNum stmt_num);

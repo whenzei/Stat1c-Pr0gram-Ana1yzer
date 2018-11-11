@@ -41,6 +41,12 @@ bool CallTable::InsertDirectCallRelationship(ProcIndex caller_proc,
 void CallTable::InsertCalls(StmtNum stmt_num, ProcIndex callee_proc) {
   stmt_num_proc_table_[callee_proc].push_back(stmt_num);
   stmt_to_call_table_[stmt_num] = callee_proc;
+  for (StmtNum stmt : stmt_num_proc_table_[callee_proc]) {
+    stmt_pair_list_.push_back(make_pair(stmt_num, stmt));
+    if (stmt_num != stmt) {
+      stmt_pair_list_.push_back(make_pair(stmt, stmt_num));
+    }
+  }
 }
 
 ProcIndex CallTable::GetCalledProcedure(StmtNum stmt_num) {
@@ -154,3 +160,7 @@ bool CallTable::IsCalledProc(ProcIndex callee_proc) {
 }
 
 bool CallTable::HasCallsRelationship() { return !direct_call_table_.empty(); }
+
+StmtNumPairList CallTable::GetAllCallPairWithSameProc() {
+  return stmt_pair_list_;
+}

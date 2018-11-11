@@ -691,6 +691,10 @@ bool PKB::IsCalledProc(ProcIndex callee_proc_id) {
 
 bool PKB::HasCallsRelationship() { return call_table_.HasCallsRelationship(); }
 
+StmtNumPairList PKB::GetAllCallPairWithSameProc() {
+  return call_table_.GetAllCallPairWithSameProc();
+}
+
 ProcIndex PKB::GetCalledProcedure(StmtNum stmt_num) {
   return call_table_.GetCalledProcedure(stmt_num);
 }

@@ -261,13 +261,32 @@ TEST_CLASS(TestCallTable) {
     Assert::IsTrue(result);
   }
 
-  TEST_METHOD(HasCallsRelationship) {
+  TEST_METHOD(TestHasCallsRelationship) {
     CallTable call_table;
     int result = call_table.HasCallsRelationship();
     Assert::IsFalse(result);
     call_table.InsertDirectCallRelationship(kProcIndex1, kProcIndex2);
     result = call_table.HasCallsRelationship();
     Assert::IsTrue(result);
+  }
+
+  TEST_METHOD(TestGetAllCallPairWithSameProc) {
+    CallTable call_table;
+    call_table.InsertCalls(kStmtNum1, kProcIndex1);
+    call_table.InsertCalls(kStmtNum2, kProcIndex2);
+    call_table.InsertCalls(kStmtNum3, kProcIndex2);
+    StmtNumPairList result = call_table.GetAllCallPairWithSameProc();
+    Assert::IsTrue(result.size() == 5);
+    Assert::AreEqual(kStmtNum1, result[0].first);
+    Assert::AreEqual(kStmtNum1, result[0].second);
+    Assert::AreEqual(kStmtNum2, result[1].first);
+    Assert::AreEqual(kStmtNum2, result[1].second);
+    Assert::AreEqual(kStmtNum3, result[2].first);
+    Assert::AreEqual(kStmtNum2, result[2].second);
+    Assert::AreEqual(kStmtNum2, result[3].first);
+    Assert::AreEqual(kStmtNum3, result[3].second);
+    Assert::AreEqual(kStmtNum3, result[4].first);
+    Assert::AreEqual(kStmtNum3, result[4].second);
   }
 };
 }  // namespace PKBTests

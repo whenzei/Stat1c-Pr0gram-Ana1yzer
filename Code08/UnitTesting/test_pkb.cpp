@@ -1218,6 +1218,24 @@ TEST_CLASS(TestPKB) {
     Assert::IsTrue(pkb.HasCallsRelationship());
   }
 
+  TEST_METHOD(TestGetAllCallPairWithSameProc) {
+    pkb.InsertCalls(kStmtNum1, kProcName1);
+    pkb.InsertCalls(kStmtNum2, kProcName2);
+    pkb.InsertCalls(kStmtNum3, kProcName2);
+    StmtNumPairList result = pkb.GetAllCallPairWithSameProc();
+    Assert::IsTrue(result.size() == 5);
+    Assert::AreEqual(kStmtNum1, result[0].first);
+    Assert::AreEqual(kStmtNum1, result[0].second);
+    Assert::AreEqual(kStmtNum2, result[1].first);
+    Assert::AreEqual(kStmtNum2, result[1].second);
+    Assert::AreEqual(kStmtNum3, result[2].first);
+    Assert::AreEqual(kStmtNum2, result[2].second);
+    Assert::AreEqual(kStmtNum2, result[3].first);
+    Assert::AreEqual(kStmtNum3, result[3].second);
+    Assert::AreEqual(kStmtNum3, result[4].first);
+    Assert::AreEqual(kStmtNum3, result[4].second);
+  }
+
   TEST_METHOD(TestGetCalledProc) {
     pkb.InsertCalls(kStmtNum1, kProcName1);
     pkb.InsertCalls(kStmtNum2, kProcName2);
