@@ -138,3 +138,63 @@ variable v1; stmt s1, s2; read r; print p;
 Select <s1,s2> with s1.stmt# = r.stmt# and s2.stmt# = p.stmt# and r.varName = v1.varName and p.varName = v1.varName
 41 42
 5000
+29 - Linking with print and read stmt and call procedure
+call c; variable v; stmt s1, s2; read r; print p; 
+Select <s1,s2> with s1.stmt# = r.stmt# and s2.stmt# = p.stmt# and r.varName = v.varName and p.varName = v.varName and c.procName = v.varName
+
+5000
+30 - Affects Next* With
+call c; variable v; stmt a1, a2;
+Select BOOLEAN with p.varName = v.varName and c.procName = v.varName such that Affects(a1,a2) and Next*(a1,a2)
+FALSE
+5000
+31 - Variable exist for print and read
+variable v; read r; print p; stmt s; while w; 
+Select BOOLEAN with v.varName = r.varName and r.varName = p.varName such that Uses(s,v) and Follows*(s,_) pattern w(v,_)
+TRUE
+5000
+32 - Find usage of read variable x
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="x"
+2, 4
+5000
+33 - variable exist in procedure name Me
+call c; variable v; procedure p, p1;  if ifs; 
+Select BOOLEAN with c.procName = p.procName and p.procName = "Me" such that Uses(p,v) and Modifies(p,v) and Calls(p1,p) pattern ifs(v,_,_)
+TRUE
+5000
+34 - Find usage of read variable d
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="d"
+2, 4, 5, 7, 21, 23, 25
+5000
+35 - Find usage of read variable zzz
+variable v; read r; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with r.varName = v.varName and v.varName ="zzz"
+2, 4, 8, 10
+5000
+36 - Find usage of call procedure Alpha
+variable v; call c; stmt s;
+Select s such that Uses(s,v) and Modifies(s,v) with c.procName = v.varName and v.varName ="Alpha"
+
+5000
+37 - Modifies Uses With
+variable v; call c; procedure s;
+Select v such that Uses(s,v) and Modifies(s,v) with c.procName = s.procName and s.procName = "Beta"
+a, b, c, d, alpha, foxtrot
+5000
+38 - Affecting v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Modifies(a1, v) and Modifies(a2, v) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 50, 51, 53, 54
+5000
+39 - Affects v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Affects(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 45, 50, 54
+5000
+40 - Affects* v with me
+assign a1, a2; variable v, v2;
+Select a1 such that Affects*(a1, a2) pattern a2(v,_"me"_) with v.varName = v2.varName
+44, 45, 47, 50, 54, 55
+5000
