@@ -369,9 +369,11 @@ void AffectsExtractor::DfsGetAffects(Vertex curr, VarIndex affects_var,
   }
 }
 
-void AffectsExtractor::DfsSetAffectsTablePartial(Vertex curr, Vertex source, VarIndex affects_var,
-                                          AffectsTable* at, AffectsTable* abt,
-                                          CFG* cfg, VisitedMap* visited) {
+void AffectsExtractor::DfsSetAffectsTablePartial(Vertex curr, Vertex source,
+                                                 VarIndex affects_var,
+                                                 AffectsTable* at,
+                                                 AffectsTable* abt, CFG* cfg,
+                                                 VisitedMap* visited) {
   if (visited->count(curr)) {
     return;
   }
@@ -394,7 +396,8 @@ void AffectsExtractor::DfsSetAffectsTablePartial(Vertex curr, Vertex source, Var
 
   VertexList neighbours = cfg->GetNeighboursList(curr);
   for (Vertex neighbour : neighbours) {
-    DfsSetAffectsTablePartial(neighbour, source, affects_var, at, abt, cfg, visited);
+    DfsSetAffectsTablePartial(neighbour, source, affects_var, at, abt, cfg,
+                              visited);
   }
 }
 
@@ -764,10 +767,8 @@ AffectsTable AffectsExtractor::GetAffectedByBipTTable() {
  * Table Setters *
  ****************/
 
-
 void AffectsExtractor::SetAffectsTables() {
-
-  //Retrieve all assign statements
+  // Retrieve all assign statements
   StmtNumList assign_stmts = pkb_->GetAllAssignStmt();
   for (auto assign_stmt : assign_stmts) {
     // Get the cfg of the assign statement
@@ -775,8 +776,9 @@ void AffectsExtractor::SetAffectsTables() {
     // Get the LHS of the assign statement
     VarIndex affects_var = pkb_->GetModifiedVarS(assign_stmt).front();
     for (auto& neighbour : cfg->GetNeighboursList(assign_stmt)) {
-      DfsSetAffectsTablePartial(neighbour, assign_stmt, affects_var, &affects_table_,
-                         &affected_by_table_, cfg, &VisitedMap());
+      DfsSetAffectsTablePartial(neighbour, assign_stmt, affects_var,
+                                &affects_table_, &affected_by_table_, cfg,
+                                &VisitedMap());
     }
   }
 
@@ -947,8 +949,6 @@ void AffectsExtractor::DfsSetAffectsBipTables(Vertex v, AffectsTable* at,
     }
   }
 }
-
-
 
 bool AffectsExtractor::IsModifyingType(StmtType stmt_type, bool is_bip) {
   if (is_bip) {

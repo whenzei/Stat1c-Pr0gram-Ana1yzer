@@ -15,7 +15,7 @@ int VarList::InsertVarName(VarName var_name) {
 }
 
 void VarList::InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type,
-                           StmtNum stmt_num) {
+                            StmtNum stmt_num) {
   VarIndex var_id = InsertVarName(var_name);
   if (var_id == -1) {
     var_id = GetVarIndex(var_name);

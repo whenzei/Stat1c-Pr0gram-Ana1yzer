@@ -1,22 +1,9 @@
-#include <iostream>
-#include <list>
-#include <map>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#include "pkb.h"
 #include "pql_evaluate_suchthat.h"
+#include "debug.h"
+#include "pkb.h"
 #include "pql_evaluator.h"
 #include "pql_extractor.h"
 #include "pql_global.h"
-
-using std::cout;
-using std::endl;
-using std::list;
-using std::map;
-using std::string;
-using std::vector;
 
 PqlEvaluateSuchthat::PqlEvaluateSuchthat() {}
 
@@ -94,63 +81,65 @@ QueryResultList PqlEvaluateSuchthat::GetSelectAllResult(
     case PqlDeclarationEntity::kProcedure:
       // Get all procedures name from PKB and store into
       // results list
-      cout << "Select all procedure." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all procedures");
       return pkb_->GetAllProcIndices();
     case PqlDeclarationEntity::kVariable:
       // Get all variable name from PKB and store into
       // results list
-      cout << "Select all variables." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all variables");
       return pkb_->GetAllVarIndices();
     case PqlDeclarationEntity::kAssign:
       // Get all statement number of statement which
       // contains assignment from PKB and store into results
       // list
-      cout << "Select all assign statement." << endl;
+      Debug::PrintLn(Debug::kLog,
+                     "PQLEvaluator: Select all assignment statements");
       return pkb_->GetAllAssignStmt();
     case PqlDeclarationEntity::kStmt:
       // Get all stmt number from PKB and store into results
       // list
-      cout << "Select all statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all statements");
       return pkb_->GetAllStmt();
     case PqlDeclarationEntity::kRead:
       // Get all read stmt from PKB and store into results
       // list
-      cout << "Select all read statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all read statements");
       return pkb_->GetAllReadStmt();
     case PqlDeclarationEntity::kPrint:
       // Get all print stmt from PKB and store into results
       // list
-      cout << "Select all print statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all print statements");
       return pkb_->GetAllPrintStmt();
     case PqlDeclarationEntity::kCall:
       // Get all call stmt from PKB and store into results
       // list
-      cout << "Select all call statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all call statements");
       return pkb_->GetAllCallStmt();
     case PqlDeclarationEntity::kCallName:
       // Get all call stmt from PKB and store into results
       // list
-      cout << "Select all call.procName statement." << endl;
+      Debug::PrintLn(Debug::kLog,
+                     "PQLEvaluator: Select all call.procName statements");
       return pkb_->GetAllCallee();
     case PqlDeclarationEntity::kWhile:
       // Get all while stmt from PKB and store into results
       // list
-      cout << "Select all while statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all while statements");
       return pkb_->GetAllWhileStmt();
     case PqlDeclarationEntity::kIf:
       // Get all if stmt from PKB and store into results
       // list
-      cout << "Select all if statement." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all if statements");
       return pkb_->GetAllIfStmt();
     case PqlDeclarationEntity::kConstant:
       // Get all constant from PKB and store into results
       // list
-      cout << "Select all constants." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all constants");
       return pkb_->GetAllConstValue();
     case PqlDeclarationEntity::kProgline:
       // Get all program line from PKB and store into
       // results list
-      cout << "Select all program lines." << endl;
+      Debug::PrintLn(Debug::kLog, "PQLEvaluator: Select all program lines");
       return pkb_->GetAllStmt();
   }
 
@@ -173,20 +162,21 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
   QueryResultPairList result_pair_list;
   VarProcToIndexMap proc_to_index = pkb_->GetProcToIndexMapping();
 
-  cout << "Evaluating Calls" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Calls");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pkb_->IsCall(left_name, right_name)) {
         SetClauseFlag(false);
-        cout << left_name << " not call by " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " not called by " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pkb_->GetProcIndex(right_name) != -1) {
         if (pkb_->GetCaller(proc_to_index[right_name]).empty()) {
           SetClauseFlag(false);
-          cout << right_name << " is not called " << endl;
+          Debug::PrintLn(Debug::kLog, "!!" + right_name + " is not called");
         }
       } else {
         SetClauseFlag(false);
@@ -196,7 +186,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       if (pkb_->GetProcIndex(left_name) != -1) {
         if (pkb_->GetCallee(proc_to_index[left_name]).empty()) {
           SetClauseFlag(false);
-          cout << left_name << " is not caller " << endl;
+          Debug::PrintLn(Debug::kLog, "!!" + left_name + " is not caller");
         }
       } else {
         SetClauseFlag(false);
@@ -205,7 +195,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasCallsRelationship()) {
         SetClauseFlag(false);
-        cout << " no calls relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No calls relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -213,7 +203,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
         result_list = pkb_->GetCaller(proc_to_index[right_name]);
         if (result_list.empty()) {
           SetClauseFlag(false);
-          cout << right_name << " is not called " << endl;
+          Debug::PrintLn(Debug::kLog, "!!" + right_name + " is not called");
         } else {
           pql_eval->StoreClauseResultInTable(result_list, left_name);
         }
@@ -225,7 +215,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       result_list = pkb_->GetAllCaller();
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "there are no call for procedure" << endl;
+        Debug::PrintLn(Debug::kLog, "!!There are no calls for procedures");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -235,7 +225,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
         result_list = pkb_->GetCallee(proc_to_index[left_name]);
         if (result_list.empty()) {
           SetClauseFlag(false);
-          cout << left_name << " is not caller " << endl;
+          Debug::PrintLn(Debug::kLog, "!!" + left_name + " is not caller");
         } else {
           pql_eval->StoreClauseResultInTable(result_list, right_name);
         }
@@ -247,7 +237,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       result_list = pkb_->GetAllCallee();
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " there are no procedures being called" << endl;
+        Debug::PrintLn(Debug::kLog, "!!There are no procedures being called");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -256,7 +246,7 @@ void PqlEvaluateSuchthat::EvaluateCalls(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllCallPairs();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Call(proc,proc)" << endl;
+        Debug::PrintLn(Debug::kLog, "!!There are no pairs of Call(proc, proc)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -279,38 +269,43 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Calls*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating CallsT");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pkb_->IsCallT(left_name, right_name)) {
         SetClauseFlag(false);
-        cout << left_name << " not indirectly call by " << right_name << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + "is not indirectly called by " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pkb_->GetCallerT(right_name).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not indirectly called " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + "is not indirectly called");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pkb_->GetCalleeT(pkb_->GetProcIndex(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not indirect caller " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + "is not an indirect caller");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasCallsRelationship()) {
         SetClauseFlag(false);
-        cout << " no calls relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No calls relationships found");
       }
       return;
     case kOneSynonymLeft:
       result_list = pkb_->GetCallerT(right_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not indirectly called " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + "is not indirectly called");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -319,7 +314,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       result_list = pkb_->GetAllCaller();
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "there are no call for procedure" << endl;
+        Debug::PrintLn(Debug::kLog, "!!There are no calls for procedures");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -328,7 +323,8 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       result_list = pkb_->GetCalleeT(pkb_->GetProcIndex(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not indirect caller " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + "is not an indirect caller");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -337,7 +333,7 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       result_list = pkb_->GetAllCallee();
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " there are no procedures being called" << endl;
+        Debug::PrintLn(Debug::kLog, "!!There are no procedures being called");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -346,7 +342,8 @@ void PqlEvaluateSuchthat::EvaluateCallsT(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllCallTPairs();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Call*(proc,proc)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Call*(proc, proc)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -369,31 +366,34 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Next" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Next");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pkb_->IsNext(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not executed after" << right_name << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + left_name +
+                                        " is not executed after " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pkb_->GetPrevious(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not executed after anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not executed after anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pkb_->GetNext(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not executed before anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not executed before anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasNextRelationship()) {
         SetClauseFlag(false);
-        cout << " no next relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Next relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -401,7 +401,8 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetPrevious(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not executed after any left type" << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + right_name +
+                                        " is not executed after any left type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -410,7 +411,8 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllPrevious(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "left type is not executed before anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Left type is not executed before anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -419,7 +421,9 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetNext(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not executed before any right type" << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + " is not executed before any right type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -428,7 +432,8 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllNext(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right type is not executed before anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Right type is not executed before anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -438,7 +443,7 @@ void PqlEvaluateSuchthat::EvaluateNext(PqlEvaluator* pql_eval,
                                           left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Next(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog, "!!No pairs of Next(left, right) found");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -461,34 +466,37 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Next*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating NextT");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsNextT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not indirectly executed after" << right_name
-             << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + left_name +
+                                        "is not indirectly executed after " +
+                                        right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pqle_->GetPreviousT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not indirectly executed after anything "
-             << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + right_name + "is not indirectly executed after anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pqle_->GetNextT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not indirectly executed before anything "
-             << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + "is not indirectly executed before anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasNextRelationship()) {
         SetClauseFlag(false);
-        cout << " no next relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No NextT relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -496,8 +504,9 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
           FilterResult(pqle_->GetPreviousT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not indirectly executed after any left type"
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name +
+                           " is not indirectly executed after any left type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -506,7 +515,9 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllPrevious(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "left type is not indirectly executed before anything" << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!Left type is not indirectly executed before anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -515,8 +526,9 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pqle_->GetNextT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not indirectly executed before any right type"
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name +
+                           " is not indirectly executed before any right type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -525,7 +537,9 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllNext(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right type is not indirectly executed after anything" << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!RIght type is not indirectly executed after anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -556,7 +570,7 @@ void PqlEvaluateSuchthat::EvaluateNextT(PqlEvaluator* pql_eval,
       }
       if (next_map.empty()) {
         SetClauseFlag(false);
-        cout << " no map of Next*(lefttype,righttype)" << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Next*(left, right) relations found");
       }
       // two syn same
       else if ((left_name.compare(right_name)) == 0) {
@@ -589,38 +603,42 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultSet result_set;
 
-  cout << "Evaluating Affects" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Affects");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsAffects(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pqle_->GetAffectedBy(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pqle_->GetAffects(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
-        cout << " no affects relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No affects relationships found");
       }
       return;
     case kOneSynonymLeft:
       result_set = pqle_->GetAffectedBy(stoi(right_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -629,7 +647,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffects();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << "left is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -638,7 +656,8 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAffects(stoi(left_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -647,7 +666,7 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectedBy();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << " right is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -657,7 +676,8 @@ void PqlEvaluateSuchthat::EvaluateAffects(PqlEvaluator* pql_eval,
       QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Affects(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Affects(left, right)");
       } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
@@ -687,38 +707,42 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultSet result_set;
 
-  cout << "Evaluating Affects*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating AffectsT");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsAffectsT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pqle_->GetAffectedByT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pqle_->GetAffectsT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
-        cout << " no affects relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Affects relationships found");
       }
       return;
     case kOneSynonymLeft:
       result_set = pqle_->GetAffectedByT(stoi(right_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -727,7 +751,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectsT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << "left is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -736,7 +760,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAffectsT(stoi(left_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -745,7 +770,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectedByT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << " right is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -755,7 +780,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsT(PqlEvaluator* pql_eval,
       QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Affects(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of AffectsT(left, right)");
       } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
@@ -785,38 +811,42 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultSet result_set;
 
-  cout << "Evaluating AffectsBip" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating AffectsBip");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsAffectsBip(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pqle_->GetAffectedByBip(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pqle_->GetAffectsBip(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
-        cout << " no affects relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Affects relationship found");
       }
       return;
     case kOneSynonymLeft:
       result_set = pqle_->GetAffectedByBip(stoi(right_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -825,7 +855,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectsBipT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << "left is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -834,7 +864,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAffectsBip(stoi(left_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " does not affect anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -843,7 +874,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectedByBipT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << " right is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -853,7 +884,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsBip(PqlEvaluator* pql_eval,
       QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of AffectsBip(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of AffectsBip(left, right)");
       } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
@@ -883,38 +915,42 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
   PqlDeclarationEntity right_type = right_param.second;
   QueryResultSet result_set;
 
-  cout << "Evaluating AffectsBip*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating AffectsBipT");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pqle_->IsAffectsBipT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pqle_->GetAffectedByBipT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pqle_->GetAffectsBipT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not affecting anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pqle_->HasAffectsRelationship()) {
         SetClauseFlag(false);
-        cout << " no affects relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Affects relationships found");
       }
       return;
     case kOneSynonymLeft:
       result_set = pqle_->GetAffectedByBipT(stoi(right_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -923,7 +959,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectsBipT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << "left is not affecting anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, left_name);
       }
@@ -932,7 +968,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAffectsBipT(stoi(left_name));
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " does not affect anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not affecting anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -941,7 +978,7 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       result_set = pqle_->GetAllAffectedByBipT();
       if (result_set.empty()) {
         SetClauseFlag(false);
-        cout << " right is not affected by anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not affected by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_set, right_name);
       }
@@ -951,7 +988,8 @@ void PqlEvaluateSuchthat::EvaluateAffectsBipT(PqlEvaluator* pql_eval,
       QueryResultPairList pair_list;
       if (result_map.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of AffectsBip(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of AffectsBip(left, right)");
       } else if ((left_name.compare(right_name)) == 0) {
         for (auto& affect : result_map) {
           for (auto& affected : affect.second) {
@@ -982,31 +1020,34 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Dominates" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Dominates");
 
   switch (arrangement) {
     case kNoSynonym:
       if (!pkb_->IsDominates(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " does not dominate " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not dominate " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       if (pkb_->GetDominating(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not dominated by anything " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not dominated by anything");
       }
       return;
     case kNoSynonymUnderscoreRight:
       if (pkb_->GetDominated(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not dominating anything" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not dominating anything");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasDominatesRelationship()) {
         SetClauseFlag(false);
-        cout << " no dominates relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Dominates relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -1014,7 +1055,8 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetDominating(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not dominated by left type" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not dominated by left type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1023,7 +1065,7 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllDominating(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "left type is not dominating anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not dominating anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1033,7 +1075,8 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetDominated(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not dominating right type" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not dominating right type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1042,7 +1085,7 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllDominated(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right type is not dominated by anything" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not dominated by anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1052,7 +1095,8 @@ void PqlEvaluateSuchthat::EvaluateDominates(PqlEvaluator* pql_eval,
           kFilterBoth, pkb_->GetAllDominatesPairs(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of Dominates(left,right)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Dominates(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1075,34 +1119,35 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Follows." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Follows");
 
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT followed by right
       if (!pkb_->IsFollows(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not followed by " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not followed by " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If right is not follower
       if (pkb_->GetFollowedBy(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not a follower " << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + right_name + " is not a follower");
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If left is not followee
       if (pkb_->GetFollows(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not a followee " << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + left_name + " is not a followee");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasFollowsRelationship()) {
         SetClauseFlag(false);
-        cout << " no follow relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Follow relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -1110,7 +1155,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetFollowedBy(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No followee for this type " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No followee for this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1119,7 +1164,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllFollowedBy(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt does not have any follower" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left does not have any follower");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1128,7 +1173,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetFollows(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No follower of this type " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No follower of this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1137,7 +1182,7 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllFollows(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt is not following anyone" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not following anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1148,7 +1193,8 @@ void PqlEvaluateSuchthat::EvaluateFollows(PqlEvaluator* pql_eval,
           kFilterBoth, pkb_->GetAllFollowsPair(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of (lefttype,righttype)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Follows(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1171,35 +1217,38 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Follows*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating FollowsT");
 
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT followed by right
       if (!pkb_->IsFollowsT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not indirectly followed by " << right_name
-             << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + " is not indirectly followed by " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If right is not follower
       if (pkb_->GetFollowedByT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " is not an indirect follower " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " is not an indirect follower");
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If left is not followee
       if (pkb_->GetFollowsT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " is not an indirect followee " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not an indirect followee ");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasFollowsRelationship()) {
         SetClauseFlag(false);
-        cout << " no follow relationship found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Follows relationships found");
       }
       return;
     case kOneSynonymLeft:
@@ -1207,7 +1256,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetFollowedByT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No indirect followee for this type " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No indirect followee for this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1216,7 +1265,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllFollowedBy(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt does not have any follower" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left does not have any follower");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1226,7 +1275,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
           FilterResult(pkb_->GetFollowsT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " No indirect follower of this type " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No indirect follower of this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1235,7 +1284,7 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllFollows(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt is not following anyone" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right is not following anything");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1246,7 +1295,8 @@ void PqlEvaluateSuchthat::EvaluateFollowsT(PqlEvaluator* pql_eval,
           kFilterBoth, pkb_->GetAllFollowsTPair(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no indirect pair of (lefttype,righttype)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of FollowsT(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1269,42 +1319,43 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Parent." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating Parent");
 
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT parent of right
       if (!pkb_->IsParent(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not parent of " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " is not parent of " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If no parent
       if (pkb_->GetParent(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " has no parent " << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + right_name + " has no parents");
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no child
       if (pkb_->GetChild(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " has no child " << endl;
+        Debug::PrintLn(Debug::kLog, "!!" + left_name + " has no children");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasParentRelationship()) {
         SetClauseFlag(false);
-        cout << " no parent/child found " << endl;
+        Debug::PrintLn(Debug::kLog, "!!No Parent relationships found");
       }
       return;
     case kOneSynonymLeft:
       result_list = FilterResult(pkb_->GetParent(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt does not have " << right_name << " as child"
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Left does not have " + right_name + " as child");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1313,7 +1364,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllParent(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt is not a parent" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not a parent");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1322,8 +1373,8 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetChild(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt does not have stmt " << left_name << " as parent"
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Right does not have " + left_name + " as parent");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1332,7 +1383,7 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllChild(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt does not have any parent" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right does not have any parent");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1343,7 +1394,8 @@ void PqlEvaluateSuchthat::EvaluateParent(PqlEvaluator* pql_eval,
       // Filter left and right
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no pair of (lefttype,righttype)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Parent(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1366,42 +1418,47 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating Parent*" << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating ParentT");
 
   switch (arrangement) {
     case kNoSynonym:
       // If left is NOT parent of right
       if (!pkb_->IsParentT(stoi(left_name), stoi(right_name))) {
         SetClauseFlag(false);
-        cout << left_name << " not indirect parent of " << right_name << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + " is not indirect parent of " + right_name);
       }
       return;
     case kNoSynonymUnderscoreLeft:
       // If no parent
       if (pkb_->GetParentT(stoi(right_name)).empty()) {
         SetClauseFlag(false);
-        cout << right_name << " has no indirect parent " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + right_name + " has no indirect parent");
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no child
       if (pkb_->GetChildT(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << left_name << " has no indirect child " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " has no indirect children");
       }
       return;
     case kNoSynonymUnderscoreBoth:
       if (!pkb_->HasParentRelationship()) {
         SetClauseFlag(false);
-        cout << " no parent/child found " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Parent(left, right)");
       }
       return;
     case kOneSynonymLeft:
       result_list = FilterResult(pkb_->GetParentT(stoi(right_name)), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt does not have " << right_name
-             << " as indirect child" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left does not have " + right_name +
+                                        " as indirect child");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1410,7 +1467,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllParent(), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " left stmt is not a parent" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left is not a parent");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1419,8 +1476,8 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetChildT(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt does not have stmt " << left_name
-             << " as indirect parent" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right does not have " + left_name +
+                                        " as indirect parent");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1429,7 +1486,7 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetAllChild(), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << " right stmt does not have any parent" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Right does not have any parents");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1440,7 +1497,8 @@ void PqlEvaluateSuchthat::EvaluateParentT(PqlEvaluator* pql_eval,
       // Filter left and right
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << " no indirect pair of (lefttype,righttype)" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of ParentT(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1463,21 +1521,23 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating UsesS." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating UsesS");
 
   switch (arrangement) {
     case kNoSynonym:
       // If stmt (left) doesnt use variable (right)
       if (!pkb_->IsUsedByS(stoi(left_name), right_name)) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't use " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not use " + right_name);
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If nothing were used by this stmt
       if (pkb_->GetUsedVarS(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't use any variable " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not use any variable");
       }
       return;
     case kOneSynonymLeft:
@@ -1485,7 +1545,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       result_list = FilterResult(pkb_->GetUsingStmt(right_name), left_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt of left type doesnt use right variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left does not use any right variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1495,7 +1555,8 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
       // If no stmt of left syn entity type uses the any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt of left type doesnt use any variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Left type does not use any right variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1505,8 +1566,9 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
           FilterVariableResult(pkb_->GetUsedVarS(stoi(left_name)), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesnt use any variable of this type"
-             << endl;
+        Debug::PrintLn(
+            Debug::kLog,
+            "!!" + left_name + " does not use any variable of this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1516,7 +1578,7 @@ void PqlEvaluateSuchthat::EvaluateUsesS(PqlEvaluator* pql_eval,
                                           left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt of left type doesnt use any variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left does not use any variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1539,21 +1601,23 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating UsesP." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating UsesP");
 
   switch (arrangement) {
     case kNoSynonym:
       // If proc (left) doesnt use variable (right)
       if (!pkb_->IsUsedByP(left_name, right_name)) {
         SetClauseFlag(false);
-        cout << "Proc " << left_name << " doesn't use " << right_name << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Proc " + left_name + " does not use " + right_name);
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If nothing were used by this proc
       if (pkb_->GetUsedVarP(left_name).empty()) {
         SetClauseFlag(false);
-        cout << "Proc " << left_name << " doesn't use any variable " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Proc " + left_name + " does not use any variables");
       }
       return;
     case kOneSynonymLeft:
@@ -1561,7 +1625,7 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       result_list = pkb_->GetUsingProc(right_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Proc doesnt use right variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Proc does not use any right variables");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1571,7 +1635,8 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       // If no proc of left syn entity type uses the any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Proc of left type doesnt use any variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Left proc does not use any right variables");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1581,8 +1646,9 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
           FilterVariableResult(pkb_->GetUsedVarP(left_name), right_type);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Proc " << left_name << " doesnt use any variable of this type"
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Proc " + left_name +
+                           " does not use any right variables of this type");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1591,7 +1657,7 @@ void PqlEvaluateSuchthat::EvaluateUsesP(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllUsesPairP();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << "Procedure doesnt use any variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Proc does not use any variables");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1614,22 +1680,23 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating ModifiesS." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating ModifiesS");
 
   switch (arrangement) {
     case kNoSynonym:
       // If stmt (left) doesnt modify variable (right)
       if (!pkb_->IsModifiedByS(stoi(left_name), right_name)) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't modify " << right_name
-             << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not modify " + right_name);
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no variables were modified by this stmt
       if (pkb_->GetModifiedVarS(stoi(left_name)).empty()) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not modify any variable");
       }
       return;
     case kOneSynonymLeft:
@@ -1637,7 +1704,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       // If no stmt of left syn entity type modifies the right variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt of left type doesnt modify right variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Left does not modify any right variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1647,7 +1715,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       // If no stmt of left syn entity type modifies any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt of left type doesnt modify any variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Left type not modify any variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1656,7 +1724,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
       result_list = pkb_->GetModifiedVarS(stoi(left_name));
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesnt modify any variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!" + left_name + " does not modify any variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1666,7 +1735,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesS(PqlEvaluator* pql_eval,
           kFilterLeft, pkb_->GetAllModifiesPairS(), left_type, right_type);
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << "No stmt/variable pair found" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Modifies(left, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);
@@ -1689,22 +1759,23 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
   QueryResultList result_list;
   QueryResultPairList result_pair_list;
 
-  cout << "Evaluating ModifiesP." << endl;
+  Debug::PrintLn(Debug::kLog, "PQLEvaluator: Evaluating ModifiesP");
 
   switch (arrangement) {
     case kNoSynonym:
       // If proc (left) doesnt modify variable (right)
       if (!pkb_->IsModifiedByP(left_name, right_name)) {
         SetClauseFlag(false);
-        cout << "Procedure " << left_name << " doesn't modify " << right_name
-             << endl;
+        Debug::PrintLn(Debug::kLog, "!!Proc " + left_name +
+                                        " does not modify " + right_name);
       }
       return;
     case kNoSynonymUnderscoreRight:
       // If no variables were modified by this proc
       if (pkb_->GetModifiedVarP(left_name).empty()) {
         SetClauseFlag(false);
-        cout << "Stmt " << left_name << " doesn't modify any variable " << endl;
+        Debug::PrintLn(Debug::kLog, "!!Proc " + left_name +
+                                        " does not modify any variables");
       }
       return;
     case kOneSynonymLeft:
@@ -1712,7 +1783,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       // If no proc modifies the right variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "No proc modify the right variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Proc does not modify any right variables");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1722,7 +1794,7 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       // If no proc modifies any variable
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Proc doesnt modify any variable" << endl;
+        Debug::PrintLn(Debug::kLog, "!!Proc does not modify any variables");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, left_name);
       }
@@ -1731,7 +1803,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       result_list = pkb_->GetModifiedVarP(left_name);
       if (result_list.empty()) {
         SetClauseFlag(false);
-        cout << "Proc " << left_name << " doesnt modify any variable" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!Proc " + left_name + " does not modify any variable");
       } else {
         pql_eval->StoreClauseResultInTable(result_list, right_name);
       }
@@ -1740,7 +1813,8 @@ void PqlEvaluateSuchthat::EvaluateModifiesP(PqlEvaluator* pql_eval,
       result_pair_list = pkb_->GetAllModifiesPairP();
       if (result_pair_list.empty()) {
         SetClauseFlag(false);
-        cout << "No proc/variable pair found" << endl;
+        Debug::PrintLn(Debug::kLog,
+                       "!!There are no pairs of Modifies(proc, right)");
       } else {
         pql_eval->StoreClauseResultInTable(result_pair_list, left_name,
                                            right_name);

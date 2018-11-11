@@ -145,8 +145,6 @@ bool Graph::HasCycle() {
 }
 
 bool Graph::HasCycle(const Vertex &v, VisitedMap *visited) {
-  std::cout << std::to_string(v) + " " << std::endl;
-
   if (!(*visited)[v]) {
     (*visited)[v] = true;
 

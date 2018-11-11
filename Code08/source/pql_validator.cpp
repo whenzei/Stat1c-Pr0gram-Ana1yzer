@@ -1,10 +1,9 @@
 #include "pql_validator.h"
+#include "debug.h"
 
-#include <iostream>
 #include <regex>
 #include <stack>
-using std::cout;
-using std::endl;
+
 using std::regex;
 using std::regex_match;
 using std::stack;
@@ -49,7 +48,10 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
     if (was_operator) {
       if (current.type != tt::kDigit && current.type != tt::kName &&
           current.type != tt::kOpenParen) {
-        cout << "[EXPR INVALID], current token: " << current.value << endl;
+        Debug::PrintLn(
+            Debug::kError,
+            "[Expression -- INVALID], current token: " + current.value);
+
         return false;
       }
 
@@ -60,13 +62,15 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
       }
     } else {
       if (current.type != tt::kCloseParen && current.type != tt::kOperator) {
-        cout << "[EXPR INVALID], current token: " << current.value << endl;
+        Debug::PrintLn(
+            Debug::kError,
+            "[Expression -- INVALID], current token: " + current.value);
         return false;
       }
 
       if (current.type == tt::kCloseParen) {
         if (parenthesis_stack.empty()) {
-          cout << "[IMBALANCED PARENTHESIS -- INVALID]" << endl;
+          Debug::PrintLn(Debug::kError, "[Imbalanced parenthesis -- INVALID]");
           return false;
         }
         parenthesis_stack.pop();
@@ -77,7 +81,7 @@ bool PqlValidator::ValidateExpression(TokenList tokens) {
   }
 
   if (!parenthesis_stack.empty()) {
-    cout << "[STACK NOT EMPTY -- INVALID]" << endl;
+    Debug::PrintLn(Debug::kError, "[Stack not empty -- INVALID]");
     return false;
   }
 
@@ -116,23 +120,23 @@ bool PqlValidator::ValidateAttribute(PqlDeclarationEntity type, string attr) {
 
 /* Check if a PqlDeclarationEntity is actually a real entity type. */
 bool PqlValidator::IsSynonym(PqlDeclarationEntity type) {
-  switch(type) {
-      case PqlDeclarationEntity::kStmt:
-      case PqlDeclarationEntity::kRead:
-      case PqlDeclarationEntity::kReadName:
-      case PqlDeclarationEntity::kPrint:
-      case PqlDeclarationEntity::kPrintName:
-      case PqlDeclarationEntity::kCall:
-      case PqlDeclarationEntity::kCallName:
-      case PqlDeclarationEntity::kWhile:
-      case PqlDeclarationEntity::kIf:
-      case PqlDeclarationEntity::kAssign:
-      case PqlDeclarationEntity::kVariable:
-      case PqlDeclarationEntity::kConstant:
-      case PqlDeclarationEntity::kProgline:
-      case PqlDeclarationEntity::kProcedure:
-        return true;
-      default: 
-        return false;
+  switch (type) {
+    case PqlDeclarationEntity::kStmt:
+    case PqlDeclarationEntity::kRead:
+    case PqlDeclarationEntity::kReadName:
+    case PqlDeclarationEntity::kPrint:
+    case PqlDeclarationEntity::kPrintName:
+    case PqlDeclarationEntity::kCall:
+    case PqlDeclarationEntity::kCallName:
+    case PqlDeclarationEntity::kWhile:
+    case PqlDeclarationEntity::kIf:
+    case PqlDeclarationEntity::kAssign:
+    case PqlDeclarationEntity::kVariable:
+    case PqlDeclarationEntity::kConstant:
+    case PqlDeclarationEntity::kProgline:
+    case PqlDeclarationEntity::kProcedure:
+      return true;
+    default:
+      return false;
   }
 }

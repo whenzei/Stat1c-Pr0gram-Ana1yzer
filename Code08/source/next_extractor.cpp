@@ -280,6 +280,6 @@ NextTMap NextExtractor::GetTypedNextTMap(StmtType type) {
   if (!type_done_map_[type]) {
     SetNextTTables(type);
   }
-  
+
   return typed_next_t_table_[type].GetAdjSet();
 }

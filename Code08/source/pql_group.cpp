@@ -4,7 +4,7 @@
 #include <climits>
 using std::sort;
 
-PqlGroup::PqlGroup() { 
+PqlGroup::PqlGroup() {
   priority_ = 0;
   uses_selection_ = false;
 }
@@ -13,7 +13,7 @@ void PqlGroup::SortClauses() {
   int max_priority = INT_MIN;
   int max_index = 0;
   unordered_set<int> available_set;
-  for(unsigned i = 0; i <  clauses_.size(); i++) {
+  for (unsigned i = 0; i < clauses_.size(); i++) {
     // Get clause with highest priority
     if (clauses_[i]->GetPriority() > max_priority) {
       max_priority = clauses_[i]->GetPriority();
@@ -26,8 +26,7 @@ void PqlGroup::SortClauses() {
     if (first != "") {
       if (synonym_map_.find(first) != synonym_map_.end()) {
         synonym_map_.at(first).insert(i);
-      }
-      else {
+      } else {
         unordered_set<int> set;
         set.insert(i);
         synonym_map_.insert(std::make_pair(first, set));
@@ -36,8 +35,7 @@ void PqlGroup::SortClauses() {
     if (second != "") {
       if (synonym_map_.find(second) != synonym_map_.end()) {
         synonym_map_.at(second).insert(i);
-      }
-      else {
+      } else {
         unordered_set<int> set;
         set.insert(i);
         synonym_map_.insert(std::make_pair(second, set));
@@ -73,8 +71,9 @@ void PqlGroup::SortClauses() {
     // Find highest priority of all neighbours that is still available
     max_priority = 0;
     max_index = -1;
-    for(unordered_set<int>::iterator it = neighbour_set.begin(); it != neighbour_set.end(); it++) {
-      if (available_set.find(*it) != available_set.end()) { // still available
+    for (unordered_set<int>::iterator it = neighbour_set.begin();
+         it != neighbour_set.end(); it++) {
+      if (available_set.find(*it) != available_set.end()) {  // still available
         if (clauses_[*it]->GetPriority() > max_priority) {
           max_priority = clauses_[*it]->GetPriority();
           max_index = *it;
@@ -84,15 +83,17 @@ void PqlGroup::SortClauses() {
 
     // If there are no more neighbours left
     if (max_index == -1) {
-      for (unordered_set<int>::iterator it = available_set.begin(); it != available_set.end(); it++) {
-        sorted_clauses.push_back(clauses_[*it]); // Add remaining clauses to sorted
+      for (unordered_set<int>::iterator it = available_set.begin();
+           it != available_set.end(); it++) {
+        sorted_clauses.push_back(
+            clauses_[*it]);  // Add remaining clauses to sorted
       }
       break;
     }
 
     // Add highest priority clause to vector
     sorted_clauses.push_back(clauses_[max_index]);
-    available_set.erase(max_index); // remove from available set
+    available_set.erase(max_index);  // remove from available set
 
     // Add more neighbours
     string first = clauses_[max_index]->GetSynonyms().first;

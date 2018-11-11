@@ -1,14 +1,11 @@
-#include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+#include "debug.h"
 #include "pql_global.h"
 #include "pql_result.h"
 
-using std::cout;
-using std::endl;
 using std::string;
 using std::unordered_map;
 using std::vector;
@@ -138,7 +135,7 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
   }
   // Left has conflict
   else if (conflict_type == kOneConflictLeft) {
-    cout << "Conflict left " << endl;
+    Debug::PrintLn(Debug::kLog, "Merging result tables: Conflict left");
     SetupMergeMap(result_pair_list, conflict_type);
     MergeMap merge_map = GetMergeMap();
     // Iterating through the row
@@ -192,7 +189,8 @@ void PqlResult::MergeResults(QueryResultPairList result_pair_list,
       string unique_key = std::to_string(row[conflict_left_pair]) + "-" +
                           std::to_string(row[conflict_right_pair]);
 
-      cout << unique_key << endl;
+      Debug::PrintLn(Debug::kLog,
+                     "Merging result tables, unique key: " + unique_key);
       // If the column value in table matches the value in result list
       if (merge_set.count(unique_key)) {
         // Row has passed the comparison
