@@ -1,4 +1,4 @@
-11 - Find tuples of procs and vars where they have the same name, and the var is both used and modified in the proc
+1 - Find tuples of procs and vars where they have the same name, and the var is both used and modified in the proc
 procedure p; variable v;
 Select <p.procName,v.varName> with p.procName = v.varName such that Modifies(p,v) and Uses(p,v)
 axolotl axolotl,bat bat,octopus octopus,possum possum,pony pony,whale whale
@@ -6,27 +6,27 @@ axolotl axolotl,bat bat,octopus octopus,possum possum,pony pony,whale whale
 2 - Tuple of all whiles and ifs
 while w; if ifs;
 Select <w, ifs, w, ifs>
-23 1 23 1,23 11 23 11,23 12 23 12,23 15 23 15,23 20 23 20,23 28 23 28,23 3 23 3,23 4 23 4,23 40 23 40,23 42 23 42,23 48 23 48,23 55 23 55,23 62 23 62,23 63 23 63,23 66 23 66,23 8 23 8,39 1 39 1,39 11 39 11,39 12 39 12,39 15 39 15,39 20 39 20,39 28 39 28,39 3 39 3,39 4 39 4,39 40 39 40,39 42 39 42,39 48 39 48,39 55 39 55,39 62 39 62,39 63 39 63,39 66 39 66,39 8 39 8,54 1 54 1,54 11 54 11,54 12 54 12,54 15 54 15,54 20 54 20,54 28 54 28,54 3 54 3,54 4 54 4,54 40 54 40,54 42 54 42,54 48 54 48,54 55 54 55,54 62 54 62,54 63 54 63,54 66 54 66,54 8 54 8
+37 14 37 14,37 15 37 15,37 16 37 16,37 19 37 19,37 23 37 23,37 24 37 24,37 28 37 28,37 3 37 3,37 31 37 31,37 38 37 38,37 45 37 45,37 53 37 53,37 54 37 54,37 59 37 59,37 63 37 63,37 65 37 65,48 14 48 14,48 15 48 15,48 16 48 16,48 19 48 19,48 23 48 23,48 24 48 24,48 28 48 28,48 3 48 3,48 31 48 31,48 38 48 38,48 45 48 45,48 53 48 53,48 54 48 54,48 59 48 59,48 63 48 63,48 65 48 65,62 14 62 14,62 15 62 15,62 16 62 16,62 19 62 19,62 23 62 23,62 24 62 24,62 28 62 28,62 3 62 3,62 31 62 31,62 38 62 38,62 45 62 45,62 53 62 53,62 54 62 54,62 59 62 59,62 63 62 63,62 65 62 65
 5000
 3 - Find call stmts where the proc being called calls some other procs
 call c; procedure p,p1;
 Select c.stmt# such that Calls*(p,p1) with c.procName = p.procName 
-18,47,68,7
+1,27,56,70
 5000
 4 - Find call stmts where the proc being called indirecrtly calls some other procs
 call c; procedure p,p1,p2;
 Select c.stmt# such that Calls(p,p1) and Calls(p1,p2) with c.procName = p.procName 
-18
+1
 5000
-5 - Find a stmt that is followed by another stmt whose num is a constant value and this second stmt is also a parent of an if stmt
-stmt s1,s2; call c; variable v; constant ct; if ifs;
-Select s1 such that Follows(s1,s2) with s2.stmt# = ct.value such that Parent(s2, ifs)
-2
+5 - Find tuple of Next*(syn,syn) that are only while before ifs, and they must use and modify the any variables
+while w; if ifs; variable v;
+Select <w, v> such that Next(w,ifs) and Modifies(ifs,_) and Uses(ifs,_) and Modifies(w, _) and Uses(w, _)
+37 alice,37 axolotl,37 bat,37 berry,37 bob,37 charlie,37 dragon,37 eel,37 fruits,37 gel,37 honey,37 horse,37 ice,37 jack,37 jelly,37 jill,37 kiwi,37 octopi,37 octopus,37 onion,37 pear,37 pebble,37 peter,37 plum,37 pony,37 possum,37 rock,37 salmon,37 sardine,37 stone,37 tom,37 tuna,37 whale,37 yeast,62 alice,62 axolotl,62 bat,62 berry,62 bob,62 charlie,62 dragon,62 eel,62 fruits,62 gel,62 honey,62 horse,62 ice,62 jack,62 jelly,62 jill,62 kiwi,62 octopi,62 octopus,62 onion,62 pear,62 pebble,62 peter,62 plum,62 pony,62 possum,62 rock,62 salmon,62 sardine,62 stone,62 tom,62 tuna,62 whale,62 yeast
 5000
 6 - Find all while stmt
 while w; stmt s1; assign a1, a2;
 Select w such that Parent(s1,a1) and Affects(49,a2) with a2.stmt#=56
-23,39,54
+
 5000
 7 - Find all while stmt (false)
 while w; stmt s1; assign a1, a2;
@@ -36,7 +36,7 @@ Select w such that Parent(s1,a1) and Affects(49,a2) with a2.stmt#=57
 8 - Test various clauses
 if ifs; stmt s1; variable v;
 Select BOOLEAN such that Parent*(20,_) pattern ifs(v,_,_) with v.varName = "yeast" such that Follows(s1,_) and Parent*(s1,31)
-TRUE
+FALSE
 5000
 9 - Test various clauses (false)
 if ifs; stmt s1; variable v;
@@ -55,31 +55,26 @@ Select v pattern ifs(v,_,_) and w(v,_)
 5000
 12 - Various clauses, no common synonym, find all call stmts
 call c; while w; if ifs; stmt s1, s2, s3, s4; assign a1, a2, a3; variable v1, v2;
-Select c such that Uses(w,v1) and Follows(ifs,54) pattern a1(v2,_"tom + fruits"_) such that Parent(s1,s2) and Next(s3,s4) and Affects*(a2,a3)
-7,18,26,44,47,61,68
+Select c such that Uses(w,v1) and Next*(ifs,20) such that Parent(s1,s2) and Next(s3,s4) and Affects*(a2,a3)
+1,27,51,56,67,70,44
 5000
 13 - all clauses and synonyms, with some common syn
 procedure p1, p2, p3; assign a1; if ifs1, ifs2; variable v1, v2; while w1; call c1; prog_line n; stmt s; constant c;
-Select c1 such that Calls(p1,p2) and Calls*("dragon","bat") such that Follows(a1, ifs1) such that Follows*(n,36) and Modifies(p2,v1) such that Uses(ifs2,v1) with c.value = 888 pattern w1("possum",_) such that Parent(ifs2,c1) and Parent*(ifs2,c1) such that Next(26,_) such that Next*(47,41) pattern a1(_,"jelly+123") and ifs1("salmon",_,_) such that Affects(57,59) and Affects*(s,s) with s.stmt#=58 and p3.procName = v2.varName
-44,47,61,68,7
+Select c1 such that Calls(p1,p2) and Calls*("dragon","bat") such that Follows(a1, ifs1) such that Follows*(n,36) and Modifies(p2,v1) such that Uses(ifs2,v1) such that Parent(ifs2,c1) and Parent*(ifs2,c1) such that Next(26,_) such that Next*(3,10) such that Affects(8,11) and Affects*(s,s)
+27,44,56,67,70
 5000
 14 - all clauses and synonyms, with some common syn
 procedure p1, p2, p3; assign a1; if ifs1, ifs2; variable v1, v2; while w1, w2; call c1; prog_line n; stmt s; constant c;
-Select c1 such that Calls(p1,p2) and Calls*("dragon","bat") such that Follows(a1, ifs1) such that Follows*(n,36) and Modifies(p2,v1) such that Uses(ifs2,v1) with c.value = 888 pattern w1("possum",_) such that Parent(ifs2,c1) and Parent*(ifs2,s) such that Next(26,_) such that Next*(47,41) pattern a1(_,"jelly+123") and ifs1("salmon",_,_) such that Affects(57,59) and Affects*(s,s) with s.stmt#=58 and p3.procName = v2.varName
-61
-5000
-15 - all clauses and synonyms, with some common syn (false, jelly spelt wrongly)
-procedure p1, p2, p3; assign a1; if ifs1, ifs2; variable v1, v2; while w1, w2; call c1; prog_line n; stmt s; constant c;
-Select c1 such that Calls(p1,p2) and Calls*("dragon","bat") such that Follows(a1, ifs1) such that Follows*(n,36) and Modifies(p2,v1) such that Uses(ifs2,v1) with c.value = 888 pattern w1("possum",_) such that Parent(ifs2,c1) and Parent*(ifs2,s) such that Next(26,_) such that Next*(47,41) pattern a1(_,"jel1y+123") and ifs1("salmon",_,_) such that Affects(57,59) and Affects*(s,s) with s.stmt#=58 and p3.procName = v2.varName
-
+Select c1 such that Calls(p1,p2) and Calls*("dragon","bat") such that Follows(a1, ifs1) such that Modifies(p2,v1) such that Uses(ifs2,v1) with c.value = 888 pattern w1("possum",_) such that Parent(ifs2,c1) and Parent*(ifs2,s)
+27,44,56,67,70
 5000
 16 - multiple patterns with some clauses, one common synonym (v)
 stmt s; assign a; if ifs; while w; call c; prog_line n; variable v, v2; procedure p;
 Select s pattern a(v,_) and w(v,_) and ifs(v2,_,_) such that Modifies(s,v) and Modifies(c,v2) and Uses(s,v) 
-1,18,23,3,39,4,40,42,47,48,54,55,62,66,68,7
+14,24,27,31,37,38,53,56,63,65,70,1,23,48,54,62
 5000
 17 - multiple clauses, one common synonym (w)
 while w; assign a; call c; variable v;
 Select w such that Uses(w,v) and Parent(w,a) and Next*(c,w)
-23
+48
 5000

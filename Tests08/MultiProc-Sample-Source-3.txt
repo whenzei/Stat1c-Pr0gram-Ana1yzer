@@ -1,7 +1,50 @@
+procedure dragon
+ {
 
+
+
+
+    call        whale;
+	tuna = 99; 
+}
+
+
+
+procedure bat{    
+	if (bat == 0) then{
+		plum           = 9 + rock;
+		pebble = bat+ 	44; 
+		fruits          = honey -    7; 
+		bat= octopi	 + 321;
+	}
+	else {
+		bat                   = 44; 
+		octopi             = tom; 
+		peter         = kiwi	 - 6;
+	}
+	stone          =          bat- 3;
+	bat= pebble + 1;   
+	pebble = bat;
+}
 procedure whale{
 	if (whale== 0) then {
-		jelly = jelly + 		123;
+if (jack == 0) then {  
+		if (yeast == 0) then{  
+			onion = whale+ whale;
+			}
+			else  {
+				jack = jack+ 9;  
+			}
+		}
+		else{
+		 if (ice == 0) then { 
+			whale= whale+ 123 - berry+ (ice-sardine) * bob;  
+		}else{
+			jill = tuna * 	4 + eel;   
+		}
+	   }
+	} else {
+				jelly = jelly + 		123;
 		if (salmon == 0) then {    
 			if (alice == 0) then { 
 				whale= 99;
@@ -14,80 +57,6 @@ procedure whale{
 				yeast = whale;
 			}
 			else{	jack = (yeast +    777) * 888 - (tom + fruits) + whale+ dragon * pebble * kiwi; 
-			}
-		}
-	} else {
-		if (jack == 0) then {  
-		if (yeast == 0) then{  
-			onion = whale+ whale;
-			}
-			else  {
-				jack = jack 	 + 9;  
-			}
-		}
-		else{
-		 if (ice == 0) then { 
-			whale= whale+ 123 - berry	 + (ice   - sardine		) * bob;  
-		}else{
-			jill = tuna * 	4 + eel;   
-		}
-	   }
-	}
-}
-procedure dragon
- {
-
-
-
-
-    call        whale;
-	tuna = 99; 
-}
-procedure      octopus{
-	if (charlie == 0) then{   
-		axolotl = bob + charlie; 
-	}	else{
-		sardine = axolotl + 888;  
-	}
-	while (octopus==0) {  
-		octopus = octopi + 44;
-	octopi = octopus;
-		call bat;
-		octopus =     octopi       ; }}
-
-
-
-
-
-procedure bat{    
-	if (bat == 0) then{
-		bat                   = 44; 
-		octopi             = tom; 
-		peter         = kiwi	 - 6;
-	}
-	else {
-		plum           = 9 + rock;
-		pebble = bat+ 	44; 
-		fruits          = honey -    7; 
-		bat= octopi	 + 321;
-	}
-	stone          =          bat- 3;
-	bat= pebble + 1;   
-	pebble = bat;
-}
-procedure possum {
-	while (possum == 0){  
-		if (berry == 0) then{  
-			possum= 44;   
-		}
-		else    {
-			if (plum == 0) then{   
-		plum = possum;
-				call bat;
-			possum= plum;  
-			}			else{
-			plum = plum + possum;
-				call pony;
 			}
 		}
 	}
@@ -121,17 +90,25 @@ while (horse ==0){
 
 
 
+procedure      octopus{
+	if (charlie == 0) then{   
+		axolotl = bob + charlie; 
+	}	else{
+		sardine = axolotl + 888;  
+	}
+	while (octopus==0) {  
+		octopus = octopi + 44;
+	octopi = octopus;
+		call bat;
+		octopus =     octopi       ; }}
+
+
 
 
 
 procedure axolotl{
 	if (bob == 0) then {    
-		if (charlie          == 0) then{  
-			bob = 1;  
-		} else{
-			charlie = bob +44;
-		}
-	} else{
+
 		if (alice == 0) then{
 			axolotl= 9 + bob;
 			call octopus;
@@ -139,10 +116,33 @@ procedure axolotl{
 		} else{
 			alice           = axolotl+ charlie + bob + 5;
 		}
+	} else{
+		if (charlie          == 0) then{  
+			bob = 1;  
+		} else{
+			charlie = bob +44;
+		}
 	}
 }
 
 
+procedure possum {
+	while (possum == 0){  
+		if (berry == 0) then{  
+			possum= 44;   
+		}
+		else    {
+			if (plum == 0) then{   
+		plum = possum;
+				call bat;
+			possum= plum;  
+			}			else{
+			plum = plum + possum;
+				call pony;
+			}
+		}
+	}
+}
 
 
 
