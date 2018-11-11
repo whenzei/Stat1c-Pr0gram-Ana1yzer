@@ -205,7 +205,8 @@ void PqlEvaluateWith::EvaluateWithTwoSynonym(PqlEvaluator* pql_eval,
       left_type == PqlDeclarationEntity::kReadName ||
       left_type == PqlDeclarationEntity::kPrintName) {
     left_name = left_name.substr(1);
-  } else if (right_type == PqlDeclarationEntity::kCallName ||
+  } 
+  if (right_type == PqlDeclarationEntity::kCallName ||
              right_type == PqlDeclarationEntity::kReadName ||
              right_type == PqlDeclarationEntity::kPrintName) {
     right_name = right_name.substr(1);
