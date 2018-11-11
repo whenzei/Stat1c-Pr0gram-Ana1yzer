@@ -30,24 +30,23 @@ After building the solution, add the required arguments for AutoTester to perfor
 From the Properties page, navigate to Configuration Properties > Debugging. Enter the provided string in the "Command Arguments" field (assuming you have not moved any folders around):
 
 ```
-..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt ..\..\Tests08\out.xml
+..\..\Tests08\MultiProc-Sample-Source-1.txt ..\..\Tests08\MultiProc-Sample-Queries-1.txt ..\..\Tests08\out.xml
 ```
 
 > Make sure the `out.xml` is located in the `Tests08` folder for the xml to be readable in Firefox. The rendering of the .xml files require the `analysis.xls` file which is located in the `Tests08` folder.
 
 After this has been done, run AutoTester and wait for the tests to be completed. A new `out.xml` file will be generated at `$SOURCE\Code08\Tests08` which can be opened in Firefox to view the results of the system tests. The supplied test cases should all pass.
 
-We have also provided two addition sample programs (`Sample-Source-2.txt`, `Sample-Source-3.txt`) with their respective sample queries (`Sample-Queries-2.txt`, `Sample-Queries-3`) files for a total of 3 test suites. You can run them by changing the file names of the arguments in the "Command Arguments" field:
+We have also provided two addition sample programs (`MultiProc-Sample-Source-2.txt`, `MultiProc-Sample-Source-3.txt`) with their respective sample queries (`MultiProc-Sample-Queries-2.txt`, `MultiProc-Sample-Queries-3.txt`) files for a total of 3 test suites. You can run them by changing the file names of the arguments in the "Command Arguments" field:
 
 ```
-..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt ..\..\Tests08\out-2.xml
+..\..\Tests08\MultiProc-Sample-Source-2.txt ..\..\Tests08\MultiProc-Sample-Queries-2.txt ..\..\Tests08\out-2.xml
 ```
 
 ```
-..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt ..\..\Tests08\out-3.xml
+..\..\Tests08\MultiProc-Sample-Source-3.txt ..\..\Tests08\MutliProc-Sample-Queries-3.txt ..\..\Tests08\out-3.xml
 ```
 
-> Note that `Sample-Source-3.txt` is purposely invalid, meaning all the queries in `Sample-Queries-3.txt` should return no results.
 
 #### AutoTester arguments
 AutoTester accepts three arguments:
@@ -81,17 +80,17 @@ None
 To run the AutoTester from a command prompt, navigate to the parent directory of `AutoTester.exe` at `$SOURCE\Code08\Release` from the command line and input:
 
 ```bash
-> AutoTester ..\..\Tests08\Sample-Source.txt ..\..\Tests08\Sample-Queries.txt ..\..\Tests08\out.xml
+> AutoTester ..\..\Tests08\MultiProc-Sample-Source-1.txt ..\..\Tests08\MultiProc-Sample-Queries-1.txt ..\..\Tests08\out.xml
 ```
 
 The above command runs AutoTester with the supplied tests located at `$SOURCE\Tests08`. The two alternate test suites can also be run in the same manner:
 
 ```bash
-> AutoTester ..\..\Tests08\Sample-Source-2.txt ..\..\Tests08\Sample-Queries-2.txt ..\..\Tests08\out-2.xml
+> AutoTester ..\..\Tests08\MultiProc-Sample-Source-2.txt ..\..\Tests08\MultiProc-Sample-Queries-2.txt ..\..\Tests08\out-2.xml
 ```
 
 ```bash
-> AutoTester ..\..\Tests08\Sample-Source-3.txt ..\..\Tests08\Sample-Queries-3.txt ..\..\Tests08\out-3.xml
+> AutoTester ..\..\Tests08\MultiProc-Sample-Source-3.txt ..\..\Tests08\MultiProc-Sample-Queries-3.txt ..\..\Tests08\out-3.xml
 ```
 
 
