@@ -789,7 +789,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
   PqlDeclarationEntity right_type;
 
   // 1. Get left
-  ParseParameter(tokens, current_index, &left, &left_type, "with ");
+  if(!ParseParameter(tokens, current_index, &left, &left_type, "with ")) return false;
   if (left_type == PqlDeclarationEntity::kUnderscore) {
     error_message_ = "Invalid left parameter of with clause.";
     return false;
@@ -842,7 +842,7 @@ bool PqlParser::ParseWith(TokenList tokens, int* current_index) {
 
   // 5. Get right
   current = tokens[++*current_index];
-  ParseParameter(tokens, current_index, &right, &right_type, "with ");
+  if(!ParseParameter(tokens, current_index, &right, &right_type, "with ")) return false;
   if (right_type == PqlDeclarationEntity::kUnderscore) {
     error_message_ = "Invalid right parameter of with clause.";
     return false;
