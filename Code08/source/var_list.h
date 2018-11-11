@@ -27,6 +27,7 @@ using VarIndexMap = unordered_map<VarName, VarIndex>;
 using IndexVarMap = unordered_map<VarIndex, VarName>;
 using StmtNum = int;
 using StmtNumList = vector<StmtNum>;
+using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
 using StmtVarMap = unordered_map<StmtNum, VarIndex>;
 using VarStmtMap = unordered_map<VarIndex, vector<StmtNum>>;
 
@@ -40,13 +41,13 @@ class VarList {
   StmtVarMap read_var_map_;
   VarStmtMap var_read_map_;
   VarIndexList read_var_list_;
-  VarIndexPairList read_var_twin_list_;
+  StmtNumPairList read_pair_list_;
   VarIndexSet read_var_set_;
   StmtVarMap print_var_map_;
   VarStmtMap var_print_map_;
   VarIndexList print_var_list_;
   VarIndexSet print_var_set_;
-  VarIndexPairList print_var_twin_list_;
+  StmtNumPairList print_pair_list_;
 
  private:
   // Internal variable to assign new variables' indices
@@ -109,13 +110,13 @@ class VarList {
   // @returns a list of all variables used in some print stmt
   VarIndexList GetAllPrintVar();
 
-  // @returns a list of all variables modified in some read stmt (repeat each
-  // var_id to form a pair)
-  VarIndexPairList GetAllReadVarTwin();
+  // @returns a list of all pairs of read statements that modifies the same
+  // variable
+  StmtNumPairList GetAllReadPairWithSameVar();
 
-  // @returns a list of all variables used in some print stmt (repeat each
-  // var_id to form a pair)
-  VarIndexPairList GetAllPrintVarTwin();
+  // @returns a list of all pairs of print statements that uses the same
+  // variable
+  StmtNumPairList GetAllPrintPairWithSameVar();
 };
 
 #endif !SPA_VAR_LIST_H

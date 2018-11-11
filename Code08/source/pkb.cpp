@@ -88,12 +88,12 @@ VarIndexList PKB::GetAllReadVar() { return var_list_.GetAllReadVar(); }
 
 VarIndexList PKB::GetAllPrintVar() { return var_list_.GetAllPrintVar(); }
 
-VarIndexPairList PKB::GetAllReadVarTwin() {
-  return var_list_.GetAllReadVarTwin();
+StmtNumPairList PKB::GetAllReadPairWithSameVar() {
+  return var_list_.GetAllReadPairWithSameVar();
 }
 
-VarIndexPairList PKB::GetAllPrintVarTwin() {
-  return var_list_.GetAllPrintVarTwin();
+StmtNumPairList PKB::GetAllPrintPairWithSameVar() {
+  return var_list_.GetAllPrintPairWithSameVar();
 }
 
 ConstValueList PKB::GetAllConstValue() {
