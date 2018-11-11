@@ -29,7 +29,7 @@ Select v such that Parent(w,ifs) and Modifies(a,v) pattern ifs(v,_,_) with r.var
 zzz
 5000
 7 - With, Uses, Modifes, Pattern, Calls
-call c; variable v; procedure p;  if ifs; 
+call c; variable v; procedure p, p1;  if ifs; 
 Select v with c.procName = p.procName and p.procName = "Me" such that Uses(p,v) and Modifies(p,v) and Calls(p1,p) pattern ifs(v,_,_)
 c, ORANGE
 5000
@@ -64,7 +64,8 @@ Select BOOLEAN such that Next*(5,10) and Affects*(11,6) with c.value = s.stmt# s
 TRUE
 5000
 14 - triple Parent, Pattern, With ident
-while w, w1, w2; assign a; variable v; Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test = "test"
+while w, w1, w2; assign a; variable v;
+Select <w,w1, w2> such that Parent(w,w1) and Parent(w1,w2) pattern w(v,_) and a(v,_) with "test = "test"
 21 23 25
 5000
 15 -  Uses Pattern Follows* With
