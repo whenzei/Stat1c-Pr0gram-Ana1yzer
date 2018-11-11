@@ -79,7 +79,7 @@ VarIndex VarList::GetReadVar(StmtNum stmt_num) {
   if (iter != read_var_map_.end()) {
     return (*iter).second;
   } else {
-    return VarIndex();
+    return -1;
   }
 }
 
@@ -88,7 +88,7 @@ VarIndex VarList::GetPrintVar(StmtNum stmt_num) {
   if (iter != print_var_map_.end()) {
     return (*iter).second;
   } else {
-    return VarIndex();
+    return -1;
   }
 }
 

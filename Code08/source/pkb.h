@@ -112,10 +112,10 @@ class PKB {
   // @returns the variable used in stmt_num if it is a print stmt
   VarIndex GetPrintVar(StmtNum stmt_num);
 
-  // @returns the variable modified in stmt_num if it is a read stmt
+  // @returns a list of read statements that modifies the variable
   StmtNumList GetReadStmt(VarName var_name);
 
-  // @returns the variable used in stmt_num if it is a print stmt
+  // @returns a list of print statements that uses the variable
   StmtNumList GetPrintStmt(VarName var_name);
 
   // @returns true if var_name is modified in any read stmt
@@ -531,9 +531,6 @@ class PKB {
   // @params caller procedure name and callee procedure name
   bool InsertIndirectCallRelationship(ProcName caller_proc,
                                       ProcName callee_proc);
-
-  bool InsertIndirectCallRelationship(ProcIndex caller_proc_id,
-                                      ProcIndex callee_proc_id);
 
   // Inserts a direct caller, callee pair relationship into the Call Table.
   // @returns true if insertion is successful, false otherwise
