@@ -102,12 +102,12 @@ TEST_CLASS(TestVarList) {
     var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kPrint, 5);
     var_list.InsertVarName(kSampleVar3);
     Assert::AreEqual(var_list.GetVarIndex(kSampleVar1), var_list.GetReadVar(3));
-    Assert::AreEqual(VarIndex(), var_list.GetReadVar(5));
-    Assert::AreEqual(VarIndex(), var_list.GetReadVar(2));
+    Assert::AreEqual(-1, var_list.GetReadVar(5));
+    Assert::AreEqual(-1, var_list.GetReadVar(2));
     Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
                      var_list.GetPrintVar(5));
-    Assert::AreEqual(VarIndex(), var_list.GetReadVar(3));
-    Assert::AreEqual(VarIndex(), var_list.GetReadVar(0));
+    Assert::AreEqual(-1, var_list.GetPrintVar(3));
+    Assert::AreEqual(-1, var_list.GetPrintVar(0));
   }
 
   TEST_METHOD(TestGetReadPrintStmt) {

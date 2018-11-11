@@ -3,8 +3,11 @@
 #ifndef AFFECTS_EXTRACTOR_H
 #define AFFECTS_EXTRACTOR_H
 
+#include <stack>
+
 #include "pkb.h"
 
+using std::stack;
 using VarIndexSet = unordered_set<VarIndex>;
 using AffectsTable = Graph;
 using AffectsMap = unordered_map<Vertex, VertexSet>;
@@ -30,15 +33,30 @@ class AffectsExtractor {
   AffectsTable affected_by_bip_table_;
   AffectsTable affected_by_bip_t_table_;
 
-  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2, bool is_bip);
+  /* Affects evaluation */
 
-  bool EvaluateIsAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt_1, StmtNum stmt_2);
 
-  bool EvaluateIsAffected(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffects(StmtNum stmt);
 
-  VertexSet EvaluateGetAffects(StmtNum stmt, bool is_bip);
+  bool EvaluateIsAffected(StmtNum stmt);
 
-  VertexSet EvaluateGetAffectedBy(StmtNum stmt, bool is_bip);
+  VertexSet EvaluateGetAffects(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedBy(StmtNum stmt);
+
+  /* AffectsBip evaluation */
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1, StmtNum stmt_2);
+
+  bool EvaluateIsAffectsBip(StmtNum stmt_1);
+
+  bool EvaluateIsAffectedBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectsBip(StmtNum stmt);
+
+  VertexSet EvaluateGetAffectedByBip(StmtNum stmt);
+
 
   // internal helper methods to get the tables regardless of whether the tables
   // have been initialized
@@ -110,6 +128,8 @@ class AffectsExtractor {
   void DfsGetAffects(Vertex curr, VarIndex affects_var, VertexSet* res_list,
                      CFG* cfg, VisitedMap visited);
 
+
+
   // @params: curr the current vertex
   // @params: used_vars the set of variables to be affected (contains variables
   // used by the statement of concern)
@@ -125,19 +145,23 @@ class AffectsExtractor {
 
   // Helper to populate the AffectsTable and AffectedByTable using DFS
   // @params: Vertex the vertex to start from
+  // @params: Vertex source the statement to affect other statements
+  // @params: VarIndex of the LHS of source
   // @params: AffectsTable* affects_table the AffectsTable to populate
   // @params: AffectsTable* affected_by_table the AffectedByTable to populate
-  // @params: VisitedMap* to keep track of what vertices have been visited
-  // @params: LastModMap the map to keep track of where each variable was last
-  // modified
   // @params: CFG* pointer to cfg to run DFS on
-  void DfsSetAffectsTables(Vertex v, AffectsTable* affects_table,
-                           AffectsTable* affected_by_table, VisitedMap* visited,
-                           LastModMap last_mod_map, VisitedCountMap vcm,
-                           CFG* cfg);
+  // @params: visited map to prevent visiting a vertex twice
+  void DfsSetAffectsTablePartial(Vertex curr, Vertex source, VarIndex affects_var,
+                          AffectsTable* affects_table,
+                          AffectsTable* affected_by_table, CFG* cfg,
+                          VisitedMap* visited);
+  
+  void DfsSetAffectsBipTables(Vertex v, AffectsTable* at, AffectsTable* abt,
+                              VisitedMap* visited, LastModMap lmm,
+                              VisitedCountMap vcm, CFG* cfg, stack<Vertex> prev_entrance);
 
   // @returns true if StmtType is either kAssign, kCall, or kRead
-  bool IsModifyingType(StmtType stmt_type);
+  bool IsModifyingType(StmtType stmt_type, bool is_bip = false);
 
  public:
   AffectsExtractor();

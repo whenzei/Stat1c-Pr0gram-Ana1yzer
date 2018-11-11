@@ -7,14 +7,18 @@
 
 using NextTTable = Graph;
 using NextTMap = unordered_map<int, unordered_set<int>>;
+using TypeDoneMap = unordered_map<StmtType, bool>;
 
 class NextExtractor {
   PKB* pkb_;
   NextTTable next_t_table_;
   NextTTable previous_t_table_;
+  TypeDoneMap type_done_map_;
+  unordered_map<StmtType, NextTTable> typed_next_t_table_;
 
   void SetNextTTables();
-  void BFSSetNextTTables(StmtNum start);
+  void SetNextTTables(StmtType type);
+  void BFSSetNextTTables(StmtNum start, StmtType type);
 
   NextTMap GetTypedNextTMap(StmtType type);
 

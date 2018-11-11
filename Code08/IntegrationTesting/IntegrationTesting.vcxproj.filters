@@ -29,9 +29,6 @@
     <ClCompile Include="test_pkb_pql.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_pkb.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_parser_pkb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
