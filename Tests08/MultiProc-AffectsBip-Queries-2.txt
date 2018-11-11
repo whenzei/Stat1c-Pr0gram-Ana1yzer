@@ -1,0 +1,37 @@
+1 - AffectsBip syn-syn(different synonym) true
+assign a1; stmt s;
+Select BOOLEAN such that AffectsBip(a1, s)
+TRUE
+5000
+2 - AffectsBip syn-syn (same synonym) true
+assign a;
+Select BOOLEAN such that AffectsBip(a,a)
+TRUE
+5000
+3 - AffectsBip const-syn true
+stmt s;
+Select BOOLEAN such that AffectsBip(58,s)
+TRUE
+5000
+4 - AffectsBip const-syn, get all affected statements
+stmt s;
+Select s such that AffectsBip(30 ,s)
+30
+5000
+5 - AffectsBip syn-const true
+stmt s;
+Select BOOLEAN such that AffectsBip(s, 36)
+TRUE
+5000
+6 - AffectsBip const-syn true
+stmt s;
+Select BOOLEAN such that AffectsBip(37,_)
+TRUE
+5000
+7 - AffectsBip const-const true
+
+Select BOOLEAN such that AffectsBip(58, 36)
+TRUE
+5000
+
+

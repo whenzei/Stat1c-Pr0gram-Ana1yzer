@@ -1,0 +1,120 @@
+1 - AffectsBip, wilcard with num
+prog_line n1;
+Select n1 such that AffectsBip(n1,43)
+22, 33
+5000
+2 - AffectsBip, two wildcard, boolean true
+
+Select BOOLEAN such that AffectsBip(_,_)
+TRUE
+5000
+3 - Assign stmt that affects itself
+assign a;
+Select a such that AffectsBip(a,a)
+69
+5000
+4 - Tuple of assign stmt that affects itself
+stmt s;
+Select <s,s> such that AffectsBip(s,s)
+69 69
+5000
+5 - Tuple of AffectsBip pair
+stmt s1, s2;
+Select <s1,s2> such that AffectsBip(s1,s2)
+12 13,12 5,13 12,22 43,32 33,32 34,32 36,32 39,33 43,34 41,35 41,36 10,36 39,39 41,4 68,4 69,40 42,41 10,41 39,42 36,42 39,43 6,46 57,5 12,50 49,50 52,50 7,55 47,55 57,64 66,64 69,66 68,66 69,68 66,68 69,69 69,7 11,8 11,9 49,9 52,9 7, 35 36, 49 50
+5000
+6 - AffectsBip, two stmt syn, selecting affecter
+stmt s1, s2;
+Select s1 such that AffectsBip(s1,s2)
+12,13,22,32,33,34,35,36,39,4,40,41,42,43,46,49,5,50,55,64,66,68,69,7,8,9
+5000
+7 - AffectsBip, wildcard with stmt syn 
+stmt s1;
+Select s1 such that AffectsBip(_,s1)
+10,11,12,13,33,34,36,39,41,42,43,47,49,5,50,52,57,6,66,68,69,7
+5000
+8 - AffectsBip, wilcard with num
+prog_line n1;
+Select n1 such that AffectsBip(n1,43)
+22, 33
+5000
+9 - AffectsBip, two wildcard, boolean true
+
+Select BOOLEAN such that AffectsBip(_,_)
+TRUE
+5000
+10 - Assign stmt that affects itself
+assign a;
+Select a such that AffectsBip(a,a)
+69
+5000
+11 - Tuple of assign stmt that affects itself
+stmt s;
+Select <s,s> such that AffectsBip(s,s)
+69 69
+5000
+12 - Tuple of AffectsBip pair
+stmt s1, s2;
+Select <s1,s2> such that AffectsBip(s1,s2)
+12 13,12 5,13 12,22 43,32 33,32 34,32 36,32 39,33 43,34 41,35 41,36 10,36 39,39 41,4 68,4 69,40 42,41 10,41 39,42 36,42 39,43 6,46 57,5 12,50 49,50 52,50 7,55 47,55 57,64 66,64 69,66 68,66 69,68 66,68 69,69 69,7 11,8 11,9 49,9 52,9 7, 35 36, 49 50
+5000
+13 - AffectsBip, two stmt syn, selected affected
+stmt s1, s2;
+Select s2 such that AffectsBip(s1,s2)
+10, 11, 12, 13, 33,34,36,39,41,42,43,47,49,5,50,52,57,6,66,68,69,7 
+5000
+14 - AffectsBip, stmt syn with number (no result)
+stmt s1;
+Select s1 such that AffectsBip(s1,38)
+
+5000
+15 - AffectsBip, stmt syn with number, boolean true
+stmt s1;
+Select BOOLEAN such that AffectsBip(s1,25)
+FALSE
+5000
+16 - AffectsBip, stmt syn with number, boolean false
+stmt s1;
+Select BOOLEAN such that AffectsBip(s1,16)
+FALSE
+5000
+17 - AffectsBip, number with stmt syn
+stmt s1;
+Select s1 such that AffectsBip(66,s1)
+68,69
+5000
+18 - AffectsBip, number with stmt syn
+stmt s1;
+Select s1 such that AffectsBip(64,s1)
+66,69
+5000
+19 - AffectsBip, number with stmt syn
+stmt s1;
+Select s1 such that AffectsBip(57,s1) (no result)
+
+5000
+20 - AffectsBip, number with stmt syn
+stmt s1;
+Select BOOLEAN such that AffectsBip(25,s1)
+FALSE
+5000
+21 - AffectsBip, two numbers, boolean true
+
+Select BOOLEAN such that AffectsBip(29,36)
+FALSE
+5000
+22 - AffectsBip, two numbers, boolean false (due to line 37)
+
+Select BOOLEAN such that AffectsBip(29,38)
+FALSE
+5000
+23 - AffectsBip, num with wildcard (this would have been false in Affects)
+
+Select BOOLEAN such that AffectsBip(43,_)
+TRUE
+5000
+24 - AffectsBip, num with wildcard, boolean true
+
+Select BOOLEAN such that AffectsBip(5,_)
+TRUE
+5000
