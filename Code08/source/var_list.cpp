@@ -26,7 +26,12 @@ void VarList::InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type,
       var_read_map_[var_id].push_back(stmt_num);
       if (read_var_set_.insert(var_id).second) {
         read_var_list_.push_back(var_id);
-        read_var_twin_list_.push_back(make_pair(var_id, var_id));
+      }
+      for (StmtNum stmt : var_read_map_[var_id]) {
+        read_pair_list_.push_back(make_pair(stmt_num, stmt));
+        if (stmt_num != stmt) {
+          read_pair_list_.push_back(make_pair(stmt, stmt_num));
+        }
       }
       break;
     case PqlDeclarationEntity::kPrint:
@@ -34,7 +39,12 @@ void VarList::InsertVarName(VarName var_name, PqlDeclarationEntity stmt_type,
       var_print_map_[var_id].push_back(stmt_num);
       if (print_var_set_.insert(var_id).second) {
         print_var_list_.push_back(var_id);
-        print_var_twin_list_.push_back(make_pair(var_id, var_id));
+      }
+      for (StmtNum stmt : var_print_map_[var_id]) {
+        print_pair_list_.push_back(make_pair(stmt_num, stmt));
+        if (stmt_num != stmt) {
+          print_pair_list_.push_back(make_pair(stmt, stmt_num));
+        }
       }
       break;
   }
@@ -120,6 +130,8 @@ VarIndexList VarList::GetAllReadVar() { return read_var_list_; }
 
 VarIndexList VarList::GetAllPrintVar() { return print_var_list_; }
 
-VarIndexPairList VarList::GetAllReadVarTwin() { return read_var_twin_list_; }
+StmtNumPairList VarList::GetAllReadPairWithSameVar() { return read_pair_list_; }
 
-VarIndexPairList VarList::GetAllPrintVarTwin() { return print_var_twin_list_; }
+StmtNumPairList VarList::GetAllPrintPairWithSameVar() {
+  return print_pair_list_;
+}

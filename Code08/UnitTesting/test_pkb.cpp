@@ -167,14 +167,24 @@ TEST_CLASS(TestPKB) {
     VarIndexList print_vars = pkb.GetAllPrintVar();
     Assert::IsTrue(print_vars.size() == 1);
     Assert::AreEqual(kVarIndex2, print_vars.front());
-    VarIndexPairList read_var_pairs = pkb.GetAllReadVarTwin();
-    Assert::IsTrue(read_var_pairs.size() == 1);
-    Assert::AreEqual(kVarIndex1, read_var_pairs.front().first);
-    Assert::AreEqual(kVarIndex1, read_var_pairs.front().second);
-    VarIndexPairList print_var_pairs = pkb.GetAllPrintVarTwin();
-    Assert::IsTrue(print_var_pairs.size() == 1);
-    Assert::AreEqual(kVarIndex2, print_var_pairs.front().first);
-    Assert::AreEqual(kVarIndex2, print_var_pairs.front().second);
+    pkb.InsertReadStmt(&ReadStmtData(kStmtNum3, kProcIndex1, kVarName1));
+    pkb.InsertPrintStmt(&PrintStmtData(kStmtNum4, kProcIndex1, kVarName3));
+    StmtNumPairList result = pkb.GetAllReadPairWithSameVar();
+    Assert::IsTrue(result.size() == 4);
+    Assert::AreEqual(kStmtNum1, result[0].first);
+    Assert::AreEqual(kStmtNum1, result[0].second);
+    Assert::AreEqual(kStmtNum3, result[1].first);
+    Assert::AreEqual(kStmtNum1, result[1].second);
+    Assert::AreEqual(kStmtNum1, result[2].first);
+    Assert::AreEqual(kStmtNum3, result[2].second);
+    Assert::AreEqual(kStmtNum3, result[3].first);
+    Assert::AreEqual(kStmtNum3, result[3].second);
+    result = pkb.GetAllPrintPairWithSameVar();
+    Assert::IsTrue(result.size() == 2);
+    Assert::AreEqual(kStmtNum2, result[0].first);
+    Assert::AreEqual(kStmtNum2, result[0].second);
+    Assert::AreEqual(kStmtNum4, result[1].first);
+    Assert::AreEqual(kStmtNum4, result[1].second);
   }
 
   TEST_METHOD(TestGetAllConstValue) {
@@ -1206,6 +1216,24 @@ TEST_CLASS(TestPKB) {
     pkb.InsertDirectCallRelationship(kProcName2, kProcName3);
     pkb.InsertIndirectCallRelationship(kProcName1, kProcName3);
     Assert::IsTrue(pkb.HasCallsRelationship());
+  }
+
+  TEST_METHOD(TestGetAllCallPairWithSameProc) {
+    pkb.InsertCalls(kStmtNum1, kProcName1);
+    pkb.InsertCalls(kStmtNum2, kProcName2);
+    pkb.InsertCalls(kStmtNum3, kProcName2);
+    StmtNumPairList result = pkb.GetAllCallPairWithSameProc();
+    Assert::IsTrue(result.size() == 5);
+    Assert::AreEqual(kStmtNum1, result[0].first);
+    Assert::AreEqual(kStmtNum1, result[0].second);
+    Assert::AreEqual(kStmtNum2, result[1].first);
+    Assert::AreEqual(kStmtNum2, result[1].second);
+    Assert::AreEqual(kStmtNum3, result[2].first);
+    Assert::AreEqual(kStmtNum2, result[2].second);
+    Assert::AreEqual(kStmtNum2, result[3].first);
+    Assert::AreEqual(kStmtNum3, result[3].second);
+    Assert::AreEqual(kStmtNum3, result[4].first);
+    Assert::AreEqual(kStmtNum3, result[4].second);
   }
 
   TEST_METHOD(TestGetCalledProc) {

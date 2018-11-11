@@ -130,13 +130,13 @@ class PKB {
   // @returns a list of all variables used in some print stmt
   VarIndexList GetAllPrintVar();
 
-  // @returns a list of all variables modified in some read stmt (repeat each
-  // var_id to form a pair)
-  VarIndexPairList GetAllReadVarTwin();
+  // @returns a list of all pairs of read statements that modifies the same
+  // variable
+  StmtNumPairList GetAllReadPairWithSameVar();
 
-  // @returns a list of all variables used in some print stmt (repeat each
-  // var_id to form a pair)
-  VarIndexPairList GetAllPrintVarTwin();
+  // @returns a list of all pairs of print statements that uses the same
+  // variable
+  StmtNumPairList GetAllPrintPairWithSameVar();
 
   // get all constant values stored inside constant list
   // @returns the list of constant values (can be empty)
@@ -639,6 +639,10 @@ class PKB {
   // @returns true if Call Table has any calls relationships
   // false if otherwise
   bool HasCallsRelationship();
+
+  // @returns a list of all pairs of call statements that call the same
+  // procedure
+  StmtNumPairList GetAllCallPairWithSameProc();
 
   // @returns the index of procedure called at given statement number if exists, empty
   // string otherwise

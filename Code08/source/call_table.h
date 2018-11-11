@@ -24,6 +24,7 @@ using StmtNumProcPairList = vector<pair<StmtNum, ProcIndex>>;
 using ProcIndexSet = unordered_set<ProcIndex>;
 using StmtNumList = vector<StmtNum>;
 using StmtProcMap = unordered_map<StmtNum, ProcIndex>;
+using StmtNumPairList = vector<pair<StmtNum, StmtNum>>;
 
 class CallTable {
   CallMap call_table_;           // stores <proc calling, proc called>
@@ -40,6 +41,7 @@ class CallTable {
       callee_twin_list_;     // stores procs called by any other proc (in pairs)
   ProcIndexSet callee_set_;  // stores procs called by any other proc
   StmtProcMap stmt_to_call_table_;  // retrieve the procedure name called at StmtNum
+  StmtNumPairList stmt_pair_list_;
 
  public:
   // PROC-PROC RELATIONSHIP INSERT
@@ -125,6 +127,10 @@ class CallTable {
   // @returns true if Call Table has any calls relationships
   // false if otherwise
   bool HasCallsRelationship();
+
+  // @returns a list of all pairs of call statements that call the same
+  // procedure
+  StmtNumPairList GetAllCallPairWithSameProc();
 };
 
 #endif !SPA_CALL_TABLE_H

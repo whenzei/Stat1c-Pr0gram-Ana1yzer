@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "stdafx.h" 
 #include "CppUnitTest.h"
 #include "var_list.h"
 
@@ -168,32 +168,31 @@ TEST_CLASS(TestVarList) {
     Assert::AreEqual(var_list.GetVarIndex(kSampleVar3), print_vars.back());
   }
 
-  TEST_METHOD(TestGetAllReadPrintVarTwin) {
+  TEST_METHOD(TestGetAllReadPrintPairWithSameVar) {
     VarList var_list;
-    var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 3);
-    var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kPrint, 5);
-    var_list.InsertVarName(kSampleVar3);
-    var_list.InsertVarName(kSampleVar3, PqlDeclarationEntity::kPrint, 6);
-    var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kRead, 10);
-    VarIndexPairList read_vars = var_list.GetAllReadVarTwin();
-    Assert::IsTrue(read_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar1),
-                     read_vars.front().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar1),
-                     read_vars.front().second);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2), read_vars.back().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     read_vars.back().second);
-    VarIndexPairList print_vars = var_list.GetAllPrintVarTwin();
-    Assert::IsTrue(print_vars.size() == 2);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     print_vars.front().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar2),
-                     print_vars.front().second);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar3),
-                     print_vars.back().first);
-    Assert::AreEqual(var_list.GetVarIndex(kSampleVar3),
-                     print_vars.back().second);
+    var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 1);
+    var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kPrint, 2);
+    var_list.InsertVarName(kSampleVar3, PqlDeclarationEntity::kPrint, 3);
+    var_list.InsertVarName(kSampleVar1, PqlDeclarationEntity::kRead, 4);
+    var_list.InsertVarName(kSampleVar2, PqlDeclarationEntity::kRead, 5);
+    StmtNumPairList result = var_list.GetAllReadPairWithSameVar();
+    Assert::IsTrue(result.size() == 5);
+    Assert::AreEqual(1, result[0].first);
+    Assert::AreEqual(1, result[0].second);
+    Assert::AreEqual(4, result[1].first);
+    Assert::AreEqual(1, result[1].second);
+    Assert::AreEqual(1, result[2].first);
+    Assert::AreEqual(4, result[2].second);
+    Assert::AreEqual(4, result[3].first);
+    Assert::AreEqual(4, result[3].second);
+    Assert::AreEqual(5, result[4].first);
+    Assert::AreEqual(5, result[4].second);
+    result = var_list.GetAllPrintPairWithSameVar();
+    Assert::IsTrue(result.size() == 2);
+    Assert::AreEqual(2, result[0].first);
+    Assert::AreEqual(2, result[0].second);
+    Assert::AreEqual(3, result[1].first);
+    Assert::AreEqual(3, result[1].second);
   }
 };
 }  // namespace PKBTests
