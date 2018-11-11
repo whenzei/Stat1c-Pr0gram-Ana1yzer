@@ -1218,23 +1218,88 @@ while w;
 Select w pattern w("count", _)
 47
 5000
-48 - AFFECTS constant-constant valid
+249 - AFFECTS constant-constant valid
 
 Select BOOLEAN such that Affects(11, 11)
 TRUE
 5000
-49 - AFFECTS constant-syn valid
+250 - AFFECTS constant-constant valid
+
+Select BOOLEAN such that Affects(16, 19)
+TRUE
+5000
+251 - AFFECTS constant-constant invalid
+
+Select BOOLEAN such that Affects(2, 16)
+FALSE
+5000
+252 - AFFECTS constant-constant invalid
+
+Select BOOLEAN such that Affects(20, 20)
+FALSE
+5000
+253 - AFFECTS constant-constant not assign stmt
+
+Select BOOLEAN such that Affects(31, 32)
+FALSE
+5000
+254 - AFFECTS constant-syn valid
 assign a;
 Select a such that Affects(14, a)
 14, 16
 5000
-50 - AFFECTS syn-constant valid
+255 - AFFECTS constant-syn invalid stmt type
+while a;
+Select a such that Affects(14, a)
+
+5000
+256- AFFECTS syn-constant valid
 assign a;
 Select a such that Affects(a, 32)
 28, 34
 5000
+257 - AFFECTS syn-constant invalid stmt type
+read a;
+Select a such that Affects(a, 32)
 
-51 - AFFECTS syn-syn valid
+5000
+258 - AFFECTS syn-syn valid
 assign a1; stmt s;
 Select a1 such that Affects(a1, s) and Next*(s,37) and Next*(a1, 37)
 8, 32, 34
+5000
+259 - AFFECTS syn-syn valid
+stmt s;
+Select s such that Affects(s, s)
+11, 14, 19, 48, 55
+5000
+260 - AFFECTS* constant-constant valid
+
+Select BOOLEAN such that Affects*(28, 35)
+TRUE
+5000
+261 - AFFECTS* constant-constant valid
+
+Select BOOLEAN such that Affects*(49, 49)
+TRUE
+5000
+262 - AFFECTS* constant-constant invalid
+
+Select BOOLEAN such that Affects*(39, 58)
+FALSE
+5000
+263- AFFECTS* constant-syn valid
+assign a;
+Select a such that Affects*(50, a)
+48, 49, 50, 51, 58
+5000
+264 - AFFECTS* syn-constant valid
+assign a;
+Select a such that Affects*(a, 58)
+41, 42, 43, 45, 48, 49, 50, 51, 53, 54
+5000
+265 - AFFECTS* syn-syn valid
+stmt s;
+Select s such that Affects*(s, s)
+11, 14, 19, 20, 48, 49, 50, 51, 55
+5000
